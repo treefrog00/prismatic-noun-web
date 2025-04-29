@@ -212,11 +212,11 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
     if (numDice === 1) {
       // Use the first audio file for a single die
-      soundFile = '/dice_roll1.mp3';
+      soundFile = '/ai_sound/dice_roll1.mp3';
     } else {
       // For 2 or more dice, use one of files 2, 3, or 4
       const soundNumber = Math.floor(Math.random() * 3) + 2; // Random number between 2-4
-      soundFile = `/dice_roll${soundNumber}.mp3`;
+      soundFile = `/ai_sound/dice_roll${soundNumber}.mp3`;
     }
 
     // Create new audio element

@@ -1,55 +1,58 @@
 import React, { useEffect, useState } from 'react';
-import { LocationDto, WorldState } from '../types';
+import { LocationDto } from '../types';
 import { useWorld, useVote } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
-const gridData: LocationDto[][] = [
-  [
-    {
-      name: 'Forest',
-      description: 'A dense forest with ancient trees',
-      image: '/map2.webp',
-      isEmpty: false,
-    },
-    {
-      name: 'Mountain',
-      description: 'Towering peaks with snow-capped summits',
-      image: '/map2.webp',
-      isEmpty: false,
-    },
-    {
-      name: 'Cave',
-      description: 'A dark cave with mysterious echoes',
-      image: '/map2.webp',
-      isEmpty: false,
-    }
-  ],
-  [
-    {
-      name: 'Village',
-      description: 'A peaceful village with friendly inhabitants',
-      image: '/map2.webp',
-      isEmpty: false,
-    },
-    {
-      name: 'Castle',
-      description: 'An imposing castle with high walls',
-      image: '/map2.webp',
-      isEmpty: false,
-    },
-    {
-      name: null,
-      description: null,
-      image: null,
-      isEmpty: true,
-    }
-    //{ name: 'Swamp', description: 'A murky swamp with strange creatures', image: '/map2.webp' }
-  ]
-];
+import artUrl from '../util/artUrls';
+
 
 const MapComponent: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<string>(null);
   const { world } = useWorld();
   const { setVoteState, setShowVote } = useVote();
+
+  const gridData: LocationDto[][] = [
+    [
+      {
+        name: 'Forest',
+        description: 'A dense forest with ancient trees',
+        image: artUrl('map2.webp'),
+        isEmpty: false,
+      },
+      {
+        name: 'Mountain',
+        description: 'Towering peaks with snow-capped summits',
+        image: artUrl('map2.webp'),
+        isEmpty: false,
+      },
+      {
+        name: 'Cave',
+        description: 'A dark cave with mysterious echoes',
+        image: artUrl('map2.webp'),
+        isEmpty: false,
+      }
+    ],
+    [
+      {
+        name: 'Village',
+        description: 'A peaceful village with friendly inhabitants',
+        image: artUrl('map2.webp'),
+        isEmpty: false,
+      },
+      {
+        name: 'Castle',
+        description: 'An imposing castle with high walls',
+        image: artUrl('map2.webp'),
+        isEmpty: false,
+      },
+      {
+        name: null,
+        description: null,
+        image: null,
+        isEmpty: true,
+      }
+      //{ name: 'Swamp', description: 'A murky swamp with strange creatures', image: '/map2.webp' }
+    ]
+  ];
 
   const handleLocationClick = (location: string) => {
     if (HASH_SKIP_VOTE) {

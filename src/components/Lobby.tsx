@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import StereoControl from './StereoControl';
 import LobbyPlayers from './LobbyPlayers';
 import NavBar from './NavBar';
@@ -6,6 +6,7 @@ import { useIsHost, insertCoin, openDiscordInviteDialog } from '../core/multipla
 import { QuestSummaryDto } from '../types';
 import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
 import { starryTheme } from '../styles/starryTheme';
+import artUrl from '../util/artUrls';
 
 const availableQuests: QuestSummaryDto[] = [
   {
@@ -86,7 +87,7 @@ const Lobby = () => {
                   <p className="mt-2 text-gray-400 text-sm">{questSummary.shortDescription}</p>
                 </div>
               </div>
-              <img src="/logo.webp" alt="Logo" className="w-48 h-48 object-contain opacity-70 ml-8" />
+              <img src={artUrl('logo.webp')} alt="Logo" className="w-48 h-48 object-contain opacity-70 ml-8" />
             </div>
             <div className="flex flex-col items-center gap-8">
               {isCoinInserted ? (

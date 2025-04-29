@@ -77,7 +77,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     // Add global pointer interaction listener to start playing on first interaction
     const handleFirstInteraction = () => {
       if (audioElementRef.current && startMode !== 'off') {
-        audioElementRef.current.src = `/${startMode}.mp3`;
+        audioElementRef.current.src = `/ai_sound/${startMode}.mp3`;
         audioElementRef.current.volume = 1;
         audioElementRef.current.play().catch(error => {
           console.error('Error playing audio:', error);
@@ -114,7 +114,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       await fadeOut(audioElementRef.current);
     } else {
       try {
-        audioElementRef.current.src = `/${mode}.mp3`;
+        audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
         audioElementRef.current.volume = 1;
         await audioElementRef.current.play();
 

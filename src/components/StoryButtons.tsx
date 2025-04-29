@@ -9,6 +9,7 @@ import { useVote } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
+import artUrl from '../util/artUrls';
 
 
 interface StoryControlsProps {
@@ -201,19 +202,19 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             className="w-16 h-16 cursor-pointer"
             onPointerDown={() => setIsInventoryOpen(true)}
           >
-            <img src="/inventory3.webp" alt="Inventory" className="hover:scale-105 transition-transform" />
+            <img src={artUrl('inventory3.webp')} alt="Inventory" className="hover:scale-105 transition-transform" />
           </div>
           <div
             className="w-16 h-16 cursor-pointer rounded-lg border-2 border-gray-700 flex items-center justify-center hover:bg-gray-900 transition-colors"
             onPointerDown={() => handleUndoClick(gameLogic)}
           >
-            <img src="/undo3.webp" alt="Undo" className="hover:scale-105 transition-transform" />
+            <img src={artUrl('undo3.webp')} alt="Undo" className="hover:scale-105 transition-transform" />
           </div>
           <div
             className="w-16 h-16 cursor-pointer"
             onPointerDown={() => setIsMapOpen(true)}
           >
-            <img src="/map2.webp" alt="Map" className="hover:scale-105 transition-transform" />
+            <img src={artUrl('map2.webp')} alt="Map" className="hover:scale-105 transition-transform" />
           </div>
         </div>
       </div>

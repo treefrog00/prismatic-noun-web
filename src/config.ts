@@ -23,3 +23,7 @@ export const HASH_NUM_PLAYERS = hashParams.get('numplayers');
 export const HASH_SKIP_ANIMATION = hashParams.get('skipanimation');
 
 export const HASH_SKIP_VOTE = hashParams.get('skipvote');
+
+// Import game-specific configuration
+import { gameConfig } from './envConfig';
+export { gameConfig };

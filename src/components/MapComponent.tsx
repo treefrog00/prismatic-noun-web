@@ -9,24 +9,18 @@ const gridData: LocationDto[][] = [
       description: 'A dense forest with ancient trees',
       image: '/map2.webp',
       isEmpty: false,
-      npcs: [],
-      items: []
     },
     {
       name: 'Mountain',
       description: 'Towering peaks with snow-capped summits',
       image: '/map2.webp',
       isEmpty: false,
-      npcs: [],
-      items: []
     },
     {
       name: 'Cave',
       description: 'A dark cave with mysterious echoes',
       image: '/map2.webp',
       isEmpty: false,
-      npcs: [],
-      items: []
     }
   ],
   [
@@ -35,24 +29,18 @@ const gridData: LocationDto[][] = [
       description: 'A peaceful village with friendly inhabitants',
       image: '/map2.webp',
       isEmpty: false,
-      npcs: [],
-      items: []
     },
     {
       name: 'Castle',
       description: 'An imposing castle with high walls',
       image: '/map2.webp',
       isEmpty: false,
-      npcs: [],
-      items: []
     },
     {
       name: null,
       description: null,
       image: null,
       isEmpty: true,
-      npcs: [],
-      items: []
     }
     //{ name: 'Swamp', description: 'A murky swamp with strange creatures', image: '/map2.webp' }
   ]

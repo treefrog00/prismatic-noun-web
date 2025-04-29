@@ -1,0 +1,6 @@
+---
+description: 
+globs: *.tsx
+alwaysApply: false
+---
+This project uses React 17.

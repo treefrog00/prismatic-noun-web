@@ -1,0 +1,15 @@
+/* Initial styling to prevent FOUC */
+html {
+  visibility: hidden;
+  opacity: 0;
+}
+
+html.wf-active {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.3s ease-in;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

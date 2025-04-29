@@ -14,8 +14,6 @@ if (hashParams.has('backend')) {
 
 export const BACKEND_URL = url;
 
-const IMAGES_URL = import.meta.env.DEV ? 'https://storage.googleapis.com/prismatic-noun-images' : '/images';
-
 export const HASH_MOBILE_TEST = hashParams.has('mobiletest');
 
 export const HASH_QUEST_ID = hashParams.get('questid');

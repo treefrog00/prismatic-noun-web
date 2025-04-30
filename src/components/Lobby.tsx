@@ -7,7 +7,7 @@ import { QuestSummaryDto } from '../types';
 import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
 import { starryTheme } from '../styles/starryTheme';
 import artUrl from '../util/artUrls';
-import { playerRoomConfig } from '../envConfig';
+import { playRoomConfig } from '../envConfig';
 
 const availableQuests: QuestSummaryDto[] = [
   {
@@ -48,7 +48,7 @@ const Lobby = () => {
   useEffect(() => {
     const initializeGame = async () => {
       // skip lobby means skip their UI and use custom lobby instead
-      await insertCoin({ skipLobby: true, gameId: playerRoomConfig.gameId, discord: true });
+      await insertCoin({ skipLobby: true, gameId: playRoomConfig.gameId, discord: true });
 
       setIsCoinInserted(true);
       setQuestSummary(availableQuests[0]);

@@ -14,6 +14,8 @@ if (hashParams.has('backend')) {
 
 export const BACKEND_URL = url;
 
+const GENERATED_IMAGES_URL = import.meta.env.DEV ? 'https://storage.googleapis.com/prismatic-noun-images' : '/images';
+
 export const HASH_MOBILE_TEST = hashParams.has('mobiletest');
 
 export const HASH_QUEST_ID = hashParams.get('questid');
@@ -24,6 +26,4 @@ export const HASH_SKIP_ANIMATION = hashParams.get('skipanimation');
 
 export const HASH_SKIP_VOTE = hashParams.get('skipvote');
 
-// Import game-specific configuration
-import { gameConfig } from './envConfig';
-export { gameConfig };
+

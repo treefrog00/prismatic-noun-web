@@ -10,8 +10,6 @@ export interface LocationState {
   }
 
 export interface CharacterState {
-  name: string;
-  username: string;
   stamina: number;
 }
 

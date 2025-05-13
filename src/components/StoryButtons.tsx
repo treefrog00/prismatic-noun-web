@@ -194,7 +194,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <img src={artUrl('inventory3.webp')} alt="Inventory" className="hover:scale-105 transition-transform" />
           </div>
           <div
-            className="w-16 h-16 cursor-pointer rounded-lg border-2 border-gray-700 flex items-center justify-center hover:bg-gray-900 transition-colors"
+            className="w-16 h-16 cursor-pointer"
             onPointerDown={() => setIsLogbookOpen(true)}
           >
             <img src={artUrl('logbook.webp')} alt="Logbook" className="hover:scale-105 transition-transform" />

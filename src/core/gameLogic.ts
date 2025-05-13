@@ -1,8 +1,10 @@
 import { setState, getState, PlayerState, RPC, getRoomCode, LocalPlayerState, setRpcPlayer } from './multiplayerState';
 import { addLocalPlayer } from '../contexts/GameContext';
 import { GameApi } from './gameApi';
-import { GameEvent, WorldState, QuestDto, QuestSummaryDto, LocationState } from '../types';
+import { GameEvent } from '../types';
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from '../config';
+import { z } from 'zod';
+import { QuestSchema, WorldSchema, StartGame, StartGameSchema, QuestSummary, Quest, WorldState } from '../types/validatedTypes';
 
 const GAME_PHASE_KEY = 'gamePhase';
 
@@ -21,31 +23,6 @@ export class GameLogic {
     this.api = new GameApi();
     this.eventLog = [];
   }
-
-  worldFromQuest(quest: QuestDto): WorldState {
-    const currentLocationStuff = quest.currentLocation;
-
-    const startLocationState: LocationState = {
-      npcs: currentLocationStuff.npcs.map((npc) => ({
-        name: npc.name,
-        instanceId: npc.instanceId,
-        stamina: quest.npcs[npc.name].stamina
-      })),
-      items: currentLocationStuff.items.map((item) => ({
-        name: item.name,
-        instanceId: item.instanceId
-      }))
-    };
-
-    const locations: Record<string, LocationState> = {};
-    locations[quest.startLocation] = startLocationState;
-
-    return {
-      locations,
-      currentLocation: quest.startLocation
-    };
-  }
-
 
   private appendToStoryRpc(text: string, label?: string) {
     RPC.call('rpc-game-event', { type: 'Story', label, text }, RPC.Mode.ALL);
@@ -81,7 +58,7 @@ export class GameLogic {
     this.appendPlayerActionRpc(text, `${player.getState('name')} investigates`);
   }
 
-  public async startIfNotStarted(startingPlayers: PlayerState[], quest: QuestSummaryDto, setWorld: (world: WorldState) => void, setQuest: (quest: QuestDto) => void, localPlayers: PlayerState[], setLocalPlayers: (players: PlayerState[]) => void) {
+  public async startIfNotStarted(startingPlayers: PlayerState[], quest: QuestSummary, setWorld: (world: WorldState) => void, setQuest: (quest: Quest) => void, localPlayers: PlayerState[], setLocalPlayers: (players: PlayerState[]) => void) {
     let phase = getState(GAME_PHASE_KEY) as string;
     if (!phase) {
       phase = 'playing';
@@ -118,21 +95,15 @@ export class GameLogic {
 
     this.appendToStoryRpc(quest.intro);
 
-    let response = await this.api.makeRequest(`/game/start/${quest.id}`,
+    let gameData = await this.api.makeTypedRequest(`/game/start/${quest.id}`,
       {
         roomCode: getRoomCode(),
         players: startingPlayers.map(p => ({ username: p.id, globalName: p.getProfile().name })),
-      });
+      }, StartGameSchema);
 
-    setQuest(response.quest)
-    this.gameId = response.gameId;
-
-    const world = this.worldFromQuest(response.quest);
-
-    setWorld({
-      ...world,
-      currentLocation: response.quest.startLocation
-    })
+    this.gameId = gameData.gameId;
+    setQuest(gameData.quest);
+    setWorld(gameData.world);
 
     this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));
   }
@@ -164,12 +135,6 @@ export class GameLogic {
     this.appendPlayerActionRpc(leavingMessage, 'player left');
   }
 
-  public nextTurn(): void {
-    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
-    this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));
-    setRpcPlayer(this.players[this.currentPlayerIndex]);
-  }
-
   async narrate(questId: string) {
     let response = await this.api.makeRequest(`/game/${this.gameId}/narrate`,
       {
@@ -189,6 +154,8 @@ export class GameLogic {
   }
 
   async endTurn(questId: string) {
-    this.nextTurn();
+    this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
+    this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));
+    setRpcPlayer(this.players[this.currentPlayerIndex]);
   }
 }

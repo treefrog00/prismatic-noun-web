@@ -1,5 +1,7 @@
 import { z } from 'zod'; // Import Zod
 
+const FriendlyLevel = z.enum(['enemy', 'neutral', 'friend']);
+
 const QuestSummarySchema = z.object({
   id: z.string(),
   title: z.string(),
@@ -45,8 +47,7 @@ const CharacterSchema = BaseCharacterSchema.extend({
 });
 
 const NpcSchema = BaseCharacterSchema.extend({
-  friendly: z.number().int(),
-  stamina: z.number(),
+  friendly: FriendlyLevel,
 });
 
 const NameAndIdSchema = z.object({
@@ -67,7 +68,7 @@ const CurrentLocationSchema = z.object({
   features: z.array(NameAndIdSchema),
 });
 
-const QuestSchema = QuestBaseSchema.extend({
+export const QuestSchema = QuestBaseSchema.extend({
   locations: z.record(z.string(), LocationSchema),
   npcs: z.record(z.string(), NpcSchema),
   items: z.record(z.string(), ItemSchema),
@@ -75,13 +76,49 @@ const QuestSchema = QuestBaseSchema.extend({
   currentLocation: CurrentLocationSchema,
 });
 
-export type QuestSummaryDto = z.infer<typeof QuestSummarySchema>;
-export type ItemDto = z.infer<typeof ItemSchema>;
-export type AbilityDto = z.infer<typeof AbilitySchema>;
-export type FeatureDto = z.infer<typeof FeatureSchema>;
-export type QuestBase = z.infer<typeof QuestBaseSchema>;
-export type QuestDto = z.infer<typeof QuestSchema>;
-export type CharacterDto = z.infer<typeof CharacterSchema>;
-export type NpcDto = z.infer<typeof NpcSchema>;
-export type LocationDto = z.infer<typeof LocationSchema>;
+export const CharacterStateSchema = z.object({
+  stamina: z.number(),
+  inventory: z.array(z.string()),
+  weapons: z.array(z.string()),
+  armor: z.string(),
+});
 
+const NpcStateSchema = z.object({
+  name: z.string(),
+  instanceId: z.string(),
+  stamina: z.number(),
+  weapons: z.array(z.string()),
+  armor: z.string(),
+});
+
+const LocationStateSchema = z.object({
+  npcs: z.array(NpcStateSchema),
+  items: z.array(z.string()),
+  features: z.array(z.string()),
+});
+
+export const WorldSchema = z.object({
+  locations: z.record(z.string(), LocationStateSchema),
+  currentLocation: z.string(),
+});
+
+export const StartGameSchema = z.object({
+  quest: QuestSchema,
+  world: WorldSchema,
+  gameId: z.string(),
+});
+
+export type QuestSummary = z.infer<typeof QuestSummarySchema>;
+export type Item = z.infer<typeof ItemSchema>;
+export type Ability = z.infer<typeof AbilitySchema>;
+export type LocationFeature = z.infer<typeof FeatureSchema>;
+export type QuestBase = z.infer<typeof QuestBaseSchema>;
+export type Quest = z.infer<typeof QuestSchema>;
+export type Character = z.infer<typeof CharacterSchema>;
+export type Npc = z.infer<typeof NpcSchema>;
+export type NpcState = z.infer<typeof NpcStateSchema>;
+export type Location = z.infer<typeof LocationSchema>;
+export type StartGame = z.infer<typeof StartGameSchema>;
+export type FriendlyLevel = z.infer<typeof FriendlyLevel>;
+export type WorldState = z.infer<typeof WorldSchema>;
+export type CharacterState = z.infer<typeof CharacterStateSchema>;

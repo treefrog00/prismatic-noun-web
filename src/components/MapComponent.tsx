@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { LocationDto } from '../types';
+import { Location } from '../types';
 import { useWorld, useVote } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
 import artUrl from '../util/artUrls';
@@ -10,7 +10,7 @@ const MapComponent: React.FC = () => {
   const { world } = useWorld();
   const { setVoteState, setShowVote } = useVote();
 
-  const gridData: LocationDto[][] = [
+  const gridData: Location[][] = [
     [
       {
         name: 'Forest',

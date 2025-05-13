@@ -8,21 +8,17 @@ export type GameEvent =
 
 // Export types from validatedTypes.ts
 export type {
-  QuestSummaryDto,
-  ItemDto,
-  AbilityDto,
-  FeatureDto,
+  QuestSummary,
+  Item,
+  Ability,
+  LocationFeature,
   QuestBase,
-  QuestDto,
-  CharacterDto,
-  NpcDto,
-  LocationDto
-} from './validatedTypes';
-
-// Export types from stateTypes.ts
-export type {
-  LocationState,
+  Quest,
+  Character,
+  Npc,
+  Location,
+  WorldState,
+  StartGame,
   CharacterState,
   NpcState,
-  WorldState
-} from './stateTypes';
+} from './validatedTypes';

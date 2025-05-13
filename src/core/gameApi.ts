@@ -1,5 +1,6 @@
 import { getDiscordAccessToken } from './multiplayerState';
 import { BACKEND_URL } from '../config';
+import { z } from 'zod';
 
 export class GameApi {
   private async getAuthToken(): Promise<string> {
@@ -57,5 +58,10 @@ export class GameApi {
       body: body ? JSON.stringify(body) : undefined
     });
     return response;
+  }
+
+  async makeTypedRequest<T extends z.ZodType>(path: string, body: any, schema: T): Promise<z.infer<T>> {
+    const response = await this.makeRequest(path, body);
+    return schema.parse(response);
   }
 }

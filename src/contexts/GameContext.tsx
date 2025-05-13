@@ -1,6 +1,6 @@
 import { GameLogic } from '../core/gameLogic';
 import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
-import { CharacterState, WorldState, QuestDto, QuestSummaryDto } from '../types';
+import { Character, WorldState, Quest, QuestSummary, CharacterState } from '../types';
 import { createContext, useContext, ReactNode, useState } from 'react';
 
 type VoteState = {
@@ -10,8 +10,8 @@ type VoteState = {
 };
 
 type GameContextType = {
-  questSummary: QuestSummaryDto | null;
-  setQuestSummary: (value: QuestSummaryDto | null) => void;
+  questSummary: QuestSummary | null;
+  setQuestSummary: (value: QuestSummary | null) => void;
 
   world: WorldState | null;
   setWorld: (value: WorldState | null) => void;
@@ -19,8 +19,8 @@ type GameContextType = {
   gameStarted: boolean;
   setGameStarted: (value: boolean) => void;
 
-  quest: QuestDto | null;
-  setQuest: (value: QuestDto | null) => void;
+  quest: Quest | null;
+  setQuest: (value: Quest | null) => void;
 
   voteState: VoteState;
   setVoteState: (value: VoteState) => void;
@@ -31,8 +31,8 @@ type GameContextType = {
   currentPlayer: string | null;
   setCurrentPlayer: (value: string | null) => void;
 
-  characters: Record<string, CharacterState>;
-  setCharacters: (value: Record<string, CharacterState>) => void;
+  characters: Record<string, Character>;
+  setCharacters: (value: Record<string, Character>) => void;
 
   votes: Record<string, boolean>;
   setVotes: (value: Record<string, boolean>) => void;
@@ -47,12 +47,12 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
-  const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummaryDto>('questSummary', null);
+  const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>('questSummary', null);
 
   const [world, setWorld] = useMultiplayerState<WorldState>('world', null);
   const [gameStarted, setGameStarted] = useMultiplayerState<boolean>('gameStarted', false);
 
-  const [quest, setQuest] = useMultiplayerState<QuestDto>('quest', null);
+  const [quest, setQuest] = useMultiplayerState<Quest>('quest', null);
 
   const [voteState, setVoteState] = useMultiplayerState<VoteState>('voteState', {
     showVote: false,

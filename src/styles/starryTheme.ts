@@ -17,6 +17,11 @@ export const starryTheme = {
     position: 'absolute' as const,
     width: '100%',
     height: '100%',
+  },
+  starLayer1: {
+    position: 'absolute' as const,
+    width: '100%',
+    height: '100%',
     backgroundImage: `
       radial-gradient(1.5px 1.5px at 25% 25%, white 100%, transparent),
       radial-gradient(1.5px 1.5px at 50% 50%, white 100%, transparent),
@@ -48,7 +53,17 @@ export const starryTheme = {
       radial-gradient(1px 1px at 30% 60%, white 100%, transparent),
       radial-gradient(1.5px 1.5px at 50% 80%, white 100%, transparent),
       radial-gradient(1.5px 1.5px at 70% 10%, white 100%, transparent),
-      radial-gradient(1px 1px at 15% 35%, white 100%, transparent),
+      radial-gradient(1px 1px at 15% 35%, white 100%, transparent)
+    `,
+    backgroundSize: '100% 100%',
+    opacity: 0.4,
+    animation: 'twinkle1 4s infinite',
+  },
+  starLayer2: {
+    position: 'absolute' as const,
+    width: '100%',
+    height: '100%',
+    backgroundImage: `
       radial-gradient(1.5px 1.5px at 35% 55%, white 100%, transparent),
       radial-gradient(1.5px 1.5px at 55% 75%, white 100%, transparent),
       radial-gradient(1px 1px at 75% 95%, white 100%, transparent),
@@ -58,11 +73,21 @@ export const starryTheme = {
       radial-gradient(1px 1px at 85% 5%, white 100%, transparent),
       radial-gradient(1.5px 1.5px at 5% 85%, white 100%, transparent),
       radial-gradient(1px 1px at 15% 95%, white 100%, transparent),
-      radial-gradient(1.5px 1.5px at 25% 5%, white 100%, transparent)
+      radial-gradient(1.5px 1.5px at 25% 5%, white 100%, transparent),
+      radial-gradient(1.5px 1.5px at 65% 25%, white 100%, transparent),
+      radial-gradient(1px 1px at 85% 35%, white 100%, transparent),
+      radial-gradient(1.5px 1.5px at 15% 15%, white 100%, transparent),
+      radial-gradient(1px 1px at 45% 85%, white 100%, transparent),
+      radial-gradient(1.5px 1.5px at 75% 45%, white 100%, transparent),
+      radial-gradient(1px 1px at 35% 25%, white 100%, transparent),
+      radial-gradient(1.5px 1.5px at 95% 65%, white 100%, transparent),
+      radial-gradient(1px 1px at 5% 35%, white 100%, transparent),
+      radial-gradient(1.5px 1.5px at 55% 15%, white 100%, transparent),
+      radial-gradient(1px 1px at 25% 75%, white 100%, transparent)
     `,
     backgroundSize: '100% 100%',
-    opacity: 0.4,
-    animation: 'twinkle 4s infinite',
+    opacity: 0.3,
+    animation: 'twinkle2 4s infinite',
   },
   content: {
     position: 'relative' as const,
@@ -115,9 +140,13 @@ export const starryTheme = {
     filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.3))'
   },
   globalStyles: `
-    @keyframes twinkle {
+    @keyframes twinkle1 {
       0%, 100% { opacity: 0.4; }
       50% { opacity: 0.8; }
+    }
+    @keyframes twinkle2 {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.7; }
     }
   `
 };

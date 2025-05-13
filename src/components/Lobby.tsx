@@ -3,13 +3,13 @@ import StereoControl from './StereoControl';
 import LobbyPlayers from './LobbyPlayers';
 import NavBar from './NavBar';
 import { useIsHost, insertCoin, openDiscordInviteDialog } from '../core/multiplayerState';
-import { QuestSummaryDto } from '../types';
+import { QuestSummary } from '../types';
 import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
 import { starryTheme } from '../styles/starryTheme';
 import artUrl from '../util/artUrls';
 import { playRoomConfig } from '../envConfig';
 
-const availableQuests: QuestSummaryDto[] = [
+const availableQuests: QuestSummary[] = [
   {
     id: 'FC4nrqC6zNoxvoQ44inF2F',
     title: 'The Forgotten Crypts',
@@ -62,7 +62,10 @@ const Lobby = () => {
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
-      <div style={starryTheme.stars} />
+      <div style={starryTheme.stars}>
+        <div style={starryTheme.starLayer1} />
+        <div style={starryTheme.starLayer2} />
+      </div>
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
         <NavBar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 flex items-center justify-center">

@@ -106,12 +106,6 @@ const GameContent = () => {
     gameLogic.selectTarget(target, thisPlayer);
   };
 
-  const handleUndoVoteComplete = (result: boolean) => {
-    if (result) {
-      gameLogic.undo(quest.questId);
-    }
-  };
-
   const triggerDiceAnimation = () => {
     setShowDiceRoll(true);
 
@@ -157,9 +151,6 @@ const GameContent = () => {
           onSelectTarget={handleTargetSelected}
         />
 
-        <VotePopup
-          onVoteComplete={handleUndoVoteComplete}
-        />
       </div>
 
       <style>{`

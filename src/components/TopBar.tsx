@@ -1,16 +1,10 @@
 import { usePlayersList } from '../core/multiplayerState';
-import { useState, useRef, useEffect } from 'react';
-import MapPopup from './MapPopup';
-import InventoryPopup from './InventoryPopup';
+import { useState, useRef } from 'react';
 import CharactersOverlay from './CharacterOverlay';
 import { useGameLogic, useQuest, useVote, useWorld } from '../contexts/GameContext';
-import { HASH_SKIP_VOTE } from '../config';
-import { GameLogic } from '../core/gameLogic';
 import SettingsPopup from './SettingsPopup';
 const TopBar = () => {
   const players = usePlayersList(true);
-  const [isMapOpen, setIsMapOpen] = useState(false);
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isCharactersOpen, setIsCharactersOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [listPosition, setListPosition] = useState({ x: 0, y: 0 });
@@ -18,9 +12,6 @@ const TopBar = () => {
   const { world } = useWorld();
   const listRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
-  const { setVoteState, setShowVote } = useVote();
-  const gameLogic = useGameLogic();
-  const { quest } = useQuest();
 
   const handleMouseEvent = (playerId: string | null, event?: React.MouseEvent) => {
     if (timeoutRef.current) {
@@ -41,19 +32,6 @@ const TopBar = () => {
         setIsCharactersOpen(false);
         setHoveredPlayer(null);
       }, 100);
-    }
-  };
-
-  const handleUndoClick = (gameLogic: GameLogic) => {
-    if (HASH_SKIP_VOTE) {
-      setShowVote(false);
-      gameLogic.undo(quest.questId);
-    } else {
-      setVoteState({
-        showVote: true,
-        voteOptions: ['Undo', 'Cancel'],
-        voteTitle: "Vote: undo last action?"
-      });
     }
   };
 
@@ -98,8 +76,6 @@ const TopBar = () => {
 
         </div>
       </div>
-      <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
-      <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
       <SettingsPopup isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
       <CharactersOverlay
         isOpen={isCharactersOpen}

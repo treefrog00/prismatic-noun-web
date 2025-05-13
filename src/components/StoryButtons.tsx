@@ -10,6 +10,7 @@ import { HASH_SKIP_VOTE } from '../config';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
+import LogbookPopup from './LogbookPopup';
 
 
 interface StoryControlsProps {
@@ -35,7 +36,7 @@ const rootButtonsMobile: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'violet' },
   { id: "narrate", label: 'Proceed', color: 'amber' },
   { id: "inventory", label: 'Inventory', color: 'indigo' },
-  { id: "undo", label: 'Undo', color: 'stone' },
+  { id: "logbook", label: 'Logbook', color: 'stone' },
   { id: "map", label: 'Map', color: 'purple' },
   { id: "end turn", label: 'End Turn', color: 'stone' },
 ];
@@ -138,6 +139,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   const { setVoteState, setShowVote } = useVote();
   const gameLogic = useGameLogic();
   const { quest } = useQuest();
+  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
 
   const handleMouseEvent = (show: boolean) => {
     if (timeoutRef.current) {
@@ -152,19 +154,6 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
       timeoutRef.current = setTimeout(() => {
         setShowActChooser?.(false);
       }, 800);
-    }
-  };
-
-  const handleUndoClick = (gameLogic: GameLogic) => {
-    if (HASH_SKIP_VOTE) {
-      setShowVote(false);
-      gameLogic.undo(quest.questId);
-    } else {
-      setVoteState({
-        showVote: true,
-        voteOptions: ['Undo', 'Cancel'],
-        voteTitle: "Vote: undo last action?"
-      });
     }
   };
 
@@ -206,9 +195,9 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
           </div>
           <div
             className="w-16 h-16 cursor-pointer rounded-lg border-2 border-gray-700 flex items-center justify-center hover:bg-gray-900 transition-colors"
-            onPointerDown={() => handleUndoClick(gameLogic)}
+            onPointerDown={() => setIsLogbookOpen(true)}
           >
-            <img src={artUrl('undo3.webp')} alt="Undo" className="hover:scale-105 transition-transform" />
+            <img src={artUrl('logbook.webp')} alt="Logbook" className="hover:scale-105 transition-transform" />
           </div>
           <div
             className="w-16 h-16 cursor-pointer"
@@ -239,6 +228,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
       )}
       <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
       <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
+      <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
     </div>
   );
 };

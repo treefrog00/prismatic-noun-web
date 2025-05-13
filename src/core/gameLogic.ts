@@ -145,14 +145,6 @@ export class GameLogic {
     this.appendToStoryRpc(message);
   }
 
-  async undo(questId: string) {
-    let response = await this.api.makeRequest(`/game/${this.gameId}/undo`,
-      {
-        questId: questId
-      });
-    this.appendPlayerActionRpc('this should somehow remove actions from the event log and story text');
-  }
-
   async endTurn(questId: string) {
     this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
     this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));

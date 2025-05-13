@@ -16,9 +16,9 @@ export class GameApi {
     return token;
   }
 
-  async makeRequest(path: string, body: any) {
+  async makeRequest(path: string, body: any, method: 'GET' | 'POST' = 'POST') {
     const token = await this.getAuthToken();
-    const response = await this._makeRequestWithTokenNoException(path, body, token);
+    const response = await this._makeRequestWithTokenNoException(path, body, token, method);
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -26,7 +26,7 @@ export class GameApi {
         if (errorData.expired) {
           localStorage.removeItem('token');
           const newToken = await this.getAuthToken();
-          const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken);
+          const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken, method);
           if (!retryResponse.ok) {
             throw new Error(`HTTP status: ${retryResponse.status}`);
           }
@@ -39,8 +39,8 @@ export class GameApi {
     return response.json();
   }
 
-  async makeRequestWithToken(path: string, body: any, token: string) {
-      const response = await this._makeRequestWithTokenNoException(path, body, token);
+  async makeRequestWithToken(path: string, body: any, token: string, method: 'GET' | 'POST' = 'POST') {
+      const response = await this._makeRequestWithTokenNoException(path, body, token, method);
 
       if (!response.ok) {
         throw new Error(`HTTP status: ${response.status}`);
@@ -48,20 +48,28 @@ export class GameApi {
       return response;
   }
 
-  async _makeRequestWithTokenNoException(path: string, body: any, token: string) {
+  async _makeRequestWithTokenNoException(path: string, body: any, token: string, method: 'GET' | 'POST' = 'POST') {
     const response = await fetch(`${BACKEND_URL}${path}`, {
-      method: 'POST',
+      method,
       headers: {
         'Authorization': token,
         'Content-Type': 'application/json'
       },
-      body: body ? JSON.stringify(body) : undefined
+      body: method === 'POST' && body ? JSON.stringify(body) : undefined
     });
     return response;
   }
 
-  async makeTypedRequest<T extends z.ZodType>(path: string, body: any, schema: T): Promise<z.infer<T>> {
-    const response = await this.makeRequest(path, body);
+  async makeTypedRequest<T extends z.ZodType>(path: string, body: any, schema: T, method: 'GET' | 'POST' = 'POST'): Promise<z.infer<T>> {
+    const response = await this.makeRequest(path, body, method);
     return schema.parse(response);
+  }
+
+  async getTyped<T extends z.ZodType>(path: string, schema: T): Promise<z.infer<T>> {
+    return this.makeTypedRequest(path, null, schema, 'GET');
+  }
+
+  async postTyped<T extends z.ZodType>(path: string, body: any, schema: T): Promise<z.infer<T>> {
+    return this.makeTypedRequest(path, body, schema, 'POST');
   }
 }

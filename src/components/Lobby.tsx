@@ -8,27 +8,15 @@ import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
 import { starryTheme } from '../styles/starryTheme';
 import artUrl from '../util/artUrls';
 import { playRoomConfig } from '../envConfig';
+import { GameApi } from '../core/gameApi';
+import { z } from 'zod';
 
-const availableQuests: QuestSummary[] = [
-  {
-    id: 'FC4nrqC6zNoxvoQ44inF2F',
-    title: 'The Forgotten Crypts',
-    shortDescription: 'Explore ancient crypts filled with mysteries and dangers.',
-    intro: 'In the depths of the ancient crypts, shadows dance upon weathered stone walls. Whispers of forgotten legends echo through time, as the darkness holds secrets yet untold...'
-  },
-  {
-    id: 'hQcxrVNWLUGvUPdzQHZzxw',
-    title: 'Dragon\'s Lair',
-    shortDescription: 'Face the mighty dragon and claim its legendary treasure.',
-    intro: 'The dragon\'s lair is a place of fearsome power and ancient secrets. The air is thick with the scent of fire and the sound of thunder. The dragon\'s eyes glow with a fierce light, and its breath is deadly.'
-  },
-  {
-    id: 'eL4HD5xdiLLUxMcBYKW2Vb',
-    title: 'The Cursed Forest',
-    shortDescription: 'Navigate through a magical forest where nothing is as it seems.',
-    intro: 'The forest is dense and dark, with trees that seem to watch you with eerie eyes. The air is thick with the scent of magic, and the ground is covered in a soft layer of moss.'
-  }
-];
+const QuestSummariesSchema = z.array(z.object({
+  questId: z.string(),
+  title: z.string(),
+  shortDescription: z.string(),
+  intro: z.string(),
+}));
 
 const Lobby = () => {
   const isHost = useIsHost();
@@ -36,6 +24,8 @@ const Lobby = () => {
   const { questSummary, setQuestSummary } = useQuestSummary();
   const [activeTab, setActiveTab] = useState('lobby');
   const [isCoinInserted, setIsCoinInserted] = useState(false);
+  const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
+  const gameApi = new GameApi();
 
   const handleStartAdventure = () => {
     setGameStarted(true);
@@ -48,10 +38,15 @@ const Lobby = () => {
   useEffect(() => {
     const initializeGame = async () => {
       // skip lobby means skip their UI and use custom lobby instead
-      await insertCoin({ skipLobby: true, gameId: playRoomConfig.gameId, discord: true });
+      await insertCoin({ skipLobby: true, gameId: playRoomConfig.gameId, discord: playRoomConfig.discord });
+
+      // Fetch available quests
+      const quests = await gameApi.getTyped('/quest/summaries', QuestSummariesSchema);
+      setAvailableQuests(quests);
+      console.log(quests);
 
       setIsCoinInserted(true);
-      setQuestSummary(availableQuests[0]);
+      setQuestSummary(quests[0]);
     };
 
     initializeGame();
@@ -76,14 +71,14 @@ const Lobby = () => {
                 <div className="mt-4">
                   <select
                     className="w-full font-['Cinzel'] bg-gray-700 text-gray-200 border-2 border-indigo-500/50 py-2.5 px-4 rounded cursor-pointer text-lg transition-all duration-300 hover:bg-gray-600 focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-sm"
-                    value={questSummary.id}
+                    value={questSummary.questId}
                     onChange={(e) => {
-                      const quest = availableQuests.find(q => q.id === e.target.value);
+                      const quest = availableQuests.find(q => q.questId === e.target.value);
                       if (quest) setQuestSummary(quest);
                     }}
                   >
                     {availableQuests.map((quest) => (
-                      <option key={quest.id} value={quest.id}>
+                      <option key={quest.questId} value={quest.questId}>
                         {quest.title}
                       </option>
                     ))}

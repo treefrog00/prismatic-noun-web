@@ -3,7 +3,7 @@ import { z } from 'zod'; // Import Zod
 const FriendlyLevel = z.enum(['enemy', 'neutral', 'friend']);
 
 const QuestSummarySchema = z.object({
-  id: z.string(),
+  questId: z.string(),
   title: z.string(),
   shortDescription: z.string(),
   intro: z.string(),

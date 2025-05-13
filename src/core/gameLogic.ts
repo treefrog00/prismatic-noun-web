@@ -67,14 +67,26 @@ export class GameLogic {
 
     this.currentPlayerIndex = Math.floor(Math.random() * this.players.length);
 
+    let questId = HASH_QUEST_ID || quest.questId;
+
+    if (!HASH_QUEST_ID) {
+      this.appendToStoryRpc(quest.intro);
+    }
+
+    let gameData = await this.api.postTyped(`/game/start/${questId}`,
+      {
+        roomCode: getRoomCode(),
+        players: startingPlayers.map(p => ({ username: p.id, globalName: p.getProfile().name })),
+      }, StartGameSchema);
+
+    this.gameId = gameData.gameId;
+    setQuest(gameData.quest);
+    setWorld(gameData.world);
+
     // check players length to handle hot reloading when iterating on the UI
     if (HASH_QUEST_ID && this.players.length == 0) {
-      quest = {
-        id: HASH_QUEST_ID,
-        title: 'Quest title from gameLogic',
-        shortDescription: '',
-        intro: 'Quest intro from gameLogic'
-      }
+      this.appendToStoryRpc(gameData.quest.intro);
+
       const numPlayers = parseInt(HASH_NUM_PLAYERS || '1', 10);
       for (let i = 0; i < numPlayers; i++) {
         const playerName = `Player ${i + 1}`;
@@ -92,18 +104,6 @@ export class GameLogic {
       // so people can start reading without having to wait for the first server response
       setRpcPlayer(this.players[this.currentPlayerIndex]);
     }
-
-    this.appendToStoryRpc(quest.intro);
-
-    let gameData = await this.api.makeTypedRequest(`/game/start/${quest.id}`,
-      {
-        roomCode: getRoomCode(),
-        players: startingPlayers.map(p => ({ username: p.id, globalName: p.getProfile().name })),
-      }, StartGameSchema);
-
-    this.gameId = gameData.gameId;
-    setQuest(gameData.quest);
-    setWorld(gameData.world);
 
     this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));
   }

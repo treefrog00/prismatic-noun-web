@@ -14,19 +14,19 @@ const MapComponent: React.FC = () => {
     [
       {
         name: 'Forest',
-        description: 'A dense forest with ancient trees',
+        shortDescription: 'A dense forest with ancient trees',
         image: artUrl('map2.webp'),
         isEmpty: false,
       },
       {
         name: 'Mountain',
-        description: 'Towering peaks with snow-capped summits',
+        shortDescription: 'Towering peaks with snow-capped summits',
         image: artUrl('map2.webp'),
         isEmpty: false,
       },
       {
         name: 'Cave',
-        description: 'A dark cave with mysterious echoes',
+        shortDescription: 'A dark cave with mysterious echoes',
         image: artUrl('map2.webp'),
         isEmpty: false,
       }
@@ -34,19 +34,19 @@ const MapComponent: React.FC = () => {
     [
       {
         name: 'Village',
-        description: 'A peaceful village with friendly inhabitants',
+        shortDescription: 'A peaceful village with friendly inhabitants',
         image: artUrl('map2.webp'),
         isEmpty: false,
       },
       {
         name: 'Castle',
-        description: 'An imposing castle with high walls',
+        shortDescription: 'An imposing castle with high walls',
         image: artUrl('map2.webp'),
         isEmpty: false,
       },
       {
         name: null,
-        description: null,
+        shortDescription: null,
         image: null,
         isEmpty: true,
       }

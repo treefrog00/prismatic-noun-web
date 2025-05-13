@@ -9,21 +9,25 @@ const QuestSummarySchema = z.object({
   intro: z.string(),
 });
 
+export const QuestSummariesSchema = z.object({
+  quests: z.array(QuestSummarySchema),
+});
+
 const ItemSchema = z.object({
   id: z.string(),
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
   image: z.string(),
 });
 
 const AbilitySchema = z.object({
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
 });
 
 const FeatureSchema = z.object({
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
 });
 
 const QuestBaseSchema = z.object({
@@ -36,7 +40,7 @@ const QuestBaseSchema = z.object({
 
 const BaseCharacterSchema = z.object({
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
   image: z.string(),
   level: z.number(),
   stamina: z.number(),
@@ -57,7 +61,7 @@ const NameAndIdSchema = z.object({
 
 const LocationSchema = z.object({
   name: z.string(),
-  description: z.string(),
+  shortDescription: z.string(),
   image: z.string(),
   isEmpty: z.boolean(),
 });
@@ -109,6 +113,7 @@ export const StartGameSchema = z.object({
 });
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
+export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;
 export type Item = z.infer<typeof ItemSchema>;
 export type Ability = z.infer<typeof AbilitySchema>;
 export type LocationFeature = z.infer<typeof FeatureSchema>;

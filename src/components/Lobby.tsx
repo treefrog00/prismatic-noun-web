@@ -11,13 +11,8 @@ import artUrl from '../util/artUrls';
 import { playRoomConfig } from '../envConfig';
 import { GameApi } from '../core/gameApi';
 import { z } from 'zod';
+import { QuestSummariesSchema } from '../types/validatedTypes';
 
-const QuestSummariesSchema = z.array(z.object({
-  questId: z.string(),
-  title: z.string(),
-  shortDescription: z.string(),
-  intro: z.string(),
-}));
 
 const Lobby = () => {
   const isHost = useIsHost();
@@ -43,11 +38,10 @@ const Lobby = () => {
 
       // Fetch available quests
       const quests = await gameApi.getTyped('/quest/summaries', QuestSummariesSchema);
-      setAvailableQuests(quests);
-      console.log(quests);
+      setAvailableQuests(quests.quests);
 
       setIsCoinInserted(true);
-      setQuestSummary(quests[0]);
+      setQuestSummary(quests.quests[0]);
     };
 
     initializeGame();

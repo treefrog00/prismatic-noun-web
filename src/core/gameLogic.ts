@@ -4,7 +4,7 @@ import { GameApi } from './gameApi';
 import { GameEvent } from '../types';
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from '../config';
 import { z } from 'zod';
-import { QuestSchema, WorldSchema, StartGame, StartGameSchema, QuestSummary, Quest, WorldState } from '../types/validatedTypes';
+import { StartGameSchema, QuestSummary } from '../types/validatedTypes';
 
 const GAME_PHASE_KEY = 'gamePhase';
 
@@ -58,7 +58,7 @@ export class GameLogic {
     this.appendPlayerActionRpc(text, `${player.getState('name')} investigates`);
   }
 
-  public async startIfNotStarted(startingPlayers: PlayerState[], quest: QuestSummary, setWorld: (world: WorldState) => void, setQuest: (quest: Quest) => void, localPlayers: PlayerState[], setLocalPlayers: (players: PlayerState[]) => void) {
+  public async startIfNotStarted(startingPlayers: PlayerState[], questSummary: QuestSummary, localPlayers: PlayerState[], setLocalPlayers: (players: PlayerState[]) => void) {
     let phase = getState(GAME_PHASE_KEY) as string;
     if (!phase) {
       phase = 'playing';
@@ -67,25 +67,23 @@ export class GameLogic {
 
     this.currentPlayerIndex = Math.floor(Math.random() * this.players.length);
 
-    let questId = HASH_QUEST_ID || quest.questId;
+    let questId = HASH_QUEST_ID || questSummary.questId;
 
     if (!HASH_QUEST_ID) {
-      this.appendToStoryRpc(quest.intro);
+      this.appendToStoryRpc(questSummary.intro);
     }
 
-    let gameData = await this.api.postTyped(`/game/start/${questId}`,
+    let startGame = await this.api.postTyped(`/game/start/${questId}`,
       {
         roomCode: getRoomCode(),
         players: startingPlayers.map(p => ({ username: p.id, globalName: p.getProfile().name })),
       }, StartGameSchema);
 
-    this.gameId = gameData.gameId;
-    setQuest(gameData.quest);
-    setWorld(gameData.world);
+    this.gameId = startGame.gameId;
 
     // check players length to handle hot reloading when iterating on the UI
     if (HASH_QUEST_ID && this.players.length == 0) {
-      this.appendToStoryRpc(gameData.quest.intro);
+      this.appendToStoryRpc(startGame.intro);
 
       const numPlayers = parseInt(HASH_NUM_PLAYERS || '1', 10);
       for (let i = 0; i < numPlayers; i++) {
@@ -106,6 +104,8 @@ export class GameLogic {
     }
 
     this.setCurrentPlayer(this.players[this.currentPlayerIndex].getState('name'));
+
+    return startGame;
   }
 
   public addPlayer(player: PlayerState, isHost: boolean): void {

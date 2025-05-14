@@ -7,8 +7,9 @@ import AttackChooser from './AttackChooser';
 import StoryButtons from './StoryButtons';
 
 import { GameEvent } from '../types';
-import VotePopup, { handleVote } from './Vote';
-import { useWorld, useQuestSummary, useQuest, useVote, useGameLogic, useCurrentPlayer, useLocalPlayers, useVotes } from '../contexts/GameContext';
+import { handleVote } from './Vote';
+import { useQuestSummary, useVote, useGameLogic, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState } from '../contexts/GameContext';
+import { HASH_QUEST_ID } from '../config';
 
 const DICE_COUNT = 2;
 
@@ -30,12 +31,11 @@ const GameContent = () => {
   const players = usePlayersList(false);
   const thisPlayer = myPlayer();
 
-  // game state loaded at start and unchanging thereafter
-  const { quest, setQuest } = useQuest();
-  // game state updated during play
-
-  const { world, setWorld } = useWorld();
-
+  const { locationData, setLocationData } = useLocationData();
+  const { locationState, setLocationState } = useLocationState();
+  const { gameData, setGameData } = useGameData();
+  const { setQuestSummary } = useQuestSummary();
+  
   const { voteState } = useVote();
 
   const { localPlayers, setLocalPlayers } = useLocalPlayers();
@@ -91,7 +91,24 @@ const GameContent = () => {
 
   useEffect(() => {
     if (isHost) {
-      gameLogic.startIfNotStarted(players, questSummary, setWorld, setQuest, localPlayers, setLocalPlayers);
+      const startGameAsync = async () => {
+        let startGame = await gameLogic.startIfNotStarted(players, questSummary, localPlayers, setLocalPlayers);
+        setLocationData(startGame.locationData);
+        setLocationState(startGame.locationState);
+        setGameData(startGame.gameData);
+
+        if (HASH_QUEST_ID) {
+          setQuestSummary(
+            {
+              questId: HASH_QUEST_ID,
+              title: startGame.title,
+              shortDescription: '',
+              intro: startGame.intro,
+            }
+          )
+        }
+      };
+      startGameAsync();
     }
   }, [isHost, questSummary, localPlayers, setLocalPlayers]);
 

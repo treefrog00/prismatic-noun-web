@@ -1,6 +1,6 @@
 import { GameLogic } from '../core/gameLogic';
 import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
-import { Character, WorldState, Quest, QuestSummary, CharacterState } from '../types';
+import { Character, QuestSummary, CharacterState, GameData, LocationData, LocationState } from '../types';
 import { createContext, useContext, ReactNode, useState } from 'react';
 
 type VoteState = {
@@ -13,14 +13,17 @@ type GameContextType = {
   questSummary: QuestSummary | null;
   setQuestSummary: (value: QuestSummary | null) => void;
 
-  world: WorldState | null;
-  setWorld: (value: WorldState | null) => void;
+  gameData: GameData | null;
+  setGameData: (value: GameData | null) => void;
+
+  locationData: LocationData | null;
+  setLocationData: (value: LocationData | null) => void;
+
+  locationState: LocationState | null;
+  setLocationState: (value: LocationState | null) => void;
 
   gameStarted: boolean;
   setGameStarted: (value: boolean) => void;
-
-  quest: Quest | null;
-  setQuest: (value: Quest | null) => void;
 
   voteState: VoteState;
   setVoteState: (value: VoteState) => void;
@@ -49,10 +52,11 @@ interface GameProviderProps {
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>('questSummary', null);
 
-  const [world, setWorld] = useMultiplayerState<WorldState>('world', null);
-  const [gameStarted, setGameStarted] = useMultiplayerState<boolean>('gameStarted', false);
+  const [gameData, setGameData] = useMultiplayerState<GameData>('gameData', null);
+  const [locationData, setLocationData] = useMultiplayerState<LocationData>('locationData', null);
+  const [locationState, setLocationState] = useMultiplayerState<LocationState>('locationState', null);
 
-  const [quest, setQuest] = useMultiplayerState<Quest>('quest', null);
+  const [gameStarted, setGameStarted] = useMultiplayerState<boolean>('gameStarted', false);
 
   const [voteState, setVoteState] = useMultiplayerState<VoteState>('voteState', {
     showVote: false,
@@ -72,12 +76,19 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       value={{
         questSummary,
         setQuestSummary,
-        world,
-        setWorld,
+
+        gameData,
+        setGameData,
+
+        locationData,
+        setLocationData,
+
+        locationState,
+        setLocationState,
+
         gameStarted,
         setGameStarted,
-        quest,
-        setQuest,
+
         voteState,
         setVoteState,
         localPlayers,
@@ -105,12 +116,12 @@ export const useQuestSummary = () => {
   return { questSummary: context.questSummary, setQuestSummary: context.setQuestSummary };
 };
 
-export const useWorld = () => {
+export const useGameData = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useWorld must be used within a GameProvider');
+    throw new Error('useGameData must be used within a GameProvider');
   }
-  return { world: context.world, setWorld: context.setWorld };
+  return { gameData: context.gameData, setGameData: context.setGameData };
 };
 
 export const useGameStarted = () => {
@@ -121,14 +132,21 @@ export const useGameStarted = () => {
   return { gameStarted: context.gameStarted, setGameStarted: context.setGameStarted };
 };
 
-export const useQuest = () => {
-const context = useContext(GameContext);
-if (!context) {
-    throw new Error('useQuest must be used within a GameProvider');
-}
-return { quest: context.quest, setQuest: context.setQuest };
+export const useLocationData = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useLocationData must be used within a GameProvider');
+  }
+  return { locationData: context.locationData, setLocationData: context.setLocationData };
 };
 
+export const useLocationState = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useLocationState must be used within a GameProvider');
+  }
+  return { locationState: context.locationState, setLocationState: context.setLocationState };
+};
 
 export const useLocalPlayers = () => {
   const context = useContext(GameContext);

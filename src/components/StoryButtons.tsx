@@ -3,10 +3,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
 import { myPlayer, RPC } from '../core/multiplayerState';
-import { GameLogic } from '../core/gameLogic';
-import { useGameLogic, useQuest } from '../contexts/GameContext';
-import { useVote } from '../contexts/GameContext';
-import { HASH_SKIP_VOTE } from '../config';
+import { useGameLogic,  useQuestSummary } from '../contexts/GameContext';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
@@ -136,9 +133,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   const [isHovering, setIsHovering] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const { setVoteState, setShowVote } = useVote();
   const gameLogic = useGameLogic();
-  const { quest } = useQuest();
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
 
   const handleMouseEvent = (show: boolean) => {
@@ -242,7 +237,7 @@ const StoryButtons: React.FC<StoryControlsProps> = ({ parentButtonHandlers }) =>
   const [okButtonText, setOkButtonText] = useState<string | null>(null);
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
-  const { quest } = useQuest();
+  const { questSummary } = useQuestSummary();
   const [text, setText] = useState<string>('');
   const thisPlayer = myPlayer();
   const isMobile = useIsMobile();
@@ -283,10 +278,10 @@ const StoryButtons: React.FC<StoryControlsProps> = ({ parentButtonHandlers }) =>
     'do-ok': () => gameLogic.do(text, thisPlayer),
     'say-ok': () => gameLogic.say(text, thisPlayer),
     'narrate': () => {
-      gameLogic.narrate(quest.questId);
+      gameLogic.narrate(questSummary.questId);
     },
     'end turn': () => {
-      gameLogic.endTurn(quest.questId);
+      gameLogic.endTurn(questSummary.questId);
     },
   }
 
@@ -341,9 +336,6 @@ const StoryButtons: React.FC<StoryControlsProps> = ({ parentButtonHandlers }) =>
     setOkButtonId(`${abilityOkButtonPrefix}${ability}`);
     setShowTextareaPopup(true);
   }
-
-  useEffect(() => {
-  }, [quest]);
 
   useEffect(() => {
     if (showTextarea && textInputRef.current) {

@@ -1,58 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Location } from '../types';
-import { useWorld, useVote } from '../contexts/GameContext';
+import { LocationData } from '../types';
+import { useLocationData, useVote } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
 import artUrl from '../util/artUrls';
 
 
 const MapComponent: React.FC = () => {
   const [currentLocation, setCurrentLocation] = useState<string>(null);
-  const { world } = useWorld();
+  const { locationData } = useLocationData();
   const { setVoteState, setShowVote } = useVote();
-
-  const gridData: Location[][] = [
-    [
-      {
-        name: 'Forest',
-        shortDescription: 'A dense forest with ancient trees',
-        image: artUrl('map2.webp'),
-        isEmpty: false,
-      },
-      {
-        name: 'Mountain',
-        shortDescription: 'Towering peaks with snow-capped summits',
-        image: artUrl('map2.webp'),
-        isEmpty: false,
-      },
-      {
-        name: 'Cave',
-        shortDescription: 'A dark cave with mysterious echoes',
-        image: artUrl('map2.webp'),
-        isEmpty: false,
-      }
-    ],
-    [
-      {
-        name: 'Village',
-        shortDescription: 'A peaceful village with friendly inhabitants',
-        image: artUrl('map2.webp'),
-        isEmpty: false,
-      },
-      {
-        name: 'Castle',
-        shortDescription: 'An imposing castle with high walls',
-        image: artUrl('map2.webp'),
-        isEmpty: false,
-      },
-      {
-        name: null,
-        shortDescription: null,
-        image: null,
-        isEmpty: true,
-      }
-      //{ name: 'Swamp', description: 'A murky swamp with strange creatures', image: '/map2.webp' }
-    ]
-  ];
 
   const handleLocationClick = (location: string) => {
     if (HASH_SKIP_VOTE) {
@@ -68,26 +24,23 @@ const MapComponent: React.FC = () => {
   };
 
   useEffect(() => {
-    if (world) {
-      setCurrentLocation(world.currentLocation);
+    if (locationData) {
+      setCurrentLocation(locationData.name);
     }
-  }, [world]);
+  }, [locationData]);
 
   return (
-    <div className="grid grid-cols-3 gap-1 bg-gray-500 p-1 rounded-lg">
-      {gridData.map((row, rowIndex) => (
-        row.map((location, colIndex) => (
-          <div key={`${rowIndex}-${colIndex}`} className="aspect-square rounded">
-            {!location.isEmpty && (
-              <img
-                src={location.image}
-                alt={location.name}
-                className="w-full h-full object-cover rounded"
-                onPointerDown={() => handleLocationClick(location.name)}
-              />
-            )}
-          </div>
-        ))
+    <div className="flex flex-col gap-2 bg-gray-500 p-2 rounded-lg">
+      {locationData.links.map((link, index) => (
+        <div key={index} className="flex items-center gap-2 bg-gray-600 p-2 rounded hover:bg-gray-700 cursor-pointer">
+          <img
+            src={link.imageUrl}
+            alt={link.target}
+            className="w-16 h-16 object-cover rounded"
+            onPointerDown={() => handleLocationClick(link.target)}
+          />
+          <span className="text-white font-medium">{link.target}</span>
+        </div>
       ))}
     </div>
   );

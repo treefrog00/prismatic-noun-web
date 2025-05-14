@@ -1,7 +1,7 @@
 import { usePlayersList } from '../core/multiplayerState';
 import { useState, useRef } from 'react';
 import CharactersOverlay from './CharacterOverlay';
-import { useGameLogic, useQuest, useVote, useWorld } from '../contexts/GameContext';
+import { useGameLogic, useVote, useLocationData, useLocationState } from '../contexts/GameContext';
 import SettingsPopup from './SettingsPopup';
 const TopBar = () => {
   const players = usePlayersList(true);
@@ -9,7 +9,8 @@ const TopBar = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [listPosition, setListPosition] = useState({ x: 0, y: 0 });
   const [hoveredPlayer, setHoveredPlayer] = useState<string | null>(null);
-  const { world } = useWorld();
+  const { locationData } = useLocationData();
+  const { locationState } = useLocationState();
   const listRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();
 
@@ -36,8 +37,8 @@ const TopBar = () => {
   };
 
   const getNpcs = () => {
-    if (!world) return [];
-    return Object.values(world.locations[world.currentLocation].npcs);
+    if (!locationState) return [];
+    return Object.values(locationState.npcs);
   }
 
   return (

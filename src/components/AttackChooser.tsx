@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { useWorld } from '../contexts/GameContext';
+import { useLocationData, useLocationState } from '../contexts/GameContext';
 import { NpcState } from '../types';
 
 interface AttackChooserProps {
@@ -30,8 +29,8 @@ const getColorClasses = (color: string) => {
 export default function AttackChooser({ isOpen, onClose, onSelectTarget }: AttackChooserProps) {
   if (!isOpen) return null;
 
-  const { world } = useWorld();
-  const npcs = world?.locations?.[world?.currentLocation]?.npcs || [];
+  const { locationState } = useLocationState();
+  const npcs = locationState?.npcs || [];
   const npcArray = Object.entries(npcs).map(([name, npc]) => ({ name, ...npc })) as NpcWithColor[];
 
   return (

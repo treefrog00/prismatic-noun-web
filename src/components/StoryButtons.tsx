@@ -2,23 +2,18 @@ import { useRef, useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
-import { myPlayer, RPC } from '../core/multiplayerState';
-import { useGameLogic,  useQuestSummary } from '../contexts/GameContext';
+import { myPlayer } from '../core/multiplayerState';
+import { useGameLogic, useQuestSummary, useActionTarget } from '../contexts/GameContext';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
 import LogbookPopup from './LogbookPopup';
-
-
-// Add interfaces for button configurations
-interface ButtonConfig {
-  id: string;
-  label: string;
-  color: 'amber' | 'brown' | 'teal' | 'purple' | 'indigo' | 'rose' | 'stone' | 'slate' | 'darkRed' | 'violet' | 'none';
-}
+import { ButtonConfig, getColorClasses } from '../types/button';
+import { useActionHandlers } from '../hooks/useActionHandlers';
+import { sharedStyles } from '../styles/shared';
 
 const rootButtonsDesktop: ButtonConfig[] = [
-  { id: "act", label: 'Act', color: 'none' },
+  { id: "act", label: 'Act', color: 'amber-border' },
   { id: "narrate", label: 'Proceed', color: 'teal' },
   { id: "end turn", label: 'End Turn', color: 'stone' },
 ];
@@ -40,29 +35,6 @@ const subActions: ButtonConfig[] = [
   { id: "ability", label: 'Ability', color: 'purple' },
 ];
 
-const abilityOkButtonPrefix = '*ability-ok-';
-
-// Utility function to generate color-specific classes
-const getColorClasses = (color: string) => {
-  if (color === 'none') {
-    return 'text-gray-200 hover:text-gray-100';
-  }
-  const colorMap: Record<string, string> = {
-    amber: 'bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500',
-    brown: 'bg-amber-900 border-amber-800 hover:bg-amber-800 hover:shadow-amber-900/50 focus:ring-amber-700',
-    teal: 'bg-teal-700 border-teal-600 hover:bg-teal-600 hover:shadow-teal-900/50 focus:ring-teal-500',
-    purple: 'bg-purple-700 border-purple-600 hover:bg-purple-600 hover:shadow-purple-900/50 focus:ring-purple-500',
-    indigo: 'bg-indigo-700 border-indigo-600 hover:bg-indigo-600 hover:shadow-indigo-900/50 focus:ring-indigo-500',
-    rose: 'bg-rose-700 border-rose-600 hover:bg-rose-600 hover:shadow-rose-900/50 focus:ring-rose-500',
-    stone: 'bg-stone-700 border-stone-600 hover:bg-stone-600 hover:shadow-stone-900/50 focus:ring-stone-500',
-    slate: 'bg-slate-700 border-slate-600 hover:bg-slate-600 hover:shadow-slate-900/50 focus:ring-slate-500',
-    darkRed: 'bg-red-900 border-red-800 hover:bg-red-800 hover:shadow-red-900/50 focus:ring-red-700',
-    violet: 'bg-violet-700 border-violet-600 hover:bg-violet-600 hover:shadow-violet-900/50 focus:ring-violet-500'
-  };
-  return colorMap[color] || colorMap.rose; // fallback to rose if color not found
-};
-
-// Add interface for mobile/desktop control props
 interface ControlProps {
   onPointerDown: (buttonId: string) => void;
   showTextarea: boolean;
@@ -133,6 +105,9 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const gameLogic = useGameLogic();
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
+  const TIMEOUT = 500;
+  const actButtonRef = useRef<HTMLButtonElement>(null);
+  const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>({});
 
   const handleMouseEvent = (show: boolean) => {
     if (timeoutRef.current) {
@@ -142,11 +117,24 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     if (show) {
       setIsHovering(true);
       setShowActChooser?.(true);
+      if (actButtonRef.current) {
+        const rect = actButtonRef.current.getBoundingClientRect();
+        const parentRect = actButtonRef.current.parentElement?.getBoundingClientRect();
+
+        if (parentRect) {
+          setActChooserStyle({
+            position: 'absolute',
+            top: rect.top - parentRect.top + rect.height / 2 - 2,
+            left: rect.width + 30,
+            transform: 'translateY(-50%)'
+          });
+        }
+      }
     } else {
       setIsHovering(false);
       timeoutRef.current = setTimeout(() => {
         setShowActChooser?.(false);
-      }, 800);
+      }, TIMEOUT);
     }
   };
 
@@ -155,12 +143,13 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   }
 
   return (
-    <div className="relative border-2 border-gray-700 rounded-lg p-4">
+    <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
       <div className="flex justify-between items-center self-center">
-        <div className="flex justify-center">
+        <div className="flex justify-center relative">
           {rootButtonsDesktop.filter(button => button.id !== 'chat').map((button) => (
             <button
               key={button.id}
+              ref={button.id === 'act' ? actButtonRef : undefined}
               className={`game-button ${getColorClasses(button.color)} ml-4`}
               data-id={button.id}
               onPointerDown={() => {
@@ -178,6 +167,26 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
               {button.label}
             </button>
           ))}
+          {showActChooser && (
+            <div
+              className={`z-20 ${sharedStyles.container}`}
+              style={actChooserStyle}
+              onMouseEnter={() => handleMouseEvent(true)}
+              onMouseLeave={() => handleMouseEvent(false)}
+            >
+              <div className="flex justify-center gap-4">
+                {subActions.map((btn) => (
+                  <button
+                    key={btn.id}
+                    onPointerDown={() => onPointerDown(btn.id)}
+                    className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors`}
+                  >
+                    {btn.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <div className="flex gap-4">
           <div
@@ -200,25 +209,6 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
           </div>
         </div>
       </div>
-      {showActChooser && (
-        <div
-          className="absolute top-0 -translate-y-full left-0 z-20 p-4 bg-gray-700 backdrop-blur-sm rounded-lg"
-          onMouseEnter={() => handleMouseEvent(true)}
-          onMouseLeave={() => handleMouseEvent(false)}
-        >
-          <div className="flex justify-center gap-4">
-            {subActions.map((btn) => (
-              <button
-                key={btn.id}
-                onPointerDown={() => onPointerDown(btn.id)}
-                className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors`}
-              >
-                {btn.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
       <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
       <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
@@ -228,18 +218,31 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
-  const [showTextarea, setShowTextareaPopup] = useState<boolean>(false);
   const [showActChooser, setShowActChooser] = useState<boolean>(false);
-  const [showAbilityChooser, setShowAbilityChooser] = useState<boolean>(false);
-  const [ability, setAbility] = useState<string | null>(null);
-  const [okButtonText, setOkButtonText] = useState<string | null>(null);
-  const [okButtonId, setOkButtonId] = useState<string | null>(null);
-  const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const { questSummary } = useQuestSummary();
-  const [text, setText] = useState<string>('');
-  const thisPlayer = myPlayer();
   const isMobile = useIsMobile();
   const gameLogic = useGameLogic();
+  const { actionTarget } = useActionTarget();
+
+  const {
+    showTextarea,
+    setShowTextarea,
+    text,
+    setText,
+    okButtonText,
+    okButtonId,
+    inputPlaceHolder,
+    handleClick,
+    handleSelectAbility,
+    showAbilityChooser,
+    setShowAbilityChooser,
+  } = useActionHandlers({
+    actionTarget,
+    onClose: () => {
+      setShowTextarea(false);
+      setText('');
+    },
+  });
 
   const renderTextInput = () => (
     <TextInput
@@ -247,90 +250,15 @@ const StoryButtons: React.FC = () => {
       setText={setText}
       textInputRef={textInputRef}
       onClose={() => {
-        setShowTextareaPopup(false);
+        setShowTextarea(false);
         setText('');
       }}
-      onOk={() => {
-        setShowTextareaPopup(false);
-        handleClick(okButtonId);
-        setText('');
-      }}
+      onOk={() => handleClick(okButtonId!)}
       placeHolder={inputPlaceHolder}
       okButtonText={okButtonText}
       okButtonId={okButtonId}
     />
   );
-
-  // Type the button handlers
-  const internalButtonHandlers: Record<string, () => void> = {
-    'chat': handleChat,
-    'act': handleAct,
-    'investigate': handleInvestigate,
-    'do': handleDo,
-    'say': handleSay,
-    'ability': () => {
-      setShowAbilityChooser(true);
-    },
-    'chat-ok': () => RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text: text }, RPC.Mode.ALL),
-    'investigate-ok': ()  => gameLogic.investigate(text, thisPlayer),
-    'do-ok': () => gameLogic.do(text, thisPlayer),
-    'say-ok': () => gameLogic.say(text, thisPlayer),
-    'narrate': () => {
-      gameLogic.narrate(questSummary.questId);
-    },
-    'end turn': () => {
-      gameLogic.endTurn(questSummary.questId);
-    },
-  }
-
-  function handleChat() {
-    setShowTextareaPopup(true);
-    setOkButtonText('Send');
-    setOkButtonId('chat-ok');
-    setInputPlaceHolder('...');
-  }
-
-  function handleAct () {
-    if (isMobile) setShowActChooser(true);
-  }
-
-  function handleInvestigate() {
-    setShowTextareaPopup(true);
-    setOkButtonText('Investigate');
-    setOkButtonId('investigate-ok');
-    setInputPlaceHolder('What do you investigate?');
-  }
-
-  function handleDo() {
-    setShowTextareaPopup(true);
-    setOkButtonText('Do');
-    setOkButtonId('do-ok');
-    setInputPlaceHolder('What do you do?');
-  }
-
-  function handleSay() {
-    setShowTextareaPopup(true);
-    setOkButtonText('Say');
-    setOkButtonId('say-ok');
-    setInputPlaceHolder('What do you say?');
-  }
-
-  function handleClick(buttonId: string): void {
-    if (buttonId.startsWith(abilityOkButtonPrefix)) {
-      gameLogic.do(text, thisPlayer, ability);
-    }
-    else if (buttonId in internalButtonHandlers) {
-      internalButtonHandlers[buttonId]();
-    }
-  }
-
-  function handleSelectAbility(ability: string): void {
-    setAbility(ability);
-    setOkButtonText(`Use ${ability}`);
-    setInputPlaceHolder(`What do you do with ${ability}?`);
-    setOkButtonId(`${abilityOkButtonPrefix}${ability}`);
-    setShowTextareaPopup(true);
-  }
 
   useEffect(() => {
     if (showTextarea && textInputRef.current) {

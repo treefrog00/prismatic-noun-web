@@ -94,6 +94,7 @@ const LinkSchema = z.object({
 const LocationDataSchema = z.object({
   name: z.string(),
   shortDescription: z.string(),
+  imageUrl: z.string(),
   links: z.array(LinkSchema),
   npcs: z.record(z.string(), NpcSchema),
   features: z.record(z.string(), FeatureSchema),

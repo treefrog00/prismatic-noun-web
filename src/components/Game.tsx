@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import DiceRoll from './DiceRoll';
 import Story, { StoryRef } from './Story';
 import TopBar from './TopBar';
@@ -7,7 +7,7 @@ import StoryButtons from './StoryButtons';
 
 import { GameEvent } from '../types';
 import { handleVote } from './Vote';
-import { useQuestSummary, useVote, useGameLogic, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState } from '../contexts/GameContext';
+import { useQuestSummary, useVote, useGameLogic, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState, useActionTarget } from '../contexts/GameContext';
 import { HASH_QUEST_ID } from '../config';
 
 const DICE_COUNT = 2;
@@ -23,6 +23,7 @@ const GameContent = () => {
   const { currentPlayer, setCurrentPlayer } = useCurrentPlayer();
   // UI variables
   const storyRef = useRef<StoryRef>(null);
+  const { actionTarget, setActionTarget } = useActionTarget();
 
   // state from PlayroomKit
   const isHost = useIsHost();
@@ -41,7 +42,6 @@ const GameContent = () => {
   const gameLogic = useGameLogic();
 
   const { votes, setVotes } = useVotes();
-
 
   useEffect(() => {
     console.log('Registering RPC listeners');
@@ -119,6 +119,7 @@ const GameContent = () => {
 
   const handleTargetSelected = (target: string) => {
     gameLogic.selectTarget(target, thisPlayer);
+    setActionTarget(target);
   };
 
   const triggerDiceAnimation = () => {
@@ -164,6 +165,4 @@ const GameContent = () => {
   );
 };
 
-export default function Game() {
-  return <GameContent />;
-}
+export default GameContent;

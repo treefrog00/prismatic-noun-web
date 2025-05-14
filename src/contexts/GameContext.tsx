@@ -40,7 +40,24 @@ type GameContextType = {
   votes: Record<string, boolean>;
   setVotes: (value: Record<string, boolean>) => void;
 
+  actionTarget: string | null;
+  setActionTarget: (value: string | null) => void;
+
   gameLogic: GameLogic;
+
+  // Action handler state
+  showTextarea: boolean;
+  setShowTextarea: (value: boolean) => void;
+  showAbilityChooser: boolean;
+  setShowAbilityChooser: (value: boolean) => void;
+  actionText: string;
+  setActionText: (value: string) => void;
+  okButtonText: string | null;
+  setOkButtonText: (value: string | null) => void;
+  okButtonId: string | null;
+  setOkButtonId: (value: string | null) => void;
+  inputPlaceHolder: string | null;
+  setInputPlaceHolder: (value: string | null) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -66,8 +83,18 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [currentPlayer, setCurrentPlayer] = useMultiplayerState<string>('currentPlayer', null);
   const [characters, setCharacters] = useMultiplayerState<Record<string, CharacterState>>('characters', {});
   const [votes, setVotes] = useMultiplayerState<Record<string, boolean>>('votes', {});
+
   // React only, doesn't apply to multiplayer
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
+  const [actionTarget, setActionTarget] = useState<string | null>(null);
+
+  // Action handler state
+  const [showTextarea, setShowTextarea] = useState(false);
+  const [showAbilityChooser, setShowAbilityChooser] = useState(false);
+  const [actionText, setActionText] = useState('');
+  const [okButtonText, setOkButtonText] = useState<string | null>(null);
+  const [okButtonId, setOkButtonId] = useState<string | null>(null);
+  const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
 
   const gameLogic = new GameLogic(setCurrentPlayer);
 
@@ -99,7 +126,23 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setCharacters,
         votes,
         setVotes,
-        gameLogic
+        actionTarget,
+        setActionTarget,
+        gameLogic,
+
+        // Action handler state
+        showTextarea,
+        setShowTextarea,
+        showAbilityChooser,
+        setShowAbilityChooser,
+        actionText,
+        setActionText,
+        okButtonText,
+        setOkButtonText,
+        okButtonId,
+        setOkButtonId,
+        inputPlaceHolder,
+        setInputPlaceHolder,
       }}
     >
       {children}
@@ -207,4 +250,33 @@ export const useVotes = () => {
     throw new Error('useVotes must be used within a GameProvider');
   }
   return { votes: context.votes, setVotes: context.setVotes };
+};
+
+export const useActionTarget = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useActionTarget must be used within a GameProvider');
+  }
+  return { actionTarget: context.actionTarget, setActionTarget: context.setActionTarget };
+};
+
+export const useActionHandler = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useActionHandler must be used within a GameProvider');
+  }
+  return {
+    showTextarea: context.showTextarea,
+    setShowTextarea: context.setShowTextarea,
+    showAbilityChooser: context.showAbilityChooser,
+    setShowAbilityChooser: context.setShowAbilityChooser,
+    actionText: context.actionText,
+    setActionText: context.setActionText,
+    okButtonText: context.okButtonText,
+    setOkButtonText: context.setOkButtonText,
+    okButtonId: context.okButtonId,
+    setOkButtonId: context.setOkButtonId,
+    inputPlaceHolder: context.inputPlaceHolder,
+    setInputPlaceHolder: context.setInputPlaceHolder,
+  };
 };

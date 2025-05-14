@@ -8,6 +8,12 @@ import { StartGameSchema, QuestSummary } from '../types/validatedTypes';
 const GAME_PHASE_KEY = 'gamePhase';
 
 export class GameLogic {
+  talk(text: string, thisPlayer: PlayerState, actionTarget: any): void {
+    throw new Error('Method not implemented.');
+  }
+  look(thisPlayer: PlayerState, actionTarget: any): void {
+    throw new Error('Method not implemented.');
+  }
   private players: PlayerState[] = [];
   private currentPlayerIndex: number = 0;
   private setCurrentPlayer: (player: string) => void;
@@ -39,8 +45,8 @@ export class GameLogic {
     RPC.call('rpc-game-event', { type: 'DiceRoll', targetValues }, RPC.Mode.ALL);
   }
 
-  async do(text: any, player: PlayerState, ability?: string) {
-    await this.api.makeRequest(`/game/${this.gameId}/act`, { text, ability, player });
+  async do(text: any, player: PlayerState, ability?: string, target?: any) {
+    await this.api.makeRequest(`/game/${this.gameId}/act`, { text, ability, player, target });
     let label = `${player.getState('name')} acts`;
     if (ability) {
       label = `${player.getState('name')} uses ${ability}`;
@@ -53,7 +59,7 @@ export class GameLogic {
     this.appendPlayerActionRpc(text, `${player.getState('name')} says`);
   }
 
-  async investigate(text: any, player: PlayerState) {
+  async investigate(text: any, player: PlayerState, target?: any) {
     this.appendPlayerActionRpc(text, `${player.getState('name')} investigates`);
   }
 

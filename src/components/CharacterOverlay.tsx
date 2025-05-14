@@ -6,9 +6,11 @@ interface CharacterOverlayProps {
   onClose: () => void;
   position: { x: number; y: number };
   playerId: string | null;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
-const CharacterOverlay = ({ isOpen, onClose, position, playerId }: CharacterOverlayProps) => {
+const CharacterOverlay = ({ isOpen, onClose, position, playerId, onMouseEnter, onMouseLeave }: CharacterOverlayProps) => {
   const players = usePlayersList(true);
   const player = players.find(p => p.id === playerId);
 
@@ -16,13 +18,15 @@ const CharacterOverlay = ({ isOpen, onClose, position, playerId }: CharacterOver
 
   return (
     <Overlay
-      className="min-w-[200px]"
+      className="w-2/5"
       style={{
         position: 'fixed',
         left: `${position.x}px`,
         top: `${position.y}px`,
         zIndex: 50
       }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2">

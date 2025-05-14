@@ -138,9 +138,10 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
       // Process each word
       words.forEach(word => {
-        if (finishedFirstLine)
+        if (finishedFirstLine){
+          finalText += word;
           return;
-
+        }
         // Measure the word width
         tempSpan.textContent = word.replace(/ /g, '\u00A0');
         const wordWidth = tempSpan.getBoundingClientRect().width;

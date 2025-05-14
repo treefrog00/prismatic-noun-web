@@ -141,7 +141,7 @@ export class GameLogic {
         prompt: "blah",
         questId: questId
       });
-    let message = `some new narration from the LLM`;
+    let message = `You hear the rustling of leaves and the distant sound of a river. The forest is dense and dark, with trees that seem to watch you with eerie eyes. The air is thick with the scent of magic, and the ground is covered in a soft layer of moss.`;
     this.appendToStoryRpc(message);
   }
 

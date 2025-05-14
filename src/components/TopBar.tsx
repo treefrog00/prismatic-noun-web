@@ -38,7 +38,7 @@ const useOverlayState = (overlayId: string) => {
   const handleMouseEvent = useCallback((
     id: string | null,
     event?: React.MouseEvent,
-    getPosition?: (rect: DOMRect, lastItemRect?: DOMRect) => { x: number; y: number }
+    getPosition?: () => { x: number; y: number }
   ) => {
     clearTimeout();
 
@@ -57,11 +57,9 @@ const useOverlayState = (overlayId: string) => {
         }));
       };
 
-      const rect = event.currentTarget.getBoundingClientRect();
-      const lastItemRect = event.currentTarget.parentElement?.lastElementChild?.getBoundingClientRect();
       setState(prev => ({
         ...prev,
-        position: getPosition(rect, lastItemRect),
+        position: getPosition(),
         isOpen: true,
         hoveredId: id
       }));
@@ -126,16 +124,17 @@ const TopBar = () => {
     return Object.values(locationState.npcs);
   };
 
-  const getCharacterPosition = (rect: DOMRect) => ({
-    x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? rect.left,
-    y: rect.bottom
+  const getCharacterPosition = () => ({
+    x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
+    y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0
   });
 
-  const getRightAlignedPosition = (rect: DOMRect) => {
+  const getRightAlignedPosition = () => {
     const overlayWidth = window.innerWidth * 0.4;
+    const lastItemRect = rightHandListRef.current?.lastElementChild?.getBoundingClientRect();
     return {
-      x: rect.right - overlayWidth,
-      y: rect.bottom
+      x: (lastItemRect?.right ?? 0) - overlayWidth,
+      y: lastItemRect?.bottom ?? 0
     };
   };
 
@@ -160,7 +159,7 @@ const TopBar = () => {
               <div
                 key={npc.instanceId}
                 className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
-                onMouseEnter={(e) => npcOverlay.handleMouseEvent(npc.instanceId, e, getRightAlignedPosition)}
+                onMouseEnter={(e) => npcOverlay.handleMouseEvent(npc.instanceId, e, () => getRightAlignedPosition())}
                 onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
               >
                 <span className="text-gray-400 text-xs">{npc.name}</span>
@@ -169,7 +168,7 @@ const TopBar = () => {
             {locationData && (
               <div
                 className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors overflow-hidden"
-                onMouseEnter={(e) => locationOverlay.handleMouseEvent('location', e, getRightAlignedPosition)}
+                onMouseEnter={(e) => locationOverlay.handleMouseEvent('location', e, () => getRightAlignedPosition())}
                 onMouseLeave={() => locationOverlay.handleMouseEvent(null)}
               >
                 <img

@@ -8,7 +8,6 @@ const StereoControl = () => {
     return (
         <div>
             <StereoKnob onModeChange={handleModeChange} mode={currentMode}/>
-            <div className="text-white font-['Cinzel'] text-lg select-none uppercase tracking-wider mt-2 filter drop-shadow">{currentMode}</div>
         </div>
     );
 };

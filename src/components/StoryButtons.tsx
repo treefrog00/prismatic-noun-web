@@ -162,7 +162,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
               data-id={button.id}
               onPointerDown={() => {
                 if (button.id === 'act') {
-                  console.log(`act button ${button.id}`);
+                  // nothing, just hover effect
                 } else {
                   onPointerDown(button.id);
                 }

@@ -141,8 +141,8 @@ export const starryTheme = {
   },
   globalStyles: `
     @keyframes twinkle1 {
-      0%, 100% { opacity: 0.4; }
-      50% { opacity: 0.8; }
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.4; }
     }
     @keyframes twinkle2 {
       0%, 100% { opacity: 0.2; }

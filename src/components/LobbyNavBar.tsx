@@ -6,9 +6,9 @@ interface NavBarProps {
   onTabChange: (tab: string) => void;
 }
 
-const NavBar: FC<NavBarProps> = (props) => {
+const LobbyNavBar: FC<NavBarProps> = (props) => {
   const isHost = useIsHost();
-  const tabs = ['lobby', ...(isHost ? ['game config', 'stereo'] : ['stereo'])];
+  const tabs = ['lobby', 'character', ...(isHost ? ['game config', 'stereo'] : ['stereo'])];
 
   return (
     <nav className="w-full bg-gray-800/80 border-b border-gray-700">
@@ -34,4 +34,4 @@ const NavBar: FC<NavBarProps> = (props) => {
   );
 };
 
-export default NavBar;
+export default LobbyNavBar;

@@ -69,12 +69,10 @@ const LocationStateSchema = z.object({
 
 const WeaponSchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
 });
 
 const ArmourSchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
 });
 
 const GameDataSchema = z.object({

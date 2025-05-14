@@ -174,12 +174,12 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
               onMouseEnter={() => handleMouseEvent(true)}
               onMouseLeave={() => handleMouseEvent(false)}
             >
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center">
                 {subActions.map((btn) => (
                   <button
                     key={btn.id}
                     onPointerDown={() => onPointerDown(btn.id)}
-                    className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors`}
+                    className={`game-button ${getColorClasses(btn.color)} text-white rounded-lg transition-colors`}
                   >
                     {btn.label}
                   </button>

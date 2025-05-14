@@ -184,7 +184,31 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
           // Measure individual character
           tempSpan.textContent = char === ' ' ? '\u00A0' : char;
-          const charWidth = char === ' ' ? spaceWidth : tempSpan.getBoundingClientRect().width;
+          let charWidth = char === ' ' ? spaceWidth : tempSpan.getBoundingClientRect().width;
+
+          // Handle special kerning cases by measuring pairs
+          if (i > 0) {
+            // Measure the previous character and current character together
+            const prevChar = word[i-1];
+            tempSpan.textContent = prevChar + char;
+            const pairWidth = tempSpan.getBoundingClientRect().width;
+
+            // Measure the previous character alone
+            tempSpan.textContent = prevChar;
+            const prevWidth = tempSpan.getBoundingClientRect().width;
+
+            // Measure current character alone
+            tempSpan.textContent = char;
+            const currentWidth = tempSpan.getBoundingClientRect().width;
+
+            // Calculate kerning adjustment
+            const kerningAdjustment = pairWidth - (prevWidth + currentWidth);
+
+            // Apply the kerning adjustment to the previous character's position
+            if (kerningAdjustment !== 0) {
+              currentX += kerningAdjustment;
+            }
+          }
 
           // Set the final position
           const finalX = currentX;

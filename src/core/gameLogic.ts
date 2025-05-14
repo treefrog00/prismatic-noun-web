@@ -3,7 +3,6 @@ import { addLocalPlayer } from '../contexts/GameContext';
 import { GameApi } from './gameApi';
 import { GameEvent } from '../types';
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from '../config';
-import { z } from 'zod';
 import { StartGameSchema, QuestSummary } from '../types/validatedTypes';
 
 const GAME_PHASE_KEY = 'gamePhase';

@@ -45,8 +45,6 @@ const GameContent = () => {
   const { votes, setVotes } = useVotes();
 
   useEffect(() => {
-    console.log('Registering RPC listeners');
-
     const rpcEventHandler = async (data: GameEvent, caller: any) => {
       switch (data.type) {
           case 'Story':

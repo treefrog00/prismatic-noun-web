@@ -297,7 +297,7 @@ const Story = forwardRef<StoryRef>((_, ref) => {
         textContainer.innerHTML = '';
         textContainer.appendChild(paragraph);
         scrollToBottom();
-      }, longestAnimationTime + 20);
+      }, longestAnimationTime);
     },
     appendNoAnimation: (text: string, label: string) => {
       if (!text || !textDisplayRef.current) return;

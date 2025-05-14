@@ -2,7 +2,7 @@ import { useActionTarget, useLocationData, useLocationState } from '../contexts/
 import { ButtonConfig, getColorClasses } from '../types/button';
 import Overlay from './Overlay';
 import { useEffect, useState } from 'react';
-import { useActionHandlers } from '../hooks/useActionHandlers';
+import { useGameActions } from '../hooks/useGameActions';
 
 interface NpcOverlayProps {
   isOpen: boolean;
@@ -28,16 +28,14 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
 
   const {
     handleClick,
-  } = useActionHandlers({
-    onClose,
-  });
+    } = useGameActions();
 
   const actions: ButtonConfig[] = [
-    { id: "look", label: 'Look', color: 'amber' as const },
+    { id: "look-ok", label: 'Look', color: 'amber' as const },
     { id: "talk", label: 'Talk', color: 'teal' as const },
-    { id: "act", label: 'Act', color: 'violet' as const },
+    { id: "do", label: 'Do', color: 'violet' as const },
     { id: "ability", label: 'Ability', color: 'purple' as const },
-    ...(npcData?.friendly !== 'friend' ? [{ id: "attack", label: 'Attack', color: 'indigo' as const }] : []),
+    ...(npcData?.friendly !== 'friend' ? [{ id: "attack-ok", label: 'Attack', color: 'indigo' as const }] : []),
   ];
 
   useEffect(() => {
@@ -63,11 +61,9 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
         zIndex: 50
       }}
       onMouseEnter={() => {
-        console.log('onMouseEnter');
         onMouseEnter();
       }}
       onMouseLeave={() => {
-        console.log('onMouseLeave');
         onMouseLeave();
       }}
     >
@@ -85,9 +81,7 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
             <button
               key={btn.id}
               onPointerDown={() => {
-                console.log('onPointerDown', btn.id);
                 handleClick(btn.id);
-                console.log('onClose');
                 onClose();
               }}
               className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors font-['Cinzel'] text-base`}

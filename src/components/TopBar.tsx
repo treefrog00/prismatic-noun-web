@@ -76,7 +76,6 @@ const useOverlayState = (overlayId: string) => {
         }));
       }, TIMEOUT);
     } else if (!id) {
-      console.log('id is null, state.isOverOverlay is', state.isOverOverlay);
       setState(prev => ({
         ...prev,
         isOpen: false,
@@ -87,7 +86,6 @@ const useOverlayState = (overlayId: string) => {
   }, [state.isOverOverlay, clearTimeout, overlayId]);
 
   const handleOverlayMouseEnter = useCallback(() => {
-    console.log('handleOverlayMouseEnter');
     clearTimeout();
     setState(prev => ({ ...prev, isOverOverlay: true }));
   }, [clearTimeout]);

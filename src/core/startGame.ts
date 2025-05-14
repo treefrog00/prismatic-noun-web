@@ -2,7 +2,7 @@ import { setState, getState, PlayerState, RPC, getRoomCode, LocalPlayerState, se
 import { addLocalPlayer } from '../contexts/GameContext';
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from '../config';
 import { StartGameSchema, QuestSummary, LocationState } from '../types/validatedTypes';
-import { appendToStoryRpc } from '../hooks/useActionHandlers';
+import { appendToStoryRpc } from '../hooks/useGameActions';
 import { GameApi } from './gameApi';
 
 const GAME_PHASE_KEY = 'gamePhase';
@@ -25,7 +25,6 @@ export async function startIfNotStarted(
   }
 
   const characters = startingPlayers.map(p => p.getState("character_id"));
-  console.log('characters', characters);
   let startGame = await gameApi.postTyped(`/game/start/${questId}`,
     {
       roomCode: getRoomCode(),
@@ -34,8 +33,6 @@ export async function startIfNotStarted(
     }, StartGameSchema);
 
   if (HASH_QUEST_ID) {
-    appendToStoryRpc(startGame.gameData.intro);
-
     const numPlayers = parseInt(HASH_NUM_PLAYERS || '1', 10);
     for (let i = 0; i < numPlayers; i++) {
       const playerName = `Player ${i + 1}`;
@@ -51,6 +48,8 @@ export async function startIfNotStarted(
     // the story intro before the current player turn is set, which is only there
     // so people can start reading without having to wait for the first server response
     setRpcPlayer(localPlayers.find(p => p.id === startGame.currentPlayer));
+
+    appendToStoryRpc(startGame.gameData.intro);
   }
 
   return startGame;

@@ -18,6 +18,5 @@ export type {
   LocationState,
   Link,
   ActionResponse,
-  TravelResponse,
   GameEvent,
 } from './validatedTypes';

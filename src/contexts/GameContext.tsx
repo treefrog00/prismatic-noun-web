@@ -39,6 +39,9 @@ type GameContextType = {
   currentPlayer: string | null;
   setCurrentPlayer: (value: string | null) => void;
 
+  ability: string | null;
+  setAbility: (value: string | null) => void;
+
   characters: Record<string, Character>;
   setCharacters: (value: Record<string, Character>) => void;
 
@@ -92,6 +95,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   // React only, doesn't apply to multiplayer
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
+  const [ability, setAbility] = useState<string | null>(null);
 
   // Action handler state
   const [showTextarea, setShowTextarea] = useState(false);
@@ -135,6 +139,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setVotes,
         actionTarget,
         setActionTarget,
+        ability,
+        setAbility,
 
         // Action handler state
         showTextarea,
@@ -213,6 +219,14 @@ export const useCurrentPlayer = () => {
   return { currentPlayer: context.currentPlayer, setCurrentPlayer: context.setCurrentPlayer };
 };
 
+export const useAbility = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useAbility must be used within a GameProvider');
+  }
+  return { ability: context.ability, setAbility: context.setAbility };
+};
+
 export const useVote = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -225,7 +239,6 @@ export const useVote = () => {
     showVote: context.voteState.showVote,
     setShowVote: (show: boolean) => {
       context.setVoteState({ ...context.voteState, showVote: show });
-      console.log('showVote', context.voteState.showVote);
     },
   };
 };
@@ -266,10 +279,10 @@ export const useActionTarget = () => {
   return { actionTarget: context.actionTarget, setActionTarget: context.setActionTarget };
 };
 
-export const useActionHandler = () => {
+export const useActionUIState = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useActionHandler must be used within a GameProvider');
+    throw new Error('useActionUIState must be used within a GameProvider');
   }
   return {
     showTextarea: context.showTextarea,

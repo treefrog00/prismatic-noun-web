@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
-import { useGameApi, useGameData, useLocationData, useVote } from '../contexts/GameContext';
+import { useLocationData, useVote } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
 import VotePopup from './Vote';
-import { TravelResponseSchema } from '../types/validatedTypes';
-import { appendToStoryRpc } from '../hooks/useActionHandlers';
+import { useGameActions } from '../hooks/useGameActions';
 
 const MapComponent: React.FC = () => {
-  const [currentLocation, setCurrentLocation] = useState<string>(null);
+  const [suggestedLocation, setSuggestedLocation] = useState<string | null>(null);
   const { locationData } = useLocationData();
   const { setVoteState, setShowVote } = useVote();
-  const gameApi = useGameApi();
-  const { gameData } = useGameData();
-
-  const doTravel = async (location: string) => {
-    let response = await gameApi.postTyped(`/game/${gameData.gameId}/travel`, { location }, TravelResponseSchema);
-    setCurrentLocation(location);
-    appendToStoryRpc(`players travel to ${location}, maybe not for the first time...`);
-  }
+  const { handleTravel } = useGameActions();
 
   const handleLocationClick = async (location: string) => {
     if (HASH_SKIP_VOTE) {
       setShowVote(false);
-      await doTravel(location);
+      await handleTravel(location);
     } else {
+      setSuggestedLocation(location);
       setVoteState({
         showVote: true,
         voteOptions: ['Travel', 'Cancel'],
@@ -48,9 +41,11 @@ const MapComponent: React.FC = () => {
       </div>
 
       <VotePopup onVoteComplete={(result) => {
-        if (result) {
-          doTravel(currentLocation);
+        // hopefully suggestedLocation is only set by the person who initiated the vote
+        if (result && suggestedLocation) {
+          handleTravel(suggestedLocation);
         }
+        setSuggestedLocation(null);
       }} />
     </>
   );

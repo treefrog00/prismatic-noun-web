@@ -2,30 +2,29 @@ import { useRef, useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
-import { myPlayer } from '../core/multiplayerState';
-import { useQuestSummary, useActionTarget } from '../contexts/GameContext';
+import { useQuestSummary, useActionTarget, useAbility } from '../contexts/GameContext';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
 import LogbookPopup from './LogbookPopup';
 import { ButtonConfig, getColorClasses } from '../types/button';
-import { useActionHandlers } from '../hooks/useActionHandlers';
+import { useGameActions } from '../hooks/useGameActions';
 import { sharedStyles } from '../styles/shared';
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'amber-border' },
-  { id: "narrate", label: 'Proceed', color: 'teal' },
-  { id: "end turn", label: 'End Turn', color: 'stone' },
+  { id: "narrate-ok", label: 'Proceed', color: 'teal' },
+  { id: "end-turn-ok", label: 'End Turn', color: 'stone' },
 ];
 
 const rootButtonsMobile: ButtonConfig[] = [
   { id: "chat", label: 'Chat', color: 'brown' },
   { id: "act", label: 'Act', color: 'violet' },
-  { id: "narrate", label: 'Proceed', color: 'teal' },
+  { id: "narrate-ok", label: 'Proceed', color: 'teal' },
   { id: "inventory", label: 'Inventory', color: 'indigo' },
   { id: "logbook", label: 'Logbook', color: 'stone' },
   { id: "map", label: 'Map', color: 'purple' },
-  { id: "end turn", label: 'End Turn', color: 'stone' },
+  { id: "end-turn-ok", label: 'End Turn', color: 'stone' },
 ];
 
 const subActions: ButtonConfig[] = [
@@ -220,7 +219,8 @@ const StoryButtons: React.FC = () => {
   const [showActChooser, setShowActChooser] = useState<boolean>(false);
   const { questSummary } = useQuestSummary();
   const isMobile = useIsMobile();
-  const { actionTarget } = useActionTarget();
+  const { setActionTarget } = useActionTarget();
+  const { setAbility } = useAbility();
 
   const {
     showTextarea,
@@ -234,12 +234,7 @@ const StoryButtons: React.FC = () => {
     handleSelectAbility,
     showAbilityChooser,
     setShowAbilityChooser,
-  } = useActionHandlers({
-    onClose: () => {
-      setShowTextarea(false);
-      setText('');
-    },
-  });
+  } = useGameActions();
 
   const renderTextInput = () => (
     <TextInput
@@ -249,6 +244,8 @@ const StoryButtons: React.FC = () => {
       onClose={() => {
         setShowTextarea(false);
         setText('');
+        setActionTarget(null);
+        setAbility(null);
       }}
       onOk={() => handleClick(okButtonId!)}
       placeHolder={inputPlaceHolder}

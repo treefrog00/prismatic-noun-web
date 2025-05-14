@@ -1,0 +1,239 @@
+import { myPlayer, RPC } from '../core/multiplayerState';
+import { useGameApi, useQuestSummary, useActionUIState, useCurrentPlayer, useGameData, useLocationState, useActionTarget, useAbility, useLocationData } from '../contexts/GameContext';
+import { useEffect, useState } from 'react';
+import { ActionResponseSchema } from '../types/validatedTypes';
+
+export function appendToStoryRpc(text: string, label?: string) {
+  RPC.call('rpc-game-event', { type: 'Story', label, text }, RPC.Mode.ALL);
+}
+
+function appendPlayerActionRpc(text: string, label?: string) {
+  RPC.call('rpc-game-event', { type: 'PlayerAction', label, text }, RPC.Mode.ALL);
+}
+
+export const useGameActions = () => {
+  const {
+    showTextarea,
+    setShowTextarea,
+    showAbilityChooser,
+    setShowAbilityChooser,
+    actionText: text,
+    setActionText: setText,
+    okButtonText,
+    setOkButtonText,
+    okButtonId,
+    setOkButtonId,
+    inputPlaceHolder,
+    setInputPlaceHolder,
+  } = useActionUIState();
+
+  const { ability, setAbility } = useAbility();
+  const thisPlayer = myPlayer();
+  const gameApi = useGameApi();
+  const { questSummary } = useQuestSummary();
+  const { currentPlayer, setCurrentPlayer } = useCurrentPlayer();
+  const { gameData } = useGameData();
+  const { locationState, setLocationState } = useLocationState();
+  const { actionTarget, setActionTarget } = useActionTarget();
+  const { locationData, setLocationData } = useLocationData();
+
+  useEffect(() => {
+
+  }, [actionTarget]);
+
+  const setInputFields = (label: string, placeholder: string) => {
+    setShowTextarea(true);
+    setOkButtonText(label);
+    setOkButtonId(label.toLowerCase() + '-ok');
+    setInputPlaceHolder(placeholder);
+  }
+
+  const getTargetName = () => {
+    if (actionTarget.targetType === 'npc') {
+      return locationState.npcs[actionTarget.targetId].name;
+    } else {
+      return actionTarget.targetId;
+    }
+  }
+
+  const handleChat = async () => {
+    setInputFields('Send', '...');
+  };
+
+  const handleTalk = async () => {
+    setInputFields('Talk', 'What do you say to ' + getTargetName() + '?');
+  };
+
+  const handleInvestigate = async () => {
+    setInputFields('Investigate', 'What do you investigate?');
+  };
+
+  const handleDo = async () => {
+    if (actionTarget) {
+      setInputFields('Do', 'What do you do to ' + getTargetName() + '?');
+    } else {
+      setInputFields('Do', 'What do you do?');
+    }
+  };
+
+  const handleSay = async () => {
+    setInputFields('Say', 'What do you say?');
+  };
+
+  const handleAbility = async () => {
+    setShowAbilityChooser(true);
+  };
+
+  const handleSelectAbility = (ability: string) => {
+    setAbility(ability);
+    setInputFields(`Use ${ability}`, `What do you do with ${ability}?`);
+  };
+
+  const handleAttackOk = async () => {
+    appendPlayerActionRpc('', `${thisPlayer.getState('name')} attacks ${getTargetName()}`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleNarrateOk = async () => {
+    await apiCallAndUpdate(`/game/${gameData.gameId}/narrate`, {});
+  };
+
+  const handleTravel = async (location: string) => {
+    await apiCallAndUpdate(`/game/${gameData.gameId}/travel`, { location });
+  };
+
+  const handleEndTurnOk = async () => {
+    await apiCallAndUpdate(`/game/${gameData.gameId}/end_turn`,
+      {
+        questId: questSummary.questId
+      });
+  };
+
+  const apiCallAndUpdate = async (url: string, postData: any) => {
+    let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
+
+    if (response.locationData) {
+      setLocationData(response.locationData);
+    }
+
+    for (const event of response.events) {
+      if (event.type === 'Story') {
+        appendToStoryRpc(event.text);
+      }
+      else if (event.type === 'Narrate') {
+        appendToStoryRpc(event.data.message);
+      }
+      else if (event.type === 'DiceRoll') {
+        const targetValues = Array.from({ length: 2 }, () => Math.floor(Math.random() * 6) + 1);
+        RPC.call('rpc-game-event', { type: 'DiceRoll', targetValues }, RPC.Mode.ALL);
+      }
+      else {
+        console.log("Unexpected event type: " + event.type);
+      }
+    }
+
+    if (response.currentPlayer !== currentPlayer) {
+      setCurrentPlayer(response.currentPlayer);
+    }
+
+    if (response.locationState) {
+      setLocationState(response.locationState);
+    }
+
+    if (response.locationData) {
+      setLocationData(response.locationData);
+    }
+  }
+
+  const handleSendOk = () => RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text }, RPC.Mode.ALL);
+
+  const handleLookOk = async () => {
+    appendPlayerActionRpc('', `${thisPlayer.getState('name')} looks at ${getTargetName()}`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/look`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleTalkOk = async () => {
+    appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says to ${getTargetName()}`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/talk`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleInvestigateOk = async () => {
+    appendPlayerActionRpc(text, `${thisPlayer.getState('name')} investigates ${getTargetName()}`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleDoOk = async () => {
+    let label = `${thisPlayer.getState('name')} acts`;
+    if (ability) {
+      label = `${thisPlayer.getState('name')} uses ${ability}`;
+    }
+    appendPlayerActionRpc(text, label);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/act`, {
+      prompt: text,
+      ability,
+      targetId: actionTarget.targetId,
+      targetType: actionTarget.targetType });
+  };
+
+  const handleSayOk = async () => {
+    appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleAbilityOk = async () => {
+    let label = `${thisPlayer.getState('name')} acts`;
+    if (ability) {
+      label = `${thisPlayer.getState('name')} uses ${ability}`;
+    }
+    appendPlayerActionRpc(text, label);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/act`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+  };
+
+  const handleClick = async (buttonId: string) => {
+    const handlers: Record<string, () => Promise<void>> = {
+      'talk': handleTalk,
+      'investigate': handleInvestigate,
+      'do': handleDo,
+      'say': handleSay,
+      'ability': handleAbility,
+      'chat': handleChat,
+
+      'end-turn-ok': handleEndTurnOk,
+      'narrate-ok': handleNarrateOk,
+      'attack-ok': handleAttackOk,
+      'send-ok': handleSendOk,
+      'look-ok': handleLookOk,
+      'talk-ok': handleTalkOk,
+      'investigate-ok': handleInvestigateOk,
+      'do-ok': handleDoOk,
+      'say-ok': handleSayOk,
+      'ability-ok': handleAbilityOk,
+    };
+
+    const handler = handlers[buttonId];
+    if (handler) {
+      await handler();
+      if (buttonId.endsWith('-ok')) {
+        setShowTextarea(false);
+        setText('');
+        setActionTarget(null);
+        setAbility(null);
+      }
+    }
+  };
+
+  return {
+    showTextarea,
+    setShowTextarea,
+    showAbilityChooser,
+    setShowAbilityChooser,
+    text,
+    setText,
+    okButtonText,
+    okButtonId,
+    inputPlaceHolder,
+    handleClick,
+    handleSelectAbility,
+    handleTravel,
+  };
+};

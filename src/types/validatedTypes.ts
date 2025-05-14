@@ -1,11 +1,16 @@
-import { z } from 'zod'; // Import Zod
-import { VoteType } from '.';
+import { z } from 'zod';
 
 const GameEventSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('Story'),
     label: z.string(),
     text: z.string(),
+  }),
+  z.object({
+    type: z.literal('Narrate'),
+    data: z.object({
+      message: z.string(),
+    }),
   }),
   z.object({
     type: z.literal('PlayerAction'),
@@ -135,14 +140,10 @@ export const StartGameSchema = z.object({
   currentPlayer: z.string(),
 });
 
-export const TravelResponseSchema = z.object({
-  locationData: LocationDataSchema,
-  locationState: LocationStateSchema,
-});
-
 export const ActionResponseSchema = z.object({
   events: z.array(GameEventSchema),
-  locationState: LocationStateSchema,
+  locationState: LocationStateSchema.nullable(),
+  locationData: LocationDataSchema.nullable(),
   currentPlayer: z.string(),
 });
 
@@ -163,6 +164,5 @@ export type Armour = z.infer<typeof ArmourSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
 export type Link = z.infer<typeof LinkSchema>;
-export type TravelResponse = z.infer<typeof TravelResponseSchema>;
 export type ActionResponse = z.infer<typeof ActionResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;

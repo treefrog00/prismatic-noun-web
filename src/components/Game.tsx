@@ -3,7 +3,6 @@ import DiceRoll from './DiceRoll';
 import Story, { StoryRef } from './Story';
 import TopBar from './TopBar';
 import { myPlayer, useIsHost, onPlayerJoin, PlayerState, usePlayersList, RPC } from '../core/multiplayerState';
-import AttackChooser from './AttackChooser';
 import StoryButtons from './StoryButtons';
 
 import { GameEvent } from '../types';
@@ -18,7 +17,6 @@ const GameContent = () => {
   const { questSummary } = useQuestSummary();
   // state for React UI
   const [showDiceRoll, setShowDiceRoll] = useState(false);
-  const [showAttackChooser, setShowAttackChooser] = useState(false);
   const [targetValues, setTargetValues] = useState<number[] | null>(null);
   const [diceRoller, setDiceRoller] = useState<string>('');
   const { showVote, setShowVote } = useVote();
@@ -35,7 +33,7 @@ const GameContent = () => {
   const { locationState, setLocationState } = useLocationState();
   const { gameData, setGameData } = useGameData();
   const { setQuestSummary } = useQuestSummary();
-  
+
   const { voteState } = useVote();
 
   const { localPlayers, setLocalPlayers } = useLocalPlayers();
@@ -132,11 +130,6 @@ const GameContent = () => {
     }, 1800 + 3000); // 1800ms for animation + 3000ms display time
   };
 
-  const buttonHandlers =
-  {
-    'attack': () => setShowAttackChooser(true),
-  };
-
   return (
     <div className="font-['Crimson_Text'] ambient-bg flex flex-col items-center justify-center m-0 h-screen">
       <div className="w-4/5 max-w-5xl flex flex-col h-full py-4">
@@ -157,17 +150,8 @@ const GameContent = () => {
         </div>
 
         <div className="relative mt-4">
-          <StoryButtons
-            parentButtonHandlers={buttonHandlers}
-          />
+          <StoryButtons />
         </div>
-
-        <AttackChooser
-          isOpen={showAttackChooser}
-          onClose={() => setShowAttackChooser(false)}
-          onSelectTarget={handleTargetSelected}
-        />
-
       </div>
 
       <style>{`

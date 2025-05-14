@@ -14,10 +14,9 @@ export const QuestSummariesSchema = z.object({
 });
 
 const ItemSchema = z.object({
-  id: z.string(),
   name: z.string(),
   shortDescription: z.string(),
-  image: z.string(),
+  imageUrl: z.string(),
 });
 
 const AbilitySchema = z.object({
@@ -33,9 +32,9 @@ const FeatureSchema = z.object({
 const BaseCharacterSchema = z.object({
   name: z.string(),
   shortDescription: z.string(),
-  image: z.string(),
+  imageUrl: z.string(),
   level: z.number(),
-  stamina: z.number(),
+  maxStamina: z.number(),
 });
 
 const CharacterSchema = BaseCharacterSchema.extend({
@@ -50,7 +49,7 @@ export const CharacterStateSchema = z.object({
   stamina: z.number(),
   inventory: z.array(z.string()),
   weapons: z.array(z.string()),
-  armor: z.string(),
+  armour: z.string(),
 });
 
 const NpcStateSchema = z.object({
@@ -58,12 +57,17 @@ const NpcStateSchema = z.object({
   instanceId: z.string(),
   stamina: z.number(),
   weapons: z.array(z.string()),
-  armor: z.string(),
+  armour: z.string(),
+});
+
+const NameAndQuantitySchema = z.object({
+  name: z.string(),
+  quantity: z.number(),
 });
 
 const LocationStateSchema = z.object({
   npcs: z.array(NpcStateSchema),
-  items: z.array(z.string()),
+  items: z.array(NameAndQuantitySchema),
   features: z.array(z.string()),
 });
 

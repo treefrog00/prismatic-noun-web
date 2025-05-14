@@ -10,10 +10,6 @@ import artUrl from '../util/artUrls';
 import LogbookPopup from './LogbookPopup';
 
 
-interface StoryControlsProps {
-  parentButtonHandlers: Record<string, (text?: string) => void>;
-}
-
 // Add interfaces for button configurations
 interface ButtonConfig {
   id: string;
@@ -43,7 +39,6 @@ const subActions: ButtonConfig[] = [
   { id: "say", label: 'Say', color: 'teal' },
   { id: "do", label: 'Do', color: 'violet' },
   { id: "ability", label: 'Ability', color: 'purple' },
-  { id: "attack", label: 'Attack', color: 'rose' },
 ];
 
 const abilityOkButtonPrefix = '*ability-ok-';
@@ -228,7 +223,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   );
 };
 
-const StoryButtons: React.FC<StoryControlsProps> = ({ parentButtonHandlers }) => {
+const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [showTextarea, setShowTextareaPopup] = useState<boolean>(false);
   const [showActChooser, setShowActChooser] = useState<boolean>(false);
@@ -320,9 +315,6 @@ const StoryButtons: React.FC<StoryControlsProps> = ({ parentButtonHandlers }) =>
   function handleClick(buttonId: string): void {
     if (buttonId.startsWith(abilityOkButtonPrefix)) {
       gameLogic.do(text, thisPlayer, ability);
-    }
-    else if (buttonId in parentButtonHandlers) {
-      parentButtonHandlers[buttonId]();
     }
     else if (buttonId in internalButtonHandlers) {
       internalButtonHandlers[buttonId]();

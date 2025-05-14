@@ -34,7 +34,7 @@ const Play = () => {
 
   return (
     <StereoProvider>
-      <div className="min-h-screen bg-gray-900 p-4">
+      <div className="min-h-screen bg-gray-900 py-4 px-0">
         {!gameStarted && !HASH_QUEST_ID && (
           <Lobby />
         )}

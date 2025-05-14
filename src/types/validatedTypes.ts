@@ -1,4 +1,27 @@
 import { z } from 'zod'; // Import Zod
+import { VoteType } from '.';
+
+const GameEventSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('Story'),
+    label: z.string(),
+    text: z.string(),
+  }),
+  z.object({
+    type: z.literal('PlayerAction'),
+    label: z.string(),
+    text: z.string(),
+  }),
+  z.object({
+    type: z.literal('DiceRoll'),
+    targetValues: z.array(z.number()),
+  }),
+  z.object({
+    type: z.literal('Vote'),
+    voteType: z.enum(['Undo', 'Kick', 'Travel']),
+    choice: z.boolean(),
+  }),
+]);
 
 const FriendlyLevel = z.enum(['enemy', 'neutral', 'friend']);
 
@@ -7,6 +30,7 @@ const QuestSummarySchema = z.object({
   title: z.string(),
   shortDescription: z.string(),
   intro: z.string(),
+  imageUrl: z.string(),
 });
 
 export const QuestSummariesSchema = z.object({
@@ -54,7 +78,6 @@ export const CharacterStateSchema = z.object({
 
 const NpcStateSchema = z.object({
   name: z.string(),
-  instanceId: z.string(),
   stamina: z.number(),
   weapons: z.array(z.string()),
   armour: z.string(),
@@ -66,7 +89,8 @@ const NameAndQuantitySchema = z.object({
 });
 
 const LocationStateSchema = z.object({
-  npcs: z.array(NpcStateSchema),
+  npcs: z.record(z.string(), NpcStateSchema),
+  characters: z.record(z.string(), CharacterStateSchema),
   items: z.array(NameAndQuantitySchema),
   features: z.array(z.string()),
 });
@@ -80,10 +104,14 @@ const ArmourSchema = z.object({
 });
 
 const GameDataSchema = z.object({
+  gameId: z.string(),
+  intro: z.string(),
+  title: z.string(),
   weapons: z.record(z.string(), WeaponSchema),
   armour: z.record(z.string(), ArmourSchema),
   items: z.record(z.string(), ItemSchema),
   abilities: z.record(z.string(), AbilitySchema),
+  characters: z.record(z.string(), CharacterSchema),
 });
 
 const LinkSchema = z.object({
@@ -101,12 +129,21 @@ const LocationDataSchema = z.object({
 });
 
 export const StartGameSchema = z.object({
-  gameId: z.string(),
-  intro: z.string(),
-  title: z.string(),
   gameData: GameDataSchema,
   locationData: LocationDataSchema,
   locationState: LocationStateSchema,
+  currentPlayer: z.string(),
+});
+
+export const TravelResponseSchema = z.object({
+  locationData: LocationDataSchema,
+  locationState: LocationStateSchema,
+});
+
+export const ActionResponseSchema = z.object({
+  events: z.array(GameEventSchema),
+  locationState: LocationStateSchema,
+  currentPlayer: z.string(),
 });
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
@@ -126,3 +163,6 @@ export type Armour = z.infer<typeof ArmourSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
 export type Link = z.infer<typeof LinkSchema>;
+export type TravelResponse = z.infer<typeof TravelResponseSchema>;
+export type ActionResponse = z.infer<typeof ActionResponseSchema>;
+export type GameEvent = z.infer<typeof GameEventSchema>;

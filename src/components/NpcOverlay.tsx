@@ -1,8 +1,7 @@
-import { useGameLogic, useLocationData, useLocationState } from '../contexts/GameContext';
-import { myPlayer } from '../core/multiplayerState';
+import { useActionTarget, useLocationData, useLocationState } from '../contexts/GameContext';
 import { ButtonConfig, getColorClasses } from '../types/button';
 import Overlay from './Overlay';
-import { useEffect, useState, useContext } from 'react';
+import { useEffect, useState } from 'react';
 import { useActionHandlers } from '../hooks/useActionHandlers';
 
 interface NpcOverlayProps {
@@ -19,11 +18,17 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
   const { locationData } = useLocationData();
   const [npcState, setNpcState] = useState(null);
   const [npcData, setNpcData] = useState(null);
+  const { setActionTarget } = useActionTarget();
+
+  useEffect(() => {
+    if (npcId) {
+      setActionTarget({ targetId: npcId, targetType: 'npc' });
+    }
+  }, [npcId, setActionTarget]);
 
   const {
     handleClick,
   } = useActionHandlers({
-    actionTarget: npcId,
     onClose,
   });
 
@@ -37,7 +42,7 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
 
   useEffect(() => {
     if (locationState && locationData && npcId) {
-      const stateData = locationState.npcs.find(npc => npc.instanceId === npcId)
+      const stateData = locationState.npcs[npcId];
       setNpcState(stateData);
       setNpcData(locationData?.npcs[stateData?.name]);
     } else {
@@ -57,8 +62,14 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
         top: `${position.y}px`,
         zIndex: 50
       }}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
+      onMouseEnter={() => {
+        console.log('onMouseEnter');
+        onMouseEnter();
+      }}
+      onMouseLeave={() => {
+        console.log('onMouseLeave');
+        onMouseLeave();
+      }}
     >
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2 mb-4">
@@ -73,7 +84,12 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
           {actions.map((btn) => (
             <button
               key={btn.id}
-              onPointerDown={() => handleClick(btn.id)}
+              onPointerDown={() => {
+                console.log('onPointerDown', btn.id);
+                handleClick(btn.id);
+                console.log('onClose');
+                onClose();
+              }}
               className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors font-['Cinzel'] text-base`}
             >
               {btn.label}

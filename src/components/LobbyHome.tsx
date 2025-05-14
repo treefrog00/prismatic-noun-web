@@ -49,7 +49,11 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
             )}
           </div>
         </div>
-        <img src={artUrl('logo.webp')} alt="Logo" className={`${responsiveStyles.sizes.logo} object-contain opacity-70 ${responsiveStyles.margins.logo}`} />
+        {questSummary ? (
+          <img src={questSummary.imageUrl} className={`${responsiveStyles.sizes.adventureImage} object-contain opacity-70 ${responsiveStyles.margins.adventureImage}`} />
+        ) : (
+          <div className={`${responsiveStyles.sizes.adventureImage} ${responsiveStyles.margins.adventureImage} bg-gray-700 rounded-lg`} />
+        )}
       </div>
       <div className="w-full space-y-4">
         <div className="flex gap-4">

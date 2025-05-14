@@ -11,7 +11,6 @@ const Story = forwardRef<StoryRef>((_, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
   const lineHeight = 16;
-  const paragraphSpacing = 30;
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({

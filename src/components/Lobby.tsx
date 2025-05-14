@@ -11,6 +11,7 @@ import { playRoomConfig } from '../envConfig';
 import { GameApi } from '../core/gameApi';
 import { QuestSummariesSchema } from '../types/validatedTypes';
 import CharacterDesigner from './CharacterDesigner';
+import artUrl from '../util/artUrls';
 
 
 const Lobby = () => {
@@ -60,7 +61,6 @@ const Lobby = () => {
         <LobbyNavBar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-
             <div className="flex flex-col items-center gap-8">
               {isCoinInserted ? (
                 activeTab === 'lobby' && (

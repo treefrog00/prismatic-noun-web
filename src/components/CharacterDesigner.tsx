@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { myPlayer } from '../core/multiplayerState';
 import { responsiveStyles } from '../styles/responsiveStyles';
 
@@ -8,7 +8,7 @@ const CharacterDesigner = () => {
 
     const savedName = localStorage.getItem('player-name');
     if (savedName) {
-      player.setState("name", savedName);
+      player.setState("name", savedName, true);
       return savedName;
     }
 
@@ -16,15 +16,20 @@ const CharacterDesigner = () => {
     if (stateName) return stateName;
 
     let name = player.getProfile().name;
-    player.setState("name", name);
+    player.setState("name", name, true);
     return name;
   });
 
   const updatePlayerName = (newName: string) => {
     localStorage.setItem('player-name', newName);
     const player = myPlayer();
-    player.setState("name", newName);
+    player.setState("name", newName, true);
   };
+
+  useEffect(() => {
+    const player = myPlayer();
+    player.setState("character_id", "some_character_id", true);
+  }, []); // Empty dependency array means this only runs once on mount
 
   return (
     <div className="flex flex-col space-y-4">

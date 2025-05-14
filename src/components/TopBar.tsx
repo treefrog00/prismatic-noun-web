@@ -75,10 +75,19 @@ const useOverlayState = (overlayId: string) => {
           hoveredId: null
         }));
       }, TIMEOUT);
+    } else if (!id) {
+      console.log('id is null, state.isOverOverlay is', state.isOverOverlay);
+      setState(prev => ({
+        ...prev,
+        isOpen: false,
+        hoveredId: null,
+        isOverOverlay: false
+      }));
     }
   }, [state.isOverOverlay, clearTimeout, overlayId]);
 
   const handleOverlayMouseEnter = useCallback(() => {
+    console.log('handleOverlayMouseEnter');
     clearTimeout();
     setState(prev => ({ ...prev, isOverOverlay: true }));
   }, [clearTimeout]);
@@ -121,7 +130,10 @@ const TopBar = () => {
 
   const getNpcs = () => {
     if (!locationState) return [];
-    return Object.values(locationState.npcs);
+    return Object.entries(locationState.npcs).map(([instanceId, npc]) => ({
+      ...npc,
+      instanceId
+    }));
   };
 
   const getCharacterPosition = () => ({

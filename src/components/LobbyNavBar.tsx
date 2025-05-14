@@ -1,5 +1,7 @@
 import type { FC } from 'react';
 import { useIsHost } from '../core/multiplayerState';
+import artUrl from '../util/artUrls';
+import { responsiveStyles } from '../styles/responsiveStyles';
 
 interface NavBarProps {
   activeTab: string;
@@ -12,10 +14,10 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
 
   return (
     <nav className="w-full bg-gray-800/80 border-b border-gray-700">
-      <div className="max-w-2xl mx-auto">
-        <ul className="flex">
-          {tabs.map((tab) => (
-            <li key={tab}>
+      <div className="flex items-center justify-center">
+        <ul className="flex items-center">
+          {tabs.map((tab, index) => (
+            <li key={tab} className="flex items-center">
               <button
                 className={`font-['Cinzel'] px-6 py-3 text-lg transition-all duration-300 ${
                   props.activeTab === tab
@@ -26,6 +28,13 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
               >
                 {tab}
               </button>
+              {index === tabs.length - 1 && (
+                <img
+                  src={artUrl('logo_wide.webp')}
+                  alt="Logo"
+                  className={`${responsiveStyles.sizes.logo} object-contain opacity-60 mx-8`}
+                />
+              )}
             </li>
           ))}
         </ul>

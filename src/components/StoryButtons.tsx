@@ -3,7 +3,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
 import { myPlayer } from '../core/multiplayerState';
-import { useGameLogic, useQuestSummary, useActionTarget } from '../contexts/GameContext';
+import { useQuestSummary, useActionTarget } from '../contexts/GameContext';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
@@ -103,7 +103,6 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   const [isHovering, setIsHovering] = useState(false);
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const gameLogic = useGameLogic();
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const TIMEOUT = 500;
   const actButtonRef = useRef<HTMLButtonElement>(null);
@@ -221,7 +220,6 @@ const StoryButtons: React.FC = () => {
   const [showActChooser, setShowActChooser] = useState<boolean>(false);
   const { questSummary } = useQuestSummary();
   const isMobile = useIsMobile();
-  const gameLogic = useGameLogic();
   const { actionTarget } = useActionTarget();
 
   const {
@@ -237,7 +235,6 @@ const StoryButtons: React.FC = () => {
     showAbilityChooser,
     setShowAbilityChooser,
   } = useActionHandlers({
-    actionTarget,
     onClose: () => {
       setShowTextarea(false);
       setText('');

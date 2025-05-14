@@ -63,7 +63,7 @@ export const myPlayer = () => {
     if (HASH_QUEST_ID) {
         const { currentPlayer } = useCurrentPlayer();
         const { localPlayers } = useLocalPlayers();
-        return localPlayers.find(p => p.getState('name') === currentPlayer);
+        return localPlayers.find(p => p.id === currentPlayer);
     }
     return originalMyPlayer();
 };

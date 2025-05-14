@@ -14,14 +14,15 @@ export const responsiveStyles = {
 
   // Sizes
   sizes: {
-    logo: 'w-32 h-32 sm:w-48 sm:h-48',
+    logo: 'w-32 h-16 sm:w-64 sm:h-32',
+    adventureImage: 'w-32 h-32 sm:w-48 sm:h-48',
     playerAvatar: 'w-12 h-12 sm:w-16 sm:h-16',
     characterAvatar: 'w-24 h-24 sm:w-32 sm:h-32',
   },
 
   // Margins
   margins: {
-    logo: 'ml-4 sm:ml-8',
+    adventureImage: 'ml-4 sm:ml-8',
   },
 
   // Common button styles

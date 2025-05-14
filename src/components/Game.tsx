@@ -7,8 +7,10 @@ import StoryButtons from './StoryButtons';
 
 import { GameEvent } from '../types';
 import { handleVote } from './Vote';
-import { useQuestSummary, useVote, useGameLogic, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState, useActionTarget } from '../contexts/GameContext';
+import { useQuestSummary, useVote, useGameApi, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState, useActionTarget } from '../contexts/GameContext';
 import { HASH_QUEST_ID } from '../config';
+import { startIfNotStarted } from '../core/startGame';
+import { ActionResponseSchema } from '../types/validatedTypes';
 
 const DICE_COUNT = 2;
 
@@ -23,7 +25,6 @@ const GameContent = () => {
   const { currentPlayer, setCurrentPlayer } = useCurrentPlayer();
   // UI variables
   const storyRef = useRef<StoryRef>(null);
-  const { actionTarget, setActionTarget } = useActionTarget();
 
   // state from PlayroomKit
   const isHost = useIsHost();
@@ -39,7 +40,7 @@ const GameContent = () => {
 
   const { localPlayers, setLocalPlayers } = useLocalPlayers();
 
-  const gameLogic = useGameLogic();
+  const gameApi = useGameApi();
 
   const { votes, setVotes } = useVotes();
 
@@ -69,18 +70,18 @@ const GameContent = () => {
           break;
       }
 
-      gameLogic.eventLog.push(data);
       return Promise.resolve();
     };
 
     RPC.register('rpc-game-event', rpcEventHandler);
 
     onPlayerJoin((player: PlayerState) => {
-      gameLogic.addPlayer(player, isHost);
-
-      const unsubscribe = player.onQuit(() => {
+      const unsubscribe = player.onQuit(async (player: PlayerState) => {
         console.log('Player left:', player);
-        gameLogic.removePlayer(player, isHost);
+        const response = await gameApi.postTyped(`/game/${gameData.gameId}/player_left/${player.id}`, {}, ActionResponseSchema);
+        if (response.currentPlayer !== currentPlayer) {
+          setCurrentPlayer(response.currentPlayer);
+        }
       });
 
       return unsubscribe;
@@ -90,18 +91,24 @@ const GameContent = () => {
   useEffect(() => {
     if (isHost) {
       const startGameAsync = async () => {
-        let startGame = await gameLogic.startIfNotStarted(players, questSummary, localPlayers, setLocalPlayers);
+        let startGame = await startIfNotStarted(
+          gameApi,
+          players,
+          questSummary,
+          localPlayers,
+        );
         setLocationData(startGame.locationData);
         setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
+        setCurrentPlayer(startGame.currentPlayer);
 
         if (HASH_QUEST_ID) {
           setQuestSummary(
             {
               questId: HASH_QUEST_ID,
-              title: startGame.title,
+              title: startGame.gameData.title,
               shortDescription: '',
-              intro: startGame.intro,
+              intro: startGame.gameData.intro,
             }
           )
         }
@@ -115,11 +122,6 @@ const GameContent = () => {
     if (storyRef.current) {
       storyRef.current.updateText(`${values.join(', ')} (total: ${sum})`, `${diceRoller} rolled`);
     }
-  };
-
-  const handleTargetSelected = (target: string) => {
-    gameLogic.selectTarget(target, thisPlayer);
-    setActionTarget(target);
   };
 
   const triggerDiceAnimation = () => {

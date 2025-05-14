@@ -1,7 +1,12 @@
-import { GameLogic } from '../core/gameLogic';
+import { GameApi } from '../core/gameApi';
 import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
 import { Character, QuestSummary, CharacterState, GameData, LocationData, LocationState } from '../types';
 import { createContext, useContext, ReactNode, useState } from 'react';
+
+type ActionTarget = {
+  targetId: string;
+  targetType: string;
+} | null;
 
 type VoteState = {
   showVote: boolean;
@@ -40,10 +45,10 @@ type GameContextType = {
   votes: Record<string, boolean>;
   setVotes: (value: Record<string, boolean>) => void;
 
-  actionTarget: string | null;
-  setActionTarget: (value: string | null) => void;
+  actionTarget: ActionTarget;
+  setActionTarget: (value: ActionTarget) => void;
 
-  gameLogic: GameLogic;
+  gameApi: GameApi;
 
   // Action handler state
   showTextarea: boolean;
@@ -86,7 +91,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   // React only, doesn't apply to multiplayer
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
-  const [actionTarget, setActionTarget] = useState<string | null>(null);
+  const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
 
   // Action handler state
   const [showTextarea, setShowTextarea] = useState(false);
@@ -96,11 +101,13 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
 
-  const gameLogic = new GameLogic(setCurrentPlayer);
+  const gameApi = new GameApi();
 
   return (
     <GameContext.Provider
       value={{
+        gameApi,
+
         questSummary,
         setQuestSummary,
 
@@ -128,7 +135,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setVotes,
         actionTarget,
         setActionTarget,
-        gameLogic,
 
         // Action handler state
         showTextarea,
@@ -228,12 +234,12 @@ export const addLocalPlayer = (player: PlayerState, localPlayers: PlayerState[])
   localPlayers.push(player);
 };
 
-export const useGameLogic = () => {
+export const useGameApi = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGameLogic must be used within a GameProvider');
+    throw new Error('useGameApi must be used within a GameProvider');
   }
-  return context.gameLogic;
+  return context.gameApi;
 };
 
 export const useCharacters = () => {

@@ -1,5 +1,9 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
 import { HASH_MOBILE_TEST } from '../config';
+import { StereoProvider } from '../contexts/StereoContext';
+import { GameProvider } from '../contexts/GameContext';
+import { ErrorProvider } from '../contexts/ErrorContext';
+import { AuthProvider } from '../contexts/AuthContext';
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -34,10 +38,18 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       border: HASH_MOBILE_TEST ? '2px solid #666' : 'none',
       borderRadius: HASH_MOBILE_TEST ? '16px' : '0',
       overflow: isDevToolsOpen ? 'auto' : 'hidden',
-  }}>
-    <Suspense fallback={''}>{children}</Suspense>
+    }}>
+      <AuthProvider>
+        <ErrorProvider>
+          <GameProvider>
+            <StereoProvider>
+              <Suspense fallback={''}>{children}</Suspense>
+            </StereoProvider>
+          </GameProvider>
+        </ErrorProvider>
+      </AuthProvider>
     </main>
-    );
-  };
+  );
+};
 
 export default GameLayout;

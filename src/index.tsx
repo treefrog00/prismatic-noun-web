@@ -5,12 +5,11 @@ import { BrowserRouter, useRoutes } from 'react-router-dom';
 import './index.css';
 import { routes } from './routes';
 import * as Sentry from "@sentry/react";
-import { ErrorProvider } from './contexts/ErrorContext';
-import { GameProvider } from './contexts/GameContext';
+import { playRoomConfig } from './envConfig';
 
 // Set font URL based on environment
 const font = 'family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@500;700&display=swap';
-const fontUrl = import.meta.env.DEV
+const fontUrl = import.meta.env.DEV || !playRoomConfig.discord
   ? `https://fonts.googleapis.com/css2?${font}`
   : `/fonts-styles/css2?${font}`;
 
@@ -59,13 +58,9 @@ if (import.meta.env.PROD) {
 
 ReactDOM.render(
   <React.StrictMode>
-    <ErrorProvider>
-      <GameProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <AppRoutes />
-        </BrowserRouter>
-      </GameProvider>
-    </ErrorProvider>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <AppRoutes />
+    </BrowserRouter>
   </React.StrictMode>,
   root
 );

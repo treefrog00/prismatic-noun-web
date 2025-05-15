@@ -1,3 +1,5 @@
+import { playRoomConfig } from './envConfig';
+
 // Get the current backend URL from the hash parameters or default to current origin
 const hash = window.location.hash.slice(1); // Remove the # symbol
 const hashParams = new URLSearchParams(hash);
@@ -7,14 +9,16 @@ if (hashParams.has('backend')) {
     url = hashParams.get('backend')!;
 } else if (import.meta.env.DEV) {
     url = 'http://localhost:5000';
-} else {
+} else if (playRoomConfig.discord) {
     // requires url-mapping to be set up
     url = '/api';
+} else {
+    url = 'https://api.prismaticnoun.xyz/api';
 }
 
 export const BACKEND_URL = url;
 
-const GENERATED_IMAGES_URL = import.meta.env.DEV ? 'https://storage.googleapis.com/prismatic-noun-images' : '/images';
+const GENERATED_IMAGES_URL = import.meta.env.DEV || !playRoomConfig.discord ? 'https://storage.googleapis.com/prismatic-noun-images' : '/images';
 
 export const HASH_MOBILE_TEST = hashParams.has('mobiletest');
 

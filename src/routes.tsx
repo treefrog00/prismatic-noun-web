@@ -6,7 +6,7 @@ import Welcome from './pages/welcome';
 import Terms from './pages/terms';
 import Privacy from './pages/privacy';
 import HomeLayout from './layouts/HomeLayout';
-const Play = lazy(() => import('./pages/play'));
+import Play from './pages/play';
 
 export const routes: RouteObject[] = [
   {

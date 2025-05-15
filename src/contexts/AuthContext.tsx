@@ -64,7 +64,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   if (!playRoomConfig.firebaseAuth) {
-    return null;
+    return (
+      <>
+        {children}
+      </>
+    );
   }
   return (
     <AuthContext.Provider value={{ firebaseUser: user, loading }}>

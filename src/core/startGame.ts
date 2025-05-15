@@ -29,7 +29,12 @@ export async function startIfNotStarted(
     {
       roomCode: getRoomCode(),
       characters: characters,
-      players: startingPlayers.map(p => ({ username: p.id, globalName: p.getProfile().name })),
+      players: startingPlayers.map(p => (
+        {
+          username: p.id,
+          globalName: p.getProfile().name,
+          characterId: p.getState("character_id")
+        })),
     }, StartGameSchema);
 
   if (HASH_QUEST_ID) {

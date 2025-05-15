@@ -41,11 +41,15 @@ export const useGameActions = () => {
 
   }, [actionTarget]);
 
-  const setInputFields = (label: string, placeholder: string) => {
+  const setInputFields = (label: string, placeholder: string, overrideOkButtonId?: string) => {
     setShowTextarea(true);
     setOkButtonText(label);
-    setOkButtonId(label.toLowerCase() + '-ok');
     setInputPlaceHolder(placeholder);
+    if (overrideOkButtonId) {
+      setOkButtonId(overrideOkButtonId);
+    } else {
+      setOkButtonId(label.toLowerCase() + '-ok');
+    }
   }
 
   const getTargetName = () => {
@@ -86,7 +90,7 @@ export const useGameActions = () => {
 
   const handleSelectAbility = (ability: string) => {
     setAbility(ability);
-    setInputFields(`Use ${ability}`, `What do you do with ${ability}?`);
+    setInputFields(`Use ${ability}`, `What do you do with ${ability}?`, 'do-ok');
   };
 
   const handleAttackOk = async () => {
@@ -171,22 +175,13 @@ export const useGameActions = () => {
     await apiCallAndUpdate(`/game/${gameData.gameId}/act`, {
       prompt: text,
       ability,
-      targetId: actionTarget.targetId,
-      targetType: actionTarget.targetType });
+      targetId: actionTarget?.targetId,
+      targetType: actionTarget?.targetType });
   };
 
   const handleSayOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
-  };
-
-  const handleAbilityOk = async () => {
-    let label = `${thisPlayer.getState('name')} acts`;
-    if (ability) {
-      label = `${thisPlayer.getState('name')} uses ${ability}`;
-    }
-    appendPlayerActionRpc(text, label);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/act`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { prompt: text });
   };
 
   const handleClick = async (buttonId: string) => {
@@ -205,9 +200,8 @@ export const useGameActions = () => {
       'look-ok': handleLookOk,
       'talk-ok': handleTalkOk,
       'investigate-ok': handleInvestigateOk,
-      'do-ok': handleDoOk,
+      'do-ok': handleDoOk, // also handles using abilities
       'say-ok': handleSayOk,
-      'ability-ok': handleAbilityOk,
     };
 
     const handler = handlers[buttonId];

@@ -1,15 +1,13 @@
 import Lobby from '../components/Lobby';
 import Game from '../components/Game';
 import { HASH_QUEST_ID } from '../config';
-import { StereoProvider } from '../contexts/StereoContext';
 import { GameProvider, useGameStarted } from '../contexts/GameContext';
 import ChatMessages from '../components/ChatMessages';
 import { useEffect, useRef, useState } from 'react';
 import { myPlayer } from '../core/multiplayerState';
 import ChatTextInput from '../components/ChatTextInput';
 import AuthPopup from '../components/AuthPopup';
-import { ErrorProvider } from '../contexts/ErrorContext';
-import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { playRoomConfig } from '../envConfig';
 
 const Play = () => {
@@ -26,9 +24,6 @@ const Play = () => {
     if (!loading && !firebaseUser && playRoomConfig.firebaseAuth) {
       setShowAuthPopup(true);
     }
-    console.log('firebaseUser', firebaseUser);
-    console.log('loading', loading);
-    console.log('showAuthPopup', showAuthPopup);
   }, [firebaseUser, loading]);
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useIsMobile } from '../hooks/useIsMobile';
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<{ player: string; text: string; id: number }[]>([]);
   const isMobile = useIsMobile();
+  const MESSAGE_LIFETIME = 15000;
 
   useEffect(() => {
     RPC.register('rpc-chat', (data: any, caller: any) => {
@@ -22,11 +23,11 @@ const ChatMessages = () => {
     }
   }, [isMobile]);
 
-  // Clean up messages after 10 seconds
+  // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {
     const cleanupInterval = setInterval(() => {
       const now = Date.now();
-      setChatMessages(prev => prev.filter(msg => now - msg.id < 10000));
+      setChatMessages(prev => prev.filter(msg => now - msg.id < MESSAGE_LIFETIME));
     }, 1000);
 
     return () => clearInterval(cleanupInterval);

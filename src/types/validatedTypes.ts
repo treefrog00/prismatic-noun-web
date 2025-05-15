@@ -144,7 +144,7 @@ export const ActionResponseSchema = z.object({
   events: z.array(GameEventSchema),
   locationState: LocationStateSchema.nullable(),
   locationData: LocationDataSchema.nullable(),
-  currentPlayer: z.string(),
+  currentPlayer: z.string().nullable(),
 });
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;

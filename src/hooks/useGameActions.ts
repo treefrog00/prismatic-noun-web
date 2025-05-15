@@ -132,7 +132,7 @@ export const useGameActions = () => {
       }
     }
 
-    if (response.currentPlayer !== currentPlayer) {
+    if (response.currentPlayer) {
       setCurrentPlayer(response.currentPlayer);
     }
 
@@ -149,17 +149,17 @@ export const useGameActions = () => {
 
   const handleLookOk = async () => {
     appendPlayerActionRpc('', `${thisPlayer.getState('name')} looks at ${getTargetName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/look`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+    await apiCallAndUpdate(`/game/${gameData.gameId}/look`, { targetId: actionTarget.targetId, targetType: actionTarget.targetType });
   };
 
   const handleTalkOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says to ${getTargetName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/talk`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+    await apiCallAndUpdate(`/game/${gameData.gameId}/talk`, { prompt: text, targetId: actionTarget.targetId, });
   };
 
   const handleInvestigateOk = async () => {
-    appendPlayerActionRpc(text, `${thisPlayer.getState('name')} investigates ${getTargetName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
+    appendPlayerActionRpc(text, `${thisPlayer.getState('name')} investigates`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, { prompt: text });
   };
 
   const handleDoOk = async () => {

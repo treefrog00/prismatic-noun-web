@@ -31,7 +31,6 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
     } = useGameActions();
 
   const actions: ButtonConfig[] = [
-    { id: "look-ok", label: 'Look', color: 'amber' as const },
     { id: "talk", label: 'Talk', color: 'teal' as const },
     { id: "do", label: 'Do', color: 'violet' as const },
     { id: "ability", label: 'Ability', color: 'purple' as const },

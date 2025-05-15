@@ -19,6 +19,7 @@ type MiscSharedData = {
   pendingLocationUpdate: LocationState
   pendingCharacterUpdate: CharacterState
   voteState: VoteState
+  turnPointsRemaining: number
 };
 
 type GameContextType = {
@@ -74,6 +75,8 @@ type GameContextType = {
 
 export const GameContext = createContext<GameContextType | null>(null);
 
+const POINTS_PER_TURN = 5;
+
 interface GameProviderProps {
   children: ReactNode;
 }
@@ -102,7 +105,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       showVote: false,
       voteOptions: [],
       voteTitle: ''
-    }
+    },
+    turnPointsRemaining: POINTS_PER_TURN
   });
 
   // React only, doesn't apply to multiplayer

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/useIsMobile';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
-import { useQuestSummary, useActionTarget, useAbility } from '../contexts/GameContext';
+import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '../contexts/GameContext';
 import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
@@ -10,6 +10,7 @@ import LogbookPopup from './LogbookPopup';
 import { ButtonConfig, getColorClasses } from '../types/button';
 import { useGameActions } from '../hooks/useGameActions';
 import { sharedStyles } from '../styles/shared';
+import Overlay from './Overlay';
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'amber-border' },
@@ -103,9 +104,12 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   const [isMapOpen, setIsMapOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
+  const [isTurnPointsOverlayOpen, setIsTurnPointsOverlayOpen] = useState(false);
+  const [turnPointsOverlayPosition, setTurnPointsOverlayPosition] = useState({ x: 0, y: 0 });
   const TIMEOUT = 500;
   const actButtonRef = useRef<HTMLButtonElement>(null);
   const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>({});
+  const { miscSharedData } = useMiscSharedData();
 
   const handleMouseEvent = (show: boolean) => {
     if (timeoutRef.current) {
@@ -136,9 +140,24 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     }
   };
 
+  const handleTurnPointsMouseEnter = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTurnPointsOverlayPosition({
+      x: rect.left,
+      y: rect.top - 10 // Position 10px above the element
+    });
+    setIsTurnPointsOverlayOpen(true);
+  };
+
+  const handleTurnPointsMouseLeave = () => {
+    setIsTurnPointsOverlayOpen(false);
+  };
+
   if (showTextarea) {
     return renderTextInput();
   }
+
+  console.log(miscSharedData.turnPointsRemaining);
 
   return (
     <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
@@ -186,7 +205,18 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             </div>
           )}
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
+          <div
+            className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help"
+            onMouseEnter={handleTurnPointsMouseEnter}
+            onMouseLeave={handleTurnPointsMouseLeave}
+          >
+            <div>
+              <div>Turn points</div>
+              <div>remaining:</div>
+            </div>
+            <div className="text-4xl font-bold">{miscSharedData.turnPointsRemaining}</div>
+          </div>
           <div
             className="w-16 h-16 cursor-pointer"
             onPointerDown={() => setIsInventoryOpen(true)}
@@ -210,6 +240,25 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
       <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
       <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
       <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
+      <Overlay
+        className="w-64"
+        style={{
+          position: 'fixed',
+          left: `${turnPointsOverlayPosition.x}px`,
+          top: `${turnPointsOverlayPosition.y}px`,
+          transform: 'translateY(-100%)',
+          zIndex: 50
+        }}
+        onMouseEnter={() => setIsTurnPointsOverlayOpen(true)}
+        onMouseLeave={() => setIsTurnPointsOverlayOpen(false)}
+      >
+        <div className="p-2">
+          <div className="text-gray-300">
+            {/* Placeholder for explanation text */}
+            Turn points explanation will go here
+          </div>
+        </div>
+      </Overlay>
     </div>
   );
 };

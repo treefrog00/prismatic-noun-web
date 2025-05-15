@@ -151,11 +151,6 @@ export const useGameActions = () => {
 
   const handleSendOk = () => RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text }, RPC.Mode.ALL);
 
-  const handleLookOk = async () => {
-    appendPlayerActionRpc('', `${thisPlayer.getState('name')} looks at ${getTargetName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/look`, { targetId: actionTarget.targetId, targetType: actionTarget.targetType });
-  };
-
   const handleTalkOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says to ${getTargetName()}`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/talk`, { prompt: text, targetId: actionTarget.targetId, });
@@ -197,7 +192,6 @@ export const useGameActions = () => {
       'narrate-ok': handleNarrateOk,
       'attack-ok': handleAttackOk,
       'send-ok': handleSendOk,
-      'look-ok': handleLookOk,
       'talk-ok': handleTalkOk,
       'investigate-ok': handleInvestigateOk,
       'do-ok': handleDoOk, // also handles using abilities

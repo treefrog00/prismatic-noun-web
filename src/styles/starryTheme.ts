@@ -133,12 +133,6 @@ export const starryTheme = {
     textDecoration: 'underline',
     fontWeight: 'bold'
   },
-  logo: {
-    width: '200px',
-    height: 'auto',
-    marginBottom: '2rem',
-    filter: 'drop-shadow(0 0 10px rgba(255, 255, 255, 0.3))'
-  },
   globalStyles: `
     @keyframes twinkle1 {
       0%, 100% { opacity: 0.8; }

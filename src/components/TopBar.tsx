@@ -34,7 +34,7 @@ const useOverlayState = (overlayId: string) => {
     }
   }, []);
 
-  const TIMEOUT = 500;
+  const TIMEOUT = 300;
 
   const handleMouseEvent = useCallback((
     id: string | null,

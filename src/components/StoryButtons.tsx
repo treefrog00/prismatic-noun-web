@@ -150,14 +150,13 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   };
 
   const handleTurnPointsMouseLeave = () => {
+    console.log('handleTurnPointsMouseLeave');
     setIsTurnPointsOverlayOpen(false);
   };
 
   if (showTextarea) {
     return renderTextInput();
   }
-
-  console.log(miscSharedData.turnPointsRemaining);
 
   return (
     <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
@@ -218,21 +217,30 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <div className="text-4xl font-bold">{miscSharedData.turnPointsRemaining}</div>
           </div>
           <div
-            className="w-16 h-16 cursor-pointer"
+            className="w-16 h-16 cursor-pointer relative group"
             onPointerDown={() => setIsInventoryOpen(true)}
           >
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Inventory
+            </div>
             <img src={artUrl('inventory3.webp')} alt="Inventory" className="hover:scale-105 transition-transform" />
           </div>
           <div
-            className="w-16 h-16 cursor-pointer"
+            className="w-16 h-16 cursor-pointer relative group"
             onPointerDown={() => setIsLogbookOpen(true)}
           >
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Logbook
+            </div>
             <img src={artUrl('logbook.webp')} alt="Logbook" className="hover:scale-105 transition-transform" />
           </div>
           <div
-            className="w-16 h-16 cursor-pointer"
+            className="w-16 h-16 cursor-pointer relative group"
             onPointerDown={() => setIsMapOpen(true)}
           >
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Map
+            </div>
             <img src={artUrl('map2.webp')} alt="Map" className="hover:scale-105 transition-transform" />
           </div>
         </div>
@@ -240,25 +248,30 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
       <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
       <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
       <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
-      <Overlay
-        className="w-64"
-        style={{
-          position: 'fixed',
-          left: `${turnPointsOverlayPosition.x}px`,
-          top: `${turnPointsOverlayPosition.y}px`,
-          transform: 'translateY(-100%)',
-          zIndex: 50
-        }}
-        onMouseEnter={() => setIsTurnPointsOverlayOpen(true)}
-        onMouseLeave={() => setIsTurnPointsOverlayOpen(false)}
-      >
-        <div className="p-2">
-          <div className="text-gray-300">
-            {/* Placeholder for explanation text */}
-            Turn points explanation will go here
+      {isTurnPointsOverlayOpen && (
+        <Overlay
+          className="w-96"
+          style={{
+            position: 'fixed',
+            left: `${turnPointsOverlayPosition.x}px`,
+            top: `${turnPointsOverlayPosition.y}px`,
+            transform: 'translateY(-100%)',
+            zIndex: 50
+          }}
+          onMouseEnter={() => setIsTurnPointsOverlayOpen(true)}
+          onMouseLeave={() => setIsTurnPointsOverlayOpen(false)}
+        >
+          <div className="p-2">
+            <div className="text-gray-300 text-base">
+              <div>Say/Talk: 2 points</div>
+              <div>Investigate: 2 points</div>
+              <div>Proceed: 3 points</div>
+              <div>Do/Ability: 3 points</div>
+              <div>Attack: 5 points</div>
+            </div>
           </div>
-        </div>
-      </Overlay>
+        </Overlay>
+      )}
     </div>
   );
 };

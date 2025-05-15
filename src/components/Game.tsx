@@ -7,7 +7,7 @@ import StoryButtons from './StoryButtons';
 
 import { GameEvent } from '../types';
 import { handleVote } from './Vote';
-import { useQuestSummary, useVote, useGameApi, useCurrentPlayer, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState, useActionTarget } from '../contexts/GameContext';
+import { useQuestSummary, useMiscSharedData, useGameApi, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState } from '../contexts/GameContext';
 import { HASH_QUEST_ID } from '../config';
 import { startIfNotStarted } from '../core/startGame';
 import { ActionResponseSchema } from '../types/validatedTypes';
@@ -15,28 +15,26 @@ import { ActionResponseSchema } from '../types/validatedTypes';
 const DICE_COUNT = 2;
 
 const GameContent = () => {
-  // game state set by the lobby UI
-  const { questSummary } = useQuestSummary();
-  // state for React UI
+  // state for React UI only
   const [showDiceRoll, setShowDiceRoll] = useState(false);
   const [targetValues, setTargetValues] = useState<number[] | null>(null);
   const [diceRoller, setDiceRoller] = useState<string>('');
-  const { showVote, setShowVote } = useVote();
-  const { currentPlayer, setCurrentPlayer } = useCurrentPlayer();
+  const { miscSharedData, setMiscSharedData } = useMiscSharedData();
+
   // UI variables
   const storyRef = useRef<StoryRef>(null);
 
-  // state from PlayroomKit
+  // built-instate from PlayroomKit
   const isHost = useIsHost();
   const players = usePlayersList(false);
   const thisPlayer = myPlayer();
 
+  // multiplayer state
   const { locationData, setLocationData } = useLocationData();
   const { locationState, setLocationState } = useLocationState();
   const { gameData, setGameData } = useGameData();
   const { setQuestSummary } = useQuestSummary();
-
-  const { voteState } = useVote();
+  const { questSummary } = useQuestSummary();
 
   const { localPlayers, setLocalPlayers } = useLocalPlayers();
 
@@ -77,8 +75,8 @@ const GameContent = () => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
         console.log('Player left:', player);
         const response = await gameApi.postTyped(`/game/${gameData.gameId}/player_left/${player.id}`, {}, ActionResponseSchema);
-        if (response.currentPlayer !== currentPlayer) {
-          setCurrentPlayer(response.currentPlayer);
+        if (response.currentPlayer !== miscSharedData.currentPlayer) {
+          setMiscSharedData({ ...miscSharedData, currentPlayer: response.currentPlayer });
         }
       });
 
@@ -98,7 +96,7 @@ const GameContent = () => {
         setLocationData(startGame.locationData);
         setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
-        setCurrentPlayer(startGame.currentPlayer);
+        setMiscSharedData({ ...miscSharedData, currentPlayer: startGame.currentPlayer });
 
         if (HASH_QUEST_ID) {
           setQuestSummary(

@@ -1,7 +1,7 @@
 import { myPlayer as originalMyPlayer, onPlayerJoin as originalOnPlayerJoin, PlayerState, usePlayersList as originalUsePlayersList, RPC as originalRPC, useMultiplayerState as originalUseMultiplayerState, openDiscordInviteDialog as originalOpenDiscordInviteDialog, getDiscordAccessToken as originalGetDiscordAccessToken, insertCoin as originalInsertCoin, Color, setState as originalSetState, getState as originalGetState, getRoomCode as originalGetRoomCode, InitOptions, useIsHost as originalUseIsHost } from 'playroomkit';
 import { HASH_QUEST_ID } from '../config';
 import { useState } from 'react';
-import { useCurrentPlayer, useLocalPlayers } from '../contexts/GameContext';
+import { useLocalPlayers, useMiscSharedData } from '../contexts/GameContext';
 
 export type { PlayerState };
 
@@ -61,9 +61,9 @@ const localStateStore: Record<string, any> = {};
 
 export const myPlayer = () => {
     if (HASH_QUEST_ID) {
-        const { currentPlayer } = useCurrentPlayer();
+        const { miscSharedData } = useMiscSharedData();
         const { localPlayers } = useLocalPlayers();
-        return localPlayers.find(p => p.id === currentPlayer);
+        return localPlayers.find(p => p.id === miscSharedData.currentPlayer);
     }
     return originalMyPlayer();
 };

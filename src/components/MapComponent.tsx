@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLocationData, useVote } from '../contexts/GameContext';
+import { useLocationData, useMiscSharedData } from '../contexts/GameContext';
 import { HASH_SKIP_VOTE } from '../config';
 import VotePopup from './Vote';
 import { useGameActions } from '../hooks/useGameActions';
@@ -7,8 +7,8 @@ import { useGameActions } from '../hooks/useGameActions';
 const MapComponent: React.FC = () => {
   const [suggestedLocation, setSuggestedLocation] = useState<string | null>(null);
   const { locationData } = useLocationData();
-  const { setVoteState, setShowVote } = useVote();
   const { handleTravel } = useGameActions();
+  const { setShowVote, miscSharedData, setMiscSharedData } = useMiscSharedData();
 
   const handleLocationClick = async (location: string) => {
     if (HASH_SKIP_VOTE) {
@@ -16,10 +16,13 @@ const MapComponent: React.FC = () => {
       await handleTravel(location);
     } else {
       setSuggestedLocation(location);
-      setVoteState({
-        showVote: true,
-        voteOptions: ['Travel', 'Cancel'],
-        voteTitle: `Vote: travel to ${location}?`
+      setMiscSharedData({
+        ...miscSharedData,
+        voteState: {
+          showVote: true,
+          voteOptions: ['Travel', 'Cancel'],
+          voteTitle: `Vote: travel to ${location}?`
+        }
       });
     }
   };

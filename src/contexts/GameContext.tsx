@@ -14,6 +14,13 @@ type VoteState = {
   voteTitle: string;
 };
 
+type MiscSharedData = {
+  currentPlayer: string | null;
+  pendingLocationUpdate: LocationState
+  pendingCharacterUpdate: CharacterState
+  voteState: VoteState
+};
+
 type GameContextType = {
   questSummary: QuestSummary | null;
   setQuestSummary: (value: QuestSummary | null) => void;
@@ -30,14 +37,8 @@ type GameContextType = {
   gameStarted: boolean;
   setGameStarted: (value: boolean) => void;
 
-  voteState: VoteState;
-  setVoteState: (value: VoteState) => void;
-
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
-
-  currentPlayer: string | null;
-  setCurrentPlayer: (value: string | null) => void;
 
   ability: string | null;
   setAbility: (value: string | null) => void;
@@ -47,6 +48,9 @@ type GameContextType = {
 
   votes: Record<string, boolean>;
   setVotes: (value: Record<string, boolean>) => void;
+
+  miscSharedData: MiscSharedData;
+  setMiscSharedData: (value: MiscSharedData) => void;
 
   actionTarget: ActionTarget;
   setActionTarget: (value: ActionTarget) => void;
@@ -88,9 +92,18 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     voteOptions: [],
     voteTitle: ''
   });
-  const [currentPlayer, setCurrentPlayer] = useMultiplayerState<string>('currentPlayer', null);
   const [characters, setCharacters] = useMultiplayerState<Record<string, CharacterState>>('characters', {});
   const [votes, setVotes] = useMultiplayerState<Record<string, boolean>>('votes', {});
+  const [miscSharedData, setMiscSharedData] = useMultiplayerState<MiscSharedData>('miscSharedData', {
+    currentPlayer: null,
+    pendingLocationUpdate: null,
+    pendingCharacterUpdate: null,
+    voteState: {
+      showVote: false,
+      voteOptions: [],
+      voteTitle: ''
+    }
+  });
 
   // React only, doesn't apply to multiplayer
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
@@ -127,12 +140,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         gameStarted,
         setGameStarted,
 
-        voteState,
-        setVoteState,
+        miscSharedData,
+        setMiscSharedData,
+
         localPlayers,
         setLocalPlayers,
-        currentPlayer,
-        setCurrentPlayer,
         characters,
         setCharacters,
         votes,
@@ -211,12 +223,27 @@ export const useLocalPlayers = () => {
   return { localPlayers: context.localPlayers, setLocalPlayers: context.setLocalPlayers };
 };
 
-export const useCurrentPlayer = () => {
+export const useMiscSharedData = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useCurrentPlayer must be used within a GameProvider');
+    throw new Error('useMiscSharedData must be used within a GameProvider');
   }
-  return { currentPlayer: context.currentPlayer, setCurrentPlayer: context.setCurrentPlayer };
+
+  const setShowVote = (showVote: boolean) => {
+    context.setMiscSharedData({
+      ...context.miscSharedData,
+      voteState: {
+        ...context.miscSharedData.voteState,
+        showVote
+      }
+    });
+  };
+
+  return {
+    miscSharedData: context.miscSharedData,
+    setMiscSharedData: context.setMiscSharedData,
+    setShowVote
+  };
 };
 
 export const useAbility = () => {
@@ -225,22 +252,6 @@ export const useAbility = () => {
     throw new Error('useAbility must be used within a GameProvider');
   }
   return { ability: context.ability, setAbility: context.setAbility };
-};
-
-export const useVote = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error('useVote must be used within a GameProvider');
-  }
-  return {
-    voteState: context.voteState,
-    setVoteState: context.setVoteState,
-    // Convenience methods for common operations
-    showVote: context.voteState.showVote,
-    setShowVote: (show: boolean) => {
-      context.setVoteState({ ...context.voteState, showVote: show });
-    },
-  };
 };
 
 export const addLocalPlayer = (player: PlayerState, localPlayers: PlayerState[]) => {

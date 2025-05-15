@@ -1,5 +1,5 @@
 import { myPlayer, RPC } from '../core/multiplayerState';
-import { useGameApi, useQuestSummary, useActionUIState, useCurrentPlayer, useGameData, useLocationState, useActionTarget, useAbility, useLocationData } from '../contexts/GameContext';
+import { useGameApi, useQuestSummary, useActionUIState, useGameData, useLocationState, useActionTarget, useAbility, useLocationData, useMiscSharedData } from '../contexts/GameContext';
 import { useEffect, useState } from 'react';
 import { ActionResponseSchema } from '../types/validatedTypes';
 
@@ -31,7 +31,7 @@ export const useGameActions = () => {
   const thisPlayer = myPlayer();
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
-  const { currentPlayer, setCurrentPlayer } = useCurrentPlayer();
+  const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const { gameData } = useGameData();
   const { locationState, setLocationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
@@ -133,7 +133,7 @@ export const useGameActions = () => {
     }
 
     if (response.currentPlayer) {
-      setCurrentPlayer(response.currentPlayer);
+      setMiscSharedData({ ...miscSharedData, currentPlayer: response.currentPlayer });
     }
 
     if (response.locationState) {

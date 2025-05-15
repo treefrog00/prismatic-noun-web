@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Popup from './Popup';
 import { usePlayersList, RPC, useIsHost, myPlayer } from '../core/multiplayerState';
-import { useCurrentPlayer, useVote, useVotes } from '../contexts/GameContext';
+import { useMiscSharedData, useVotes } from '../contexts/GameContext';
 interface VoteProps {
   onVoteComplete: (result: boolean) => void;
 }
@@ -29,14 +29,12 @@ const VotePopup: React.FC<VoteProps> = ({
 }) => {
   const { votes, setVotes } = useVotes();
   const [myVote, setMyVote] = useState<boolean | null>(null);
-  const { showVote, setShowVote } = useVote();
   const players = usePlayersList(false);
   const isHost = useIsHost();
-  const { voteState } = useVote();
-  const { currentPlayer } = useCurrentPlayer();
+  const { miscSharedData, setMiscSharedData, setShowVote } = useMiscSharedData();
   const thisPlayer = myPlayer();
 
-  const onClose = currentPlayer === thisPlayer?.getState('name')
+  const onClose = miscSharedData.currentPlayer === thisPlayer?.getState('name')
     ? () => setShowVote(false)
     : null;
 
@@ -44,10 +42,10 @@ const VotePopup: React.FC<VoteProps> = ({
     if (isHost) {
       setVotes({});
     }
-    if (showVote) {
+    if (miscSharedData.voteState.showVote) {
       setMyVote(null);
     }
-  }, [showVote, isHost]);
+  }, [miscSharedData.voteState.showVote, isHost]);
 
   useEffect(() => {
     if (!isHost) return;
@@ -80,9 +78,12 @@ const VotePopup: React.FC<VoteProps> = ({
     RPC.call('rpc-game-event', { type: 'Vote', voteType: voteState.voteTitle, choice: choice }, RPC.Mode.HOST);
   };
 
+  const voteState = miscSharedData.voteState;
+  const currentPlayer = miscSharedData.currentPlayer;
+
   return (
     <Popup
-      isOpen={showVote}
+      isOpen={voteState.showVote}
       onClose={onClose}
       title={voteState.voteTitle}
       maxWidth="max-w-sm"

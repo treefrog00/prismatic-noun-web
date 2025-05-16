@@ -1,9 +1,9 @@
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
-import { HASH_MOBILE_TEST } from '../config';
 import { StereoProvider } from '../contexts/StereoContext';
 import { GameProvider } from '../contexts/GameContext';
 import { ErrorProvider } from '../contexts/ErrorContext';
 import { AuthProvider } from '../contexts/AuthContext';
+import { LogProvider } from '../contexts/LogContext';
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -31,23 +31,22 @@ const GameLayout = ({ children }: GameLayoutProps) => {
 
   return (
     <main style={{
-      width: HASH_MOBILE_TEST ? '375px' : '100%',
-      height: HASH_MOBILE_TEST ? '800px' : '100vh',
-      minHeight: HASH_MOBILE_TEST ? '667px' : '100vh',
-      margin: HASH_MOBILE_TEST ? '20px auto' : '0',
-      border: HASH_MOBILE_TEST ? '2px solid #666' : 'none',
-      borderRadius: HASH_MOBILE_TEST ? '16px' : '0',
+      margin: '0',
+      border: 'none',
+      borderRadius:'0',
       overflow: isDevToolsOpen ? 'auto' : 'hidden',
     }}>
-      <AuthProvider>
-        <ErrorProvider>
-          <GameProvider>
+      <LogProvider>
+        <AuthProvider>
+          <ErrorProvider>
+            <GameProvider>
             <StereoProvider>
               <Suspense fallback={''}>{children}</Suspense>
             </StereoProvider>
           </GameProvider>
-        </ErrorProvider>
-      </AuthProvider>
+          </ErrorProvider>
+        </AuthProvider>
+      </LogProvider>
     </main>
   );
 };

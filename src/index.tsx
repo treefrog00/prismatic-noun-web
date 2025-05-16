@@ -6,6 +6,7 @@ import './index.css';
 import { routes } from './routes';
 import * as Sentry from "@sentry/react";
 import { playRoomConfig } from './envConfig';
+import { USE_SENTRY } from './config';
 
 // Set font URL based on environment
 const font = 'family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@500;700&display=swap';
@@ -50,7 +51,9 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-if (import.meta.env.PROD) {
+// If backend url is set then probably testing on mobile, so log errors to sentry
+if (USE_SENTRY) {
+  console.log('Logging errors to sentry');
   Sentry.init({
     dsn: "https://052dd47cd9b62719ea8864353ab3b2d3@o4509174697623552.ingest.de.sentry.io/4509174698868816"
   });

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
 import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '../contexts/GameContext';
@@ -7,7 +7,7 @@ import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
 import LogbookPopup from './LogbookPopup';
-import { ButtonConfig, getColorClasses } from '../types/button';
+import { alternatingColorMap, ButtonConfig, getColorClasses } from '../types/button';
 import { useGameActions } from '../hooks/useGameActions';
 import { sharedStyles } from '../styles/shared';
 import Overlay from './Overlay';
@@ -29,7 +29,7 @@ const rootButtonsMobile: ButtonConfig[] = [
 ];
 
 const subActions: ButtonConfig[] = [
-  { id: "investigate", label: 'Investigate', color: 'amber' },
+  { id: "investigate", label: 'Investigate', color: 'stone' },
   { id: "say", label: 'Say', color: 'teal' },
   { id: "do", label: 'Do', color: 'violet' },
   { id: "ability", label: 'Ability', color: 'purple' },
@@ -45,6 +45,7 @@ interface ControlProps {
 
 const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser }: ControlProps) => {
   const [showMobileDropdown, setShowMobileDropdown] = useState(false);
+  const { miscSharedData } = useMiscSharedData();
 
   if (showTextarea) {
     return renderTextInput();
@@ -52,11 +53,22 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
 
   const buttons = showActChooser ? subActions : rootButtonsMobile;
 
+  const chequerColors = ['teal', 'slate'];
+  const numCols = 2;
+  const action_colors = Object.fromEntries(
+    buttons.map((ability, index) => {
+      const row = Math.floor(index / numCols);
+      const col = index % numCols;
+      const color = chequerColors[(row + col) % 2];
+      return [ability.id, color];
+    })
+  );
+
   return (
     <div className="flex flex-col self-center mt-2">
       <div className="flex gap-2">
         <button
-          className={`game-button ${getColorClasses('amber')} flex-1 flex items-center justify-center gap-1`}
+          className={`game-button ${getColorClasses('amber-border')} flex-1 flex items-center justify-center gap-1`}
           onPointerDown={() => setShowMobileDropdown(!showMobileDropdown)}
         >
           <span>Actions</span>
@@ -70,7 +82,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
               {buttons.map((button) => (
                 <button
                   key={button.id}
-                  className={`game-button ${getColorClasses(button.color)} w-full text-center px-4 py-2`}
+                  className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
                   onPointerDown={() => {
                     onPointerDown(button.id);
                     if (showMobileDropdown) {
@@ -81,6 +93,10 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
                   {button.label}
                 </button>
               ))}
+              <div className="col-span-2 text-center text-gray-300 mt-2">
+                <div>Turn points:</div>
+                <div className="text-2xl font-bold">{miscSharedData.turnPointsRemaining}</div>
+              </div>
             </div>
             <button
                 className={`game-button ${getColorClasses('slate')} w-full mt-4`}
@@ -211,8 +227,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             onMouseLeave={handleTurnPointsMouseLeave}
           >
             <div>
-              <div>Turn points</div>
-              <div>remaining:</div>
+              <div>Turn points:</div>
             </div>
             <div className="text-4xl font-bold">{miscSharedData.turnPointsRemaining}</div>
           </div>
@@ -280,7 +295,7 @@ const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const [showActChooser, setShowActChooser] = useState<boolean>(false);
   const { questSummary } = useQuestSummary();
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
   const { setActionTarget } = useActionTarget();
   const { setAbility } = useAbility();
 
@@ -374,7 +389,7 @@ const StoryButtons: React.FC = () => {
           }
         }
       `}</style>
-      {isMobile ? (
+      {isNarrowScreen ? (
         <MobileControls
           onPointerDown={handleClick}
           showTextarea={showTextarea}

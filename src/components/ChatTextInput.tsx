@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
 import { RPC, myPlayer } from '../core/multiplayerState';
 
 interface ChatTextInputProps {
@@ -20,7 +20,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
   textInputRef,
   onClose,
 }) => {
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
   const thisPlayer = myPlayer();
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
     </div>
   );
 
-  if (isMobile) {
+  if (isNarrowScreen) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">

@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
 
 interface TextInputProps {
   text: string;
@@ -26,7 +26,7 @@ const TextInput: React.FC<TextInputProps> = ({
   placeHolder,
   okButtonText
 }) => {
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
 
   useEffect(() => {
     const focusInput = () => {
@@ -89,7 +89,7 @@ const TextInput: React.FC<TextInputProps> = ({
     </div>
   );
 
-  if (isMobile) {
+  if (isNarrowScreen) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">

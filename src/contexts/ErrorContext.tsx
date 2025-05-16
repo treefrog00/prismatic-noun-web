@@ -1,7 +1,6 @@
 import React, { useState, ReactNode, useEffect } from 'react';
 import ErrorNotification from '../components/ErrorNotification';
 
-// Create a singleton error handler
 let globalErrorHandler: ((message: string) => void) | null = null;
 
 export const setGlobalErrorHandler = (handler: (message: string) => void) => {

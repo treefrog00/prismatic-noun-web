@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { RPC } from '../core/multiplayerState';
-import { useIsMobile } from '../hooks/useIsMobile';
+import { isAndroidOrIOS, useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<{ player: string; text: string; id: number }[]>([]);
-  const isMobile = useIsMobile();
+  const isNarrowScreen = useIsNarrowScreen();
   const MESSAGE_LIFETIME = 15000;
 
   useEffect(() => {
@@ -16,12 +16,12 @@ const ChatMessages = () => {
       return Promise.resolve();
     });
 
-    if (!isMobile) {
+    if (!isAndroidOrIOS()) {
       // Show initial "press t to chat" message
       const initialMessage = { player: null, text: "press t to chat", id: Date.now() };
       setChatMessages([initialMessage]);
     }
-  }, [isMobile]);
+  }, [isNarrowScreen]);
 
   // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {

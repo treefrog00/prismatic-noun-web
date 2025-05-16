@@ -9,6 +9,7 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
+    host: true, // Enable to access the server from the network for e.g. mobile testing
   },
   build: {
     sourcemap: true,

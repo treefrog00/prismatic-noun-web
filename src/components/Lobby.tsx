@@ -49,7 +49,6 @@ const Lobby = () => {
   }, []);
 
   if (!questSummary) return null;
-
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />

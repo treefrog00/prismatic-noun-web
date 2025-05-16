@@ -1,8 +1,8 @@
-import { useActionTarget, useLocationData, useLocationState } from '../contexts/GameContext';
-import { ButtonConfig, getColorClasses } from '../types/button';
-import Overlay from './Overlay';
+import { useActionTarget, useLocationData, useLocationState } from '@/contexts/GameContext';
+import { ButtonConfig, getColorClasses } from '@/types/button';
+import Overlay from '@/components/overlays/Overlay';
 import { useEffect, useState } from 'react';
-import { useGameActions } from '../hooks/useGameActions';
+import { useGameActions } from '@/hooks/useGameActions';
 
 interface NpcOverlayProps {
   isOpen: boolean;

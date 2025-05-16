@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react';
-import StereoControl from './StereoControl';
+import StereoControl from '../stereo/StereoControl';
 import LobbyHome from './LobbyHome';
 import LobbyNavBar from './LobbyNavBar';
-import { useIsHost, insertCoin, openDiscordInviteDialog } from '../core/multiplayerState';
-import { QuestSummary } from '../types';
-import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
-import { starryTheme } from '../styles/starryTheme';
-import { responsiveStyles } from '../styles/responsiveStyles';
-import { envConfig } from '../envConfig';
-import { GameApi } from '../core/gameApi';
-import { QuestSummariesSchema } from '../types/validatedTypes';
+import { useIsHost, insertCoin, openDiscordInviteDialog } from '@/core/multiplayerState';
+import { QuestSummary } from '@/types';
+import { useGameStarted, useQuestSummary } from '@/contexts/GameContext';
+import { starryTheme } from '@/styles/starryTheme';
+import { responsiveStyles } from '@/styles/responsiveStyles';
+import { envConfig } from '@/envConfig';
+import { GameApi } from '@/core/gameApi';
+import { QuestSummariesSchema } from '@/types/validatedTypes';
 import CharacterDesigner from './CharacterDesigner';
-import artUrl from '../util/artUrls';
 
 
 const Lobby = () => {

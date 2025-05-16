@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { FirebaseAuth } from './FirebaseAuth';
+import { FirebaseAuth } from '@/components/auth/FirebaseAuth';
 
 interface AuthPopupProps {
   onClose: () => void;

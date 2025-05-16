@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useLocationData, useMiscSharedData } from '../contexts/GameContext';
-import { HASH_SKIP_VOTE } from '../config';
+import { useLocationData, useMiscSharedData } from '@/contexts/GameContext';
+import { HASH_SKIP_VOTE } from '@/config';
 import VotePopup from './Vote';
-import { useGameActions } from '../hooks/useGameActions';
+import { useGameActions } from '@/hooks/useGameActions';
 
 const MapComponent: React.FC = () => {
   const [suggestedLocation, setSuggestedLocation] = useState<string | null>(null);

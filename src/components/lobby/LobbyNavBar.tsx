@@ -1,7 +1,7 @@
 import type { FC } from 'react';
-import { useIsHost } from '../core/multiplayerState';
-import artUrl from '../util/artUrls';
-import { responsiveStyles } from '../styles/responsiveStyles';
+import { useIsHost } from '@/core/multiplayerState';
+import artUrl from '@/util/artUrls';
+import { responsiveStyles } from '@/styles/responsiveStyles';
 
 interface NavBarProps {
   activeTab: string;

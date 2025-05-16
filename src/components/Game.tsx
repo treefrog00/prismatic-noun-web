@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from 'react';
 import { myPlayer, useIsHost, onPlayerJoin, PlayerState, usePlayersList, RPC } from '../core/multiplayerState';
 import TopBar from './TopBar';
 import GameContentComponent from './GameContent';
-import MobileCharacterSheet from './MobileCharacterSheet';
-import MobileLocationView from './MobileLocationView';
+import MobileCharacterSheet from './mobile/MobileCharacterSheet';
+import MobileLocationView from './mobile/MobileLocationView';
 import AmbientBackground from './AmbientBackground';
 
 import { GameEvent } from '../types';
-import { handleVote } from './Vote';
+import { handleVote } from './popups/Vote';
 import { useQuestSummary, useMiscSharedData, useGameApi, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState } from '../contexts/GameContext';
 import { HASH_QUEST_ID } from '../config';
 import { startIfNotStarted } from '../core/startGame';

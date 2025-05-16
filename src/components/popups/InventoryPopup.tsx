@@ -1,5 +1,5 @@
 import React from 'react';
-import Popup from './Popup';
+import Popup from '@/components/popups/Popup';
 
 interface InventoryPopupProps {
   isOpen: boolean;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { myPlayer } from '../core/multiplayerState';
-import { responsiveStyles } from '../styles/responsiveStyles';
+import { myPlayer } from '@/core/multiplayerState';
+import { responsiveStyles } from '@/styles/responsiveStyles';
 
 const CharacterDesigner = () => {
   const [playerName, setPlayerName] = useState(() => {

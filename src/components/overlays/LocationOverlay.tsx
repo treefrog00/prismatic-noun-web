@@ -1,4 +1,4 @@
-import { useLocationData } from '../contexts/GameContext';
+import { useLocationData } from '@/contexts/GameContext';
 import Overlay from './Overlay';
 
 interface LocationOverlayProps {

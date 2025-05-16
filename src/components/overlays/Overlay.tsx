@@ -1,5 +1,5 @@
 import { ReactNode, CSSProperties } from 'react';
-import { sharedStyles } from '../styles/shared';
+import { sharedStyles } from '@/styles/shared';
 
 interface OverlayProps {
   children: ReactNode;

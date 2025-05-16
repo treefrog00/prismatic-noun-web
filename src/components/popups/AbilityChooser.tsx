@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { alternatingColorMap } from '../types/button';
+import { useEffect } from 'react';
+import { alternatingColorMap } from '@/types/button';
 interface AbilityChooserProps {
   isOpen: boolean;
   onClose: () => void;

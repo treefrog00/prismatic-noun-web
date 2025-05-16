@@ -1,10 +1,8 @@
-import { useState } from 'react';
-import { useIsHost, usePlayersList } from '../core/multiplayerState';
-import { responsiveStyles } from '../styles/responsiveStyles';
-import { starryTheme } from '../styles/starryTheme';
-import { QuestSummary } from '../types';
-import artUrl from '../util/artUrls';
-import { useQuestSummary } from '../contexts/GameContext';
+import { useIsHost, usePlayersList } from '@/core/multiplayerState';
+import { responsiveStyles } from '@/styles/responsiveStyles';
+import { starryTheme } from '@/styles/starryTheme';
+import { QuestSummary } from '@/types';
+import { useQuestSummary } from '@/contexts/GameContext';
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];

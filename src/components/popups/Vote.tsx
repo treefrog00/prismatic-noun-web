@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Popup from './Popup';
-import { usePlayersList, RPC, useIsHost, myPlayer } from '../core/multiplayerState';
-import { useMiscSharedData, useVotes } from '../contexts/GameContext';
+import { usePlayersList, RPC, useIsHost, myPlayer } from '../../core/multiplayerState';
+import { useMiscSharedData, useVotes } from '../../contexts/GameContext';
 interface VoteProps {
   onVoteComplete: (result: boolean) => void;
 }

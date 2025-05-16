@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { envConfig } from '../envConfig';
-import type { FirebaseApp } from 'firebase/app';
+import { envConfig } from '@/envConfig';
 
 // Only import Firebase dependencies if firebaseAuth is enabled
 let firebase: any;
@@ -29,7 +28,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
       const [firebaseModule, firebaseuiModule, firebaseConfig] = await Promise.all([
         import('firebase/compat/app'),
         import('firebaseui'),
-        import('../firebaseConfig')
+        import('@/firebaseConfig')
       ]);
 
       // Import CSS

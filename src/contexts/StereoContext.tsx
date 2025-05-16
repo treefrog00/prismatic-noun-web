@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { StereoMode } from '../components/StereoKnob';
+import { StereoMode } from '../components/stereo/StereoKnob';
 import { useGameStarted } from './GameContext';
 
 const DEFAULT_MODE = 'spooky';

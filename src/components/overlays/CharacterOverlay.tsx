@@ -1,4 +1,4 @@
-import { usePlayersList } from '../core/multiplayerState';
+import { usePlayersList } from '../../core/multiplayerState';
 import Overlay from './Overlay';
 
 interface CharacterOverlayProps {

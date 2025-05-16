@@ -1,10 +1,10 @@
 import { usePlayersList } from '../core/multiplayerState';
 import { useState, useRef, useCallback } from 'react';
-import CharacterOverlay from './CharacterOverlay';
-import { useActionTarget, useLocationData, useLocationState } from '../contexts/GameContext';
-import SettingsPopup from './SettingsPopup';
-import NpcOverlay from './NpcOverlay';
-import LocationOverlay from './LocationOverlay';
+import CharacterOverlay from './overlays/CharacterOverlay';
+import { useActionTarget, useLocationData, useLocationState } from '@/contexts/GameContext';
+import SettingsPopup from '@/components/popups/SettingsPopup';
+import NpcOverlay from './overlays/NpcOverlay';
+import LocationOverlay from './overlays/LocationOverlay';
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;

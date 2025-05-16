@@ -1,16 +1,16 @@
 import { useRef, useState, useEffect } from 'react';
-import { useIsNarrowScreen } from '../hooks/useDeviceDetection';
-import AbilityChooser from './AbilityChooser';
-import TextInput from './TextInput';
-import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '../contexts/GameContext';
-import MapPopup from './MapPopup';
-import InventoryPopup from './InventoryPopup';
-import artUrl from '../util/artUrls';
-import LogbookPopup from './LogbookPopup';
-import { ButtonConfig, getColorClasses } from '../types/button';
-import { useGameActions } from '../hooks/useGameActions';
-import { sharedStyles } from '../styles/shared';
-import Overlay from './Overlay';
+import { useIsNarrowScreen } from '@/hooks/useDeviceDetection';
+import AbilityChooser from '@/components/popups/AbilityChooser';
+import TextInput from '@/components/TextInput';
+import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '@/contexts/GameContext';
+import MapPopup from '@/components/popups/MapPopup';
+import InventoryPopup from '@/components/popups/InventoryPopup';
+import artUrl from '@/util/artUrls';
+import LogbookPopup from '@/components/popups/LogbookPopup';
+import { ButtonConfig, getColorClasses } from '@/types/button';
+import { useGameActions } from '@/hooks/useGameActions';
+import { sharedStyles } from '@/styles/shared';
+import Overlay from './overlays/Overlay';
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'amber-border' },

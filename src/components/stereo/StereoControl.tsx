@@ -1,6 +1,5 @@
-import SlidingRadio from './SlidingRadio';
-import StereoKnob from './StereoKnob';
-import { useStereo } from '../contexts/StereoContext';
+import StereoKnob from '@/components/stereo/StereoKnob';
+import { useStereo } from '@/contexts/StereoContext';
 
 const StereoControl = () => {
     const { currentMode, handleModeChange} = useStereo();

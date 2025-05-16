@@ -1,6 +1,6 @@
 import React from 'react';
-import Popup from './Popup';
-import MapComponent from './MapComponent';
+import Popup from '@/components/popups/Popup';
+import MapComponent from '@/components/popups/MapComponent';
 
 interface MapPopupProps {
   isOpen: boolean;

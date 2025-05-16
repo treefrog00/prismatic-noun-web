@@ -25,6 +25,7 @@ const GameContent = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
+  const [dragOffset, setDragOffset] = useState(0);
 
   // UI variables
   const storyRef = useRef<StoryRef>(null);
@@ -53,11 +54,22 @@ const GameContent = () => {
     setIsDragging(true);
     setStartX(e.touches[0].clientX);
     setCurrentX(e.touches[0].clientX);
+    setDragOffset(0);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
     setCurrentX(e.touches[0].clientX);
+
+    const diff = e.touches[0].clientX - startX;
+    const threshold = window.innerWidth * 0.05; // 5% threshold for animation
+
+    if (Math.abs(diff) > threshold) {
+      // Calculate proportional offset (-1 to 1 range)
+      const maxDrag = window.innerWidth * 0.5; // Maximum drag distance
+      const offset = Math.max(Math.min(diff / maxDrag, 1), -1);
+      setDragOffset(offset);
+    }
   };
 
   const handleTouchEnd = () => {
@@ -65,7 +77,7 @@ const GameContent = () => {
     setIsDragging(false);
 
     const diff = currentX - startX;
-    const threshold = window.innerWidth * 0.2; // 20% of screen width threshold
+    const threshold = window.innerWidth * 0.2; // 20% threshold for final position
 
     if (Math.abs(diff) > threshold) {
       // Move to next/previous position
@@ -74,9 +86,10 @@ const GameContent = () => {
         : Math.max(carouselPosition - 1, 0); // Move left (show character sheet)
       setCarouselPosition(newPosition);
     } else {
-      // Reset to current position
+      // Reset to original position
       setCarouselPosition(carouselPosition);
     }
+    setDragOffset(0);
   };
 
   useEffect(() => {
@@ -182,7 +195,10 @@ const GameContent = () => {
         <div
           ref={carouselRef}
           className="w-full h-full flex transition-transform duration-300 ease-out"
-          style={{ transform: `translateX(${-carouselPosition * 100}%)` }}
+          style={{
+            transform: `translateX(calc(${-carouselPosition * 100}% + ${dragOffset * 100}%))`,
+            transition: isDragging ? 'none' : 'transform 300ms ease-out'
+          }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}

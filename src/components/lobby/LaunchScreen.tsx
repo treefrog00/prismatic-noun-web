@@ -1,8 +1,7 @@
 import { useShowLaunchScreen } from '@/contexts/GameContext';
 import { starryTheme } from '@/styles/starryTheme';
 import { useStereo } from '@/contexts/StereoContext';
-
-
+import { responsiveStyles } from '@/styles/responsiveStyles';
 
 const LaunchScreen = () => {
   const { setShowLaunchScreen } = useShowLaunchScreen();
@@ -22,10 +21,16 @@ const LaunchScreen = () => {
       </div>
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
       <div className="flex flex-col items-center justify-center h-full">
-          <img src="/ai_art/logo.webp" alt="Game Logo" className="w-64 mb-8" />
+          <img src="/ai_art/logo_wide.webp" alt="Game Logo"
+          className="w-80 xl:w-[640px] mb-8 opacity-90"
+          style={{
+            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+          }}
+          />
           <button
             onClick={handleLaunch}
-            className="px-8 py-4 text-xl font-bold text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+            className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
           >
             Launch
           </button>

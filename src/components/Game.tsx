@@ -194,7 +194,7 @@ const GameContent = () => {
       <AmbientBackground className="overflow-hidden">
         <div
           ref={carouselRef}
-          className="w-full h-full flex transition-transform duration-300 ease-out"
+          className="w-full h-dynamic flex transition-transform duration-300 ease-out"
           style={{
             transform: `translateX(calc(${-carouselPosition * 100}% + ${dragOffset * 100}%))`,
             transition: isDragging ? 'none' : 'transform 300ms ease-out'
@@ -219,7 +219,7 @@ const GameContent = () => {
 
   return (
     <AmbientBackground>
-      <div className="w-4/5 max-w-5xl flex flex-col h-full py-4">
+      <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar/>
         {commonGameContent}
       </div>

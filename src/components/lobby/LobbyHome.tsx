@@ -22,7 +22,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
             {isHost ? (
               <>
                 <select
-                  className={`w-full font-['Cinzel'] bg-gray-700 text-gray-200 border-2 border-indigo-500/50 ${responsiveStyles.padding.input} rounded cursor-pointer ${responsiveStyles.text.base} transition-all duration-300 hover:bg-gray-600 focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-sm`}
+                  className={`w-full font-['Cinzel'] bg-gray-700 text-gray-200 border-2 border-indigo-500/50 ${responsiveStyles.padding.input} rounded cursor-pointer ${responsiveStyles.text.small} transition-all duration-300 hover:bg-gray-600 focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-sm`}
                   value={questSummary.questId}
                   onChange={(e) => {
                     const quest = availableQuests.find(q => q.questId === e.target.value);

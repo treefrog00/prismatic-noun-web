@@ -1,28 +1,28 @@
 export const responsiveStyles = {
   // Font sizes
   text: {
-    base: 'text-base sm:text-lg',
-    small: 'text-sm sm:text-base',
+    base: 'text-base md:text-lg',
+    small: 'text-sm md:text-base',
     heading: 'clamp(1.25rem, 4vw, 1.5rem)',
   },
 
   // Padding
   padding: {
-    button: 'py-2 px-4 sm:py-2.5 sm:px-8',
-    input: 'py-2 px-3 sm:py-2.5 sm:px-4',
+    button: 'py-2 px-4 md:py-2.5 md:px-8',
+    input: 'py-2 px-3 md:py-2.5 md:px-4',
   },
 
   // Sizes
   sizes: {
-    logo: 'w-32 h-16 sm:w-64 sm:h-32',
-    adventureImage: 'w-32 h-32 sm:w-48 sm:h-48',
-    playerAvatar: 'w-12 h-12 sm:w-16 sm:h-16',
-    characterAvatar: 'w-24 h-24 sm:w-32 sm:h-32',
+    logo: 'w-32 h-16 md:w-64 md:h-32',
+    adventureImage: 'w-32 h-32 md:w-48 md:h-48',
+    playerAvatar: 'w-12 h-12 md:w-16 md:h-16',
+    characterAvatar: 'w-24 h-24 md:w-32 md:h-32',
   },
 
   // Margins
   margins: {
-    adventureImage: 'ml-4 sm:ml-8',
+    adventureImage: 'ml-4 md:ml-8',
   },
 
   // Common button styles

@@ -46,7 +46,7 @@ const Play = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 py-4 px-0">
-      {showLaunchScreen && (
+      {showLaunchScreen && !HASH_QUEST_ID && !showAuthPopup && (
         <LaunchScreen />
       )}
       {!showLaunchScreen && !gameStarted && !HASH_QUEST_ID && (firebaseUser || !envConfig.firebaseAuth) && (
@@ -65,6 +65,7 @@ const Play = () => {
           onClose={() => setShowChatInput(false)}
         />
       )}
+      {/* I think the check for firebaseUser may be redundant */}
       {showAuthPopup && !firebaseUser && !loading && (
         <AuthPopup onClose={() => setShowAuthPopup(false)} />
       )}

@@ -117,7 +117,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
   const [ability, setAbility] = useState<string | null>(null);
-  const [showLaunchScreen, setShowLaunchScreen] = useState(isAndroidOrIOS());
+  const [showLaunchScreen, setShowLaunchScreen] = useState(true);
   const [showTextarea, setShowTextarea] = useState(false);
   const [showAbilityChooser, setShowAbilityChooser] = useState(false);
   const [actionText, setActionText] = useState('');

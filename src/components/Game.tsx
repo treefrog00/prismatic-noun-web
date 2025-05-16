@@ -82,8 +82,8 @@ const GameContent = () => {
     if (Math.abs(diff) > threshold) {
       // Move to next/previous position
       const newPosition = diff > 0
-        ? Math.min(carouselPosition + 1, 2) // Move right (show location view)
-        : Math.max(carouselPosition - 1, 0); // Move left (show character sheet)
+        ? Math.max(carouselPosition - 1, 0) // Move left (show character sheet)
+        : Math.min(carouselPosition + 1, 2); // Move right (show location view)
       setCarouselPosition(newPosition);
     } else {
       // Reset to original position
@@ -189,7 +189,7 @@ const GameContent = () => {
     />
   );
 
-  if (isPhone) {
+  if (isPhone()) {
     return (
       <AmbientBackground className="overflow-hidden">
         <div

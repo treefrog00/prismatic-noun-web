@@ -46,31 +46,36 @@ const TextInput: React.FC<TextInputProps> = ({
   }, [textInputRef]);
 
   const textareaElement = (
-    <textarea
-      className="font-['Crimson_Text'] w-full p-3 mb-4 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
-      id="textInput"
-      rows={4}
-      placeholder={placeHolder}
-      value={text}
-      maxLength={PROMPT_LIMIT}
-      onChange={(e) => setText(e.target.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          if (e.shiftKey) {
-            // Allow default behavior (newline) for Shift+Enter
-            return;
+    <div>
+      <textarea
+        className="font-['Crimson_Text'] w-full p-3 mb-4 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
+        id="textInput"
+        rows={4}
+        placeholder={placeHolder}
+        value={text}
+        maxLength={PROMPT_LIMIT}
+        onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            if (e.shiftKey) {
+              // Allow default behavior (newline) for Shift+Enter
+              return;
+            }
+            e.preventDefault();
+            if (hasText(text)) {
+              onOk();
+            }
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            onClose();
           }
-          e.preventDefault();
-          if (hasText(text)) {
-            onOk();
-          }
-        } else if (e.key === 'Escape') {
-          e.preventDefault();
-          onClose();
-        }
-      }}
-      ref={textInputRef}
-    />
+        }}
+        ref={textInputRef}
+      />
+      <div className="text-right text-base text-gray-300 mb-4">
+        {text.length} / {PROMPT_LIMIT}
+      </div>
+    </div>
   );
 
   const buttonContainer = (

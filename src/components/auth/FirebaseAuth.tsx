@@ -58,7 +58,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
             return false; // Don't redirect automatically
           },
           signInFailure: function(error: any) {
-            console.error('FirebaseAuth: signInFailure', error);
+            console.log('FirebaseAuth: signInFailure', error);
           },
         }
       };

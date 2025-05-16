@@ -231,7 +231,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
     // Set the new audio and play it
     setAudio(newAudio);
     newAudio.play().catch(error => {
-      console.error('Error playing dice roll sound:', error);
+      console.log('Error playing dice roll sound:', error);
     });
   };
 

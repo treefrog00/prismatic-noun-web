@@ -73,7 +73,6 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
     setCurrentModeIndex(startIndex);
     setCurrentMode(startMode);
-    console.log('startMode', startMode);
     // Add global pointer interaction listener to start playing on first interaction
     const handleFirstInteraction = () => {
       if (audioElementRef.current && startMode !== 'off') {

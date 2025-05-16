@@ -45,17 +45,46 @@ export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
     // Intercept console.log
     const originalConsoleLog = console.log;
+    const originalConsoleError = console.error;
+
+    const formatMessage = (args: any[]) => {
+      return args.map(arg => {
+        if (arg instanceof DOMException) {
+          return `DOMException: ${arg.name} - ${arg.message}`;
+        }
+        if (arg instanceof Element) {
+          return `<${arg.tagName.toLowerCase()}>`;
+        }
+        if (arg instanceof HTMLElement) {
+          return `<${arg.tagName.toLowerCase()}>`;
+        }
+        if (typeof arg === 'object') {
+          try {
+            return JSON.stringify(arg);
+          } catch (e) {
+            return String(arg);
+          }
+        }
+        return String(arg);
+      }).join(' ');
+    };
+
     console.log = (...args) => {
       originalConsoleLog.apply(console, args);
-      const message = args.map(arg =>
-        typeof arg === 'object' ? JSON.stringify(arg) : String(arg)
-      ).join(' ');
+      const message = formatMessage(args);
+      showGlobalLog(message);
+    };
+
+    console.error = (...args) => {
+      originalConsoleError.apply(console, args);
+      const message = formatMessage(args);
       showGlobalLog(message);
     };
 
     return () => {
       setGlobalLogHandler(null);
       console.log = originalConsoleLog;
+      console.error = originalConsoleError;
     };
   }, []);
 

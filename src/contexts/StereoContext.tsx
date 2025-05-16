@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { StereoMode } from '../components/stereo/StereoKnob';
 import { useGameStarted } from './GameContext';
+import { isAndroidOrIOS } from '@/hooks/useDeviceDetection';
 
 const DEFAULT_MODE = 'spooky';
 const STORAGE_KEY = 'stereo-mode';
@@ -11,6 +12,7 @@ const STEREO_MODES: StereoMode[] = ['retro', 'funky', 'jazzy', 'spooky'];
 interface StereoContextType {
   currentMode: StereoMode;
   handleModeChange: (mode: StereoMode) => Promise<void>;
+  initialPlay: () => void;
 }
 
 const StereoContext = createContext<StereoContextType | null>(null);
@@ -63,6 +65,16 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const initialPlay = () => {
+    if (audioElementRef.current && currentMode !== 'off') {
+      audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
+      audioElementRef.current.volume = 1;
+      audioElementRef.current.play().catch(error => {
+        console.error('Error playing audio:', error);
+      });
+    }
+  };
+
   useEffect(() => {
     const savedMode = localStorage.getItem(STORAGE_KEY) as StereoMode;
     const startMode = savedMode || DEFAULT_MODE;
@@ -73,26 +85,12 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
     setCurrentModeIndex(startIndex);
     setCurrentMode(startMode);
-    // Add global pointer interaction listener to start playing on first interaction
-    const handleFirstInteraction = () => {
-      if (audioElementRef.current && startMode !== 'off') {
-        audioElementRef.current.src = `/ai_sound/${startMode}.mp3`;
-        audioElementRef.current.volume = 1;
-        audioElementRef.current.play().catch(error => {
-          console.error('Error playing audio:', error);
-        });
-      }
-      document.removeEventListener('pointerdown', handleFirstInteraction);
-    };
-
-    document.addEventListener('pointerdown', handleFirstInteraction);
 
     return () => {
       if (audioElementRef.current) {
         audioElementRef.current.pause();
         audioElementRef.current.src = '';
       }
-      document.removeEventListener('pointerdown', handleFirstInteraction);
     };
   }, []);
 
@@ -140,6 +138,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     <StereoContext.Provider value={{
       currentMode,
       handleModeChange,
+      initialPlay,
     }}>
       {children}
     </StereoContext.Provider>

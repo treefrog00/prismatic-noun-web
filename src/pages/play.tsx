@@ -1,13 +1,15 @@
 import Lobby from '../components/lobby/Lobby';
 import Game from '../components/Game';
 import { HASH_QUEST_ID } from '../config';
-import { GameProvider, useGameStarted } from '../contexts/GameContext';
+import { GameProvider, useGameStarted, useShowLaunchScreen } from '../contexts/GameContext';
 import ChatMessages from '../components/chat/ChatMessages';
 import { useEffect, useRef, useState } from 'react';
 import ChatTextInput from '../components/chat/ChatTextInput';
 import AuthPopup from '../components/popups/AuthPopup';
 import { useAuth } from '../contexts/AuthContext';
 import { envConfig } from '../envConfig';
+import { isAndroidOrIOS } from '../hooks/useDeviceDetection';
+import LaunchScreen from '@/components/lobby/LaunchScreen';
 
 const Play = () => {
   const { gameStarted, setGameStarted } = useGameStarted();
@@ -16,6 +18,7 @@ const Play = () => {
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
   const { firebaseUser, loading } = useAuth();
+  const { showLaunchScreen, setShowLaunchScreen } = useShowLaunchScreen();
 
   // Show Firebase auth popup if necessary
   useEffect(() => {
@@ -43,11 +46,14 @@ const Play = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 py-4 px-0">
-      {!gameStarted && !HASH_QUEST_ID && (firebaseUser || !envConfig.firebaseAuth) && (
+      {showLaunchScreen && (
+        <LaunchScreen />
+      )}
+      {!showLaunchScreen && !gameStarted && !HASH_QUEST_ID && (firebaseUser || !envConfig.firebaseAuth) && (
         <Lobby />
       )}
 
-      {(gameStarted || HASH_QUEST_ID) && (
+      {(!showLaunchScreen && (gameStarted || HASH_QUEST_ID)) && (
         <Game />
       )}
       <ChatMessages />

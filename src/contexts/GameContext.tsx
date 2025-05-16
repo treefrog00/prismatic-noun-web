@@ -1,3 +1,4 @@
+import { isAndroidOrIOS } from '@/hooks/useDeviceDetection';
 import { GameApi } from '../core/gameApi';
 import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
 import { Character, QuestSummary, CharacterState, GameData, LocationData, LocationState } from '../types';
@@ -56,6 +57,9 @@ type GameContextType = {
   actionTarget: ActionTarget;
   setActionTarget: (value: ActionTarget) => void;
 
+  showLaunchScreen: boolean;
+  setShowLaunchScreen: (value: boolean) => void;
+
   gameApi: GameApi;
 
   // Action handler state
@@ -109,12 +113,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     turnPointsRemaining: POINTS_PER_TURN
   });
 
-  // React only, doesn't apply to multiplayer
+  // React only, not multiplayer state
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
   const [ability, setAbility] = useState<string | null>(null);
-
-  // Action handler state
+  const [showLaunchScreen, setShowLaunchScreen] = useState(isAndroidOrIOS());
   const [showTextarea, setShowTextarea] = useState(false);
   const [showAbilityChooser, setShowAbilityChooser] = useState(false);
   const [actionText, setActionText] = useState('');
@@ -171,6 +174,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setOkButtonId,
         inputPlaceHolder,
         setInputPlaceHolder,
+
+        showLaunchScreen,
+        setShowLaunchScreen,
       }}
     >
       {children}
@@ -292,6 +298,14 @@ export const useActionTarget = () => {
     throw new Error('useActionTarget must be used within a GameProvider');
   }
   return { actionTarget: context.actionTarget, setActionTarget: context.setActionTarget };
+};
+
+export const useShowLaunchScreen = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useShowLaunchScreen must be used within a GameProvider');
+  }
+  return { showLaunchScreen: context.showLaunchScreen, setShowLaunchScreen: context.setShowLaunchScreen };
 };
 
 export const useActionUIState = () => {

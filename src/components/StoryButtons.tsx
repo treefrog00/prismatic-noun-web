@@ -7,21 +7,21 @@ import MapPopup from './MapPopup';
 import InventoryPopup from './InventoryPopup';
 import artUrl from '../util/artUrls';
 import LogbookPopup from './LogbookPopup';
-import { alternatingColorMap, ButtonConfig, getColorClasses } from '../types/button';
+import { ButtonConfig, getColorClasses } from '../types/button';
 import { useGameActions } from '../hooks/useGameActions';
 import { sharedStyles } from '../styles/shared';
 import Overlay from './Overlay';
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'amber-border' },
-  { id: "narrate-ok", label: 'Proceed', color: 'teal' },
+  { id: "proceed-ok", label: 'Proceed', color: 'teal' },
   { id: "end-turn-ok", label: 'End Turn', color: 'stone' },
 ];
 
 const rootButtonsMobile: ButtonConfig[] = [
   { id: "chat", label: 'Chat', color: 'brown' },
   { id: "act", label: 'Act', color: 'violet' },
-  { id: "narrate-ok", label: 'Proceed', color: 'teal' },
+  { id: "proceed-ok", label: 'Proceed', color: 'teal' },
   { id: "inventory", label: 'Inventory', color: 'indigo' },
   { id: "logbook", label: 'Logbook', color: 'stone' },
   { id: "map", label: 'Map', color: 'purple' },

@@ -7,7 +7,7 @@ import { QuestSummary } from '../types';
 import { useGameStarted, useQuestSummary } from '../contexts/GameContext';
 import { starryTheme } from '../styles/starryTheme';
 import { responsiveStyles } from '../styles/responsiveStyles';
-import { playRoomConfig } from '../envConfig';
+import { envConfig } from '../envConfig';
 import { GameApi } from '../core/gameApi';
 import { QuestSummariesSchema } from '../types/validatedTypes';
 import CharacterDesigner from './CharacterDesigner';
@@ -35,7 +35,7 @@ const Lobby = () => {
   useEffect(() => {
     const initializeGame = async () => {
       // skip lobby means skip their UI and use custom lobby instead
-      await insertCoin({ skipLobby: true, gameId: playRoomConfig.gameId, discord: playRoomConfig.discord });
+      await insertCoin({ skipLobby: true, gameId: envConfig.gameId, discord: envConfig.useDiscord });
 
       // Fetch available quests
       const quests = await gameApi.getTyped('/quest/summaries', QuestSummariesSchema);

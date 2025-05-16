@@ -8,7 +8,7 @@ import { myPlayer } from '../core/multiplayerState';
 import ChatTextInput from '../components/ChatTextInput';
 import AuthPopup from '../components/AuthPopup';
 import { useAuth } from '../contexts/AuthContext';
-import { playRoomConfig } from '../envConfig';
+import { envConfig } from '../envConfig';
 
 const Play = () => {
   const { gameStarted, setGameStarted } = useGameStarted();
@@ -21,7 +21,7 @@ const Play = () => {
 
   // Show Firebase auth popup if necessary
   useEffect(() => {
-    if (!loading && !firebaseUser && playRoomConfig.firebaseAuth) {
+    if (!loading && !firebaseUser && envConfig.firebaseAuth) {
       setShowAuthPopup(true);
     }
   }, [firebaseUser, loading]);
@@ -45,7 +45,7 @@ const Play = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 py-4 px-0">
-      {!gameStarted && !HASH_QUEST_ID && (firebaseUser || !playRoomConfig.firebaseAuth) && (
+      {!gameStarted && !HASH_QUEST_ID && (firebaseUser || !envConfig.firebaseAuth) && (
         <Lobby />
       )}
 

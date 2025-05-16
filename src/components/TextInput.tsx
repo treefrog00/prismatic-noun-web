@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
+import { PROMPT_LIMIT } from '../config';
 
 interface TextInputProps {
   text: string;
@@ -51,6 +52,7 @@ const TextInput: React.FC<TextInputProps> = ({
       rows={4}
       placeholder={placeHolder}
       value={text}
+      maxLength={PROMPT_LIMIT}
       onChange={(e) => setText(e.target.value)}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { playRoomConfig } from '../envConfig';
+import { envConfig } from '../envConfig';
 
 // Only import Firebase dependencies if firebaseAuth is enabled
 let auth: any;
@@ -12,7 +12,7 @@ type FirebaseUser = {
 };
 
 // Conditional type based on firebaseAuth config
-type AuthUser = (typeof playRoomConfig.firebaseAuth extends true ? FirebaseUser : null);
+type AuthUser = (typeof envConfig.firebaseAuth extends true ? FirebaseUser : null);
 
 interface AuthContextType {
   firebaseUser: AuthUser;
@@ -20,7 +20,7 @@ interface AuthContextType {
 }
 
 // Initialize auth if firebaseAuth is enabled
-if (playRoomConfig.firebaseAuth) {
+if (envConfig.firebaseAuth) {
   import('../firebaseConfig').then((module) => {
     auth = module.auth;
   });
@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!playRoomConfig.firebaseAuth) {
+    if (!envConfig.firebaseAuth) {
       setLoading(false);
       return;
     }
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
-  if (!playRoomConfig.firebaseAuth) {
+  if (!envConfig.firebaseAuth) {
     return (
       <>
         {children}

@@ -98,8 +98,8 @@ export const useGameActions = () => {
     await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, { text, ability, player: thisPlayer, targetId: actionTarget.targetId, targetType: actionTarget.targetType });
   };
 
-  const handleNarrateOk = async () => {
-    await apiCallAndUpdate(`/game/${gameData.gameId}/narrate`, {});
+  const handleProceedOk = async () => {
+    await apiCallAndUpdate(`/game/${gameData.gameId}/proceed`, {});
   };
 
   const handleTravel = async (location: string) => {
@@ -189,7 +189,7 @@ export const useGameActions = () => {
       'chat': handleChat,
 
       'end-turn-ok': handleEndTurnOk,
-      'narrate-ok': handleNarrateOk,
+      'proceed-ok': handleProceedOk,
       'attack-ok': handleAttackOk,
       'send-ok': handleSendOk,
       'talk-ok': handleTalkOk,

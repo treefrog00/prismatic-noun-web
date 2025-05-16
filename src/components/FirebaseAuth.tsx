@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { playRoomConfig } from '../envConfig';
+import { envConfig } from '../envConfig';
 import type { FirebaseApp } from 'firebase/app';
 
 // Only import Firebase dependencies if firebaseAuth is enabled
@@ -19,7 +19,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    if (!playRoomConfig.firebaseAuth) {
+    if (!envConfig.firebaseAuth) {
       return;
     }
 
@@ -87,7 +87,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
     };
   }, [onSignInSuccess]);
 
-  if (!playRoomConfig.firebaseAuth) {
+  if (!envConfig.firebaseAuth) {
     return null;
   }
 

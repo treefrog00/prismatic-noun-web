@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useEffect } from 'react';
-import { isAndroidOrIOS } from '../hooks/useIsNarrowScreen';
+import { isAndroidOrIOS } from '../hooks/useDeviceDetection';
 
 interface Log {
   message: string;

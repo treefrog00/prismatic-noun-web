@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
+import { useIsNarrowScreen } from '../hooks/useDeviceDetection';
 import { RPC, myPlayer } from '../core/multiplayerState';
 
 interface ChatTextInputProps {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { RPC } from '../core/multiplayerState';
-import { isAndroidOrIOS, useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
+import { isAndroidOrIOS, useIsNarrowScreen } from '../hooks/useDeviceDetection';
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<{ player: string; text: string; id: number }[]>([]);
   const isNarrowScreen = useIsNarrowScreen();

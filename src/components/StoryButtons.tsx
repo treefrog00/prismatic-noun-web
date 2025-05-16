@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { useIsNarrowScreen } from '../hooks/useIsNarrowScreen';
+import { useIsNarrowScreen } from '../hooks/useDeviceDetection';
 import AbilityChooser from './AbilityChooser';
 import TextInput from './TextInput';
 import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '../contexts/GameContext';

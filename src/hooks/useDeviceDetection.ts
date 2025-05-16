@@ -31,3 +31,7 @@ export const isAndroidOrIOS = () => {
   // possibly this could use bowser instead...
   return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 };
+
+export const isPhone = () => {
+    return isAndroidOrIOS() && window.innerWidth < SMALL_SCREEN_BREAKPOINT;
+  };

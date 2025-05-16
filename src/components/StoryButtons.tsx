@@ -76,7 +76,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
         </button>
       </div>
       {(showMobileDropdown || showActChooser) && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
           <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
             <div className="grid grid-cols-2 gap-2">
               {buttons.map((button) => (

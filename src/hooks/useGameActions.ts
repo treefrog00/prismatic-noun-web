@@ -153,7 +153,7 @@ export const useGameActions = () => {
 
   const handleTalkOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says to ${getTargetName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/talk`, { prompt: text, targetId: actionTarget.targetId, });
+    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { message: text, targetId: actionTarget.targetId, });
   };
 
   const handleInvestigateOk = async () => {
@@ -167,7 +167,7 @@ export const useGameActions = () => {
       label = `${thisPlayer.getState('name')} uses ${ability}`;
     }
     appendPlayerActionRpc(text, label);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/act`, {
+    await apiCallAndUpdate(`/game/${gameData.gameId}/do`, {
       prompt: text,
       ability,
       targetId: actionTarget?.targetId,
@@ -176,7 +176,7 @@ export const useGameActions = () => {
 
   const handleSayOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { prompt: text });
+    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { message: text });
   };
 
   const handleClick = async (buttonId: string) => {

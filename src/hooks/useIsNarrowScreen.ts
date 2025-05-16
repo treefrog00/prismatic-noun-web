@@ -15,8 +15,6 @@ export const useIsNarrowScreen = () => {
 
     checkisNarrowScreen();
 
-    console.log('will be narrow screen', window.innerWidth < SMALL_SCREEN_BREAKPOINT);
-
     // Add event listener for window resize
     window.addEventListener('resize', checkisNarrowScreen);
 

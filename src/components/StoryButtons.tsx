@@ -166,7 +166,6 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
   };
 
   const handleTurnPointsMouseLeave = () => {
-    console.log('handleTurnPointsMouseLeave');
     setIsTurnPointsOverlayOpen(false);
   };
 

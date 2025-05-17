@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { useIsNarrowScreen } from '../hooks/useDeviceDetection';
 import { PROMPT_LIMIT } from '../config';
+import { createPortal } from 'react-dom';
 
 interface TextInputProps {
   text: string;
@@ -97,13 +98,14 @@ const TextInput: React.FC<TextInputProps> = ({
   );
 
   if (isNarrowScreen) {
-    return (
+    return createPortal(
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
           {textareaElement}
           {buttonContainer}
         </div>
-      </div>
+      </div>,
+      document.body
     );
   }
 

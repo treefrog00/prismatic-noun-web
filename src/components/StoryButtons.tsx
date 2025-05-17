@@ -11,6 +11,7 @@ import { ButtonConfig, getColorClasses } from '@/types/button';
 import { useGameActions } from '@/hooks/useGameActions';
 import { sharedStyles } from '@/styles/shared';
 import Overlay from './overlays/Overlay';
+import { createPortal } from 'react-dom';
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: 'Act', color: 'amber-border' },
@@ -64,6 +65,47 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
     })
   );
 
+  const renderDropdown = () => {
+    if (!showMobileDropdown && !showActChooser) return null;
+
+    return createPortal(
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
+        <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
+          <div className="grid grid-cols-2 gap-2">
+            {buttons.map((button) => (
+              <button
+                key={button.id}
+                className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
+                onPointerDown={() => {
+                  onPointerDown(button.id);
+                  if (showMobileDropdown) {
+                    setShowMobileDropdown(false);
+                  }
+                }}
+              >
+                {button.label}
+              </button>
+            ))}
+            <div className="col-span-2 text-center text-gray-300 mt-2">
+              <div>Turn points:</div>
+              <div className="text-2xl font-bold">{miscSharedData.turnPointsRemaining}</div>
+            </div>
+          </div>
+          <button
+            className={`game-button ${getColorClasses('slate')} w-full mt-4`}
+            onPointerDown={() => {
+              setShowMobileDropdown(false);
+              setShowActChooser(false);
+            }}
+          >
+            Close
+          </button>
+        </div>
+      </div>,
+      document.body
+    );
+  };
+
   return (
     <div className="flex flex-col self-center mt-2">
       <div className="flex gap-2">
@@ -75,43 +117,9 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
           <span>▼</span>
         </button>
       </div>
-      {(showMobileDropdown || showActChooser) && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
-          <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
-            <div className="grid grid-cols-2 gap-2">
-              {buttons.map((button) => (
-                <button
-                  key={button.id}
-                  className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
-                  onPointerDown={() => {
-                    onPointerDown(button.id);
-                    if (showMobileDropdown) {
-                      setShowMobileDropdown(false);
-                    }
-                  }}
-                >
-                  {button.label}
-                </button>
-              ))}
-              <div className="col-span-2 text-center text-gray-300 mt-2">
-                <div>Turn points:</div>
-                <div className="text-2xl font-bold">{miscSharedData.turnPointsRemaining}</div>
-              </div>
-            </div>
-            <button
-                className={`game-button ${getColorClasses('slate')} w-full mt-4`}
-                onPointerDown={() => {
-                  setShowMobileDropdown(false);
-                  setShowActChooser(false);
-                }}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      {renderDropdown()}
     </div>
-  )
+  );
 };
 
 const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser }: ControlProps) => {

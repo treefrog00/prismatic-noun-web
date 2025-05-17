@@ -67,7 +67,15 @@ const GameContent = () => {
     if (Math.abs(diff) > threshold) {
       // Calculate proportional offset (-1 to 1 range)
       const maxDrag = window.innerWidth * 0.5; // Maximum drag distance
-      const offset = Math.max(Math.min(diff / maxDrag, 1), -1);
+      let offset = Math.max(Math.min(diff / maxDrag, 1), -1);
+
+      // Prevent dragging beyond edges
+      if (carouselPosition === 0 && offset > 0) {
+        offset = 0; // Prevent dragging right when at leftmost position
+      } else if (carouselPosition === 2 && offset < 0) {
+        offset = 0; // Prevent dragging left when at rightmost position
+      }
+
       setDragOffset(offset);
     }
   };

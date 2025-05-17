@@ -80,10 +80,8 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
                 key={button.id}
                 className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
                 onPointerDown={() => {
+                  setShowMobileButtons(false);
                   onPointerDown(button.id);
-                  if (showMobileButtons) {
-                    setShowMobileButtons(false);
-                  }
                 }}
               >
                 {button.label}

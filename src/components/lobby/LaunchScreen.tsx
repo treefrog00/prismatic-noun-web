@@ -39,15 +39,15 @@ const LaunchScreen = () => {
                 Prismatic Noun is a multiplayer role-playing game with an AI Game Operations Director. You can play with friends, family, and online communities.
               </p>
               <p className="mb-4">
-              Embark on adventures across a wide range of different scenarios:
-                <ul className="list-disc list-inside mb-4">
-              <li>a team of dwarves on a quest to rid their underground fortress of troublesome giant rodents</li>
-              <li>a team of intergalactic beings of pure energy endeavouring to capture and imprison a troublesome multidimensional imp</li>
-              <li>a team of software engineers building a vaguely defined SAAS product on a mission to secure their next funding round</li>
-              <li>a team of accountants gathered round a table pretending to be a party of wizards venturing into a mythical grove.</li>
-            </ul>
-            </p>
-             <p className="mb-4">The choice is yours!</p>
+                Embark on adventures across a wide range of different scenarios:
+              </p>
+              <ul className="list-disc list-inside mb-4">
+                <li>a team of dwarves on a quest to rid their underground fortress of troublesome giant rodents</li>
+                <li>a team of intergalactic beings of pure energy endeavouring to capture and imprison a troublesome multidimensional imp</li>
+                <li>a team of software engineers building a vaguely defined SAAS product on a mission to secure their next funding round</li>
+                <li>a team of accountants gathered round a table pretending to be a party of wizards venturing into a mythical grove.</li>
+              </ul>
+              <p className="mb-4">The choice is yours!</p>
               <p className="mb-4">
                 The game is a Discord activity that is currently only available for alpha testers. It may one day be available both on the web and on any Discord Server, chat or direct message.
               </p>

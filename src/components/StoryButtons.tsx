@@ -44,10 +44,13 @@ interface ControlProps {
   showTextarea: boolean;
   renderTextInput: () => JSX.Element;
   showActChooser: boolean;
-  setShowActChooser?: (show: boolean) => void;
+  setShowActChooser: (show: boolean) => void;
+  setIsMapOpen: (open: boolean) => void;
+  setIsInventoryOpen: (open: boolean) => void;
+  setIsLogbookOpen: (open: boolean) => void;
 }
 
-const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser }: ControlProps) => {
+const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser, setIsMapOpen, setIsInventoryOpen, setIsLogbookOpen }: ControlProps) => {
   const [showMobileButtons, setShowMobileButtons] = useState(false);
   const { miscSharedData } = useMiscSharedData();
 
@@ -55,12 +58,10 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
     return renderTextInput();
   }
 
-  const buttons = rootButtonsMobile;
-
   const chequerColors = ['teal', 'slate'];
   const numCols = 2;
   const action_colors = Object.fromEntries(
-    buttons.map((ability, index) => {
+    rootButtonsMobile.map((ability, index) => {
       const row = Math.floor(index / numCols);
       const col = index % numCols;
       const color = chequerColors[(row + col) % 2];
@@ -75,7 +76,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
           <div className="grid grid-cols-2 gap-2">
-            {buttons.map((button) => (
+            {rootButtonsMobile.map((button) => (
               <button
                 key={button.id}
                 className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
@@ -122,18 +123,16 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
   );
 };
 
-const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser }: ControlProps) => {
+const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser, setIsMapOpen, setIsInventoryOpen, setIsLogbookOpen }: ControlProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [isHovering, setIsHovering] = useState(false);
-  const [isMapOpen, setIsMapOpen] = useState(false);
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const [isTurnPointsOverlayOpen, setIsTurnPointsOverlayOpen] = useState(false);
   const [turnPointsOverlayPosition, setTurnPointsOverlayPosition] = useState({ x: 0, y: 0 });
   const TIMEOUT = 500;
-  const actButtonRef = useRef<HTMLButtonElement>(null);
+
   const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>({});
   const { miscSharedData } = useMiscSharedData();
+  const actButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleMouseEvent = (show: boolean) => {
     if (timeoutRef.current) {
@@ -142,7 +141,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
 
     if (show) {
       setIsHovering(true);
-      setShowActChooser?.(true);
+      setShowActChooser(true);
       if (actButtonRef.current) {
         const rect = actButtonRef.current.getBoundingClientRect();
         const parentRect = actButtonRef.current.parentElement?.getBoundingClientRect();
@@ -159,7 +158,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     } else {
       setIsHovering(false);
       timeoutRef.current = setTimeout(() => {
-        setShowActChooser?.(false);
+        setShowActChooser(false);
       }, TIMEOUT);
     }
   };
@@ -168,7 +167,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     const rect = e.currentTarget.getBoundingClientRect();
     setTurnPointsOverlayPosition({
       x: rect.left,
-      y: rect.top - 10 // Position 10px above the element
+      y: rect.top - 10
     });
     setIsTurnPointsOverlayOpen(true);
   };
@@ -267,9 +266,6 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
           </div>
         </div>
       </div>
-      <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
-      <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
-      <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
       {isTurnPointsOverlayOpen && (
         <Overlay
           className="w-96"
@@ -300,11 +296,26 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
-  const [showActChooser, setShowActChooser] = useState<boolean>(false);
-  const { questSummary } = useQuestSummary();
   const isNarrowScreen = useIsNarrowScreen();
   const { setActionTarget } = useActionTarget();
   const { setAbility } = useAbility();
+
+  const [showActChooser, setShowActChooser] = useState(false);
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
+
+  const handleMobileClick = (buttonId: string) => {
+    if (buttonId === 'map') {
+      setIsMapOpen(true);
+    } else if (buttonId === 'inventory') {
+      setIsInventoryOpen(true);
+    } else if (buttonId === 'logbook') {
+      setIsLogbookOpen(true);
+    } else {
+      globalHandleClick(buttonId);
+    }
+  }
 
   const {
     showTextarea,
@@ -314,7 +325,7 @@ const StoryButtons: React.FC = () => {
     okButtonText,
     okButtonId,
     inputPlaceHolder,
-    handleClick,
+    globalHandleClick,
     handleSelectAbility,
     showAbilityChooser,
     setShowAbilityChooser,
@@ -331,7 +342,7 @@ const StoryButtons: React.FC = () => {
         setActionTarget(null);
         setAbility(null);
       }}
-      onOk={() => handleClick(okButtonId!)}
+      onOk={() => handleMobileClick(okButtonId!)}
       placeHolder={inputPlaceHolder}
       okButtonText={okButtonText}
       okButtonId={okButtonId}
@@ -347,15 +358,17 @@ const StoryButtons: React.FC = () => {
   useEffect(() => {
     if (showActChooser) {
       const handlePointerDown = (e: PointerEvent) => {
-        // Check if the click was on the act button
         const actButton = document.querySelector('button[data-id="act"]');
         if (actButton && actButton.contains(e.target as Node)) {
           return;
         }
         setShowActChooser(false);
       };
+
       document.addEventListener('pointerdown', handlePointerDown);
-      return () => document.removeEventListener('pointerdown', handlePointerDown);
+      return () => {
+        document.removeEventListener('pointerdown', handlePointerDown);
+      };
     }
   }, [showActChooser]);
 
@@ -398,19 +411,25 @@ const StoryButtons: React.FC = () => {
       `}</style>
       {isNarrowScreen ? (
         <MobileControls
-          onPointerDown={handleClick}
+          onPointerDown={handleMobileClick}
           showTextarea={showTextarea}
           renderTextInput={renderTextInput}
           showActChooser={showActChooser}
           setShowActChooser={setShowActChooser}
+          setIsMapOpen={setIsMapOpen}
+          setIsInventoryOpen={setIsInventoryOpen}
+          setIsLogbookOpen={setIsLogbookOpen}
         />
       ) : (
         <DesktopControls
-          onPointerDown={handleClick}
+          onPointerDown={globalHandleClick}
           showTextarea={showTextarea}
           renderTextInput={renderTextInput}
           showActChooser={showActChooser}
           setShowActChooser={setShowActChooser}
+          setIsMapOpen={setIsMapOpen}
+          setIsInventoryOpen={setIsInventoryOpen}
+          setIsLogbookOpen={setIsLogbookOpen}
         />
       )}
       <AbilityChooser
@@ -418,6 +437,9 @@ const StoryButtons: React.FC = () => {
         onClose={() => setShowAbilityChooser(false)}
         onSelectAbility={handleSelectAbility}
       />
+      <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
+      <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
+      <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
     </>
   );
 };

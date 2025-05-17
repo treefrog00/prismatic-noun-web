@@ -182,7 +182,7 @@ export const useGameActions = () => {
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { message: text });
   };
 
-  const handleClick = async (buttonId: string) => {
+  const globalHandleClick = async (buttonId: string) => {
     const handlers: Record<string, () => Promise<void>> = {
       'talk': handleTalk,
       'investigate': handleInvestigate,
@@ -211,7 +211,7 @@ export const useGameActions = () => {
         setAbility(null);
       }
     } else {
-      throw new Error('No handler for buttonId: ' + buttonId);
+      // this is expected for inventory, logbook, map, etc.
     }
   };
 
@@ -225,7 +225,7 @@ export const useGameActions = () => {
     okButtonText,
     okButtonId,
     inputPlaceHolder,
-    handleClick,
+    globalHandleClick,
     handleSelectAbility,
     handleTravel,
   };

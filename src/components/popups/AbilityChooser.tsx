@@ -45,7 +45,7 @@ export default function AbilityChooser({ isOpen, onClose, onSelectAbility }: Abi
   );
 
   return ReactDOM.createPortal(
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
+    <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
       <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
         <h2 className="text-base font-['Cinzel'] text-gray-200 mb-4 text-center">Choose Ability</h2>
         <div className="flex flex-col gap-2">

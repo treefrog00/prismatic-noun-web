@@ -27,8 +27,8 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
   }, [npcId, setActionTarget]);
 
   const {
-    handleClick,
-    } = useGameActions();
+    globalHandleClick,
+  } = useGameActions();
 
   const actions: ButtonConfig[] = [
     { id: "talk", label: 'Talk', color: 'teal' as const },
@@ -80,7 +80,7 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
             <button
               key={btn.id}
               onPointerDown={() => {
-                handleClick(btn.id);
+                globalHandleClick(btn.id);
                 onClose();
               }}
               className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors font-['Cinzel'] text-base`}

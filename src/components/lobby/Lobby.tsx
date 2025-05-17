@@ -11,6 +11,7 @@ import { envConfig } from '@/envConfig';
 import { GameApi } from '@/core/gameApi';
 import { QuestSummariesSchema } from '@/types/validatedTypes';
 import CharacterDesigner from './CharacterDesigner';
+import StarryBackground from '../StarryBackground';
 
 
 const Lobby = () => {
@@ -51,10 +52,7 @@ const Lobby = () => {
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
-      <div style={starryTheme.stars}>
-        <div style={starryTheme.starLayer1} />
-        <div style={starryTheme.starLayer2} />
-      </div>
+      <StarryBackground />
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
         <LobbyNavBar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 flex items-center justify-center">
@@ -101,9 +99,6 @@ const Lobby = () => {
           </div>
         </div>
       </div>
-      <style>
-        {starryTheme.globalStyles}
-      </style>
     </div>
   );
 };

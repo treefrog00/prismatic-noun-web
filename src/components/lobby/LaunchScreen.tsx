@@ -3,6 +3,7 @@ import { starryTheme } from '@/styles/starryTheme';
 import { useStereo } from '@/contexts/StereoContext';
 import { responsiveStyles } from '@/styles/responsiveStyles';
 import { isPhone } from '@/hooks/useDeviceDetection';
+import StarryBackground from '../StarryBackground';
 
 const LaunchScreen = () => {
   const { setShowLaunchScreen } = useShowLaunchScreen();
@@ -16,18 +17,15 @@ const LaunchScreen = () => {
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
-      <div style={starryTheme.stars}>
-        <div style={starryTheme.starLayer1} />
-        <div style={starryTheme.starLayer2} />
-      </div>
+      <StarryBackground />
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
-      <div className="flex flex-col items-center justify-center flex-1">
+        <div className="flex flex-col items-center justify-center flex-1">
           <img src="/ai_art/logo_wide.webp" alt="Game Logo"
-          className="w-80 xl:w-[640px] mb-8 opacity-90"
-          style={{
-            maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
-          }}
+            className="w-80 xl:w-[640px] mb-8 opacity-90"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 15%, black 85%, transparent)'
+            }}
           />
           <button
             onClick={handleLaunch}
@@ -57,9 +55,6 @@ const LaunchScreen = () => {
           )}
         </div>
       </div>
-      <style>
-        {starryTheme.globalStyles}
-      </style>
     </div>
   );
 };

@@ -52,15 +52,13 @@ const HomeLayout: React.FC<HomeProps> = ({ children }) => {
         <Suspense fallback={<></>}>
         <div style={starryTheme.container}>
           <div style={starryTheme.starryBackground} />
-          <div style={starryTheme.stars} />
-            <div style={starryTheme.starLayer1} />
-            <div style={starryTheme.starLayer2} />
-            {children}
+          <div style={starryTheme.stars}>
+            <div className="starry-layer-1" />
+            <div className="starry-layer-2" />
           </div>
+          {children}
+        </div>
         </Suspense>
-        <style>
-        {starryTheme.globalStyles}
-      </style>
       </main>
 
       <style>

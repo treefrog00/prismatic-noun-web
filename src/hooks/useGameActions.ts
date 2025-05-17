@@ -149,7 +149,10 @@ export const useGameActions = () => {
     }
   }
 
-  const handleSendOk = () => RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text }, RPC.Mode.ALL);
+  const handleSendOk = async () => {
+    // note that if you await RPC.call it seems to never return....
+    RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text }, RPC.Mode.ALL);
+  }
 
   const handleTalkOk = async () => {
     appendPlayerActionRpc(text, `${thisPlayer.getState('name')} says to ${getTargetName()}`);
@@ -207,6 +210,8 @@ export const useGameActions = () => {
         setActionTarget(null);
         setAbility(null);
       }
+    } else {
+      throw new Error('No handler for buttonId: ' + buttonId);
     }
   };
 

@@ -78,12 +78,12 @@ export const onPlayerJoin = (callback: (player: PlayerState) => void) => {
     return originalOnPlayerJoin(callback);
 };
 
-export const usePlayersList = (includeSelf: boolean = false) => {
+export const usePlayersList = (triggerOnPlayerStateChange?: boolean) => {
     if (HASH_QUEST_ID) {
         const { localPlayers } = useLocalPlayers();
         return localPlayers;
     }
-    return originalUsePlayersList(includeSelf);
+    return originalUsePlayersList(triggerOnPlayerStateChange);
 };
 
 export const openDiscordInviteDialog = () => {

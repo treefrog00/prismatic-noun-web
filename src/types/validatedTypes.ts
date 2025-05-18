@@ -21,11 +21,6 @@ const GameEventSchema = z.discriminatedUnion('type', [
     type: z.literal('DiceRoll'),
     targetValues: z.array(z.number()),
   }),
-  z.object({
-    type: z.literal('Vote'),
-    voteType: z.enum(['Undo', 'Kick', 'Travel']),
-    choice: z.boolean(),
-  }),
 ]);
 
 const FriendlyLevel = z.enum(['enemy', 'neutral', 'friend']);
@@ -50,7 +45,14 @@ const ItemSchema = z.object({
 
 const AbilitySchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
+  level: z.number(),
+});
+
+const ArmourLevel = z.enum(['UNARMOURED', 'LIGHTLY_ARMOURED', 'MODESTLY_ARMOURED', 'HEAVILY_ARMOURED']);
+
+const ArmourSchema = z.object({
+  name: z.string(),
+  level: ArmourLevel,
 });
 
 const FeatureSchema = z.object({
@@ -59,19 +61,34 @@ const FeatureSchema = z.object({
 });
 
 const BaseCharacterSchema = z.object({
-  name: z.string(),
   shortDescription: z.string(),
-  imageUrl: z.string(),
   level: z.number(),
   maxStamina: z.number(),
-});
-
-const CharacterSchema = BaseCharacterSchema.extend({
+  weapons: z.array(z.string()),
+  armour: z.string(),
   inventory: z.array(z.string()),
 });
 
+const CharacterSchema = BaseCharacterSchema.extend({
+  characterId: z.string(),
+  shortName: z.string(),
+  special: z.string(),
+  abilities: z.array(AbilitySchema),
+});
+
 const NpcSchema = BaseCharacterSchema.extend({
+  name: z.string(),
   friendly: FriendlyLevel,
+  imageUrl: z.string(),
+});
+
+export const RolledCharacterSchema = z.object({
+  name: z.string(),
+  characterId: z.string(),
+  luck: z.number(),
+  pronouns: z.string(),
+  imageUrl: z.string(),
+  character: CharacterSchema,
 });
 
 export const CharacterStateSchema = z.object({
@@ -79,6 +96,7 @@ export const CharacterStateSchema = z.object({
   inventory: z.array(z.string()),
   weapons: z.array(z.string()),
   armour: z.string(),
+  luck: z.number(),
 });
 
 const NpcStateSchema = z.object({
@@ -95,16 +113,12 @@ const NameAndQuantitySchema = z.object({
 
 const LocationStateSchema = z.object({
   npcs: z.record(z.string(), NpcStateSchema),
-  characters: z.record(z.string(), CharacterStateSchema),
   items: z.array(NameAndQuantitySchema),
   features: z.array(z.string()),
+  isVisited: z.boolean(),
 });
 
 const WeaponSchema = z.object({
-  name: z.string(),
-});
-
-const ArmourSchema = z.object({
   name: z.string(),
 });
 
@@ -137,6 +151,7 @@ export const StartGameSchema = z.object({
   gameData: GameDataSchema,
   locationData: LocationDataSchema,
   locationState: LocationStateSchema,
+  characterState: z.record(z.string(), CharacterStateSchema),
   currentPlayer: z.string(),
 });
 
@@ -145,6 +160,8 @@ export const ActionResponseSchema = z.object({
   locationState: LocationStateSchema.nullable(),
   locationData: LocationDataSchema.nullable(),
   currentPlayer: z.string().nullable(),
+  turnPointsRemaining: z.number().nullable(),
+  characterState: z.record(z.string(), CharacterStateSchema).nullable(),
 });
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
@@ -153,6 +170,7 @@ export type Item = z.infer<typeof ItemSchema>;
 export type Ability = z.infer<typeof AbilitySchema>;
 export type LocationFeature = z.infer<typeof FeatureSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
+export type RolledCharacter = z.infer<typeof RolledCharacterSchema>;
 export type Npc = z.infer<typeof NpcSchema>;
 export type NpcState = z.infer<typeof NpcStateSchema>;
 export type LocationData = z.infer<typeof LocationDataSchema>;

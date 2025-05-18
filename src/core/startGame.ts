@@ -1,7 +1,7 @@
 import { setState, getState, PlayerState, RPC, getRoomCode, LocalPlayerState, setRpcPlayer } from './multiplayerState';
 import { addLocalPlayer } from '../contexts/GameContext';
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from '../config';
-import { StartGameSchema, QuestSummary, LocationState } from '../types/validatedTypes';
+import { StartGameSchema, QuestSummary } from '../types/validatedTypes';
 import { appendToStoryRpc } from '../hooks/useGameActions';
 import { GameApi } from './gameApi';
 
@@ -11,7 +11,8 @@ export async function startIfNotStarted(
   gameApi: GameApi,
   startingPlayers: PlayerState[],
   questSummary: QuestSummary,
-  localPlayers: PlayerState[]) {
+  localPlayers: PlayerState[],
+) {
   let phase = getState(GAME_PHASE_KEY) as string;
   if (!phase) {
     phase = 'playing';
@@ -24,17 +25,24 @@ export async function startIfNotStarted(
     appendToStoryRpc(questSummary.intro);
   }
 
-  const characters = startingPlayers.map(p => p.getState("character_id"));
+  const playerDetails = startingPlayers.map(p => {
+    let details = p.getState("character");
+    return (
+      {
+        username: p.id,
+        globalName: p.getProfile().name,
+        characterId: details.characterId,
+        pronouns: details.pronouns,
+        characterName: details.name,
+        characterImageUrl: details.imageUrl,
+        luck: details.luck,
+      });
+  });
+
   let startGame = await gameApi.postTyped(`/game/start/${questId}`,
     {
       roomCode: getRoomCode(),
-      characters: characters,
-      players: startingPlayers.map(p => (
-        {
-          username: p.id,
-          globalName: p.getProfile().name,
-          characterId: p.getState("character_id")
-        })),
+      players: playerDetails,
     }, StartGameSchema);
 
   if (HASH_QUEST_ID) {

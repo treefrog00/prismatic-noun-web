@@ -4,6 +4,7 @@ import { GameProvider } from '../contexts/GameContext';
 import { ErrorProvider } from '../contexts/ErrorContext';
 import { AuthProvider } from '../contexts/AuthContext';
 import { LogProvider } from '../contexts/LogContext';
+import { MiscProvider } from '@/contexts/MiscContext';
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -39,11 +40,13 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       <LogProvider>
         <AuthProvider>
           <ErrorProvider>
+          <MiscProvider>
             <GameProvider>
             <StereoProvider>
               <Suspense fallback={''}>{children}</Suspense>
             </StereoProvider>
           </GameProvider>
+          </MiscProvider>
           </ErrorProvider>
         </AuthProvider>
       </LogProvider>

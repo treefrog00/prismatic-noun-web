@@ -7,8 +7,7 @@ import MobileLocationView from './mobile/MobileLocationView';
 import AmbientBackground from './AmbientBackground';
 
 import { GameEvent } from '../types';
-import { handleVote } from './popups/Vote';
-import { useQuestSummary, useMiscSharedData, useGameApi, useLocalPlayers, useVotes, useGameData, useLocationData, useLocationState } from '../contexts/GameContext';
+import { useQuestSummary, useMiscSharedData, useGameApi, useLocalPlayers, useGameData, useLocationData, useLocationState, useCharacters } from '../contexts/GameContext';
 import { HASH_QUEST_ID } from '../config';
 import { startIfNotStarted } from '../core/startGame';
 import { ActionResponseSchema } from '../types/validatedTypes';
@@ -33,21 +32,21 @@ const GameContent = () => {
 
   // built-instate from PlayroomKit
   const isHost = useIsHost();
-  const players = usePlayersList(false);
+  const players = usePlayersList();
   const thisPlayer = myPlayer();
 
   // multiplayer state
-  const { locationData, setLocationData } = useLocationData();
-  const { locationState, setLocationState } = useLocationState();
+  const { setLocationData } = useLocationData();
+  const { setLocationState } = useLocationState();
   const { gameData, setGameData } = useGameData();
   const { setQuestSummary } = useQuestSummary();
   const { questSummary } = useQuestSummary();
 
   const { localPlayers, setLocalPlayers } = useLocalPlayers();
 
-  const gameApi = useGameApi();
+  const { characters, setCharacters } = useCharacters();
 
-  const { votes, setVotes } = useVotes();
+  const gameApi = useGameApi();
 
   // Carousel swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -118,10 +117,6 @@ const GameContent = () => {
           setDiceRoller(caller.state.name);
           triggerDiceAnimation();
           break;
-        // Vote is called in host only mode
-        case 'Vote':
-          handleVote(votes, setVotes, data.voteType, data.choice, caller.state.name);
-          break;
       }
 
       return Promise.resolve();
@@ -155,6 +150,7 @@ const GameContent = () => {
         setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
         setMiscSharedData({ ...miscSharedData, currentPlayer: startGame.currentPlayer });
+        setCharacters(startGame.characterState);
 
         if (HASH_QUEST_ID) {
           setQuestSummary(

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import StereoControl from '../stereo/StereoControl';
 import LobbyHome from './LobbyHome';
 import LobbyNavBar from './LobbyNavBar';
+import LobbyConfig from './LobbyConfig';
 import { useIsHost, insertCoin, openDiscordInviteDialog } from '@/core/multiplayerState';
 import { QuestSummary } from '@/types';
 import { useGameStarted, useQuestSummary } from '@/contexts/GameContext';
@@ -10,27 +11,16 @@ import { responsiveStyles } from '@/styles/responsiveStyles';
 import { envConfig } from '@/envConfig';
 import { GameApi } from '@/core/gameApi';
 import { QuestSummariesSchema } from '@/types/validatedTypes';
-import CharacterDesigner from './CharacterDesigner';
 import StarryBackground from '../StarryBackground';
+import { MiscProvider, useMisc } from '@/contexts/MiscContext';
 
-
-const Lobby = () => {
-  const isHost = useIsHost();
-  const { setGameStarted } = useGameStarted();
-
+const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState('lobby');
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
   const { questSummary, setQuestSummary } = useQuestSummary();
+  const { shouldAnimateStars } = useMisc();
   const gameApi = new GameApi();
-
-  const handleStartAdventure = () => {
-    setGameStarted(true);
-  };
-
-  const handleInvite = () => {
-    openDiscordInviteDialog()
-  };
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -52,7 +42,7 @@ const Lobby = () => {
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
-      <StarryBackground />
+      <StarryBackground shouldAnimate={shouldAnimateStars} />
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
         <LobbyNavBar activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="flex-1 flex items-center justify-center">
@@ -68,31 +58,8 @@ const Lobby = () => {
                 <div className="text-gray-400">Loading...</div>
               )}
               {(
-                <div className={activeTab === 'character' ? 'block' : 'hidden'}>
-                  <CharacterDesigner />
-                </div>
-              )}
-              {(
-                <div className={activeTab === 'stereo' ? 'block' : 'hidden'}>
-                  <StereoControl />
-                </div>
-              )}
-              {activeTab === 'lobby' && (
-                <div className="flex gap-4">
-                  {isHost && (
-                    <button
-                      className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-                      onClick={handleStartAdventure}
-                    >
-                      Start adventure!
-                    </button>
-                  )}
-                  <button
-                    className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-                    onClick={handleInvite}
-                  >
-                    Invite
-                  </button>
+                <div className={activeTab === 'config' ? 'block' : 'hidden'}>
+                  <LobbyConfig />
                 </div>
               )}
             </div>
@@ -100,6 +67,12 @@ const Lobby = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Lobby = () => {
+  return (
+    <LobbyContent />
   );
 };
 

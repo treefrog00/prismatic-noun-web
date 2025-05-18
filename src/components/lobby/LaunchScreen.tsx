@@ -4,10 +4,12 @@ import { useStereo } from '@/contexts/StereoContext';
 import { responsiveStyles } from '@/styles/responsiveStyles';
 import { isPhone } from '@/hooks/useDeviceDetection';
 import StarryBackground from '../StarryBackground';
+import { useMisc } from '@/contexts/MiscContext';
 
 const LaunchScreen = () => {
   const { setShowLaunchScreen } = useShowLaunchScreen();
   const { initialPlay } = useStereo();
+  const { shouldAnimateStars } = useMisc();
 
   const handleLaunch = () => {
     initialPlay();
@@ -17,7 +19,7 @@ const LaunchScreen = () => {
   return (
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
-      <StarryBackground />
+      <StarryBackground shouldAnimate={shouldAnimateStars} />
       <div style={{...starryTheme.contentLeft, height: '100vh', display: 'flex', flexDirection: 'column'}}>
         <div className="flex flex-col items-center justify-center flex-1">
           <img src="/ai_art/logo_wide.webp" alt="Game Logo"
@@ -36,20 +38,10 @@ const LaunchScreen = () => {
           {!isPhone() && (
             <div className={`text-center text-gray-200 max-w-2xl`}>
               <p className="mb-4">
-                Prismatic Noun is a multiplayer role-playing game with an AI Game Operations Director. You can play with friends, family, and online communities.
+                Prismatic Noun is a collection of short role-playing adventure stories that you can play through with friends on Discord.
               </p>
               <p className="mb-4">
-                Embark on adventures across a wide range of different scenarios:
-              </p>
-              <ul className="list-disc list-inside mb-4">
-                <li>a team of dwarves on a quest to rid their underground fortress of troublesome giant rodents</li>
-                <li>a team of intergalactic beings of pure energy endeavouring to capture and imprison a troublesome multidimensional imp</li>
-                <li>a team of software engineers building a vaguely defined SAAS product on a mission to secure their next funding round</li>
-                <li>a team of accountants gathered round a table pretending to be a party of wizards venturing into a mythical grove.</li>
-              </ul>
-              <p className="mb-4">The choice is yours!</p>
-              <p className="mb-4">
-                The game is a Discord activity that is currently only available for alpha testers. It may one day be available both on the web and on any Discord Server, chat or direct message.
+                The game is a Discord activity that is currently only available for alpha testers.
               </p>
             </div>
           )}

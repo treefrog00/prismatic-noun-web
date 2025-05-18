@@ -1,3 +1,6 @@
 node_modules
 dist
 src/envConfig.ts
+
+# gh pulse
+*-pulse.html

@@ -19,4 +19,5 @@ export type {
   Link,
   ActionResponse,
   GameEvent,
+  RolledCharacter,
 } from './validatedTypes';

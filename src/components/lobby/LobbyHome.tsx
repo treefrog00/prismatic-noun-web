@@ -1,17 +1,55 @@
-import { useIsHost, usePlayersList } from '@/core/multiplayerState';
+import { myPlayer, openDiscordInviteDialog, useIsHost, usePlayersList } from '@/core/multiplayerState';
 import { responsiveStyles } from '@/styles/responsiveStyles';
 import { starryTheme } from '@/styles/starryTheme';
 import { QuestSummary } from '@/types';
-import { useQuestSummary } from '@/contexts/GameContext';
+import { useCharacters, useGameStarted, useQuestSummary } from '@/contexts/GameContext';
+import { CharacterInstance } from '@/types/CharacterInstance';
+import { GameApi } from '@/core/gameApi';
+import { RolledCharacterSchema } from '@/types/validatedTypes';
+import { useState, useEffect } from 'react';
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
 }
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
-  const players = usePlayersList(true);
+  const players = usePlayersList();
   const { questSummary, setQuestSummary } = useQuestSummary();
+  const gameApi = new GameApi();
+  const [characterRolled, setCharacterRolled] = useState(false);
   const isHost = useIsHost();
+  const { setGameStarted } = useGameStarted();
+
+  useEffect(() => {
+    setCharacterRolled(false);
+  }, [questSummary]);
+
+  const handleRollCharacter = async () => {
+    let rolledCharacter = await gameApi.postTyped(`/quest/${questSummary.questId}/roll_character`,
+      {
+        pronouns: "he",
+      }, RolledCharacterSchema);
+
+    const player = myPlayer();
+    const character: CharacterInstance = {
+      characterId: rolledCharacter.characterId,
+      name: rolledCharacter.name,
+      luck: rolledCharacter.luck,
+      pronouns: rolledCharacter.pronouns,
+      imageUrl: rolledCharacter.imageUrl,
+      data: rolledCharacter.character
+    };
+    player.setState("character", character, true);
+    setCharacterRolled(true);
+  };
+
+  const handleStartAdventure = () => {
+    setGameStarted(true);
+  };
+
+  const handleInvite = () => {
+    openDiscordInviteDialog()
+  };
 
   return (
     <>
@@ -64,11 +102,43 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         <div className="flex gap-4">
           {players.map((player) => (
             <div key={player.id} className={`${responsiveStyles.sizes.playerAvatar} bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center`}>
-              <span className={`text-gray-400 ${responsiveStyles.text.small}`}>{player.getState("name")}</span>
+              <span className={`text-gray-400 ${responsiveStyles.text.small}`}>{player.getProfile().name}</span>
             </div>
           ))}
         </div>
       </div>
+      <div className="flex gap-4">
+          {questSummary && !characterRolled && (
+            <button
+              className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              onClick={handleRollCharacter}
+            >
+              Roll character
+            </button>
+          )}
+          {questSummary && !isHost && characterRolled && (
+            <button
+              className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              disabled
+            >
+              Ready!
+            </button>
+          )}
+          {questSummary && isHost && characterRolled && (
+            <button
+              className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              onClick={handleStartAdventure}
+            >
+              Start adventure!
+            </button>
+          )}
+          <button
+            className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+            onClick={handleInvite}
+          >
+            Invite
+          </button>
+        </div>
     </>
   );
 };

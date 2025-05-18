@@ -10,7 +10,7 @@ interface NavBarProps {
 
 const LobbyNavBar: FC<NavBarProps> = (props) => {
   const isHost = useIsHost();
-  const tabs = ['lobby', 'character', ...(isHost ? ['game config', 'stereo'] : ['stereo'])];
+  const tabs = ['lobby', 'config'];
 
   return (
     <nav className="w-full bg-gray-800/80 border-b border-gray-700 px-2 md:px-0">

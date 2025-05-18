@@ -27,6 +27,7 @@ export const useStereo = () => {
 
 export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [currentMode, setCurrentMode] = useState<StereoMode>(DEFAULT_MODE);
   const [currentModeIndex, setCurrentModeIndex] = useState<number>(STEREO_MODES.indexOf(DEFAULT_MODE));
   const { gameStarted } = useGameStarted();
@@ -111,12 +112,17 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       await fadeOut(audioElementRef.current);
     } else {
       try {
+        // Clear any existing timeout
+        if (fadeTimeoutRef.current) {
+          clearTimeout(fadeTimeoutRef.current);
+        }
+
         audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
         audioElementRef.current.volume = 1;
         await audioElementRef.current.play();
 
         // Set timeout for auto fadeout after 1 minute
-        setTimeout(() => {
+        fadeTimeoutRef.current = setTimeout(() => {
           if (audioElementRef.current && !audioElementRef.current.paused) {
             fadeOut(audioElementRef.current);
           }
@@ -133,6 +139,15 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
   };
+
+  // Clean up timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <StereoContext.Provider value={{

@@ -1,47 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import Popup from './Popup';
-import { usePlayersList, RPC, useIsHost, myPlayer } from '../../core/multiplayerState';
-import { useMiscSharedData, useVotes } from '../../contexts/GameContext';
+import { usePlayersList, useIsHost, myPlayer } from '../../core/multiplayerState';
+import { useMiscSharedData } from '../../contexts/GameContext';
 interface VoteProps {
   onVoteComplete: (result: boolean) => void;
 }
 
-const voteKey = (voteType: string, name: string) => `${voteType}-${name}`;
+const voteKey = (voteType: string) => `vote-${voteType}`;
 
-// called from RPC of event handler, vote is called in host only mode
-export function handleVote(
-  votes: Record<string, boolean>,
-  setVotes: (value: Record<string, boolean>, reliable?: boolean) => void,
-  voteType: string,
-  choice: boolean,
-  name: string) {
-
-  const key = voteKey(voteType, name);
-
-  setVotes({
-    ...votes,
-    [key]: choice
-  });
-}
 
 const VotePopup: React.FC<VoteProps> = ({
   onVoteComplete,
 }) => {
-  const { votes, setVotes } = useVotes();
   const [myVote, setMyVote] = useState<boolean | null>(null);
-  const players = usePlayersList(false);
+  const players = usePlayersList(true);
   const isHost = useIsHost();
   const { miscSharedData, setMiscSharedData, setShowVote } = useMiscSharedData();
   const thisPlayer = myPlayer();
-
   const onClose = miscSharedData.currentPlayer === thisPlayer?.getState('name')
     ? () => setShowVote(false)
     : null;
 
   useEffect(() => {
-    if (isHost) {
-      setVotes({});
-    }
+    thisPlayer.setState(voteKey(voteState.voteTitle), null);
     if (miscSharedData.voteState.showVote) {
       setMyVote(null);
     }
@@ -51,7 +32,7 @@ const VotePopup: React.FC<VoteProps> = ({
     if (!isHost) return;
 
     const playerCount = players.length;
-    const votesArr = Object.values(votes);
+    const votesArr = players.map(player => player.getState(voteKey(voteState.voteTitle)));
     const yesVotes = votesArr.filter(v => v === true).length;
     const noVotes = votesArr.filter(v => v === false).length;
     const majority = Math.floor(playerCount / 2) + 1;
@@ -61,9 +42,12 @@ const VotePopup: React.FC<VoteProps> = ({
       const result = yesVotes >= majority;
       onVoteComplete(result);
       setShowVote(false);
-      setVotes({});
+
+      for (const player of players) {
+        player.setState(voteKey(voteState.voteTitle), null);
+      }
     }
-  }, [votes, isHost, players.length, onVoteComplete]);
+  }, [isHost, players, onVoteComplete]);
 
   const handleVote = (choice: boolean, currentPlayer: string) => {
     // Prevent changing vote, unless this is the initiator. haven't implemented events for changing vote
@@ -75,7 +59,8 @@ const VotePopup: React.FC<VoteProps> = ({
     }
 
     setMyVote(choice);
-    RPC.call('rpc-game-event', { type: 'Vote', voteType: voteState.voteTitle, choice: choice }, RPC.Mode.HOST);
+    const key = voteKey(voteState.voteTitle);
+    myPlayer().setState(key, choice);
   };
 
   const voteState = miscSharedData.voteState;

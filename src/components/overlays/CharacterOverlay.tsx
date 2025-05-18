@@ -11,7 +11,7 @@ interface CharacterOverlayProps {
 }
 
 const CharacterOverlay = ({ isOpen, onClose, position, playerId, onMouseEnter, onMouseLeave }: CharacterOverlayProps) => {
-  const players = usePlayersList(true);
+  const players = usePlayersList();
   const player = players.find(p => p.id === playerId);
 
   if (!isOpen || !player) return null;

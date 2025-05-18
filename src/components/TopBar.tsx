@@ -1,7 +1,7 @@
 import { usePlayersList } from '../core/multiplayerState';
 import { useState, useRef, useCallback } from 'react';
 import CharacterOverlay from './overlays/CharacterOverlay';
-import { useActionTarget, useLocationData, useLocationState } from '@/contexts/GameContext';
+import { useActionTarget, useCharacters, useLocationData, useLocationState } from '@/contexts/GameContext';
 import SettingsPopup from '@/components/popups/SettingsPopup';
 import NpcOverlay from './overlays/NpcOverlay';
 import LocationOverlay from './overlays/LocationOverlay';
@@ -123,6 +123,7 @@ const TopBar = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const rightHandListRef = useRef<HTMLDivElement>(null);
+  const { characters } = useCharacters();
 
   const characterOverlay = useOverlayState('character');
   const npcOverlay = useOverlayState('npc');
@@ -162,7 +163,7 @@ const TopBar = () => {
                 onMouseEnter={(e) => characterOverlay.handleMouseEvent(player.id, e, getCharacterPosition)}
                 onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
               >
-                <span className="text-gray-400 text-xs">{player.getState("name")}</span>
+                <span className="text-gray-400 text-xs">{player.getProfile().name}</span>
               </div>
             ))}
           </div>

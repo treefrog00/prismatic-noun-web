@@ -35,6 +35,7 @@ export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         message,
         timestamp: Date.now(),
       };
+      return;
       setLogs(prev => [...prev, newLog]);
 
       // Remove the log after 5 seconds

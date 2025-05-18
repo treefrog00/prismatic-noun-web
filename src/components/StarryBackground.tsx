@@ -8,14 +8,20 @@ interface Star {
   speed: number;
 }
 
-const StarryBackground: React.FC = () => {
+interface StarryBackgroundProps {
+  shouldAnimate: boolean;
+}
+
+const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<Star[]>([]);
   const animationFrameRef = useRef<number>();
 
   // Star configuration
   const config = {
-    count: 80,
+    get count() {
+      return Math.floor((window.innerWidth * window.innerHeight) / 4000);
+    },
     size: {
       min: 0.5,
       max: 2.0
@@ -55,8 +61,9 @@ const StarryBackground: React.FC = () => {
     // Initialize stars
     const initStars = () => {
       const stars: Star[] = [];
+      const starCount = config.count;
 
-      for (let i = 0; i < config.count; i++) {
+      for (let i = 0; i < starCount; i++) {
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -77,10 +84,12 @@ const StarryBackground: React.FC = () => {
 
       // Update and draw stars
       starsRef.current.forEach(star => {
-        // Update opacity with sine wave
-        star.opacity += Math.sin(Date.now() * star.speed) * 0.01;
-        // Clamp opacity between min and max values
-        star.opacity = Math.max(config.opacity.animation.min, Math.min(config.opacity.animation.max, star.opacity));
+        if (shouldAnimate) {
+          // Update opacity with sine wave
+          star.opacity += Math.sin(Date.now() * star.speed) * 0.01;
+          // Clamp opacity between min and max values
+          star.opacity = Math.max(config.opacity.animation.min, Math.min(config.opacity.animation.max, star.opacity));
+        }
 
         // Draw star
         ctx.beginPath();
@@ -88,7 +97,10 @@ const StarryBackground: React.FC = () => {
         ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
         ctx.fill();
       });
-      animationFrameRef.current = requestAnimationFrame(animate);
+
+      if (shouldAnimate) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+      }
     };
 
     // Initial setup
@@ -106,7 +118,7 @@ const StarryBackground: React.FC = () => {
         cancelAnimationFrame(animationFrameRef.current);
       }
     };
-  }, []);
+  }, [shouldAnimate]); // Add shouldAnimate to dependencies
 
   return (
     <canvas

@@ -28,12 +28,14 @@ export class GameApi {
           const newToken = await this.getAuthToken();
           const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken, method);
           if (!retryResponse.ok) {
-            throw new Error(`HTTP status: ${retryResponse.status}`);
+            const responseBody = await retryResponse.json();
+            throw new Error(`HTTP error ${retryResponse.status}: ${JSON.stringify(responseBody)}`);
           }
           return retryResponse.json();
         }
       }
-      throw new Error(`HTTP status: ${response.status}`);
+      const responseBody = await response.json();
+      throw new Error(`HTTP error ${response.status}: ${JSON.stringify(responseBody)}`);
     }
 
     return response.json();
@@ -43,7 +45,8 @@ export class GameApi {
       const response = await this._makeRequestWithTokenNoException(path, body, token, method);
 
       if (!response.ok) {
-        throw new Error(`HTTP status: ${response.status}`);
+        const responseBody = await response.json();
+        throw new Error(`HTTP error ${response.status}: ${JSON.stringify(responseBody)}`);
       }
       return response;
   }

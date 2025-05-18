@@ -1,4 +1,3 @@
-import { isAndroidOrIOS } from '@/hooks/useDeviceDetection';
 import { GameApi } from '../core/gameApi';
 import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
 import { Character, QuestSummary, CharacterState, GameData, LocationData, LocationState } from '../types';
@@ -18,7 +17,7 @@ type VoteState = {
 type MiscSharedData = {
   currentPlayer: string | null;
   pendingLocationUpdate: LocationState
-  pendingCharacterUpdate: CharacterState
+  pendingCharacterUpdate: Record<string, CharacterState>
   voteState: VoteState
   turnPointsRemaining: number
 };
@@ -36,6 +35,9 @@ type GameContextType = {
   locationState: LocationState | null;
   setLocationState: (value: LocationState | null) => void;
 
+  characters: Record<string, CharacterState>;
+  setCharacters: (value: Record<string, CharacterState>) => void;
+
   gameStarted: boolean;
   setGameStarted: (value: boolean) => void;
 
@@ -44,12 +46,6 @@ type GameContextType = {
 
   ability: string | null;
   setAbility: (value: string | null) => void;
-
-  characters: Record<string, Character>;
-  setCharacters: (value: Record<string, Character>) => void;
-
-  votes: Record<string, boolean>;
-  setVotes: (value: Record<string, boolean>) => void;
 
   miscSharedData: MiscSharedData;
   setMiscSharedData: (value: MiscSharedData) => void;
@@ -100,7 +96,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     voteTitle: ''
   });
   const [characters, setCharacters] = useMultiplayerState<Record<string, CharacterState>>('characters', {});
-  const [votes, setVotes] = useMultiplayerState<Record<string, boolean>>('votes', {});
   const [miscSharedData, setMiscSharedData] = useMultiplayerState<MiscSharedData>('miscSharedData', {
     currentPlayer: null,
     pendingLocationUpdate: null,
@@ -144,6 +139,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         locationState,
         setLocationState,
 
+        characters,
+        setCharacters,
+
         gameStarted,
         setGameStarted,
 
@@ -152,10 +150,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         localPlayers,
         setLocalPlayers,
-        characters,
-        setCharacters,
-        votes,
-        setVotes,
         actionTarget,
         setActionTarget,
         ability,
@@ -225,6 +219,14 @@ export const useLocationState = () => {
   return { locationState: context.locationState, setLocationState: context.setLocationState };
 };
 
+export const useCharacters = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useCharacters must be used within a GameProvider');
+  }
+  return { characters: context.characters, setCharacters: context.setCharacters };
+};
+
 export const useLocalPlayers = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -274,22 +276,6 @@ export const useGameApi = () => {
     throw new Error('useGameApi must be used within a GameProvider');
   }
   return context.gameApi;
-};
-
-export const useCharacters = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error('useCharacters must be used within a GameProvider');
-  }
-  return { characters: context.characters, setCharacters: context.setCharacters };
-};
-
-export const useVotes = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error('useVotes must be used within a GameProvider');
-  }
-  return { votes: context.votes, setVotes: context.setVotes };
 };
 
 export const useActionTarget = () => {

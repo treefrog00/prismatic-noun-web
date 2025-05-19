@@ -1,6 +1,5 @@
 ## Local dev
 
-
 ```bash
 # this will also set up pre-commit hooks with husky, via the script in .husky:
 $ npm install

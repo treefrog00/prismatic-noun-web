@@ -1,10 +1,15 @@
-import { usePlayersList } from '../core/multiplayerState';
-import { useState, useRef, useCallback } from 'react';
-import CharacterOverlay from './overlays/CharacterOverlay';
-import { useActionTarget, useCharacters, useLocationData, useLocationState } from '@/contexts/GameContext';
-import SettingsPopup from '@/components/popups/SettingsPopup';
-import NpcOverlay from './overlays/NpcOverlay';
-import LocationOverlay from './overlays/LocationOverlay';
+import { usePlayersList } from "../core/multiplayerState";
+import { useState, useRef, useCallback } from "react";
+import CharacterOverlay from "./overlays/CharacterOverlay";
+import {
+  useActionTarget,
+  useCharacters,
+  useLocationData,
+  useLocationState,
+} from "@/contexts/GameContext";
+import SettingsPopup from "@/components/popups/SettingsPopup";
+import NpcOverlay from "./overlays/NpcOverlay";
+import LocationOverlay from "./overlays/LocationOverlay";
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;
@@ -22,7 +27,7 @@ const useOverlayState = (overlayId: string) => {
     isOpen: false,
     position: { x: 0, y: 0 },
     hoveredId: null,
-    isOverOverlay: false
+    isOverOverlay: false,
   });
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const { setActionTarget } = useActionTarget();
@@ -36,74 +41,81 @@ const useOverlayState = (overlayId: string) => {
 
   const TIMEOUT = 300;
 
-  const handleMouseEvent = useCallback((
-    id: string | null,
-    event?: React.MouseEvent,
-    getPosition?: () => { x: number; y: number }
-  ) => {
-    clearTimeout();
+  const handleMouseEvent = useCallback(
+    (
+      id: string | null,
+      event?: React.MouseEvent,
+      getPosition?: () => { x: number; y: number },
+    ) => {
+      clearTimeout();
 
-    if (id && event && getPosition) {
-      // If a different overlay is active, close it immediately
-      if (activeOverlayId && activeOverlayId !== overlayId && closeOtherOverlays) {
-        closeOtherOverlays();
-      }
-
-      activeOverlayId = overlayId;
-      closeOtherOverlays = () => {
-        setState(prev => ({
-          ...prev,
-          isOpen: false,
-          hoveredId: null
-        }));
-      };
-
-      setState(prev => ({
-        ...prev,
-        position: getPosition(),
-        isOpen: true,
-        hoveredId: id
-      }));
-    } else if (!state.isOverOverlay) {
-      timeoutRef.current = setTimeout(() => {
-        if (activeOverlayId === overlayId) {
-          activeOverlayId = null;
-          closeOtherOverlays = null;
+      if (id && event && getPosition) {
+        // If a different overlay is active, close it immediately
+        if (
+          activeOverlayId &&
+          activeOverlayId !== overlayId &&
+          closeOtherOverlays
+        ) {
+          closeOtherOverlays();
         }
-        setState(prev => ({
+
+        activeOverlayId = overlayId;
+        closeOtherOverlays = () => {
+          setState((prev) => ({
+            ...prev,
+            isOpen: false,
+            hoveredId: null,
+          }));
+        };
+
+        setState((prev) => ({
+          ...prev,
+          position: getPosition(),
+          isOpen: true,
+          hoveredId: id,
+        }));
+      } else if (!state.isOverOverlay) {
+        timeoutRef.current = setTimeout(() => {
+          if (activeOverlayId === overlayId) {
+            activeOverlayId = null;
+            closeOtherOverlays = null;
+          }
+          setState((prev) => ({
+            ...prev,
+            isOpen: false,
+            hoveredId: null,
+          }));
+        }, TIMEOUT);
+      } else if (!id) {
+        setState((prev) => ({
           ...prev,
           isOpen: false,
-          hoveredId: null
+          hoveredId: null,
+          isOverOverlay: false,
         }));
-      }, TIMEOUT);
-    } else if (!id) {
-      setState(prev => ({
-        ...prev,
-        isOpen: false,
-        hoveredId: null,
-        isOverOverlay: false
-      }));
-    }
-  }, [state.isOverOverlay, clearTimeout, overlayId]);
+      }
+    },
+    [state.isOverOverlay, clearTimeout, overlayId],
+  );
 
   const handleOverlayMouseEnter = useCallback(() => {
     clearTimeout();
-    setState(prev => ({ ...prev, isOverOverlay: true }));
+    setState((prev) => ({ ...prev, isOverOverlay: true }));
   }, [clearTimeout]);
 
   const handleOverlayMouseLeave = useCallback(() => {
     clearTimeout();
     setActionTarget(null);
-    setState(prev => ({ ...prev, isOverOverlay: false }));
+    setState((prev) => ({ ...prev, isOverOverlay: false }));
     timeoutRef.current = setTimeout(() => {
       if (activeOverlayId === overlayId) {
         activeOverlayId = null;
         closeOtherOverlays = null;
       }
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         isOpen: false,
-        hoveredId: null
+        hoveredId: null,
       }));
     }, TIMEOUT);
   }, [clearTimeout, overlayId]);
@@ -112,7 +124,7 @@ const useOverlayState = (overlayId: string) => {
     state,
     handleMouseEvent,
     handleOverlayMouseEnter,
-    handleOverlayMouseLeave
+    handleOverlayMouseLeave,
   };
 };
 
@@ -125,29 +137,30 @@ const TopBar = () => {
   const rightHandListRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
 
-  const characterOverlay = useOverlayState('character');
-  const npcOverlay = useOverlayState('npc');
-  const locationOverlay = useOverlayState('location');
+  const characterOverlay = useOverlayState("character");
+  const npcOverlay = useOverlayState("npc");
+  const locationOverlay = useOverlayState("location");
 
   const getNpcs = () => {
     if (!locationState) return [];
     return Object.entries(locationState.npcs).map(([instanceId, npc]) => ({
       ...npc,
-      instanceId
+      instanceId,
     }));
   };
 
   const getCharacterPosition = () => ({
     x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
-    y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0
+    y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
 
   const getRightAlignedPosition = () => {
     const overlayWidth = window.innerWidth * 0.4;
-    const lastItemRect = rightHandListRef.current?.lastElementChild?.getBoundingClientRect();
+    const lastItemRect =
+      rightHandListRef.current?.lastElementChild?.getBoundingClientRect();
     return {
       x: (lastItemRect?.right ?? 0) - overlayWidth,
-      y: lastItemRect?.bottom ?? 0
+      y: lastItemRect?.bottom ?? 0,
     };
   };
 
@@ -160,10 +173,18 @@ const TopBar = () => {
               <div
                 key={player.id}
                 className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
-                onMouseEnter={(e) => characterOverlay.handleMouseEvent(player.id, e, getCharacterPosition)}
+                onMouseEnter={(e) =>
+                  characterOverlay.handleMouseEvent(
+                    player.id,
+                    e,
+                    getCharacterPosition,
+                  )
+                }
                 onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
               >
-                <span className="text-gray-400 text-xs">{player.getProfile().name}</span>
+                <span className="text-gray-400 text-xs">
+                  {player.getProfile().name}
+                </span>
               </div>
             ))}
           </div>
@@ -172,7 +193,11 @@ const TopBar = () => {
               <div
                 key={npc.instanceId}
                 className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
-                onMouseEnter={(e) => npcOverlay.handleMouseEvent(npc.instanceId, e, () => getRightAlignedPosition())}
+                onMouseEnter={(e) =>
+                  npcOverlay.handleMouseEvent(npc.instanceId, e, () =>
+                    getRightAlignedPosition(),
+                  )
+                }
                 onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
               >
                 <span className="text-gray-400 text-xs">{npc.name}</span>
@@ -181,7 +206,11 @@ const TopBar = () => {
             {locationData && (
               <div
                 className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors overflow-hidden"
-                onMouseEnter={(e) => locationOverlay.handleMouseEvent('location', e, () => getRightAlignedPosition())}
+                onMouseEnter={(e) =>
+                  locationOverlay.handleMouseEvent("location", e, () =>
+                    getRightAlignedPosition(),
+                  )
+                }
                 onMouseLeave={() => locationOverlay.handleMouseEvent(null)}
               >
                 <img
@@ -194,7 +223,10 @@ const TopBar = () => {
           </div>
         </div>
       </div>
-      <SettingsPopup isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <SettingsPopup
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
       <CharacterOverlay
         isOpen={characterOverlay.state.isOpen}
         onClose={() => {

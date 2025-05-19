@@ -1,5 +1,5 @@
-import { useLocationData } from '@/contexts/GameContext';
-import Overlay from './Overlay';
+import { useLocationData } from "@/contexts/GameContext";
+import Overlay from "./Overlay";
 
 interface LocationOverlayProps {
   isOpen: boolean;
@@ -9,7 +9,13 @@ interface LocationOverlayProps {
   onMouseLeave: () => void;
 }
 
-const LocationOverlay = ({ isOpen, onClose, position, onMouseEnter, onMouseLeave }: LocationOverlayProps) => {
+const LocationOverlay = ({
+  isOpen,
+  onClose,
+  position,
+  onMouseEnter,
+  onMouseLeave,
+}: LocationOverlayProps) => {
   const { locationData } = useLocationData();
 
   if (!isOpen || !locationData) return null;
@@ -18,10 +24,10 @@ const LocationOverlay = ({ isOpen, onClose, position, onMouseEnter, onMouseLeave
     <Overlay
       className="w-2/5"
       style={{
-        position: 'fixed',
+        position: "fixed",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 50
+        zIndex: 50,
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -34,8 +40,12 @@ const LocationOverlay = ({ isOpen, onClose, position, onMouseEnter, onMouseLeave
             className="w-16 h-16 object-cover rounded"
           />
           <div className="flex flex-col">
-            <span className="text-gray-300 font-medium">{locationData.name}</span>
-            <span className="text-gray-400 text-sm">{locationData.shortDescription}</span>
+            <span className="text-gray-300 font-medium">
+              {locationData.name}
+            </span>
+            <span className="text-gray-400 text-sm">
+              {locationData.shortDescription}
+            </span>
           </div>
         </div>
       </div>

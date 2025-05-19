@@ -1,42 +1,47 @@
-import { useRef, useState, useEffect } from 'react';
-import { useIsNarrowScreen } from '@/hooks/useDeviceDetection';
-import AbilityChooser from '@/components/popups/AbilityChooser';
-import TextInput from '@/components/TextInput';
-import { useQuestSummary, useActionTarget, useAbility, useMiscSharedData } from '@/contexts/GameContext';
-import MapPopup from '@/components/popups/MapPopup';
-import InventoryPopup from '@/components/popups/InventoryPopup';
-import artUrl from '@/util/artUrls';
-import LogbookPopup from '@/components/popups/LogbookPopup';
-import { ButtonConfig, getColorClasses } from '@/types/button';
-import { useGameActions } from '@/hooks/useGameActions';
-import { sharedStyles } from '@/styles/shared';
-import Overlay from './overlays/Overlay';
-import { createPortal } from 'react-dom';
+import { useRef, useState, useEffect } from "react";
+import { useIsNarrowScreen } from "@/hooks/useDeviceDetection";
+import AbilityChooser from "@/components/popups/AbilityChooser";
+import TextInput from "@/components/TextInput";
+import {
+  useQuestSummary,
+  useActionTarget,
+  useAbility,
+  useMiscSharedData,
+} from "@/contexts/GameContext";
+import MapPopup from "@/components/popups/MapPopup";
+import InventoryPopup from "@/components/popups/InventoryPopup";
+import artUrl from "@/util/artUrls";
+import LogbookPopup from "@/components/popups/LogbookPopup";
+import { ButtonConfig, getColorClasses } from "@/types/button";
+import { useGameActions } from "@/hooks/useGameActions";
+import { sharedStyles } from "@/styles/shared";
+import Overlay from "./overlays/Overlay";
+import { createPortal } from "react-dom";
 
 const rootButtonsDesktop: ButtonConfig[] = [
-  { id: "act", label: 'Act', color: 'amber-border' },
-  { id: "proceed-ok", label: 'Proceed', color: 'teal' },
-  { id: "end-turn-ok", label: 'End Turn', color: 'stone' },
+  { id: "act", label: "Act", color: "amber-border" },
+  { id: "proceed-ok", label: "Proceed", color: "teal" },
+  { id: "end-turn-ok", label: "End Turn", color: "stone" },
 ];
 
 const rootButtonsMobile: ButtonConfig[] = [
-  { id: "chat", label: 'Chat', color: 'none' },
-  { id: "investigate", label: 'Investigate', color: 'none' },
-  { id: "say", label: 'Say', color: 'none' },
-  { id: "do", label: 'Do', color: 'none' },
-  { id: "ability", label: 'Ability', color: 'none' },
-  { id: "proceed-ok", label: 'Proceed', color: 'none' },
-  { id: "inventory", label: 'Inventory', color: 'none' },
-  { id: "logbook", label: 'Logbook', color: 'none' },
-  { id: "map", label: 'Map', color: 'none' },
-  { id: "end-turn-ok", label: 'End Turn', color: 'none' },
+  { id: "chat", label: "Chat", color: "none" },
+  { id: "investigate", label: "Investigate", color: "none" },
+  { id: "say", label: "Say", color: "none" },
+  { id: "do", label: "Do", color: "none" },
+  { id: "ability", label: "Ability", color: "none" },
+  { id: "proceed-ok", label: "Proceed", color: "none" },
+  { id: "inventory", label: "Inventory", color: "none" },
+  { id: "logbook", label: "Logbook", color: "none" },
+  { id: "map", label: "Map", color: "none" },
+  { id: "end-turn-ok", label: "End Turn", color: "none" },
 ];
 
 const subActions: ButtonConfig[] = [
-  { id: "investigate", label: 'Investigate', color: 'stone' },
-  { id: "say", label: 'Say', color: 'teal' },
-  { id: "do", label: 'Do', color: 'violet' },
-  { id: "ability", label: 'Ability', color: 'purple' },
+  { id: "investigate", label: "Investigate", color: "stone" },
+  { id: "say", label: "Say", color: "teal" },
+  { id: "do", label: "Do", color: "violet" },
+  { id: "ability", label: "Ability", color: "purple" },
 ];
 
 interface ControlProps {
@@ -50,7 +55,16 @@ interface ControlProps {
   setIsLogbookOpen: (open: boolean) => void;
 }
 
-const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser, setIsMapOpen, setIsInventoryOpen, setIsLogbookOpen }: ControlProps) => {
+const MobileControls = ({
+  onPointerDown,
+  showTextarea,
+  renderTextInput,
+  showActChooser,
+  setShowActChooser,
+  setIsMapOpen,
+  setIsInventoryOpen,
+  setIsLogbookOpen,
+}: ControlProps) => {
   const [showMobileButtons, setShowMobileButtons] = useState(false);
   const { miscSharedData } = useMiscSharedData();
 
@@ -58,7 +72,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
     return renderTextInput();
   }
 
-  const chequerColors = ['teal', 'slate'];
+  const chequerColors = ["teal", "slate"];
   const numCols = 2;
   const action_colors = Object.fromEntries(
     rootButtonsMobile.map((ability, index) => {
@@ -66,7 +80,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
       const col = index % numCols;
       const color = chequerColors[(row + col) % 2];
       return [ability.id, color];
-    })
+    }),
   );
 
   const renderDropdown = () => {
@@ -90,11 +104,13 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
             ))}
             <div className="col-span-2 text-center text-gray-300 mt-2">
               <div>Turn points:</div>
-              <div className="text-2xl font-bold">{miscSharedData.turnPointsRemaining}</div>
+              <div className="text-2xl font-bold">
+                {miscSharedData.turnPointsRemaining}
+              </div>
             </div>
           </div>
           <button
-            className={`game-button ${getColorClasses('slate')} w-full mt-4`}
+            className={`game-button ${getColorClasses("slate")} w-full mt-4`}
             onPointerDown={() => {
               setShowMobileButtons(false);
             }}
@@ -103,7 +119,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
           </button>
         </div>
       </div>,
-      document.body
+      document.body,
     );
   };
 
@@ -111,7 +127,7 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
     <div className="flex flex-col self-center mt-2">
       <div className="flex gap-2">
         <button
-          className={`game-button ${getColorClasses('amber-border')} flex-1 flex items-center justify-center gap-1`}
+          className={`game-button ${getColorClasses("amber-border")} flex-1 flex items-center justify-center gap-1`}
           onPointerDown={() => setShowMobileButtons(!showMobileButtons)}
         >
           <span>Actions</span>
@@ -123,14 +139,28 @@ const MobileControls = ({ onPointerDown, showTextarea, renderTextInput, showActC
   );
 };
 
-const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showActChooser, setShowActChooser, setIsMapOpen, setIsInventoryOpen, setIsLogbookOpen }: ControlProps) => {
+const DesktopControls = ({
+  onPointerDown,
+  showTextarea,
+  renderTextInput,
+  showActChooser,
+  setShowActChooser,
+  setIsMapOpen,
+  setIsInventoryOpen,
+  setIsLogbookOpen,
+}: ControlProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [isHovering, setIsHovering] = useState(false);
   const [isTurnPointsOverlayOpen, setIsTurnPointsOverlayOpen] = useState(false);
-  const [turnPointsOverlayPosition, setTurnPointsOverlayPosition] = useState({ x: 0, y: 0 });
+  const [turnPointsOverlayPosition, setTurnPointsOverlayPosition] = useState({
+    x: 0,
+    y: 0,
+  });
   const TIMEOUT = 500;
 
-  const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>({});
+  const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>(
+    {},
+  );
   const { miscSharedData } = useMiscSharedData();
   const actButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -144,14 +174,15 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
       setShowActChooser(true);
       if (actButtonRef.current) {
         const rect = actButtonRef.current.getBoundingClientRect();
-        const parentRect = actButtonRef.current.parentElement?.getBoundingClientRect();
+        const parentRect =
+          actButtonRef.current.parentElement?.getBoundingClientRect();
 
         if (parentRect) {
           setActChooserStyle({
-            position: 'absolute',
+            position: "absolute",
             top: rect.top - parentRect.top + rect.height / 2 - 2,
             left: rect.width + 30,
-            transform: 'translateY(-50%)'
+            transform: "translateY(-50%)",
           });
         }
       }
@@ -167,7 +198,7 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     const rect = e.currentTarget.getBoundingClientRect();
     setTurnPointsOverlayPosition({
       x: rect.left,
-      y: rect.top - 10
+      y: rect.top - 10,
     });
     setIsTurnPointsOverlayOpen(true);
   };
@@ -184,27 +215,31 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
     <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
       <div className="flex justify-between items-center self-center">
         <div className="flex justify-center relative">
-          {rootButtonsDesktop.filter(button => button.id !== 'chat').map((button) => (
-            <button
-              key={button.id}
-              ref={button.id === 'act' ? actButtonRef : undefined}
-              className={`game-button ${getColorClasses(button.color)} ml-4`}
-              data-id={button.id}
-              onPointerDown={() => {
-                if (button.id === 'act') {
-                  // nothing, just hover effect
-                } else {
-                  onPointerDown(button.id);
+          {rootButtonsDesktop
+            .filter((button) => button.id !== "chat")
+            .map((button) => (
+              <button
+                key={button.id}
+                ref={button.id === "act" ? actButtonRef : undefined}
+                className={`game-button ${getColorClasses(button.color)} ml-4`}
+                data-id={button.id}
+                onPointerDown={() => {
+                  if (button.id === "act") {
+                    // nothing, just hover effect
+                  } else {
+                    onPointerDown(button.id);
+                  }
+                }}
+                onMouseEnter={() =>
+                  button.id === "act" && handleMouseEvent(true)
                 }
-              }}
-              onMouseEnter={() => button.id === 'act' && handleMouseEvent(true)}
-              onMouseLeave={() => {
-                button.id === 'act' && handleMouseEvent(false);
-              }}
-            >
-              {button.label}
-            </button>
-          ))}
+                onMouseLeave={() => {
+                  button.id === "act" && handleMouseEvent(false);
+                }}
+              >
+                {button.label}
+              </button>
+            ))}
           {showActChooser && (
             <div
               className={`z-20 ${sharedStyles.container}`}
@@ -235,7 +270,9 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <div>
               <div>Turn points:</div>
             </div>
-            <div className="text-4xl font-bold">{miscSharedData.turnPointsRemaining}</div>
+            <div className="text-4xl font-bold">
+              {miscSharedData.turnPointsRemaining}
+            </div>
           </div>
           <div
             className="w-16 h-16 cursor-pointer relative group"
@@ -244,7 +281,11 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Inventory
             </div>
-            <img src={artUrl('inventory3.webp')} alt="Inventory" className="hover:scale-105 transition-transform" />
+            <img
+              src={artUrl("inventory3.webp")}
+              alt="Inventory"
+              className="hover:scale-105 transition-transform"
+            />
           </div>
           <div
             className="w-16 h-16 cursor-pointer relative group"
@@ -253,7 +294,11 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Logbook
             </div>
-            <img src={artUrl('logbook.webp')} alt="Logbook" className="hover:scale-105 transition-transform" />
+            <img
+              src={artUrl("logbook.webp")}
+              alt="Logbook"
+              className="hover:scale-105 transition-transform"
+            />
           </div>
           <div
             className="w-16 h-16 cursor-pointer relative group"
@@ -262,7 +307,11 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
               Map
             </div>
-            <img src={artUrl('map2.webp')} alt="Map" className="hover:scale-105 transition-transform" />
+            <img
+              src={artUrl("map2.webp")}
+              alt="Map"
+              className="hover:scale-105 transition-transform"
+            />
           </div>
         </div>
       </div>
@@ -270,11 +319,11 @@ const DesktopControls = ({ onPointerDown, showTextarea, renderTextInput, showAct
         <Overlay
           className="w-96"
           style={{
-            position: 'fixed',
+            position: "fixed",
             left: `${turnPointsOverlayPosition.x}px`,
             top: `${turnPointsOverlayPosition.y}px`,
-            transform: 'translateY(-100%)',
-            zIndex: 50
+            transform: "translateY(-100%)",
+            zIndex: 50,
           }}
           onMouseEnter={() => setIsTurnPointsOverlayOpen(true)}
           onMouseLeave={() => setIsTurnPointsOverlayOpen(false)}
@@ -306,16 +355,16 @@ const StoryButtons: React.FC = () => {
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
 
   const handleMobileClick = (buttonId: string) => {
-    if (buttonId === 'map') {
+    if (buttonId === "map") {
       setIsMapOpen(true);
-    } else if (buttonId === 'inventory') {
+    } else if (buttonId === "inventory") {
       setIsInventoryOpen(true);
-    } else if (buttonId === 'logbook') {
+    } else if (buttonId === "logbook") {
       setIsLogbookOpen(true);
     } else {
       globalHandleClick(buttonId);
     }
-  }
+  };
 
   const {
     showTextarea,
@@ -338,7 +387,7 @@ const StoryButtons: React.FC = () => {
       textInputRef={textInputRef}
       onClose={() => {
         setShowTextarea(false);
-        setText('');
+        setText("");
         setActionTarget(null);
         setAbility(null);
       }}
@@ -365,9 +414,9 @@ const StoryButtons: React.FC = () => {
         setShowActChooser(false);
       };
 
-      document.addEventListener('pointerdown', handlePointerDown);
+      document.addEventListener("pointerdown", handlePointerDown);
       return () => {
-        document.removeEventListener('pointerdown', handlePointerDown);
+        document.removeEventListener("pointerdown", handlePointerDown);
       };
     }
   }, [showActChooser]);
@@ -438,8 +487,14 @@ const StoryButtons: React.FC = () => {
         onSelectAbility={handleSelectAbility}
       />
       <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
-      <InventoryPopup isOpen={isInventoryOpen} onClose={() => setIsInventoryOpen(false)} />
-      <LogbookPopup isOpen={isLogbookOpen} onClose={() => setIsLogbookOpen(false)} />
+      <InventoryPopup
+        isOpen={isInventoryOpen}
+        onClose={() => setIsInventoryOpen(false)}
+      />
+      <LogbookPopup
+        isOpen={isLogbookOpen}
+        onClose={() => setIsLogbookOpen(false)}
+      />
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 interface Star {
   x: number;
@@ -12,7 +12,9 @@ interface StarryBackgroundProps {
   shouldAnimate: boolean;
 }
 
-const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) => {
+const StarryBackground: React.FC<StarryBackgroundProps> = ({
+  shouldAnimate,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const starsRef = useRef<Star[]>([]);
   const animationFrameRef = useRef<number>();
@@ -24,29 +26,29 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) =>
     },
     size: {
       min: 0.5,
-      max: 2.0
+      max: 2.0,
     },
     opacity: {
       initial: {
         min: 0.5,
-        max: 0.7
+        max: 0.7,
       },
       animation: {
         min: 0.1,
-        max: 0.9
-      }
+        max: 0.9,
+      },
     },
     speed: {
       min: 0.002,
-      max: 0.003
-    }
+      max: 0.003,
+    },
   };
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     // Set canvas size to match container
@@ -67,9 +69,16 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) =>
         stars.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * (config.size.max - config.size.min) + config.size.min,
-          opacity: Math.random() * (config.opacity.initial.max - config.opacity.initial.min) + config.opacity.initial.min,
-          speed: Math.random() * (config.speed.max - config.speed.min) + config.speed.min
+          size:
+            Math.random() * (config.size.max - config.size.min) +
+            config.size.min,
+          opacity:
+            Math.random() *
+              (config.opacity.initial.max - config.opacity.initial.min) +
+            config.opacity.initial.min,
+          speed:
+            Math.random() * (config.speed.max - config.speed.min) +
+            config.speed.min,
         });
       }
       starsRef.current = stars;
@@ -83,12 +92,15 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) =>
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw stars
-      starsRef.current.forEach(star => {
+      starsRef.current.forEach((star) => {
         if (shouldAnimate) {
           // Update opacity with sine wave
           star.opacity += Math.sin(Date.now() * star.speed) * 0.01;
           // Clamp opacity between min and max values
-          star.opacity = Math.max(config.opacity.animation.min, Math.min(config.opacity.animation.max, star.opacity));
+          star.opacity = Math.max(
+            config.opacity.animation.min,
+            Math.min(config.opacity.animation.max, star.opacity),
+          );
         }
 
         // Draw star
@@ -109,11 +121,11 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) =>
     animate();
 
     // Handle window resize
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -124,12 +136,12 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({ shouldAnimate }) =>
     <canvas
       ref={canvasRef}
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 0
+        width: "100%",
+        height: "100%",
+        zIndex: 0,
       }}
     />
   );

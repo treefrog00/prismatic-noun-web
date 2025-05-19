@@ -1,53 +1,57 @@
-import { useEffect } from 'react';
-import ReactDOM from 'react-dom';
-import { alternatingColorMap } from '@/types/button';
+import { useEffect } from "react";
+import ReactDOM from "react-dom";
+import { alternatingColorMap } from "@/types/button";
 interface AbilityChooserProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectAbility: (ability: string) => void;
 }
 
-
-
 const getColorClasses = (color: string) => {
   return alternatingColorMap[color];
 };
 
 const abilities = [
-  'strength',
-  'dexterity',
-  'constitution',
-  'intelligence',
-  'wisdom',
-]
+  "strength",
+  "dexterity",
+  "constitution",
+  "intelligence",
+  "wisdom",
+];
 
-export default function AbilityChooser({ isOpen, onClose, onSelectAbility }: AbilityChooserProps) {
+export default function AbilityChooser({
+  isOpen,
+  onClose,
+  onSelectAbility,
+}: AbilityChooserProps) {
   if (!isOpen) return null;
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         e.preventDefault();
         onClose();
       }
     };
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
   const colorKeys = Object.keys(alternatingColorMap);
   const ability_colors = Object.fromEntries(
     abilities.map((ability, index) => [
       ability,
-      colorKeys[index % colorKeys.length]
-    ])
+      colorKeys[index % colorKeys.length],
+    ]),
   );
 
   return ReactDOM.createPortal(
     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
       <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
-        <h2 className="text-base font-['Cinzel'] text-gray-200 mb-4 text-center">Choose Ability</h2>
+        <h2 className="text-base font-['Cinzel'] text-gray-200 mb-4 text-center">
+          Choose Ability
+        </h2>
         <div className="flex flex-col gap-2">
           {abilities.map((ability) => (
             <button
@@ -70,6 +74,6 @@ export default function AbilityChooser({ isOpen, onClose, onSelectAbility }: Abi
         </button>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }

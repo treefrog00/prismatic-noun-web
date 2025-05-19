@@ -1,16 +1,13 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { visualizer } from 'rollup-plugin-visualizer';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import { visualizer } from "rollup-plugin-visualizer";
+import path from "path";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    visualizer({ open: true, filename: 'dist/stats.html' }),
-  ],
+  plugins: [react(), visualizer({ open: true, filename: "dist/stats.html" })],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
   server: {
@@ -21,9 +18,9 @@ export default defineConfig({
     sourcemap: true,
   },
   esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+    logOverride: { "this-is-undefined-in-esm": "silent" },
   },
   optimizeDeps: {
-    include: ['react', 'react-dom']
-  }
+    include: ["react", "react-dom"],
+  },
 });

@@ -1,4 +1,4 @@
-export type VoteType = 'Undo' | 'Kick' | 'Travel';
+export type VoteType = "Undo" | "Kick" | "Travel";
 
 // Export types from validatedTypes.ts
 export type {
@@ -20,4 +20,4 @@ export type {
   ActionResponse,
   GameEvent,
   RolledCharacter,
-} from './validatedTypes';
+} from "./validatedTypes";

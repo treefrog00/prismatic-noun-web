@@ -1,8 +1,12 @@
-import { useActionTarget, useLocationData, useLocationState } from '@/contexts/GameContext';
-import { ButtonConfig, getColorClasses } from '@/types/button';
-import Overlay from '@/components/overlays/Overlay';
-import { useEffect, useState } from 'react';
-import { useGameActions } from '@/hooks/useGameActions';
+import {
+  useActionTarget,
+  useLocationData,
+  useLocationState,
+} from "@/contexts/GameContext";
+import { ButtonConfig, getColorClasses } from "@/types/button";
+import Overlay from "@/components/overlays/Overlay";
+import { useEffect, useState } from "react";
+import { useGameActions } from "@/hooks/useGameActions";
 
 interface NpcOverlayProps {
   isOpen: boolean;
@@ -13,7 +17,14 @@ interface NpcOverlayProps {
   onMouseLeave: () => void;
 }
 
-const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLeave }: NpcOverlayProps) => {
+const NpcOverlay = ({
+  isOpen,
+  onClose,
+  position,
+  npcId,
+  onMouseEnter,
+  onMouseLeave,
+}: NpcOverlayProps) => {
   const { locationState } = useLocationState();
   const { locationData } = useLocationData();
   const [npcState, setNpcState] = useState(null);
@@ -22,19 +33,19 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
 
   useEffect(() => {
     if (npcId) {
-      setActionTarget({ targetId: npcId, targetType: 'npc' });
+      setActionTarget({ targetId: npcId, targetType: "npc" });
     }
   }, [npcId, setActionTarget]);
 
-  const {
-    globalHandleClick,
-  } = useGameActions();
+  const { globalHandleClick } = useGameActions();
 
   const actions: ButtonConfig[] = [
-    { id: "talk", label: 'Talk', color: 'teal' as const },
-    { id: "do", label: 'Do', color: 'violet' as const },
-    { id: "ability", label: 'Ability', color: 'purple' as const },
-    ...(npcData?.friendly !== 'friend' ? [{ id: "attack-ok", label: 'Attack', color: 'indigo' as const }] : []),
+    { id: "talk", label: "Talk", color: "teal" as const },
+    { id: "do", label: "Do", color: "violet" as const },
+    { id: "ability", label: "Ability", color: "purple" as const },
+    ...(npcData?.friendly !== "friend"
+      ? [{ id: "attack-ok", label: "Attack", color: "indigo" as const }]
+      : []),
   ];
 
   useEffect(() => {
@@ -54,10 +65,10 @@ const NpcOverlay = ({ isOpen, onClose, position, npcId, onMouseEnter, onMouseLea
     <Overlay
       className="w-2/5"
       style={{
-        position: 'fixed',
+        position: "fixed",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 50
+        zIndex: 50,
       }}
       onMouseEnter={() => {
         onMouseEnter();

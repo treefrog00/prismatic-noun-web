@@ -1,6 +1,6 @@
-import { useRef, useEffect } from 'react';
-import { useIsNarrowScreen } from '@/hooks/useDeviceDetection';
-import { RPC, myPlayer } from '@/core/multiplayerState';
+import { useRef, useEffect } from "react";
+import { useIsNarrowScreen } from "@/hooks/useDeviceDetection";
+import { RPC, myPlayer } from "@/core/multiplayerState";
 
 interface ChatTextInputProps {
   text: string;
@@ -41,8 +41,12 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
 
   const handleSend = () => {
     if (hasText(text)) {
-      RPC.call('rpc-chat', { player: thisPlayer.getState('name'), text }, RPC.Mode.ALL);
-      setText('');
+      RPC.call(
+        "rpc-chat",
+        { player: thisPlayer.getState("name"), text },
+        RPC.Mode.ALL,
+      );
+      setText("");
       onClose();
     }
   };
@@ -56,14 +60,14 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
       value={text}
       onChange={(e) => setText(e.target.value)}
       onKeyDown={(e) => {
-        if (e.key === 'Enter') {
+        if (e.key === "Enter") {
           if (e.shiftKey) {
             // Allow default behavior (newline) for Shift+Enter
             return;
           }
           e.preventDefault();
           handleSend();
-        } else if (e.key === 'Escape') {
+        } else if (e.key === "Escape") {
           e.preventDefault();
           onClose();
         }
@@ -75,7 +79,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
   const buttonContainer = (
     <div className="flex gap-2">
       <button
-        className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasText(text) ? 'opacity-50' : ''}`}
+        className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasText(text) ? "opacity-50" : ""}`}
         onClick={handleSend}
         disabled={!hasText(text)}
       >
@@ -103,9 +107,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-gray-800 p-4 z-30">
-      <div className="max-w-4xl mx-auto">
-        {textareaElement}
-      </div>
+      <div className="max-w-4xl mx-auto">{textareaElement}</div>
     </div>
   );
 };

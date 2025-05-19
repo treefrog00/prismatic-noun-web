@@ -1,24 +1,40 @@
-import { useState, useEffect, useRef } from 'react';
-import { myPlayer, useIsHost, onPlayerJoin, PlayerState, usePlayersList, RPC } from '../core/multiplayerState';
-import TopBar from './TopBar';
-import GameContentComponent from './GameContent';
-import MobileCharacterSheet from './mobile/MobileCharacterSheet';
-import MobileLocationView from './mobile/MobileLocationView';
-import AmbientBackground from './AmbientBackground';
+import { useState, useEffect, useRef } from "react";
+import {
+  myPlayer,
+  useIsHost,
+  onPlayerJoin,
+  PlayerState,
+  usePlayersList,
+  RPC,
+} from "../core/multiplayerState";
+import TopBar from "./TopBar";
+import GameContentComponent from "./GameContent";
+import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
+import MobileLocationView from "./mobile/MobileLocationView";
+import AmbientBackground from "./AmbientBackground";
 
-import { GameEvent } from '../types';
-import { useQuestSummary, useMiscSharedData, useGameApi, useLocalPlayers, useGameData, useLocationData, useLocationState, useCharacters } from '../contexts/GameContext';
-import { HASH_QUEST_ID } from '../config';
-import { startIfNotStarted } from '../core/startGame';
-import { ActionResponseSchema } from '../types/validatedTypes';
-import { isPhone } from '../hooks/useDeviceDetection';
-import { StoryRef } from './Story';
+import { GameEvent } from "../types";
+import {
+  useQuestSummary,
+  useMiscSharedData,
+  useGameApi,
+  useLocalPlayers,
+  useGameData,
+  useLocationData,
+  useLocationState,
+  useCharacters,
+} from "../contexts/GameContext";
+import { HASH_QUEST_ID } from "../config";
+import { startIfNotStarted } from "../core/startGame";
+import { ActionResponseSchema } from "../types/validatedTypes";
+import { isPhone } from "../hooks/useDeviceDetection";
+import { StoryRef } from "./Story";
 
 const GameContent = () => {
   // state for React UI only
   const [showDiceRoll, setShowDiceRoll] = useState(false);
   const [targetValues, setTargetValues] = useState<number[] | null>(null);
-  const [diceRoller, setDiceRoller] = useState<string>('');
+  const [diceRoller, setDiceRoller] = useState<string>("");
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
   const [isDragging, setIsDragging] = useState(false);
@@ -88,9 +104,10 @@ const GameContent = () => {
 
     if (Math.abs(diff) > threshold) {
       // Move to next/previous position
-      const newPosition = diff > 0
-        ? Math.max(carouselPosition - 1, 0) // Move left (show character sheet)
-        : Math.min(carouselPosition + 1, 2); // Move right (show location view)
+      const newPosition =
+        diff > 0
+          ? Math.max(carouselPosition - 1, 0) // Move left (show character sheet)
+          : Math.min(carouselPosition + 1, 2); // Move right (show location view)
       setCarouselPosition(newPosition);
     } else {
       // Reset to original position
@@ -102,17 +119,17 @@ const GameContent = () => {
   useEffect(() => {
     const rpcEventHandler = async (data: GameEvent, caller: any) => {
       switch (data.type) {
-          case 'Story':
-            if (storyRef.current) {
-              storyRef.current.updateText(data.text, data.label);
-            }
-            break;
-        case 'PlayerAction':
+        case "Story":
+          if (storyRef.current) {
+            storyRef.current.updateText(data.text, data.label);
+          }
+          break;
+        case "PlayerAction":
           if (storyRef.current) {
             storyRef.current.appendNoAnimation(data.text, data.label);
           }
           break;
-        case 'DiceRoll':
+        case "DiceRoll":
           setTargetValues(data.targetValues);
           setDiceRoller(caller.state.name);
           triggerDiceAnimation();
@@ -122,14 +139,21 @@ const GameContent = () => {
       return Promise.resolve();
     };
 
-    RPC.register('rpc-game-event', rpcEventHandler);
+    RPC.register("rpc-game-event", rpcEventHandler);
 
     onPlayerJoin((player: PlayerState) => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
-        console.log('Player left:', player);
-        const response = await gameApi.postTyped(`/game/${gameData.gameId}/player_left/${player.id}`, {}, ActionResponseSchema);
+        console.log("Player left:", player);
+        const response = await gameApi.postTyped(
+          `/game/${gameData.gameId}/player_left/${player.id}`,
+          {},
+          ActionResponseSchema,
+        );
         if (response.currentPlayer !== miscSharedData.currentPlayer) {
-          setMiscSharedData({ ...miscSharedData, currentPlayer: response.currentPlayer });
+          setMiscSharedData({
+            ...miscSharedData,
+            currentPlayer: response.currentPlayer,
+          });
         }
       });
 
@@ -149,18 +173,19 @@ const GameContent = () => {
         setLocationData(startGame.locationData);
         setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
-        setMiscSharedData({ ...miscSharedData, currentPlayer: startGame.currentPlayer });
+        setMiscSharedData({
+          ...miscSharedData,
+          currentPlayer: startGame.currentPlayer,
+        });
         setCharacters(startGame.characterState);
 
         if (HASH_QUEST_ID) {
-          setQuestSummary(
-            {
-              questId: HASH_QUEST_ID,
-              title: startGame.gameData.title,
-              shortDescription: '',
-              intro: startGame.gameData.intro,
-            }
-          )
+          setQuestSummary({
+            questId: HASH_QUEST_ID,
+            title: startGame.gameData.title,
+            shortDescription: "",
+            intro: startGame.gameData.intro,
+          });
         }
       };
       startGameAsync();
@@ -170,7 +195,10 @@ const GameContent = () => {
   // Function to handle dice roll completion
   const handleRollComplete = (values: number[], sum: number) => {
     if (storyRef.current) {
-      storyRef.current.updateText(`${values.join(', ')} (total: ${sum})`, `${diceRoller} rolled`);
+      storyRef.current.updateText(
+        `${values.join(", ")} (total: ${sum})`,
+        `${diceRoller} rolled`,
+      );
     }
   };
 
@@ -201,7 +229,7 @@ const GameContent = () => {
           className="w-full h-dynamic flex transition-transform duration-300 ease-out"
           style={{
             transform: `translateX(calc(${-carouselPosition * 100}% + ${dragOffset * 100}%))`,
-            transition: isDragging ? 'none' : 'transform 300ms ease-out'
+            transition: isDragging ? "none" : "transform 300ms ease-out",
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -210,9 +238,7 @@ const GameContent = () => {
           <div className="w-full h-full flex-shrink-0">
             <MobileCharacterSheet />
           </div>
-          <div className="w-full h-full flex-shrink-0">
-            {commonGameContent}
-          </div>
+          <div className="w-full h-full flex-shrink-0">{commonGameContent}</div>
           <div className="w-full h-full flex-shrink-0">
             <MobileLocationView />
           </div>
@@ -224,7 +250,7 @@ const GameContent = () => {
   return (
     <AmbientBackground>
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
-        <TopBar/>
+        <TopBar />
         {commonGameContent}
       </div>
     </AmbientBackground>

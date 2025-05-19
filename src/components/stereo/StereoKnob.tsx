@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-export type StereoMode = 'off' | 'retro' | 'funky' | 'jazzy' | 'spooky';
+export type StereoMode = "off" | "retro" | "funky" | "jazzy" | "spooky";
 
 const MODE_ANGLES: Record<StereoMode, number> = {
-  'off': 0,
-  'retro': 72,
-  'funky': 144,
-  'jazzy': 216,
-  'spooky': 288
+  off: 0,
+  retro: 72,
+  funky: 144,
+  jazzy: 216,
+  spooky: 288,
 };
 
 interface StereoKnobProps {
@@ -15,7 +15,7 @@ interface StereoKnobProps {
   mode?: StereoMode;
 }
 
-const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
+const StereoKnob = ({ onModeChange, mode = "off" }: StereoKnobProps) => {
   let currentMode: StereoMode = mode;
   const [isDragging, setIsDragging] = useState(false);
   const [startAngle, setStartAngle] = useState(0);
@@ -27,7 +27,10 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
     setRotation(MODE_ANGLES[mode]);
   }, [mode]);
 
-  const handleModeClick = async (mode: StereoMode, e: React.MouseEvent | React.TouchEvent) => {
+  const handleModeClick = async (
+    mode: StereoMode,
+    e: React.MouseEvent | React.TouchEvent,
+  ) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -36,12 +39,15 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
     await onModeChange(mode);
   };
 
-  const getAngleFromEvent = (e: React.MouseEvent | React.TouchEvent, element: SVGSVGElement) => {
+  const getAngleFromEvent = (
+    e: React.MouseEvent | React.TouchEvent,
+    element: SVGSVGElement,
+  ) => {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
+    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
   };
 
@@ -63,10 +69,15 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
     setStartAngle(currentAngle);
 
     // Find the closest mode
-    currentMode = Object.entries(MODE_ANGLES).reduce((closest, [mode, angle]) => {
-      const diff = Math.abs(newRotation - angle);
-      return diff < Math.abs(newRotation - MODE_ANGLES[closest as StereoMode]) ? mode : closest;
-    }, 'retro') as StereoMode;
+    currentMode = Object.entries(MODE_ANGLES).reduce(
+      (closest, [mode, angle]) => {
+        const diff = Math.abs(newRotation - angle);
+        return diff < Math.abs(newRotation - MODE_ANGLES[closest as StereoMode])
+          ? mode
+          : closest;
+      },
+      "retro",
+    ) as StereoMode;
   };
 
   const handleEnd = () => {
@@ -107,29 +118,84 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
             <stop offset="100%" stopColor="#000" stopOpacity="0.5" />
           </linearGradient>
           <filter id="knobShadow">
-            <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#000" floodOpacity="0.5" />
-            <feDropShadow dx="0" dy="1" stdDeviation="1" floodColor="#000" floodOpacity="0.7" />
+            <feDropShadow
+              dx="0"
+              dy="2"
+              stdDeviation="3"
+              floodColor="#000"
+              floodOpacity="0.5"
+            />
+            <feDropShadow
+              dx="0"
+              dy="1"
+              stdDeviation="1"
+              floodColor="#000"
+              floodOpacity="0.7"
+            />
           </filter>
           <filter id="plateShadow">
-            <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#000" floodOpacity="0.6" />
-            <feDropShadow dx="0" dy="1" stdDeviation="2" floodColor="#000" floodOpacity="0.8" />
+            <feDropShadow
+              dx="0"
+              dy="4"
+              stdDeviation="5"
+              floodColor="#000"
+              floodOpacity="0.6"
+            />
+            <feDropShadow
+              dx="0"
+              dy="1"
+              stdDeviation="2"
+              floodColor="#000"
+              floodOpacity="0.8"
+            />
           </filter>
           <filter id="innerShadow">
             <feOffset dx="0" dy="2" />
             <feGaussianBlur stdDeviation="2" result="offset-blur" />
-            <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
+            <feComposite
+              operator="out"
+              in="SourceGraphic"
+              in2="offset-blur"
+              result="inverse"
+            />
             <feFlood floodColor="black" floodOpacity="0.8" result="color" />
-            <feComposite operator="in" in="color" in2="inverse" result="shadow" />
+            <feComposite
+              operator="in"
+              in="color"
+              in2="inverse"
+              result="shadow"
+            />
             <feComposite operator="over" in="shadow" in2="SourceGraphic" />
           </filter>
           <filter id="textInset">
             <feGaussianBlur in="SourceAlpha" stdDeviation="1" result="blur" />
             <feOffset in="blur" dx="0" dy="1" result="offsetBlur" />
-            <feSpecularLighting in="blur" surfaceScale="5" specularConstant=".75" specularExponent="20" lightingColor="#white" result="specOut">
+            <feSpecularLighting
+              in="blur"
+              surfaceScale="5"
+              specularConstant=".75"
+              specularExponent="20"
+              lightingColor="#white"
+              result="specOut"
+            >
               <fePointLight x="-5000" y="-10000" z="20000" />
             </feSpecularLighting>
-            <feComposite in="specOut" in2="SourceAlpha" operator="in" result="specOut" />
-            <feComposite in="SourceGraphic" in2="specOut" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litPaint" />
+            <feComposite
+              in="specOut"
+              in2="SourceAlpha"
+              operator="in"
+              result="specOut"
+            />
+            <feComposite
+              in="SourceGraphic"
+              in2="specOut"
+              operator="arithmetic"
+              k1="0"
+              k2="1"
+              k3="1"
+              k4="0"
+              result="litPaint"
+            />
           </filter>
         </defs>
 
@@ -170,8 +236,8 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
 
           {/* Mode indicators */}
           {Object.entries(MODE_ANGLES).map(([mode, angle]) => {
-            const textX = 80 + Math.cos((angle - 90) * Math.PI / 180) * 105;
-            const textY = 80 + Math.sin((angle - 90) * Math.PI / 180) * 105;
+            const textX = 80 + Math.cos(((angle - 90) * Math.PI) / 180) * 105;
+            const textY = 80 + Math.sin(((angle - 90) * Math.PI) / 180) * 105;
 
             return (
               <g key={mode}>
@@ -181,9 +247,11 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
                     cy="0"
                     r="40"
                     fill="transparent"
-                    onPointerDown={(e) => handleModeClick(mode as StereoMode, e)}
+                    onPointerDown={(e) =>
+                      handleModeClick(mode as StereoMode, e)
+                    }
                     className="cursor-pointer"
-                    style={{ pointerEvents: 'all', touchAction: 'none' }}
+                    style={{ pointerEvents: "all", touchAction: "none" }}
                   />
                   <text
                     x="0"
@@ -195,7 +263,11 @@ const StereoKnob = ({ onModeChange, mode = 'off' }: StereoKnobProps) => {
                     fontSize="11"
                     fontFamily="Cinzel"
                     className="select-none cursor-pointer"
-                    style={{ textTransform: 'uppercase', letterSpacing: '1px', pointerEvents: 'none' }}
+                    style={{
+                      textTransform: "uppercase",
+                      letterSpacing: "1px",
+                      pointerEvents: "none",
+                    }}
                   >
                     {mode}
                   </text>

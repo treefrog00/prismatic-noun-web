@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 
 interface DiceRollProps {
   numDice: number;
@@ -6,7 +6,11 @@ interface DiceRollProps {
   targetValues: number[];
 }
 
-export default function DiceRoll({ numDice, onRollComplete, targetValues }: DiceRollProps) {
+export default function DiceRoll({
+  numDice,
+  onRollComplete,
+  targetValues,
+}: DiceRollProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);
@@ -16,12 +20,12 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
   // Mapping of face values to rotations
   const faceRotations = {
-    1: { x: 0, y: 0, z: 0 },      // Face 1 (front)
-    2: { x: 0, y: 180, z: 0 },    // Face 2 (back)
-    3: { x: 0, y: 90, z: 0 },     // Face 3 (right)
-    4: { x: 0, y: -90, z: 0 },    // Face 4 (left)
-    5: { x: 90, y: 0, z: 0 },     // Face 5 (top)
-    6: { x: -90, y: 0, z: 0 }     // Face 6 (bottom)
+    1: { x: 0, y: 0, z: 0 }, // Face 1 (front)
+    2: { x: 0, y: 180, z: 0 }, // Face 2 (back)
+    3: { x: 0, y: 90, z: 0 }, // Face 3 (right)
+    4: { x: 0, y: -90, z: 0 }, // Face 4 (left)
+    5: { x: 90, y: 0, z: 0 }, // Face 5 (top)
+    6: { x: -90, y: 0, z: 0 }, // Face 6 (bottom)
   };
 
   // Helper function to get a random face value
@@ -30,7 +34,11 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
   };
 
   // Function to check if two positions overlap
-  const positionsOverlap = (pos1: { x: number; y: number }, pos2: { x: number; y: number }, minDistance = 100) => {
+  const positionsOverlap = (
+    pos1: { x: number; y: number },
+    pos2: { x: number; y: number },
+    minDistance = 100,
+  ) => {
     const dx = pos1.x - pos2.x;
     const dy = pos1.y - pos2.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -51,12 +59,14 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       top: 20,
       right: 20,
       bottom: 20,
-      left: 20
+      left: 20,
     };
 
     // Calculate available area
-    const availableWidth = containerWidth - padding.left - padding.right - DICE_SIZE;
-    const availableHeight = containerHeight - padding.top - padding.bottom - DICE_SIZE;
+    const availableWidth =
+      containerWidth - padding.left - padding.right - DICE_SIZE;
+    const availableHeight =
+      containerHeight - padding.top - padding.bottom - DICE_SIZE;
 
     // Try to find a non-overlapping position with a maximum number of attempts
     const MAX_ATTEMPTS = 50;
@@ -67,7 +77,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       // Generate position within safe area
       position = {
         x: Math.floor(Math.random() * availableWidth) + padding.left,
-        y: Math.floor(Math.random() * availableHeight) + padding.top
+        y: Math.floor(Math.random() * availableHeight) + padding.top,
       };
 
       // Check if this position overlaps with any existing final positions
@@ -97,7 +107,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       for (let i = 0; i < 10; i++) {
         const testPos = {
           x: Math.floor(Math.random() * availableWidth) + padding.left,
-          y: Math.floor(Math.random() * availableHeight) + padding.top
+          y: Math.floor(Math.random() * availableHeight) + padding.top,
         };
 
         // Calculate minimum distance to any existing dice
@@ -126,7 +136,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
   // Function to create a die element with all faces and dots
   const createDieElement = (index: number) => {
-    const die = document.createElement('div');
+    const die = document.createElement("div");
 
     // Apply the correct class for coloring
     // Use modulo to cycle through colors if more than 6 dice
@@ -135,13 +145,14 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
     // Create faces and dots for the die
     for (let i = 1; i <= 6; i++) {
-      const face = document.createElement('div');
+      const face = document.createElement("div");
       face.className = `face face-${i} absolute w-full h-full rounded-lg border-2 border-white/80 flex justify-center items-center text-[0px]`;
 
       // Add appropriate number of dots to each face
       for (let d = 0; d < i; d++) {
-        const dot = document.createElement('span');
-        dot.className = 'dot absolute w-4 h-4 bg-white rounded-full shadow-inner';
+        const dot = document.createElement("span");
+        dot.className =
+          "dot absolute w-4 h-4 bg-white rounded-full shadow-inner";
         face.appendChild(dot);
       }
 
@@ -152,7 +163,11 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
   };
 
   // Function to animate a bouncing die
-  const animateDiceBounce = (dice: HTMLDivElement, finalPos: { x: number; y: number }, finalRotation: { x: number; y: number; z: number }) => {
+  const animateDiceBounce = (
+    dice: HTMLDivElement,
+    finalPos: { x: number; y: number },
+    finalRotation: { x: number; y: number; z: number },
+  ) => {
     // Starting position
     const startLeft = parseInt(dice.style.left);
     const startTop = parseInt(dice.style.top);
@@ -167,7 +182,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
     const startRotation = {
       x: Math.floor(Math.random() * 180),
       y: Math.floor(Math.random() * 180),
-      z: Math.floor(Math.random() * 45)
+      z: Math.floor(Math.random() * 45),
     };
 
     // Set initial position and start rotation
@@ -185,9 +200,10 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       const bounce1 = getRandomPosition();
       dice.style.left = `${bounce1.x}px`;
       dice.style.top = `${bounce1.y}px`;
-      dice.style.transitionProperty = 'transform, left, top';
+      dice.style.transitionProperty = "transform, left, top";
       dice.style.transitionDuration = `${totalTime}ms, 400ms, 400ms`;
-      dice.style.transitionTimingFunction = 'linear, cubic-bezier(0.5, 0.1, 0.5, 1), cubic-bezier(0.5, 0.1, 0.5, 1)';
+      dice.style.transitionTimingFunction =
+        "linear, cubic-bezier(0.5, 0.1, 0.5, 1), cubic-bezier(0.5, 0.1, 0.5, 1)";
     }, 100);
 
     // Second bounce - keep within container
@@ -212,7 +228,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
     if (numDice === 1) {
       // Use the first audio file for a single die
-      soundFile = '/ai_sound/dice_roll1.mp3';
+      soundFile = "/ai_sound/dice_roll1.mp3";
     } else {
       // For 2 or more dice, use one of files 2, 3, or 4
       const soundNumber = Math.floor(Math.random() * 3) + 2; // Random number between 2-4
@@ -230,13 +246,16 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
 
     // Set the new audio and play it
     setAudio(newAudio);
-    newAudio.play().catch(error => {
-      console.log('Error playing dice roll sound:', error);
+    newAudio.play().catch((error) => {
+      console.log("Error playing dice roll sound:", error);
     });
   };
 
   // Main function to roll multiple dice
-  const rollDice = (numDiceToRoll = numDice, targetValues: number[] | null = null) => {
+  const rollDice = (
+    numDiceToRoll = numDice,
+    targetValues: number[] | null = null,
+  ) => {
     if (!diceContainerRef.current) return;
 
     // Play dice roll sound based on number of dice
@@ -261,7 +280,7 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       const containerWidth = diceContainer.getBoundingClientRect().width;
       const offset = (i + 1) * (containerWidth / (numDiceToRoll + 1));
       die.style.left = `${offset - 50}px`; // 50 is half the dice width
-      die.style.top = '150px';
+      die.style.top = "150px";
     }
 
     // Generate random values and animations for each die
@@ -286,14 +305,14 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       const extraRotations = {
         x: Math.floor(Math.random() * 5 + 2) * 360,
         y: Math.floor(Math.random() * 5 + 2) * 360,
-        z: Math.floor(Math.random() * 3) * 90
+        z: Math.floor(Math.random() * 3) * 90,
       };
 
       // Calculate final rotation
       const finalRotation = {
         x: faceRotations[dieValue].x + extraRotations.x,
         y: faceRotations[dieValue].y + extraRotations.y,
-        z: faceRotations[dieValue].z + extraRotations.z
+        z: faceRotations[dieValue].z + extraRotations.z,
       };
 
       // Generate final position that doesn't overlap with other dice
@@ -302,15 +321,15 @@ export default function DiceRoll({ numDice, onRollComplete, targetValues }: Dice
       finalPositions.current.push(finalPosition);
 
       // Add bouncing class for physical movement
-      die.classList.add('bouncing');
+      die.classList.add("bouncing");
 
       // Animate dice bounce
       animateDiceBounce(die, finalPosition, finalRotation);
 
       // Create a promise to track when animation completes
-      const rollPromise = new Promise<void>(resolve => {
+      const rollPromise = new Promise<void>((resolve) => {
         setTimeout(() => {
-          die.classList.remove('bouncing');
+          die.classList.remove("bouncing");
           resolve();
         }, DICE_ANIMATION_DURATION);
       });

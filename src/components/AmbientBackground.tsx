@@ -1,13 +1,18 @@
-import React from 'react';
+import React from "react";
 
 interface AmbientBackgroundProps {
   children: React.ReactNode;
   className?: string;
 }
 
-const AmbientBackground: React.FC<AmbientBackgroundProps> = ({ children, className = '' }) => {
+const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
+  children,
+  className = "",
+}) => {
   return (
-    <div className={`font-['Crimson_Text'] ambient-bg flex flex-col items-center justify-center m-0 h-screen ${className}`}>
+    <div
+      className={`font-['Crimson_Text'] ambient-bg flex flex-col items-center justify-center m-0 h-screen ${className}`}
+    >
       {children}
       <style>{`
         .ambient-bg {

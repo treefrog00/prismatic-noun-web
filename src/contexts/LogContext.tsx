@@ -1,5 +1,5 @@
-import React, { useState, ReactNode, useEffect } from 'react';
-import { isAndroidOrIOS } from '../hooks/useDeviceDetection';
+import React, { useState, ReactNode, useEffect } from "react";
+import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 
 interface Log {
   message: string;
@@ -19,7 +19,9 @@ export const showGlobalLog = (message: string) => {
   }
 };
 
-export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const LogProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [logs, setLogs] = useState<Log[]>([]);
   const isAndroidOrIOSCached = isAndroidOrIOS();
 
@@ -36,11 +38,13 @@ export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         timestamp: Date.now(),
       };
       return;
-      setLogs(prev => [...prev, newLog]);
+      setLogs((prev) => [...prev, newLog]);
 
       // Remove the log after 5 seconds
       setTimeout(() => {
-        setLogs(prev => prev.filter(log => log.timestamp !== newLog.timestamp));
+        setLogs((prev) =>
+          prev.filter((log) => log.timestamp !== newLog.timestamp),
+        );
       }, 5000);
     });
 
@@ -49,25 +53,27 @@ export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     const originalConsoleError = console.error;
 
     const formatMessage = (args: any[]) => {
-      return args.map(arg => {
-        if (arg instanceof DOMException) {
-          return `DOMException: ${arg.name} - ${arg.message}`;
-        }
-        if (arg instanceof Element) {
-          return `<${arg.tagName.toLowerCase()}>`;
-        }
-        if (arg instanceof HTMLElement) {
-          return `<${arg.tagName.toLowerCase()}>`;
-        }
-        if (typeof arg === 'object') {
-          try {
-            return JSON.stringify(arg);
-          } catch (e) {
-            return String(arg);
+      return args
+        .map((arg) => {
+          if (arg instanceof DOMException) {
+            return `DOMException: ${arg.name} - ${arg.message}`;
           }
-        }
-        return String(arg);
-      }).join(' ');
+          if (arg instanceof Element) {
+            return `<${arg.tagName.toLowerCase()}>`;
+          }
+          if (arg instanceof HTMLElement) {
+            return `<${arg.tagName.toLowerCase()}>`;
+          }
+          if (typeof arg === "object") {
+            try {
+              return JSON.stringify(arg);
+            } catch (e) {
+              return String(arg);
+            }
+          }
+          return String(arg);
+        })
+        .join(" ");
     };
 
     console.log = (...args) => {
@@ -94,27 +100,29 @@ export const LogProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     <>
       {children}
       {(isAndroidOrIOSCached || import.meta.env.DEV) && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 1000,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px',
-          maxWidth: '80%',
-        }}>
-          {logs.map(log => (
+        <div
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            maxWidth: "80%",
+          }}
+        >
+          {logs.map((log) => (
             <div
               key={log.timestamp}
               style={{
-                backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                color: 'white',
-                padding: '8px 16px',
-                borderRadius: '4px',
-                fontSize: '14px',
-                animation: 'fadeIn 0.3s ease-in-out',
+                backgroundColor: "rgba(0, 0, 0, 0.8)",
+                color: "white",
+                padding: "8px 16px",
+                borderRadius: "4px",
+                fontSize: "14px",
+                animation: "fadeIn 0.3s ease-in-out",
               }}
             >
               {log.message}

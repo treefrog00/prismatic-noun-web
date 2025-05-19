@@ -1,29 +1,29 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-const GameEventSchema = z.discriminatedUnion('type', [
+const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
-    type: z.literal('Story'),
+    type: z.literal("Story"),
     label: z.string(),
     text: z.string(),
   }),
   z.object({
-    type: z.literal('Narrate'),
+    type: z.literal("Narrate"),
     data: z.object({
       message: z.string(),
     }),
   }),
   z.object({
-    type: z.literal('PlayerAction'),
+    type: z.literal("PlayerAction"),
     label: z.string(),
     text: z.string(),
   }),
   z.object({
-    type: z.literal('DiceRoll'),
+    type: z.literal("DiceRoll"),
     targetValues: z.array(z.number()),
   }),
 ]);
 
-const FriendlyLevel = z.enum(['enemy', 'neutral', 'friend']);
+const FriendlyLevel = z.enum(["enemy", "neutral", "friend"]);
 
 const QuestSummarySchema = z.object({
   questId: z.string(),
@@ -48,7 +48,12 @@ const AbilitySchema = z.object({
   level: z.number(),
 });
 
-const ArmourLevel = z.enum(['UNARMOURED', 'LIGHTLY_ARMOURED', 'MODESTLY_ARMOURED', 'HEAVILY_ARMOURED']);
+const ArmourLevel = z.enum([
+  "UNARMOURED",
+  "LIGHTLY_ARMOURED",
+  "MODESTLY_ARMOURED",
+  "HEAVILY_ARMOURED",
+]);
 
 const ArmourSchema = z.object({
   name: z.string(),

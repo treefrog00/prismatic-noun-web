@@ -10,7 +10,8 @@
     "serve": "tsc && vite preview",
     "type-check": "tsc --noEmit",
     "postinstall": "patch-package",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md}\""
   },
   "license": "MIT",
   "devDependencies": {
@@ -23,6 +24,7 @@
     "lint-staged": "^15.2.2",
     "patch-package": "^8.0.0",
     "postcss": "^8.4.49",
+    "prettier": "^3.5.3",
     "rollup-plugin-visualizer": "^5.14.0",
     "tailwindcss": "^3.4.15",
     "tsc-files": "^1.1.4",
@@ -40,7 +42,8 @@
     "zod": "^3.24.3"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.{ts,tsx,js,jsx}": [
+      "prettier --write",
       "tsc-files --noEmit --project tsconfig.json"
     ]
   }

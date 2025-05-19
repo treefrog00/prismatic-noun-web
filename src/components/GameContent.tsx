@@ -1,7 +1,7 @@
-import React from 'react';
-import Story, { StoryRef } from './Story';
-import DiceRoll from './DiceRoll';
-import StoryButtons from './StoryButtons';
+import React from "react";
+import Story, { StoryRef } from "./Story";
+import DiceRoll from "./DiceRoll";
+import StoryButtons from "./StoryButtons";
 
 interface GameContentProps {
   storyRef: React.RefObject<StoryRef>;
@@ -18,7 +18,7 @@ const GameContent: React.FC<GameContentProps> = ({
   targetValues,
   diceRoller,
   onRollComplete,
-  className = '',
+  className = "",
 }) => {
   return (
     <div className={`w-full h-full flex flex-col ${className}`}>

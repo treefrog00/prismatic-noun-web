@@ -1,10 +1,10 @@
-import { Suspense, useEffect, useState, type ReactNode } from 'react';
-import { StereoProvider } from '../contexts/StereoContext';
-import { GameProvider } from '../contexts/GameContext';
-import { ErrorProvider } from '../contexts/ErrorContext';
-import { AuthProvider } from '../contexts/AuthContext';
-import { LogProvider } from '../contexts/LogContext';
-import { MiscProvider } from '@/contexts/MiscContext';
+import { Suspense, useEffect, useState, type ReactNode } from "react";
+import { StereoProvider } from "../contexts/StereoContext";
+import { GameProvider } from "../contexts/GameContext";
+import { ErrorProvider } from "../contexts/ErrorContext";
+import { AuthProvider } from "../contexts/AuthContext";
+import { LogProvider } from "../contexts/LogContext";
+import { MiscProvider } from "@/contexts/MiscContext";
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -28,25 +28,27 @@ const GameLayout = ({ children }: GameLayoutProps) => {
     const interval = setInterval(checkDevTools, 1000);
 
     return () => clearInterval(interval);
-  })
+  });
 
   return (
-    <main style={{
-      margin: '0',
-      border: 'none',
-      borderRadius:'0',
-      overflow: isDevToolsOpen ? 'auto' : 'hidden',
-    }}>
+    <main
+      style={{
+        margin: "0",
+        border: "none",
+        borderRadius: "0",
+        overflow: isDevToolsOpen ? "auto" : "hidden",
+      }}
+    >
       <LogProvider>
         <AuthProvider>
           <ErrorProvider>
-          <MiscProvider>
-            <GameProvider>
-            <StereoProvider>
-              <Suspense fallback={''}>{children}</Suspense>
-            </StereoProvider>
-          </GameProvider>
-          </MiscProvider>
+            <MiscProvider>
+              <GameProvider>
+                <StereoProvider>
+                  <Suspense fallback={""}>{children}</Suspense>
+                </StereoProvider>
+              </GameProvider>
+            </MiscProvider>
           </ErrorProvider>
         </AuthProvider>
       </LogProvider>

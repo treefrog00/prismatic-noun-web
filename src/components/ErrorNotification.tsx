@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface ErrorNotificationProps {
   message: string;
   onClose: () => void;
 }
 
-const ErrorNotification: React.FC<ErrorNotificationProps> = ({ message, onClose }) => {
+const ErrorNotification: React.FC<ErrorNotificationProps> = ({
+  message,
+  onClose,
+}) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();

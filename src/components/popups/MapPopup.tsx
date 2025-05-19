@@ -1,6 +1,6 @@
-import React from 'react';
-import Popup from '@/components/popups/Popup';
-import MapComponent from '@/components/popups/MapComponent';
+import React from "react";
+import Popup from "@/components/popups/Popup";
+import MapComponent from "@/components/popups/MapComponent";
 
 interface MapPopupProps {
   isOpen: boolean;
@@ -8,7 +8,6 @@ interface MapPopupProps {
 }
 
 const MapPopup: React.FC<MapPopupProps> = ({ isOpen, onClose }) => {
-
   return (
     <Popup
       isOpen={isOpen}

@@ -1,7 +1,7 @@
-import { useRef, useEffect } from 'react';
-import { useIsNarrowScreen } from '../hooks/useDeviceDetection';
-import { PROMPT_LIMIT } from '../config';
-import { createPortal } from 'react-dom';
+import { useRef, useEffect } from "react";
+import { useIsNarrowScreen } from "../hooks/useDeviceDetection";
+import { PROMPT_LIMIT } from "../config";
+import { createPortal } from "react-dom";
 
 interface TextInputProps {
   text: string;
@@ -26,7 +26,7 @@ const TextInput: React.FC<TextInputProps> = ({
   onClose,
   onOk,
   placeHolder,
-  okButtonText
+  okButtonText,
 }) => {
   const isNarrowScreen = useIsNarrowScreen();
 
@@ -57,7 +57,7 @@ const TextInput: React.FC<TextInputProps> = ({
         maxLength={PROMPT_LIMIT}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === "Enter") {
             if (e.shiftKey) {
               // Allow default behavior (newline) for Shift+Enter
               return;
@@ -66,7 +66,7 @@ const TextInput: React.FC<TextInputProps> = ({
             if (hasText(text)) {
               onOk();
             }
-          } else if (e.key === 'Escape') {
+          } else if (e.key === "Escape") {
             e.preventDefault();
             onClose();
           }
@@ -82,7 +82,7 @@ const TextInput: React.FC<TextInputProps> = ({
   const buttonContainer = (
     <div className="flex gap-2">
       <button
-        className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasText(text) ? 'opacity-50' : ''}`}
+        className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasText(text) ? "opacity-50" : ""}`}
         onClick={onOk}
         disabled={!hasText(text)}
       >
@@ -105,7 +105,7 @@ const TextInput: React.FC<TextInputProps> = ({
           {buttonContainer}
         </div>
       </div>,
-      document.body
+      document.body,
     );
   }
 

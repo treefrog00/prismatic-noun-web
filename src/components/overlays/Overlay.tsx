@@ -1,5 +1,5 @@
-import { ReactNode, CSSProperties } from 'react';
-import { sharedStyles } from '@/styles/shared';
+import { ReactNode, CSSProperties } from "react";
+import { sharedStyles } from "@/styles/shared";
 
 interface OverlayProps {
   children: ReactNode;
@@ -9,7 +9,13 @@ interface OverlayProps {
   onMouseLeave?: () => void;
 }
 
-const Overlay = ({ children, className = '', style, onMouseEnter, onMouseLeave }: OverlayProps) => {
+const Overlay = ({
+  children,
+  className = "",
+  style,
+  onMouseEnter,
+  onMouseLeave,
+}: OverlayProps) => {
   return (
     <div
       className={`${sharedStyles.container} ${className} pointer-events-auto`}
@@ -17,9 +23,7 @@ const Overlay = ({ children, className = '', style, onMouseEnter, onMouseLeave }
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className={sharedStyles.text}>
-        {children}
-      </div>
+      <div className={sharedStyles.text}>{children}</div>
     </div>
   );
 };

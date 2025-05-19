@@ -1,5 +1,5 @@
-import React from 'react';
-import Popup from './Popup';
+import React from "react";
+import Popup from "./Popup";
 
 interface LogbookPopupProps {
   isOpen: boolean;
@@ -15,8 +15,7 @@ const LogbookPopup: React.FC<LogbookPopupProps> = ({ isOpen, onClose }) => {
       maxWidth="max-w-4xl"
       className="max-h-[80vh] overflow-auto"
     >
-      <div className="grid grid-cols-4 gap-4">
-      </div>
+      <div className="grid grid-cols-4 gap-4"></div>
     </Popup>
   );
 };

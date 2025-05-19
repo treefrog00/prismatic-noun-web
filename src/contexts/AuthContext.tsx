@@ -1,5 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { envConfig } from '../envConfig';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { envConfig } from "../envConfig";
 
 // Only import Firebase dependencies if firebaseAuth is enabled
 let auth: any;
@@ -12,7 +18,9 @@ type FirebaseUser = {
 };
 
 // Conditional type based on firebaseAuth config
-type AuthUser = (typeof envConfig.firebaseAuth extends true ? FirebaseUser : null);
+type AuthUser = typeof envConfig.firebaseAuth extends true
+  ? FirebaseUser
+  : null;
 
 interface AuthContextType {
   firebaseUser: AuthUser;
@@ -21,12 +29,15 @@ interface AuthContextType {
 
 // Initialize auth if firebaseAuth is enabled
 if (envConfig.firebaseAuth) {
-  import('../firebaseConfig').then((module) => {
+  import("../firebaseConfig").then((module) => {
     auth = module.auth;
   });
 }
 
-const AuthContext = createContext<AuthContextType>({ firebaseUser: null, loading: true });
+const AuthContext = createContext<AuthContextType>({
+  firebaseUser: null,
+  loading: true,
+});
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -45,7 +56,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     let unsubscribe: (() => void) | undefined;
 
     const initializeAuth = async () => {
-      const module = await import('../firebaseConfig');
+      const module = await import("../firebaseConfig");
       auth = module.auth;
 
       unsubscribe = auth.onAuthStateChanged((user) => {
@@ -64,11 +75,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   if (!envConfig.firebaseAuth) {
-    return (
-      <>
-        {children}
-      </>
-    );
+    return <>{children}</>;
   }
   return (
     <AuthContext.Provider value={{ firebaseUser: user, loading }}>
@@ -80,7 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

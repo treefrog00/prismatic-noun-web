@@ -1,7 +1,14 @@
-import { GameApi } from '../core/gameApi';
-import { useMultiplayerState, PlayerState } from '../core/multiplayerState';
-import { Character, QuestSummary, CharacterState, GameData, LocationData, LocationState } from '../types';
-import { createContext, useContext, ReactNode, useState } from 'react';
+import { GameApi } from "../core/gameApi";
+import { useMultiplayerState, PlayerState } from "../core/multiplayerState";
+import {
+  Character,
+  QuestSummary,
+  CharacterState,
+  GameData,
+  LocationData,
+  LocationState,
+} from "../types";
+import { createContext, useContext, ReactNode, useState } from "react";
 
 type ActionTarget = {
   targetId: string;
@@ -16,10 +23,10 @@ type VoteState = {
 
 type MiscSharedData = {
   currentPlayer: string | null;
-  pendingLocationUpdate: LocationState
-  pendingCharacterUpdate: Record<string, CharacterState>
-  voteState: VoteState
-  turnPointsRemaining: number
+  pendingLocationUpdate: LocationState;
+  pendingCharacterUpdate: Record<string, CharacterState>;
+  voteState: VoteState;
+  turnPointsRemaining: number;
 };
 
 type GameContextType = {
@@ -82,31 +89,52 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
-  const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>('questSummary', null);
+  const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>(
+    "questSummary",
+    null,
+  );
 
-  const [gameData, setGameData] = useMultiplayerState<GameData>('gameData', null);
-  const [locationData, setLocationData] = useMultiplayerState<LocationData>('locationData', null);
-  const [locationState, setLocationState] = useMultiplayerState<LocationState>('locationState', null);
+  const [gameData, setGameData] = useMultiplayerState<GameData>(
+    "gameData",
+    null,
+  );
+  const [locationData, setLocationData] = useMultiplayerState<LocationData>(
+    "locationData",
+    null,
+  );
+  const [locationState, setLocationState] = useMultiplayerState<LocationState>(
+    "locationState",
+    null,
+  );
 
-  const [gameStarted, setGameStarted] = useMultiplayerState<boolean>('gameStarted', false);
+  const [gameStarted, setGameStarted] = useMultiplayerState<boolean>(
+    "gameStarted",
+    false,
+  );
 
-  const [voteState, setVoteState] = useMultiplayerState<VoteState>('voteState', {
-    showVote: false,
-    voteOptions: [],
-    voteTitle: ''
-  });
-  const [characters, setCharacters] = useMultiplayerState<Record<string, CharacterState>>('characters', {});
-  const [miscSharedData, setMiscSharedData] = useMultiplayerState<MiscSharedData>('miscSharedData', {
-    currentPlayer: null,
-    pendingLocationUpdate: null,
-    pendingCharacterUpdate: null,
-    voteState: {
+  const [voteState, setVoteState] = useMultiplayerState<VoteState>(
+    "voteState",
+    {
       showVote: false,
       voteOptions: [],
-      voteTitle: ''
+      voteTitle: "",
     },
-    turnPointsRemaining: POINTS_PER_TURN
-  });
+  );
+  const [characters, setCharacters] = useMultiplayerState<
+    Record<string, CharacterState>
+  >("characters", {});
+  const [miscSharedData, setMiscSharedData] =
+    useMultiplayerState<MiscSharedData>("miscSharedData", {
+      currentPlayer: null,
+      pendingLocationUpdate: null,
+      pendingCharacterUpdate: null,
+      voteState: {
+        showVote: false,
+        voteOptions: [],
+        voteTitle: "",
+      },
+      turnPointsRemaining: POINTS_PER_TURN,
+    });
 
   // React only, not multiplayer state
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
@@ -115,7 +143,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [showLaunchScreen, setShowLaunchScreen] = useState(true);
   const [showTextarea, setShowTextarea] = useState(false);
   const [showAbilityChooser, setShowAbilityChooser] = useState(false);
-  const [actionText, setActionText] = useState('');
+  const [actionText, setActionText] = useState("");
   const [okButtonText, setOkButtonText] = useState<string | null>(null);
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
@@ -182,15 +210,18 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 export const useQuestSummary = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useQuestSummary must be used within a GameProvider');
+    throw new Error("useQuestSummary must be used within a GameProvider");
   }
-  return { questSummary: context.questSummary, setQuestSummary: context.setQuestSummary };
+  return {
+    questSummary: context.questSummary,
+    setQuestSummary: context.setQuestSummary,
+  };
 };
 
 export const useGameData = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGameData must be used within a GameProvider');
+    throw new Error("useGameData must be used within a GameProvider");
   }
   return { gameData: context.gameData, setGameData: context.setGameData };
 };
@@ -198,47 +229,62 @@ export const useGameData = () => {
 export const useGameStarted = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGameStarted must be used within a GameProvider');
+    throw new Error("useGameStarted must be used within a GameProvider");
   }
-  return { gameStarted: context.gameStarted, setGameStarted: context.setGameStarted };
+  return {
+    gameStarted: context.gameStarted,
+    setGameStarted: context.setGameStarted,
+  };
 };
 
 export const useLocationData = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useLocationData must be used within a GameProvider');
+    throw new Error("useLocationData must be used within a GameProvider");
   }
-  return { locationData: context.locationData, setLocationData: context.setLocationData };
+  return {
+    locationData: context.locationData,
+    setLocationData: context.setLocationData,
+  };
 };
 
 export const useLocationState = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useLocationState must be used within a GameProvider');
+    throw new Error("useLocationState must be used within a GameProvider");
   }
-  return { locationState: context.locationState, setLocationState: context.setLocationState };
+  return {
+    locationState: context.locationState,
+    setLocationState: context.setLocationState,
+  };
 };
 
 export const useCharacters = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useCharacters must be used within a GameProvider');
+    throw new Error("useCharacters must be used within a GameProvider");
   }
-  return { characters: context.characters, setCharacters: context.setCharacters };
+  return {
+    characters: context.characters,
+    setCharacters: context.setCharacters,
+  };
 };
 
 export const useLocalPlayers = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useLocalPlayers must be used within a GameProvider');
+    throw new Error("useLocalPlayers must be used within a GameProvider");
   }
-  return { localPlayers: context.localPlayers, setLocalPlayers: context.setLocalPlayers };
+  return {
+    localPlayers: context.localPlayers,
+    setLocalPlayers: context.setLocalPlayers,
+  };
 };
 
 export const useMiscSharedData = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useMiscSharedData must be used within a GameProvider');
+    throw new Error("useMiscSharedData must be used within a GameProvider");
   }
 
   const setShowVote = (showVote: boolean) => {
@@ -246,34 +292,37 @@ export const useMiscSharedData = () => {
       ...context.miscSharedData,
       voteState: {
         ...context.miscSharedData.voteState,
-        showVote
-      }
+        showVote,
+      },
     });
   };
 
   return {
     miscSharedData: context.miscSharedData,
     setMiscSharedData: context.setMiscSharedData,
-    setShowVote
+    setShowVote,
   };
 };
 
 export const useAbility = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useAbility must be used within a GameProvider');
+    throw new Error("useAbility must be used within a GameProvider");
   }
   return { ability: context.ability, setAbility: context.setAbility };
 };
 
-export const addLocalPlayer = (player: PlayerState, localPlayers: PlayerState[]) => {
+export const addLocalPlayer = (
+  player: PlayerState,
+  localPlayers: PlayerState[],
+) => {
   localPlayers.push(player);
 };
 
 export const useGameApi = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useGameApi must be used within a GameProvider');
+    throw new Error("useGameApi must be used within a GameProvider");
   }
   return context.gameApi;
 };
@@ -281,23 +330,29 @@ export const useGameApi = () => {
 export const useActionTarget = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useActionTarget must be used within a GameProvider');
+    throw new Error("useActionTarget must be used within a GameProvider");
   }
-  return { actionTarget: context.actionTarget, setActionTarget: context.setActionTarget };
+  return {
+    actionTarget: context.actionTarget,
+    setActionTarget: context.setActionTarget,
+  };
 };
 
 export const useShowLaunchScreen = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useShowLaunchScreen must be used within a GameProvider');
+    throw new Error("useShowLaunchScreen must be used within a GameProvider");
   }
-  return { showLaunchScreen: context.showLaunchScreen, setShowLaunchScreen: context.setShowLaunchScreen };
+  return {
+    showLaunchScreen: context.showLaunchScreen,
+    setShowLaunchScreen: context.setShowLaunchScreen,
+  };
 };
 
 export const useActionUIState = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error('useActionUIState must be used within a GameProvider');
+    throw new Error("useActionUIState must be used within a GameProvider");
   }
   return {
     showTextarea: context.showTextarea,

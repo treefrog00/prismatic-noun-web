@@ -1,15 +1,15 @@
-import { lazy } from 'react';
-import type { RouteObject } from 'react-router-dom';
+import { lazy } from "react";
+import type { RouteObject } from "react-router-dom";
 
-import GameLayout from './layouts/GameLayout';
-import Terms from './pages/terms';
-import Privacy from './pages/privacy';
-import HomeLayout from './layouts/HomeLayout';
-import Play from './pages/play';
+import GameLayout from "./layouts/GameLayout";
+import Terms from "./pages/terms";
+import Privacy from "./pages/privacy";
+import HomeLayout from "./layouts/HomeLayout";
+import Play from "./pages/play";
 
 export const routes: RouteObject[] = [
   {
-    path: '/',
+    path: "/",
     element: (
       <GameLayout>
         <Play />
@@ -17,7 +17,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/terms',
+    path: "/terms",
     element: (
       <HomeLayout>
         <Terms />
@@ -25,7 +25,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/privacy',
+    path: "/privacy",
     element: (
       <HomeLayout>
         <Privacy />
@@ -33,7 +33,7 @@ export const routes: RouteObject[] = [
     ),
   },
   {
-    path: '/play',
+    path: "/play",
     element: (
       <GameLayout>
         <Play />

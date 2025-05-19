@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { envConfig } from '@/envConfig';
+import { useEffect, useRef, useState } from "react";
+import { envConfig } from "@/envConfig";
 
 // Only import Firebase dependencies if firebaseAuth is enabled
 let firebase: any;
@@ -13,7 +13,9 @@ interface FirebaseAuthProps {
   onSignInSuccess?: () => void;
 }
 
-export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) => {
+export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({
+  onSignInSuccess,
+}) => {
   const elementRef = useRef<HTMLDivElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -25,14 +27,15 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
     let ui: any = null;
 
     const initializeFirebase = async () => {
-      const [firebaseModule, firebaseuiModule, firebaseConfig] = await Promise.all([
-        import('firebase/compat/app'),
-        import('firebaseui'),
-        import('@/firebaseConfig')
-      ]);
+      const [firebaseModule, firebaseuiModule, firebaseConfig] =
+        await Promise.all([
+          import("firebase/compat/app"),
+          import("firebaseui"),
+          import("@/firebaseConfig"),
+        ]);
 
       // Import CSS
-      await import('firebaseui/dist/firebaseui.css');
+      await import("firebaseui/dist/firebaseui.css");
 
       // Set the global variables
       firebase = firebaseModule.default;
@@ -40,15 +43,15 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
       auth = firebaseConfig.auth;
 
       const uiConfig = {
-        signInFlow: 'popup',
+        signInFlow: "popup",
         signInOptions: [
           {
             provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
             requireDisplayName: false,
-            privacyPolicyUrl: '/privacy',
+            privacyPolicyUrl: "/privacy",
             disableSignUp: {
-              status: false
-            }
+              status: false,
+            },
           },
           firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         ],
@@ -57,10 +60,10 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
             onSignInSuccess?.();
             return false; // Don't redirect automatically
           },
-          signInFailure: function(error: any) {
-            console.log('FirebaseAuth: signInFailure', error);
+          signInFailure: function (error: any) {
+            console.log("FirebaseAuth: signInFailure", error);
           },
-        }
+        },
       };
 
       // Only initialize if we don't have an instance
@@ -79,7 +82,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
     initializeFirebase();
 
     return () => {
-      console.log('FirebaseAuth: Cleaning up');
+      console.log("FirebaseAuth: Cleaning up");
       if (ui) {
         ui.reset();
       }

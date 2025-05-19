@@ -1,6 +1,6 @@
-import React from 'react';
-import StereoControl from '../stereo/StereoControl';
-import { useMisc } from '@/contexts/MiscContext';
+import React from "react";
+import StereoControl from "../stereo/StereoControl";
+import { useMisc } from "@/contexts/MiscContext";
 
 const LobbyConfig: React.FC = () => {
   const { shouldAnimateStars, setShouldAnimateStars } = useMisc();
@@ -21,11 +21,11 @@ const LobbyConfig: React.FC = () => {
               onClick={() => setShouldAnimateStars(!shouldAnimateStars)}
               className={`px-4 py-2 rounded ${
                 shouldAnimateStars
-                  ? 'bg-blue-600 hover:bg-blue-700'
-                  : 'bg-gray-600 hover:bg-gray-700'
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-600 hover:bg-gray-700"
               } text-white transition-colors`}
             >
-              {shouldAnimateStars ? 'Enabled' : 'Disabled'}
+              {shouldAnimateStars ? "Enabled" : "Disabled"}
             </button>
           </div>
         </div>

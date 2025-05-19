@@ -1,5 +1,5 @@
-import { usePlayersList } from '../../core/multiplayerState';
-import Overlay from './Overlay';
+import { usePlayersList } from "../../core/multiplayerState";
+import Overlay from "./Overlay";
 
 interface CharacterOverlayProps {
   isOpen: boolean;
@@ -10,9 +10,16 @@ interface CharacterOverlayProps {
   onMouseLeave: () => void;
 }
 
-const CharacterOverlay = ({ isOpen, onClose, position, playerId, onMouseEnter, onMouseLeave }: CharacterOverlayProps) => {
+const CharacterOverlay = ({
+  isOpen,
+  onClose,
+  position,
+  playerId,
+  onMouseEnter,
+  onMouseLeave,
+}: CharacterOverlayProps) => {
   const players = usePlayersList();
-  const player = players.find(p => p.id === playerId);
+  const player = players.find((p) => p.id === playerId);
 
   if (!isOpen || !player) return null;
 
@@ -20,10 +27,10 @@ const CharacterOverlay = ({ isOpen, onClose, position, playerId, onMouseEnter, o
     <Overlay
       className="w-2/5"
       style={{
-        position: 'fixed',
+        position: "fixed",
         left: `${position.x}px`,
         top: `${position.y}px`,
-        zIndex: 50
+        zIndex: 50,
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -31,7 +38,9 @@ const CharacterOverlay = ({ isOpen, onClose, position, playerId, onMouseEnter, o
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2">
           <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">{player.getState("name")?.[0]}</span>
+            <span className="text-gray-400 text-xs">
+              {player.getState("name")?.[0]}
+            </span>
           </div>
           <span className="text-gray-300">{player.getState("name")}</span>
         </div>

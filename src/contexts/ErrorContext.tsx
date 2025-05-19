@@ -1,5 +1,5 @@
-import React, { useState, ReactNode, useEffect } from 'react';
-import ErrorNotification from '../components/ErrorNotification';
+import React, { useState, ReactNode, useEffect } from "react";
+import ErrorNotification from "../components/ErrorNotification";
 
 let globalErrorHandler: ((message: string) => void) | null = null;
 
@@ -11,11 +11,13 @@ export const showGlobalError = (message: string) => {
   if (globalErrorHandler) {
     globalErrorHandler(message);
   } else {
-    console.error('Error handler not initialized:', message);
+    console.error("Error handler not initialized:", message);
   }
 };
 
-export const ErrorProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ErrorProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [error, setError] = useState<string | null>(null);
 
   // Set up global error handlers
@@ -26,33 +28,41 @@ export const ErrorProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     // Handle unhandled promise rejections
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       const error = event.reason;
-      console.error('Unhandled promise rejection:', {
+      console.error("Unhandled promise rejection:", {
         message: error instanceof Error ? error.message : error,
         stack: error instanceof Error ? error.stack : undefined,
-        error
+        error,
       });
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
       setError(errorMessage);
     };
 
     // Handle uncaught errors
     const handleUncaughtError = (event: ErrorEvent) => {
-      console.error('Uncaught error:', {
-        message: event.error instanceof Error ? event.error.message : event.message,
+      console.error("Uncaught error:", {
+        message:
+          event.error instanceof Error ? event.error.message : event.message,
         stack: event.error instanceof Error ? event.error.stack : undefined,
-        error: event.error
+        error: event.error,
       });
-      const errorMessage = event.error instanceof Error ? event.error.message : 'An unexpected error occurred';
+      const errorMessage =
+        event.error instanceof Error
+          ? event.error.message
+          : "An unexpected error occurred";
       setError(errorMessage);
     };
 
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-    window.addEventListener('error', handleUncaughtError);
+    window.addEventListener("unhandledrejection", handleUnhandledRejection);
+    window.addEventListener("error", handleUncaughtError);
 
     return () => {
       setGlobalErrorHandler(null);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-      window.removeEventListener('error', handleUncaughtError);
+      window.removeEventListener(
+        "unhandledrejection",
+        handleUnhandledRejection,
+      );
+      window.removeEventListener("error", handleUncaughtError);
     };
   }, []);
 
@@ -60,10 +70,7 @@ export const ErrorProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     <>
       {children}
       {error && (
-        <ErrorNotification
-          message={error}
-          onClose={() => setError(null)}
-        />
+        <ErrorNotification message={error} onClose={() => setError(null)} />
       )}
     </>
   );

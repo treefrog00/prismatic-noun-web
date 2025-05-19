@@ -1,13 +1,13 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { StereoMode } from '../components/stereo/StereoKnob';
-import { useGameStarted } from './GameContext';
-import { isAndroidOrIOS } from '@/hooks/useDeviceDetection';
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { StereoMode } from "../components/stereo/StereoKnob";
+import { useGameStarted } from "./GameContext";
+import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
-const DEFAULT_MODE = 'spooky';
-const STORAGE_KEY = 'stereo-mode';
+const DEFAULT_MODE = "spooky";
+const STORAGE_KEY = "stereo-mode";
 const FADE_DURATION = 2000;
 
-const STEREO_MODES: StereoMode[] = ['retro', 'funky', 'jazzy', 'spooky'];
+const STEREO_MODES: StereoMode[] = ["retro", "funky", "jazzy", "spooky"];
 
 interface StereoContextType {
   currentMode: StereoMode;
@@ -20,7 +20,7 @@ const StereoContext = createContext<StereoContextType | null>(null);
 export const useStereo = () => {
   const context = useContext(StereoContext);
   if (!context) {
-    throw new Error('useStereo must be used within a StereoProvider');
+    throw new Error("useStereo must be used within a StereoProvider");
   }
   return context;
 };
@@ -29,7 +29,9 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [currentMode, setCurrentMode] = useState<StereoMode>(DEFAULT_MODE);
-  const [currentModeIndex, setCurrentModeIndex] = useState<number>(STEREO_MODES.indexOf(DEFAULT_MODE));
+  const [currentModeIndex, setCurrentModeIndex] = useState<number>(
+    STEREO_MODES.indexOf(DEFAULT_MODE),
+  );
   const { gameStarted } = useGameStarted();
 
   const fadeOut = async (audio: HTMLAudioElement): Promise<void> => {
@@ -58,7 +60,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         if (progress === 1) {
           clearInterval(fadeInterval);
           audio.pause();
-          audio.src = '';
+          audio.src = "";
           audio.volume = 1; // Reset volume for next playback
           resolve();
         }
@@ -67,11 +69,11 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const initialPlay = () => {
-    if (audioElementRef.current && currentMode !== 'off') {
+    if (audioElementRef.current && currentMode !== "off") {
       audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
       audioElementRef.current.volume = 1;
-      audioElementRef.current.play().catch(error => {
-        console.error('Error playing audio:', error);
+      audioElementRef.current.play().catch((error) => {
+        console.error("Error playing audio:", error);
       });
     }
   };
@@ -90,7 +92,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       if (audioElementRef.current) {
         audioElementRef.current.pause();
-        audioElementRef.current.src = '';
+        audioElementRef.current.src = "";
       }
     };
   }, []);
@@ -108,7 +110,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
     if (!audioElementRef.current) return;
 
-    if (mode === 'off') {
+    if (mode === "off") {
       await fadeOut(audioElementRef.current);
     } else {
       try {
@@ -129,12 +131,14 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         }, 60000); // 1 minute
       } catch (error) {
         // Ignore errors when audio is blocked or turned off
-        if (error instanceof DOMException &&
-            (error.name === 'NotAllowedError' ||
-              error.message.includes('aborted by the user agent'))) {
-          console.log('Audio playback stopped by user');
+        if (
+          error instanceof DOMException &&
+          (error.name === "NotAllowedError" ||
+            error.message.includes("aborted by the user agent"))
+        ) {
+          console.log("Audio playback stopped by user");
         } else {
-          console.error('Error playing audio:', error);
+          console.error("Error playing audio:", error);
         }
       }
     }
@@ -150,11 +154,13 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <StereoContext.Provider value={{
-      currentMode,
-      handleModeChange,
-      initialPlay,
-    }}>
+    <StereoContext.Provider
+      value={{
+        currentMode,
+        handleModeChange,
+        initialPlay,
+      }}
+    >
       {children}
     </StereoContext.Provider>
   );

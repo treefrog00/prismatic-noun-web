@@ -6,6 +6,7 @@ import {
   PlayerState,
   usePlayersList,
   RPC,
+  setRpcPlayer,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import GameContentComponent from "./GameContent";
@@ -24,14 +25,16 @@ import {
   useLocationState,
   useCharacters,
 } from "../contexts/GameContext";
-import { HASH_QUEST_ID } from "../config";
+import { HASH_LOCATION_ID, HASH_QUEST_ID } from "../config";
 import { startIfNotStarted } from "../core/startGame";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { isPhone } from "../hooks/useDeviceDetection";
 import { StoryRef } from "./Story";
+import { useGameActions, appendToStoryRpc } from "@/hooks/useGameActions";
 
 const GameContent = () => {
-  console.log("Starting game");
+  const { handleTravel } = useGameActions();
+
   // state for React UI only
   const [showDiceRoll, setShowDiceRoll] = useState(false);
   const [targetValues, setTargetValues] = useState<number[] | null>(null);
@@ -188,6 +191,23 @@ const GameContent = () => {
             intro: startGame.gameData.intro,
             imageUrl: "https://placehold.co/100x100",
           });
+
+          // this is extremely hacky, setCurrentPlayer below will also result in updating this eventually,
+          // but only via lots of React indirection that won't take place until the next render
+          // when using real playroom it doesn't matter because the RPC call will take the
+          // player from playroom's internal state
+          // The only reason this is needed at all is because the RPC call is made to add
+          // the story intro before the current player turn is set, which is only there
+          // so people can start reading without having to wait for the first server response
+          setRpcPlayer(
+            localPlayers.find((p) => p.id === startGame.currentPlayer),
+          );
+
+          if (HASH_LOCATION_ID) {
+            await handleTravel(HASH_LOCATION_ID);
+          } else {
+            appendToStoryRpc(startGame.gameData.intro);
+          }
         }
       };
       startGameAsync();

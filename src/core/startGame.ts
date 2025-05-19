@@ -8,7 +8,7 @@ import {
   setRpcPlayer,
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
-import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
+import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
 import {
   StartGameSchema,
   QuestSummary,
@@ -81,19 +81,6 @@ export async function startIfNotStarted(
     },
     StartGameSchema,
   );
-
-  if (HASH_QUEST_ID) {
-    // this is extremely hacky, setCurrentPlayer below will also result in updating this eventually,
-    // but only via lots of React indirection that won't take place until the next render
-    // when using real playroom it doesn't matter because the RPC call will take the
-    // player from playroom's internal state
-    // The only reason this is needed at all is because the RPC call is made to add
-    // the story intro before the current player turn is set, which is only there
-    // so people can start reading without having to wait for the first server response
-    setRpcPlayer(localPlayers.find((p) => p.id === startGame.currentPlayer));
-
-    appendToStoryRpc(startGame.gameData.intro);
-  }
 
   return startGame;
 }

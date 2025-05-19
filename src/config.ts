@@ -25,6 +25,8 @@ const GENERATED_IMAGES_URL =
 
 export const HASH_QUEST_ID = hashParams.get("questid");
 
+export const HASH_LOCATION_ID = hashParams.get("locationid");
+
 export const HASH_NUM_PLAYERS = hashParams.get("numplayers");
 
 export const HASH_SKIP_ANIMATION = hashParams.get("skipanimation");

@@ -204,7 +204,7 @@ const GameContent = () => {
           );
 
           if (HASH_LOCATION_ID) {
-            await handleTravel(HASH_LOCATION_ID);
+            await handleTravel(HASH_LOCATION_ID, startGame.gameData.gameId);
           } else {
             appendToStoryRpc(startGame.gameData.intro);
           }

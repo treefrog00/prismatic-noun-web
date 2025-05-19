@@ -365,15 +365,16 @@ const DesktopControls = ({
           <div className="p-2">
             <div className="text-gray-300 text-base">
               <div>
-                Each action costs points. Timer is for a single action, not your
-                whole turn
+                Each action costs points. The countdown timer is for a single
+                action, not your entire turn
               </div>
               <div>&nbsp;</div>
               <div>Points per action:</div>
-              <div>Say/Talk: 2 points</div>
-              <div>Investigate: 2 points</div>
-              <div>Proceed: 3 points</div>
-              <div>Do/Ability: 3 points</div>
+              <div>&nbsp;</div>
+              <div>Say, Talk, Investigate: 2 points</div>
+              <div>&nbsp;</div>
+              <div>Do, Ability, Proceed, Travel: 3 points</div>
+              <div>&nbsp;</div>
               <div>Attack: 5 points</div>
             </div>
           </div>

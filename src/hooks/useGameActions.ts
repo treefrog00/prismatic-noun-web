@@ -132,8 +132,10 @@ export const useGameActions = () => {
     await apiCallAndUpdate(`/game/${gameData.gameId}/proceed`, {});
   };
 
-  const handleTravel = async (location: string) => {
-    await apiCallAndUpdate(`/game/${gameData.gameId}/travel`, { location });
+  const handleTravel = async (location: string, gameId?: string) => {
+    await apiCallAndUpdate(`/game/${gameId || gameData.gameId}/travel`, {
+      location,
+    });
   };
 
   const handleEndTurnOk = async () => {

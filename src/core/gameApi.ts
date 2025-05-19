@@ -1,6 +1,6 @@
 import { getDiscordAccessToken } from "./multiplayerState";
 import { BACKEND_URL } from "../config";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 export class GameApi {
   private async getAuthToken(): Promise<string> {

@@ -44,7 +44,7 @@ const LocationOverlay = ({
               {locationData.name}
             </span>
             <span className="text-gray-400 text-sm">
-              {locationData.shortDescription}
+              {locationData.description}
             </span>
           </div>
         </div>

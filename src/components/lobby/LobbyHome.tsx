@@ -97,7 +97,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 <p
                   className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
                 >
-                  {questSummary.shortDescription}
+                  {questSummary.description}
                 </p>
               </>
             ) : (
@@ -110,7 +110,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 <p
                   className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
                 >
-                  {questSummary.shortDescription}
+                  {questSummary.description}
                 </p>
               </>
             )}

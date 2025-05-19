@@ -7,6 +7,7 @@ import {
   useActionTarget,
   useAbility,
   useMiscSharedData,
+  useGameConfig,
 } from "@/contexts/GameContext";
 import MapPopup from "@/components/popups/MapPopup";
 import InventoryPopup from "@/components/popups/InventoryPopup";
@@ -67,6 +68,19 @@ const MobileControls = ({
 }: ControlProps) => {
   const [showMobileButtons, setShowMobileButtons] = useState(false);
   const { miscSharedData } = useMiscSharedData();
+  const { gameConfig } = useGameConfig();
+  const [timeRemaining, setTimeRemaining] = useState(gameConfig.turnTimeLimit);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   if (showTextarea) {
     return renderTextInput();
@@ -107,6 +121,8 @@ const MobileControls = ({
               <div className="text-2xl font-bold">
                 {miscSharedData.turnPointsRemaining}
               </div>
+              <div className="mt-2">Time remaining:</div>
+              <div className="text-2xl font-bold">{timeRemaining}s</div>
             </div>
           </div>
           <button
@@ -157,11 +173,24 @@ const DesktopControls = ({
     y: 0,
   });
   const TIMEOUT = 500;
+  const { miscSharedData } = useMiscSharedData();
+  const { gameConfig } = useGameConfig();
+  const [timeRemaining, setTimeRemaining] = useState(gameConfig.turnTimeLimit);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 0) return 0;
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>(
     {},
   );
-  const { miscSharedData } = useMiscSharedData();
   const actButtonRef = useRef<HTMLButtonElement>(null);
 
   const handleMouseEvent = (show: boolean) => {
@@ -261,6 +290,7 @@ const DesktopControls = ({
             </div>
           )}
         </div>
+        <div className="text-gray-300 flex items-center gap-4"></div>
         <div className="flex gap-4 items-center">
           <div
             className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help"
@@ -268,10 +298,14 @@ const DesktopControls = ({
             onMouseLeave={handleTurnPointsMouseLeave}
           >
             <div>
-              <div>Turn points:</div>
+              <div>Time:</div>
+              <div className="text-4xl font-bold">{timeRemaining}s</div>
             </div>
-            <div className="text-4xl font-bold">
-              {miscSharedData.turnPointsRemaining}
+            <div>
+              <div>Turn points:</div>
+              <div className="text-4xl font-bold">
+                {miscSharedData.turnPointsRemaining}
+              </div>
             </div>
           </div>
           <div
@@ -330,6 +364,12 @@ const DesktopControls = ({
         >
           <div className="p-2">
             <div className="text-gray-300 text-base">
+              <div>
+                Each action costs points. Timer is for a single action, not your
+                whole turn
+              </div>
+              <div>&nbsp;</div>
+              <div>Points per action:</div>
               <div>Say/Talk: 2 points</div>
               <div>Investigate: 2 points</div>
               <div>Proceed: 3 points</div>

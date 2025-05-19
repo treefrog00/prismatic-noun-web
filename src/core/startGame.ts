@@ -9,7 +9,11 @@ import {
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
 import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
-import { StartGameSchema, QuestSummary } from "../types/validatedTypes";
+import {
+  StartGameSchema,
+  QuestSummary,
+  RolledCharacterSchema,
+} from "../types/validatedTypes";
 import { appendToStoryRpc } from "../hooks/useGameActions";
 import { GameApi } from "./gameApi";
 
@@ -36,12 +40,21 @@ export async function startIfNotStarted(
     for (let i = 0; i < numPlayers; i++) {
       const playerName = `Player ${i + 1}`;
       const player = new LocalPlayerState(playerName);
+
+      let rolledCharacter = await gameApi.postTyped(
+        `/quest/${HASH_QUEST_ID}/roll_character`,
+        {
+          pronouns: "he",
+        },
+        RolledCharacterSchema,
+      );
+
       player.setState("character", {
-        characterId: "character_001",
-        name: "Character Name",
-        imageUrl: "https://placehold.co/100x100",
-        luck: 10,
-        pronouns: "he/him",
+        characterId: rolledCharacter.characterId,
+        name: rolledCharacter.name,
+        imageUrl: rolledCharacter.imageUrl,
+        luck: rolledCharacter.luck,
+        pronouns: rolledCharacter.pronouns,
       });
       addLocalPlayer(player, localPlayers);
     }

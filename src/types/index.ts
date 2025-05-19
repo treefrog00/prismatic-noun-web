@@ -4,7 +4,7 @@ export type VoteType = "Undo" | "Kick" | "Travel";
 export type {
   QuestSummary,
   Item,
-  Ability,
+  CharacterAbility,
   LocationFeature,
   Character,
   Npc,

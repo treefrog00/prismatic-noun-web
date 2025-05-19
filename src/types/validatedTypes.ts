@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
@@ -28,7 +28,7 @@ const FriendlyLevel = z.enum(["enemy", "neutral", "friend"]);
 const QuestSummarySchema = z.object({
   questId: z.string(),
   title: z.string(),
-  shortDescription: z.string(),
+  description: z.string(),
   intro: z.string(),
   imageUrl: z.string(),
 });
@@ -39,11 +39,16 @@ export const QuestSummariesSchema = z.object({
 
 const ItemSchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
+  description: z.string(),
   imageUrl: z.string(),
 });
 
-const AbilitySchema = z.object({
+const AbilityDataSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+});
+
+const CharacterAbilitySchema = z.object({
   name: z.string(),
   level: z.number(),
 });
@@ -62,11 +67,11 @@ const ArmourSchema = z.object({
 
 const FeatureSchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
+  description: z.string(),
 });
 
 const BaseCharacterSchema = z.object({
-  shortDescription: z.string(),
+  description: z.string(),
   level: z.number(),
   maxStamina: z.number(),
   weapons: z.array(z.string()),
@@ -78,7 +83,7 @@ const CharacterSchema = BaseCharacterSchema.extend({
   characterId: z.string(),
   shortName: z.string(),
   special: z.string(),
-  abilities: z.array(AbilitySchema),
+  abilities: z.array(CharacterAbilitySchema),
 });
 
 const NpcSchema = BaseCharacterSchema.extend({
@@ -134,7 +139,7 @@ const GameDataSchema = z.object({
   weapons: z.record(z.string(), WeaponSchema),
   armour: z.record(z.string(), ArmourSchema),
   items: z.record(z.string(), ItemSchema),
-  abilities: z.record(z.string(), AbilitySchema),
+  abilities: z.record(z.string(), AbilityDataSchema),
   characters: z.record(z.string(), CharacterSchema),
 });
 
@@ -145,7 +150,7 @@ const LinkSchema = z.object({
 
 const LocationDataSchema = z.object({
   name: z.string(),
-  shortDescription: z.string(),
+  description: z.string(),
   imageUrl: z.string(),
   links: z.array(LinkSchema),
   npcs: z.record(z.string(), NpcSchema),
@@ -172,7 +177,7 @@ export const ActionResponseSchema = z.object({
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
 export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;
 export type Item = z.infer<typeof ItemSchema>;
-export type Ability = z.infer<typeof AbilitySchema>;
+export type CharacterAbility = z.infer<typeof CharacterAbilitySchema>;
 export type LocationFeature = z.infer<typeof FeatureSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
 export type RolledCharacter = z.infer<typeof RolledCharacterSchema>;

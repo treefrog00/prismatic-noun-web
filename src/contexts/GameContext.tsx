@@ -1,7 +1,6 @@
 import { GameApi } from "../core/gameApi";
 import { useMultiplayerState, PlayerState } from "../core/multiplayerState";
 import {
-  Character,
   QuestSummary,
   CharacterState,
   GameData,
@@ -27,6 +26,10 @@ type MiscSharedData = {
   pendingCharacterUpdate: Record<string, CharacterState>;
   voteState: VoteState;
   turnPointsRemaining: number;
+};
+
+type GameConfig = {
+  turnTimeLimit: number;
 };
 
 type GameContextType = {
@@ -65,6 +68,9 @@ type GameContextType = {
 
   gameApi: GameApi;
 
+  gameConfig: GameConfig;
+  setGameConfig: (value: GameConfig) => void;
+
   // Action handler state
   showTextarea: boolean;
   setShowTextarea: (value: boolean) => void;
@@ -83,6 +89,7 @@ type GameContextType = {
 export const GameContext = createContext<GameContextType | null>(null);
 
 const POINTS_PER_TURN = 5;
+const DEFAULT_TURN_TIME_LIMIT = 60;
 
 interface GameProviderProps {
   children: ReactNode;
@@ -148,6 +155,13 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
 
+  const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
+    "gameConfig",
+    {
+      turnTimeLimit: DEFAULT_TURN_TIME_LIMIT,
+    },
+  );
+
   const gameApi = new GameApi();
 
   return (
@@ -182,6 +196,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setActionTarget,
         ability,
         setAbility,
+
+        gameConfig,
+        setGameConfig,
 
         // Action handler state
         showTextarea,
@@ -367,5 +384,16 @@ export const useActionUIState = () => {
     setOkButtonId: context.setOkButtonId,
     inputPlaceHolder: context.inputPlaceHolder,
     setInputPlaceHolder: context.setInputPlaceHolder,
+  };
+};
+
+export const useGameConfig = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useGameConfig must be used within a GameProvider");
+  }
+  return {
+    gameConfig: context.gameConfig,
+    setGameConfig: context.setGameConfig,
   };
 };

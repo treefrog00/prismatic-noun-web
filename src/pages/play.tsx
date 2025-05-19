@@ -59,7 +59,7 @@ const Play = () => {
         !HASH_QUEST_ID &&
         (firebaseUser || !envConfig.firebaseAuth) && <Lobby />}
 
-      {!showLaunchScreen && (gameStarted || HASH_QUEST_ID) && <Game />}
+      {(!showLaunchScreen && gameStarted) || (HASH_QUEST_ID && <Game />)}
       <ChatMessages />
       {showChatInput && (
         <ChatTextInput

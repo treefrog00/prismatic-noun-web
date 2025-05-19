@@ -31,6 +31,7 @@ import { isPhone } from "../hooks/useDeviceDetection";
 import { StoryRef } from "./Story";
 
 const GameContent = () => {
+  console.log("Starting game");
   // state for React UI only
   const [showDiceRoll, setShowDiceRoll] = useState(false);
   const [targetValues, setTargetValues] = useState<number[] | null>(null);
@@ -183,14 +184,16 @@ const GameContent = () => {
           setQuestSummary({
             questId: HASH_QUEST_ID,
             title: startGame.gameData.title,
-            shortDescription: "",
+            description: "",
             intro: startGame.gameData.intro,
+            imageUrl: "https://placehold.co/100x100",
           });
         }
       };
       startGameAsync();
     }
-  }, [isHost, questSummary, localPlayers, setLocalPlayers]);
+    // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
+  }, [isHost]);
 
   // Function to handle dice roll completion
   const handleRollComplete = (values: number[], sum: number) => {

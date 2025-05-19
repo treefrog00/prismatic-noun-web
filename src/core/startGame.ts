@@ -31,6 +31,20 @@ export async function startIfNotStarted(
 
   if (!HASH_QUEST_ID) {
     appendToStoryRpc(questSummary.intro);
+  } else {
+    const numPlayers = parseInt(HASH_NUM_PLAYERS || "1", 10);
+    for (let i = 0; i < numPlayers; i++) {
+      const playerName = `Player ${i + 1}`;
+      const player = new LocalPlayerState(playerName);
+      player.setState("character", {
+        characterId: "character_001",
+        name: "Character Name",
+        imageUrl: "https://placehold.co/100x100",
+        luck: 10,
+        pronouns: "he/him",
+      });
+      addLocalPlayer(player, localPlayers);
+    }
   }
 
   const playerDetails = startingPlayers.map((p) => {
@@ -56,13 +70,6 @@ export async function startIfNotStarted(
   );
 
   if (HASH_QUEST_ID) {
-    const numPlayers = parseInt(HASH_NUM_PLAYERS || "1", 10);
-    for (let i = 0; i < numPlayers; i++) {
-      const playerName = `Player ${i + 1}`;
-      const player = new LocalPlayerState(playerName);
-      addLocalPlayer(player, localPlayers);
-    }
-
     // this is extremely hacky, setCurrentPlayer below will also result in updating this eventually,
     // but only via lots of React indirection that won't take place until the next render
     // when using real playroom it doesn't matter because the RPC call will take the

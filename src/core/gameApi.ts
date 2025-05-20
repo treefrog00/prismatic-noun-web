@@ -105,7 +105,14 @@ export class GameApi {
     method: "GET" | "POST" = "POST",
   ): Promise<z.infer<T>> {
     const response = await this.makeRequest(path, body, method);
-    return schema.parse(response);
+    try {
+      return schema.parse(response);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new Error(`Validation error: ${JSON.stringify(error.issues)}`);
+      }
+      throw error;
+    }
   }
 
   async getTyped<T extends z.ZodType>(

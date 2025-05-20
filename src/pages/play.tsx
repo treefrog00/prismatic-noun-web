@@ -1,18 +1,13 @@
 import Lobby from "../components/lobby/Lobby";
 import Game from "../components/Game";
 import { HASH_QUEST_ID } from "../config";
-import {
-  GameProvider,
-  useGameStarted,
-  useShowLaunchScreen,
-} from "../contexts/GameContext";
+import { useGameStarted, useShowLaunchScreen } from "../contexts/GameContext";
 import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useRef, useState } from "react";
 import ChatTextInput from "../components/chat/ChatTextInput";
 import AuthPopup from "../components/popups/AuthPopup";
 import { useAuth } from "../contexts/AuthContext";
 import { envConfig } from "../envConfig";
-import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import LaunchScreen from "@/components/lobby/LaunchScreen";
 
 const Play = () => {
@@ -59,7 +54,7 @@ const Play = () => {
         !HASH_QUEST_ID &&
         (firebaseUser || !envConfig.firebaseAuth) && <Lobby />}
 
-      {(!showLaunchScreen && gameStarted) || (HASH_QUEST_ID && <Game />)}
+      {(gameStarted || HASH_QUEST_ID) && <Game />}
       <ChatMessages />
       {showChatInput && (
         <ChatTextInput

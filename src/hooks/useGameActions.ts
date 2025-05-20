@@ -155,15 +155,15 @@ export const useGameActions = () => {
       // Create a promise that resolves after the event is fully processed
       await new Promise<void>(async (resolve) => {
         if (event.type === "Story") {
-          appendToStoryRpc(event.data.message, event.data.label);
+          appendToStoryRpc(event.message, event.label);
           setTimeout(resolve, 2000);
         } else if (event.type === "DiceRoll") {
           setDiceRollState({
             show: true,
-            beforeText: event.data.beforeText,
-            afterText: event.data.afterText,
-            imageUrls: event.data.imageUrls,
-            targetValues: event.data.targetValues,
+            beforeText: event.beforeText,
+            afterText: event.afterText,
+            imageUrls: event.imageUrls,
+            targetValues: event.targetValues,
           });
 
           setTimeout(() => {
@@ -177,22 +177,22 @@ export const useGameActions = () => {
             resolve();
           }, DICE_WRAPPER_ANIMATION_DURATION);
         } else if (event.type === "CharacterStateUpdate") {
-          setCharacters(event.data.characterState);
+          setCharacters(event.characterState);
         } else if (event.type === "LocationStateUpdate") {
-          setLocationState(event.data.locationState);
+          setLocationState(event.locationState);
         } else if (event.type === "ChangeLocation") {
-          setLocationState(event.data.locationState);
-          setLocationData(event.data.locationData);
+          setLocationState(event.locationState);
+          setLocationData(event.locationData);
         } else if (event.type === "ChangeTurn") {
           setMiscSharedData({
             ...miscSharedData,
-            currentPlayer: event.data.newPlayer,
-            turnPointsRemaining: event.data.turnPointsRemaining,
+            currentPlayer: event.newPlayer,
+            turnPointsRemaining: event.turnPointsRemaining,
           });
         } else if (event.type === "TurnPointsUpdate") {
           setMiscSharedData({
             ...miscSharedData,
-            turnPointsRemaining: event.data.turnPointsRemaining,
+            turnPointsRemaining: event.turnPointsRemaining,
           });
         } else {
           // For any unhandled event types, resolve immediately

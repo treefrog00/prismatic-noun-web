@@ -31,11 +31,14 @@ export const ErrorProvider: React.FC<{ children: ReactNode }> = ({
       console.error("Unhandled promise rejection:", {
         message: error instanceof Error ? error.message : error,
         stack: error instanceof Error ? error.stack : undefined,
-        error,
+        issues: error?.issues, // zod error
       });
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
-      setError(errorMessage);
+      // Wrap in setTimeout to ensure state update happens in the correct context
+      setTimeout(() => {
+        setError(errorMessage);
+      }, 0);
     };
 
     // Handle uncaught errors

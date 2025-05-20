@@ -9,10 +9,10 @@ import {
   setRpcPlayer,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
-import GameContentComponent from "./GameContent";
 import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
 import MobileLocationView from "./mobile/MobileLocationView";
 import AmbientBackground from "./AmbientBackground";
+import DiceRollWrapper from "./DiceRollWrapper";
 
 import { GameEvent } from "../types";
 import {
@@ -32,15 +32,13 @@ import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import Story, { StoryRef } from "./Story";
 import { useGameActions, appendToStoryRpc } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
-import DiceRoll from "./DiceRoll";
+import { RpcStoryEvent } from "@/types/rpcEvent";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
 
   // state for React UI only
   const [showDiceRoll, setShowDiceRoll] = useState(false);
-  const [targetValues, setTargetValues] = useState<number[] | null>(null);
-  const [diceRoller, setDiceRoller] = useState<string>("");
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
   const [isDragging, setIsDragging] = useState(false);
@@ -123,29 +121,15 @@ const GameContent = () => {
   };
 
   useEffect(() => {
-    const rpcEventHandler = async (data: GameEvent, caller: any) => {
-      switch (data.type) {
-        case "Story":
-          if (storyRef.current) {
-            storyRef.current.updateText(data.text, data.label);
-          }
-          break;
-        case "PlayerAction":
-          if (storyRef.current) {
-            storyRef.current.appendNoAnimation(data.text, data.label);
-          }
-          break;
-        case "DiceRoll":
-          setTargetValues(data.targetValues);
-          setDiceRoller(caller.state.name);
-          triggerDiceAnimation();
-          break;
+    const appendStoryHandler = async (data: RpcStoryEvent, caller: any) => {
+      if (storyRef.current) {
+        storyRef.current.updateText(data.text, data.label);
       }
 
       return Promise.resolve();
     };
 
-    RPC.register("rpc-game-event", rpcEventHandler);
+    RPC.register("rpc-append-story", appendStoryHandler);
 
     onPlayerJoin((player: PlayerState) => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
@@ -217,25 +201,6 @@ const GameContent = () => {
     // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
   }, [isHost]);
 
-  // Function to handle dice roll completion
-  const handleRollComplete = (values: number[], sum: number) => {
-    if (storyRef.current) {
-      storyRef.current.updateText(
-        `${values.join(", ")} (total: ${sum})`,
-        `${diceRoller} rolled`,
-      );
-    }
-  };
-
-  const triggerDiceAnimation = () => {
-    setShowDiceRoll(true);
-
-    // Hide the dice after animation + 3 seconds
-    setTimeout(() => {
-      setShowDiceRoll(false);
-    }, 1800 + 3000); // 1800ms for animation + 3000ms display time
-  };
-
   if (isAndroidOrIOS()) {
     return (
       <AmbientBackground className="overflow-hidden">
@@ -275,18 +240,10 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar />
-        <div className={`w-full h-full flex flex-col`}>
+        <div className="w-full h-full flex flex-col">
           <div className="flex-1 flex flex-col min-h-0">
             <Story ref={storyRef} />
-            {showDiceRoll && (
-              <div className="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-gray-800/60 backdrop-blur-sm rounded-lg">
-                <DiceRoll
-                  numDice={2}
-                  onRollComplete={handleRollComplete}
-                  targetValues={targetValues}
-                />
-              </div>
-            )}
+            {showDiceRoll && <DiceRollWrapper />}
           </div>
           <div className="relative mt-4">
             <StoryButtons />

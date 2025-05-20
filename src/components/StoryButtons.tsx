@@ -121,7 +121,7 @@ const MobileControls = ({
               <div className="text-2xl font-bold">
                 {miscSharedData.turnPointsRemaining}
               </div>
-              <div className="mt-2">Time remaining:</div>
+              <div className="mt-2">Turn time:</div>
               <div className="text-2xl font-bold">{timeRemaining}s</div>
             </div>
           </div>
@@ -298,7 +298,7 @@ const DesktopControls = ({
             onMouseLeave={handleTurnPointsMouseLeave}
           >
             <div>
-              <div>Time:</div>
+              <div>Turn time:</div>
               <div className="text-4xl font-bold">{timeRemaining}s</div>
             </div>
             <div>
@@ -365,9 +365,8 @@ const DesktopControls = ({
           <div className="p-2">
             <div className="text-gray-300 text-base">
               <div>
-                Each action costs points.
+                Actions cost both points and time.
                 <br />
-                The countdown timer is for a single action, not your entire turn
               </div>
               <div>&nbsp;</div>
               <div>Points per action:</div>

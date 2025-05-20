@@ -11,19 +11,11 @@ import {
   useMiscSharedData,
   useCharacters,
 } from "../contexts/GameContext";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
-
+import { useDiceRoll } from "../contexts/DiceRollContext";
 export function appendToStoryRpc(text: string, label?: string) {
-  RPC.call("rpc-game-event", { type: "Story", label, text }, RPC.Mode.ALL);
-}
-
-function appendPlayerActionRpc(text: string, label?: string) {
-  RPC.call(
-    "rpc-game-event",
-    { type: "PlayerAction", label, text },
-    RPC.Mode.ALL,
-  );
+  RPC.call("rpc-append-story", { label, text }, RPC.Mode.ALL);
 }
 
 export const useGameActions = () => {
@@ -52,6 +44,7 @@ export const useGameActions = () => {
   const { actionTarget, setActionTarget } = useActionTarget();
   const { locationData, setLocationData } = useLocationData();
   const { characters, setCharacters } = useCharacters();
+  const { setShowDiceRoll, setTargetValues } = useDiceRoll();
   useEffect(() => {}, [actionTarget]);
 
   const setInputFields = (
@@ -115,7 +108,7 @@ export const useGameActions = () => {
   };
 
   const handleAttackOk = async () => {
-    appendPlayerActionRpc(
+    appendToStoryRpc(
       "",
       `${thisPlayer.getState("name")} attacks ${getTargetName()}`,
     );
@@ -152,22 +145,16 @@ export const useGameActions = () => {
     }
 
     for (const event of response.events) {
-      if (event.type === "Story") {
-        appendToStoryRpc(event.text);
-      } else if (event.type === "Narrate") {
+      if (event.type === "Narrate") {
         appendToStoryRpc(event.data.message);
       } else if (event.type === "DiceRoll") {
-        const targetValues = Array.from(
-          { length: 2 },
-          () => Math.floor(Math.random() * 6) + 1,
-        );
-        RPC.call(
-          "rpc-game-event",
-          { type: "DiceRoll", targetValues },
-          RPC.Mode.ALL,
-        );
-      } else {
-        console.log("Unexpected event type: " + event.type);
+        setTargetValues(event.data.targetValues);
+        setShowDiceRoll(true);
+
+        // Hide the dice after animation + 3 seconds
+        setTimeout(() => {
+          setShowDiceRoll(false);
+        }, 1800 + 3000); // 1800ms for animation + 3000ms display time
       }
     }
 
@@ -200,7 +187,7 @@ export const useGameActions = () => {
   };
 
   const handleTalkOk = async () => {
-    appendPlayerActionRpc(
+    appendToStoryRpc(
       text,
       `${thisPlayer.getState("name")} says to ${getTargetName()}`,
     );
@@ -211,7 +198,7 @@ export const useGameActions = () => {
   };
 
   const handleInvestigateOk = async () => {
-    appendPlayerActionRpc(text, `${thisPlayer.getState("name")} investigates`);
+    appendToStoryRpc(text, `${thisPlayer.getState("name")} investigates`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, {
       prompt: text,
     });
@@ -222,7 +209,7 @@ export const useGameActions = () => {
     if (ability) {
       label = `${thisPlayer.getState("name")} uses ${ability}`;
     }
-    appendPlayerActionRpc(text, label);
+    appendToStoryRpc(text, label);
     await apiCallAndUpdate(`/game/${gameData.gameId}/do`, {
       prompt: text,
       ability,
@@ -232,7 +219,7 @@ export const useGameActions = () => {
   };
 
   const handleSayOk = async () => {
-    appendPlayerActionRpc(text, `${thisPlayer.getState("name")} says`);
+    appendToStoryRpc(text, `${thisPlayer.getState("name")} says`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { message: text });
   };
 

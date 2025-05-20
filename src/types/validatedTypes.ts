@@ -2,24 +2,16 @@ import { z } from "zod/v4";
 
 const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
-    type: z.literal("Story"),
-    label: z.string(),
-    text: z.string(),
-  }),
-  z.object({
     type: z.literal("Narrate"),
     data: z.object({
       message: z.string(),
     }),
   }),
   z.object({
-    type: z.literal("PlayerAction"),
-    label: z.string(),
-    text: z.string(),
-  }),
-  z.object({
     type: z.literal("DiceRoll"),
-    targetValues: z.array(z.number()),
+    data: z.object({
+      targetValues: z.array(z.array(z.number())),
+    }),
   }),
 ]);
 

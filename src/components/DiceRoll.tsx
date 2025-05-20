@@ -2,15 +2,10 @@ import { useState, useEffect, useRef } from "react";
 
 interface DiceRollProps {
   numDice: number;
-  onRollComplete: (values: number[], sum: number) => void;
   targetValues: number[];
 }
 
-export default function DiceRoll({
-  numDice,
-  onRollComplete,
-  targetValues,
-}: DiceRollProps) {
+export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);
@@ -338,13 +333,7 @@ export default function DiceRoll({
     });
 
     Promise.all(rollPromises).then(() => {
-      // Calculate sum of all dice
       const sum = diceValues.reduce((total, val) => total + val, 0);
-
-      // Call the onRollComplete callback if provided
-      if (onRollComplete) {
-        onRollComplete(diceValues, sum);
-      }
     });
 
     return diceValues;

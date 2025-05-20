@@ -12,29 +12,10 @@ import {
   useCharacters,
 } from "../contexts/GameContext";
 import { useEffect } from "react";
-import {
-  ActionResponseSchema,
-  GameEvent,
-  GameEventSchema,
-} from "../types/validatedTypes";
+import { ActionResponseSchema } from "../types/validatedTypes";
 import { useDiceRoll } from "../contexts/DiceRollContext";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
 import { z } from "zod/v4";
-
-function decode(encodedValue: string): GameEvent[] {
-  // Reverse the character substitution (shift back by 33)
-  const base64String = Array.from(encodedValue)
-    .map((c) => String.fromCharCode((c.charCodeAt(0) - 33 + 128) % 128))
-    .join("");
-
-  // Base64 decode and parse JSON
-  const decoded = atob(base64String);
-  const parsed = JSON.parse(decoded);
-
-  // Validate the parsed data against the GameEventSchema
-  const arraySchema = z.array(GameEventSchema);
-  return arraySchema.parse(parsed);
-}
 
 export function appendToStoryRpc(text: string, label?: string) {
   RPC.call("rpc-append-story", { label, text }, RPC.Mode.ALL);
@@ -169,10 +150,8 @@ export const useGameActions = () => {
   const apiCallAndUpdate = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
 
-    const decodedEvents = decode(response.metadata);
-
     // Process events sequentially
-    for (const event of decodedEvents) {
+    for (const event of response.events) {
       // Create a promise that resolves after the event is fully processed
       await new Promise<void>(async (resolve) => {
         if (event.type === "Story") {

@@ -193,7 +193,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
 ]);
 
 export const ActionResponseSchema = z.object({
-  metadata: z.string(),
+  events: z.array(GameEventSchema),
 });
 
 export { GameEventSchema };

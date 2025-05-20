@@ -12,8 +12,30 @@ import {
   useCharacters,
 } from "../contexts/GameContext";
 import { useEffect } from "react";
-import { ActionResponseSchema } from "../types/validatedTypes";
+import {
+  ActionResponseSchema,
+  GameEvent,
+  GameEventSchema,
+} from "../types/validatedTypes";
 import { useDiceRoll } from "../contexts/DiceRollContext";
+import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
+import { z } from "zod/v4";
+
+function decode(encodedValue: string): GameEvent[] {
+  // Reverse the character substitution (shift back by 33)
+  const base64String = Array.from(encodedValue)
+    .map((c) => String.fromCharCode((c.charCodeAt(0) - 33 + 128) % 128))
+    .join("");
+
+  // Base64 decode and parse JSON
+  const decoded = atob(base64String);
+  const parsed = JSON.parse(decoded);
+
+  // Validate the parsed data against the GameEventSchema
+  const arraySchema = z.array(GameEventSchema);
+  return arraySchema.parse(parsed);
+}
+
 export function appendToStoryRpc(text: string, label?: string) {
   RPC.call("rpc-append-story", { label, text }, RPC.Mode.ALL);
 }
@@ -137,43 +159,56 @@ export const useGameActions = () => {
     });
   };
 
+  const handlePlayerLeft = async (playerId: string) => {
+    await apiCallAndUpdate(
+      `/game/${gameData.gameId}/player_left/${playerId}`,
+      {},
+    );
+  };
+
   const apiCallAndUpdate = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
 
-    if (response.locationData) {
-      setLocationData(response.locationData);
-    }
+    const decodedEvents = decode(response.metadata);
 
-    for (const event of response.events) {
-      if (event.type === "Narrate") {
-        appendToStoryRpc(event.data.message);
-      } else if (event.type === "DiceRoll") {
-        setTargetValues(event.data.targetValues);
-        setShowDiceRoll(true);
+    // Process events sequentially
+    for (const event of decodedEvents) {
+      // Create a promise that resolves after the event is fully processed
+      await new Promise<void>(async (resolve) => {
+        if (event.type === "Story") {
+          appendToStoryRpc(event.data.message, event.data.label);
+          setTimeout(resolve, 2000);
+        } else if (event.type === "DiceRoll") {
+          setTargetValues(event.data.targetValues);
+          setShowDiceRoll(true);
 
-        // Hide the dice after animation + 3 seconds
-        setTimeout(() => {
-          setShowDiceRoll(false);
-        }, 1800 + 3000); // 1800ms for animation + 3000ms display time
-      }
-    }
-
-    setMiscSharedData({
-      ...miscSharedData,
-      currentPlayer: response.currentPlayer,
-      turnPointsRemaining: response.turnPointsRemaining,
-    });
-
-    if (response.locationState) {
-      setLocationState(response.locationState);
-    }
-
-    if (response.locationData) {
-      setLocationData(response.locationData);
-    }
-
-    if (response.characterState) {
-      setCharacters(response.characterState);
+          setTimeout(() => {
+            setShowDiceRoll(false);
+            resolve();
+          }, DICE_WRAPPER_ANIMATION_DURATION);
+        } else if (event.type === "CharacterStateUpdate") {
+          setCharacters(event.data.characterState);
+        } else if (event.type === "LocationStateUpdate") {
+          setLocationState(event.data.locationState);
+        } else if (event.type === "ChangeLocation") {
+          setLocationState(event.data.locationState);
+          setLocationData(event.data.locationData);
+        } else if (event.type === "ChangeTurn") {
+          setMiscSharedData({
+            ...miscSharedData,
+            currentPlayer: event.data.newPlayer,
+            turnPointsRemaining: event.data.turnPointsRemaining,
+          });
+        } else if (event.type === "TurnPointsUpdate") {
+          setMiscSharedData({
+            ...miscSharedData,
+            turnPointsRemaining: event.data.turnPointsRemaining,
+          });
+        } else {
+          // For any unhandled event types, resolve immediately
+          resolve();
+        }
+      });
     }
   };
 
@@ -269,5 +304,6 @@ export const useGameActions = () => {
     globalHandleClick,
     handleSelectAbility,
     handleTravel,
+    handlePlayerLeft,
   };
 };

@@ -1,20 +1,5 @@
 import { z } from "zod/v4";
 
-const GameEventSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("Narrate"),
-    data: z.object({
-      message: z.string(),
-    }),
-  }),
-  z.object({
-    type: z.literal("DiceRoll"),
-    data: z.object({
-      targetValues: z.array(z.array(z.number())),
-    }),
-  }),
-]);
-
 const FriendlyLevel = z.enum(["enemy", "neutral", "friend"]);
 
 const QuestSummarySchema = z.object({
@@ -157,14 +142,61 @@ export const StartGameSchema = z.object({
   currentPlayer: z.string(),
 });
 
+const GameEventSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("Story"),
+    data: z.object({
+      label: z.string().optional(),
+      message: z.string(),
+    }),
+  }),
+  z.object({
+    type: z.literal("DiceRoll"),
+    data: z.object({
+      label: z.string(),
+      resultText: z.string(),
+      targetValues: z.array(z.array(z.number())),
+    }),
+  }),
+  z.object({
+    type: z.literal("CharacterStateUpdate"),
+    data: z.object({
+      characterState: z.record(z.string(), CharacterStateSchema),
+    }),
+  }),
+  z.object({
+    type: z.literal("LocationStateUpdate"),
+    data: z.object({
+      locationState: LocationStateSchema,
+    }),
+  }),
+  z.object({
+    type: z.literal("ChangeLocation"),
+    data: z.object({
+      locationState: LocationStateSchema,
+      locationData: LocationDataSchema,
+    }),
+  }),
+  z.object({
+    type: z.literal("ChangeTurn"),
+    data: z.object({
+      newPlayer: z.string(),
+      turnPointsRemaining: z.number(),
+    }),
+  }),
+  z.object({
+    type: z.literal("TurnPointsUpdate"),
+    data: z.object({
+      turnPointsRemaining: z.number(),
+    }),
+  }),
+]);
+
 export const ActionResponseSchema = z.object({
-  events: z.array(GameEventSchema),
-  locationState: LocationStateSchema.nullable(),
-  locationData: LocationDataSchema.nullable(),
-  currentPlayer: z.string().nullable(),
-  turnPointsRemaining: z.number().nullable(),
-  characterState: z.record(z.string(), CharacterStateSchema).nullable(),
+  metadata: z.string(),
 });
+
+export { GameEventSchema };
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
 export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;

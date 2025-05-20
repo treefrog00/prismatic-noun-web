@@ -1,6 +1,8 @@
 import React from "react";
 import { useDiceRoll } from "../contexts/DiceRollContext";
-import DiceRoll from "./DiceRoll";
+import DiceRoll, { DICE_ANIMATION_DURATION } from "./DiceRoll";
+
+export const DICE_WRAPPER_ANIMATION_DURATION = DICE_ANIMATION_DURATION + 2000;
 
 const DiceRollWrapper: React.FC = () => {
   const { showDiceRoll, targetValues } = useDiceRoll();

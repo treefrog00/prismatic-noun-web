@@ -5,13 +5,12 @@ interface DiceRollProps {
   targetValues: number[];
 }
 
+export const DICE_ANIMATION_DURATION = 3300; // ms
+
 export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);
-
-  // Animation configuration
-  const DICE_ANIMATION_DURATION = 3300; // ms
 
   // Mapping of face values to rotations
   const faceRotations = {

@@ -61,8 +61,8 @@ const GameContent = () => {
   const { gameData, setGameData } = useGameData();
   const { setQuestSummary } = useQuestSummary();
   const { questSummary } = useQuestSummary();
-
-  const { localPlayers, setLocalPlayers } = useLocalPlayers();
+  const { handlePlayerLeft } = useGameActions();
+  const { localPlayers } = useLocalPlayers();
 
   const { characters, setCharacters } = useCharacters();
 
@@ -133,18 +133,7 @@ const GameContent = () => {
 
     onPlayerJoin((player: PlayerState) => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
-        console.log("Player left:", player);
-        const response = await gameApi.postTyped(
-          `/game/${gameData.gameId}/player_left/${player.id}`,
-          {},
-          ActionResponseSchema,
-        );
-        if (response.currentPlayer !== miscSharedData.currentPlayer) {
-          setMiscSharedData({
-            ...miscSharedData,
-            currentPlayer: response.currentPlayer,
-          });
-        }
+        await handlePlayerLeft(player.id);
       });
 
       return unsubscribe;

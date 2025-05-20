@@ -18,9 +18,9 @@ const TermsOfService: React.FC = () => {
               2. Be nice to people. Abusive behavior will not be tolerated.
             </p>
             <p className={pageStyles.policyText}>
-              3. This is meant to be a lighthearted role-playing game suitable
-              for players ages 13 and up. Keep language respectful and
-              appropriate. Do not post content that is:
+              3. This is a lighthearted role-playing game suitable for players
+              ages 13 and up. Keep language respectful and appropriate. Do not
+              post content that is:
             </p>
             <ul className="list-disc pl-8 space-y-2">
               <li className={pageStyles.policyText}>

@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { RPC } from "@/core/multiplayerState";
-import { isAndroidOrIOS, useIsNarrowScreen } from "@/hooks/useDeviceDetection";
+import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 import { useGameStarted } from "@/contexts/GameContext";
 
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<
     { player: string; text: string; id: number }[]
   >([]);
-  const isNarrowScreen = useIsNarrowScreen();
   const MESSAGE_LIFETIME = 15000;
   const { gameStarted } = useGameStarted();
 
@@ -34,7 +33,7 @@ const ChatMessages = () => {
       };
       setChatMessages([initialMessage]);
     }
-  }, [isNarrowScreen]);
+  }, []);
 
   // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {

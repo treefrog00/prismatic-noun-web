@@ -28,9 +28,11 @@ import {
 import { HASH_LOCATION_ID, HASH_QUEST_ID } from "../config";
 import { startIfNotStarted } from "../core/startGame";
 import { ActionResponseSchema } from "../types/validatedTypes";
-import { isPhone } from "../hooks/useDeviceDetection";
-import { StoryRef } from "./Story";
+import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
+import Story, { StoryRef } from "./Story";
 import { useGameActions, appendToStoryRpc } from "@/hooks/useGameActions";
+import StoryButtons from "./StoryButtons";
+import DiceRoll from "./DiceRoll";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
@@ -234,17 +236,7 @@ const GameContent = () => {
     }, 1800 + 3000); // 1800ms for animation + 3000ms display time
   };
 
-  const commonGameContent = (
-    <GameContentComponent
-      storyRef={storyRef}
-      showDiceRoll={showDiceRoll}
-      targetValues={targetValues}
-      diceRoller={diceRoller}
-      onRollComplete={handleRollComplete}
-    />
-  );
-
-  if (isPhone()) {
+  if (isAndroidOrIOS()) {
     return (
       <AmbientBackground className="overflow-hidden">
         <div
@@ -261,9 +253,18 @@ const GameContent = () => {
           <div className="w-full h-full flex-shrink-0">
             <MobileCharacterSheet />
           </div>
-          <div className="w-full h-full flex-shrink-0">{commonGameContent}</div>
           <div className="w-full h-full flex-shrink-0">
             <MobileLocationView />
+            <div className="relative mt-4">
+              <StoryButtons />
+            </div>
+          </div>
+          <div className="w-full h-full flex-shrink-0">
+            <div className={`w-full h-full flex flex-col`}>
+              <div className="flex-1 flex flex-col min-h-0">
+                <Story ref={storyRef} />
+              </div>
+            </div>
           </div>
         </div>
       </AmbientBackground>
@@ -274,7 +275,23 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar />
-        {commonGameContent}
+        <div className={`w-full h-full flex flex-col`}>
+          <div className="flex-1 flex flex-col min-h-0">
+            <Story ref={storyRef} />
+            {showDiceRoll && (
+              <div className="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-gray-800/60 backdrop-blur-sm rounded-lg">
+                <DiceRoll
+                  numDice={2}
+                  onRollComplete={handleRollComplete}
+                  targetValues={targetValues}
+                />
+              </div>
+            )}
+          </div>
+          <div className="relative mt-4">
+            <StoryButtons />
+          </div>
+        </div>
       </div>
     </AmbientBackground>
   );

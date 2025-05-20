@@ -1,5 +1,4 @@
 import { useRef, useState, useEffect } from "react";
-import { useIsNarrowScreen } from "@/hooks/useDeviceDetection";
 import AbilityChooser from "@/components/popups/AbilityChooser";
 import TextInput from "@/components/TextInput";
 import {
@@ -18,6 +17,7 @@ import { useGameActions } from "@/hooks/useGameActions";
 import { sharedStyles } from "@/styles/shared";
 import Overlay from "./overlays/Overlay";
 import { createPortal } from "react-dom";
+import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: "Act", color: "amber-border" },
@@ -365,8 +365,9 @@ const DesktopControls = ({
           <div className="p-2">
             <div className="text-gray-300 text-base">
               <div>
-                Each action costs points. The countdown timer is for a single
-                action, not your entire turn
+                Each action costs points.
+                <br />
+                The countdown timer is for a single action, not your entire turn
               </div>
               <div>&nbsp;</div>
               <div>Points per action:</div>
@@ -386,7 +387,6 @@ const DesktopControls = ({
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
-  const isNarrowScreen = useIsNarrowScreen();
   const { setActionTarget } = useActionTarget();
   const { setAbility } = useAbility();
 
@@ -499,7 +499,7 @@ const StoryButtons: React.FC = () => {
           }
         }
       `}</style>
-      {isNarrowScreen ? (
+      {isAndroidOrIOS() ? (
         <MobileControls
           onPointerDown={handleMobileClick}
           showTextarea={showTextarea}

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
-import { useIsNarrowScreen } from "@/hooks/useDeviceDetection";
 import { RPC, myPlayer } from "@/core/multiplayerState";
+import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
 interface ChatTextInputProps {
   text: string;
@@ -20,7 +20,6 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
   textInputRef,
   onClose,
 }) => {
-  const isNarrowScreen = useIsNarrowScreen();
   const thisPlayer = myPlayer();
 
   useEffect(() => {
@@ -94,7 +93,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
     </div>
   );
 
-  if (isNarrowScreen) {
+  if (isAndroidOrIOS()) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">

@@ -2,7 +2,6 @@ import { useShowLaunchScreen } from "@/contexts/GameContext";
 import { starryTheme } from "@/styles/starryTheme";
 import { useStereo } from "@/contexts/StereoContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
-import { isPhone } from "@/hooks/useDeviceDetection";
 import StarryBackground from "../StarryBackground";
 import { useMisc } from "@/contexts/MiscContext";
 
@@ -46,7 +45,7 @@ const LaunchScreen = () => {
           >
             Launch
           </button>
-          {!isPhone() && (
+          {
             <div className={`text-center text-gray-200 max-w-2xl`}>
               <p className="mb-4">
                 Prismatic Noun is a collection of short role-playing adventure
@@ -57,7 +56,7 @@ const LaunchScreen = () => {
                 for alpha testers.
               </p>
             </div>
-          )}
+          }
         </div>
       </div>
     </div>

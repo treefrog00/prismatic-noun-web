@@ -33,12 +33,13 @@ import Story, { StoryRef } from "./Story";
 import { useGameActions, appendToStoryRpc } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
 import { RpcStoryEvent } from "@/types/rpcEvent";
+import { useDiceRoll } from "@/contexts/DiceRollContext";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
 
   // state for React UI only
-  const [showDiceRoll, setShowDiceRoll] = useState(false);
+  const { diceRollState } = useDiceRoll();
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
   const [isDragging, setIsDragging] = useState(false);
@@ -232,7 +233,7 @@ const GameContent = () => {
         <div className="w-full h-full flex flex-col">
           <div className="flex-1 flex flex-col min-h-0">
             <Story ref={storyRef} />
-            {showDiceRoll && <DiceRollWrapper />}
+            {diceRollState.show && <DiceRollWrapper />}
           </div>
           <div className="relative mt-4">
             <StoryButtons />

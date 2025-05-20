@@ -47,7 +47,7 @@ export const useGameActions = () => {
   const { actionTarget, setActionTarget } = useActionTarget();
   const { locationData, setLocationData } = useLocationData();
   const { characters, setCharacters } = useCharacters();
-  const { setShowDiceRoll, setTargetValues } = useDiceRoll();
+  const { setDiceRollState } = useDiceRoll();
   useEffect(() => {}, [actionTarget]);
 
   const setInputFields = (
@@ -158,11 +158,22 @@ export const useGameActions = () => {
           appendToStoryRpc(event.data.message, event.data.label);
           setTimeout(resolve, 2000);
         } else if (event.type === "DiceRoll") {
-          setTargetValues(event.data.targetValues);
-          setShowDiceRoll(true);
+          setDiceRollState({
+            show: true,
+            beforeText: event.data.beforeText,
+            afterText: event.data.afterText,
+            imageUrls: event.data.imageUrls,
+            targetValues: event.data.targetValues,
+          });
 
           setTimeout(() => {
-            setShowDiceRoll(false);
+            setDiceRollState({
+              show: false,
+              beforeText: "",
+              afterText: "",
+              imageUrls: [],
+              targetValues: [],
+            });
             resolve();
           }, DICE_WRAPPER_ANIMATION_DURATION);
         } else if (event.type === "CharacterStateUpdate") {

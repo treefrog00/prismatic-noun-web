@@ -153,8 +153,9 @@ const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("DiceRoll"),
     data: z.object({
-      label: z.string(),
-      resultText: z.string(),
+      beforeText: z.string(),
+      afterText: z.string(),
+      imageUrls: z.array(z.string()),
       targetValues: z.array(z.array(z.number())),
     }),
   }),

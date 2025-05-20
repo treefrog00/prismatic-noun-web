@@ -49,11 +49,11 @@ const LaunchScreen = () => {
             <div className={`text-center text-gray-200 max-w-2xl`}>
               <p className="mb-4">
                 Prismatic Noun is a collection of short role-playing adventure
-                stories that you can play through with friends on Discord.
+                stories that you can play through with friends on Discord or as
+                a jackbox-style party game.
               </p>
               <p className="mb-4">
-                The game is a Discord activity that is currently only available
-                for alpha testers.
+                The game is currently only available to alpha testers.
               </p>
             </div>
           }

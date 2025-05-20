@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+interface DiceRollState {
+  show: boolean;
+  beforeText: string;
+  afterText: string;
+  imageUrls: string[];
+  targetValues: number[][];
+}
+
 interface DiceRollContextType {
-  showDiceRoll: boolean;
-  setShowDiceRoll: (show: boolean) => void;
-  targetValues: number[][] | null;
-  setTargetValues: (values: number[][] | null) => void;
+  diceRollState: DiceRollState;
+  setDiceRollState: (state: DiceRollState) => void;
 }
 
 const DiceRollContext = createContext<DiceRollContextType | undefined>(
@@ -14,16 +20,19 @@ const DiceRollContext = createContext<DiceRollContextType | undefined>(
 export const DiceRollProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [showDiceRoll, setShowDiceRoll] = useState(false);
-  const [targetValues, setTargetValues] = useState<number[][] | null>(null);
+  const [diceRollState, setDiceRollState] = useState<DiceRollState>({
+    show: false,
+    beforeText: "",
+    afterText: "",
+    imageUrls: [],
+    targetValues: [],
+  });
 
   return (
     <DiceRollContext.Provider
       value={{
-        showDiceRoll,
-        setShowDiceRoll,
-        targetValues,
-        setTargetValues,
+        diceRollState,
+        setDiceRollState,
       }}
     >
       {children}

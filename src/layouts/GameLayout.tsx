@@ -2,7 +2,6 @@ import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { StereoProvider } from "../contexts/StereoContext";
 import { GameProvider } from "../contexts/GameContext";
 import { ErrorProvider } from "../contexts/ErrorContext";
-import { AuthProvider } from "../contexts/AuthContext";
 import { LogProvider } from "../contexts/LogContext";
 import { MiscProvider } from "@/contexts/MiscContext";
 import { DiceRollProvider } from "@/contexts/DiceRollContext";
@@ -41,19 +40,17 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       }}
     >
       <LogProvider>
-        <AuthProvider>
-          <ErrorProvider>
-            <MiscProvider>
-              <GameProvider>
-                <DiceRollProvider>
-                  <StereoProvider>
-                    <Suspense fallback={""}>{children}</Suspense>
-                  </StereoProvider>
-                </DiceRollProvider>
-              </GameProvider>
-            </MiscProvider>
-          </ErrorProvider>
-        </AuthProvider>
+        <ErrorProvider>
+          <MiscProvider>
+            <GameProvider>
+              <DiceRollProvider>
+                <StereoProvider>
+                  <Suspense fallback={""}>{children}</Suspense>
+                </StereoProvider>
+              </DiceRollProvider>
+            </GameProvider>
+          </MiscProvider>
+        </ErrorProvider>
       </LogProvider>
     </main>
   );

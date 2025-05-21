@@ -3,7 +3,11 @@ import { AuthMode } from "@/types/auth";
 import { z } from "zod/v4";
 import { envConfig } from "@/envConfig";
 import { getDiscordAccessToken } from "./multiplayerState";
-import { discordLoginButtonAccessToken } from "@/contexts/AuthContext";
+import {
+  discordLoginButtonAccessToken,
+  pnAccessToken,
+  setPnAccessToken,
+} from "@/contexts/AuthContext";
 
 export class GameApi {
   /* This exchanges a Discord access token for a PN access token.
@@ -12,8 +16,7 @@ export class GameApi {
     // TODO if localstorage has client token, and room code matches up, then use that, or
     // otherwise delete it
 
-    const token = localStorage.getItem("token");
-    if (!token) {
+    if (!pnAccessToken) {
       let discordToken: string;
       if (envConfig.authMode == AuthMode.DiscordEmbedded) {
         discordToken = await getDiscordAccessToken();
@@ -40,11 +43,11 @@ export class GameApi {
       // that triggers the auth dialog? if so, it should be called when entering the game,
       // not when first making a request to the API server
       const data = await response.json();
-      localStorage.setItem("token", data.token);
+      setPnAccessToken(data.token);
       localStorage.setItem("discord_username", data.discord_username);
       return data.token;
     }
-    return token;
+    return pnAccessToken;
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
@@ -58,31 +61,7 @@ export class GameApi {
 
     if (!response.ok) {
       if (response.status === 401) {
-        const errorData = await response.json();
-
-        // this only handles expiry of the PN token, not of the Discord token
-        // the PN token has a 1 hour expiry, whilst I think Discord tokens are valid
-        // for a week. Also Discord tokens may get refreshed each time you open the app
-        // (depending on the playroom kit implementation), whilst PN tokens are stored
-        // in local storage. Also, possibly PlayroomKit will refresh the Discord token
-        // when you call getDiscordAccessToken(), not sure.
-        if (errorData.expired) {
-          localStorage.removeItem("token");
-          const newToken = await this.maybeExchangeDiscordTokenForPNToken();
-          const retryResponse = await this._makeRequestWithTokenNoException(
-            path,
-            body,
-            newToken,
-            method,
-          );
-          if (!retryResponse.ok) {
-            const responseBody = await retryResponse.json();
-            throw new Error(
-              `HTTP error ${retryResponse.status}: ${JSON.stringify(responseBody)}`,
-            );
-          }
-          return retryResponse.json();
-        }
+        throw new Error("Unauthorized 401");
       }
       const responseBody = await response.json();
       throw new Error(

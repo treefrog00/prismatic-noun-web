@@ -1,9 +1,8 @@
 import { BACKEND_URL } from "@/config";
-import { useAuth } from "@/contexts/AuthContext";
+import { setPnAccessToken } from "@/contexts/AuthContext";
+import { setDiscordLoginButtonAccessToken } from "@/contexts/AuthContext";
 
 const DiscordCallback: React.FC = () => {
-  const { setDiscordLoginButtonAccessToken } = useAuth();
-
   const handleCallback = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
@@ -20,8 +19,8 @@ const DiscordCallback: React.FC = () => {
 
         if (response.ok) {
           const data = await response.json();
-          localStorage.setItem("token", data.token);
-          setDiscordLoginButtonAccessToken(data.token);
+          setPnAccessToken(data.pn_access_token);
+          setDiscordLoginButtonAccessToken(data.discord_access_token);
           localStorage.setItem("discord_username", data.discord_username);
 
           // Get the stored redirect URL or default to /play

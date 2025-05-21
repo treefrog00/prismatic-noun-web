@@ -202,37 +202,42 @@ export const useGameActions = () => {
     }
   };
 
+  const getCharacterName = () => {
+    return thisPlayer.getState("character").name;
+  };
+
+  const getPlayerName = () => {
+    return thisPlayer.getProfile().name;
+  };
+
   const handleSendOk = async () => {
     // note that if you await RPC.call it seems to never return....
-    RPC.call(
-      "rpc-chat",
-      { player: thisPlayer.getState("name"), text },
-      RPC.Mode.ALL,
-    );
+    RPC.call("rpc-chat", { player: getPlayerName(), text }, RPC.Mode.ALL);
   };
 
   const handleTalkOk = async () => {
+    const textWithQuotes = getTextWithQuotes(text);
     appendToStoryRpc(
-      text,
-      `${thisPlayer.getState("name")} says to ${getTargetName()}`,
+      textWithQuotes,
+      `${getCharacterName()} says to ${getTargetName()}`,
     );
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
-      message: text,
+      message: textWithQuotes,
       targetId: actionTarget.targetId,
     });
   };
 
   const handleInvestigateOk = async () => {
-    appendToStoryRpc(text, `${thisPlayer.getState("name")} investigates`);
+    appendToStoryRpc(text, `${getCharacterName()} investigates`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, {
       prompt: text,
     });
   };
 
   const handleDoOk = async () => {
-    let label = `${thisPlayer.getState("name")} acts`;
+    let label = `${getCharacterName()} acts`;
     if (ability) {
-      label = `${thisPlayer.getState("name")} uses ${ability}`;
+      label = `${getCharacterName()} uses ${ability}`;
     }
     appendToStoryRpc(text, label);
     await apiCallAndUpdate(`/game/${gameData.gameId}/do`, {
@@ -243,9 +248,16 @@ export const useGameActions = () => {
     });
   };
 
+  const getTextWithQuotes = (text: string) => {
+    return '"' + text.trim() + '"';
+  };
+
   const handleSayOk = async () => {
-    appendToStoryRpc(text, `${thisPlayer.getState("name")} says`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, { message: text });
+    const textWithQuotes = getTextWithQuotes(text);
+    appendToStoryRpc(textWithQuotes, `${getCharacterName()} says`);
+    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
+      message: textWithQuotes,
+    });
   };
 
   const globalHandleClick = async (buttonId: string) => {

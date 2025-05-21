@@ -1,11 +1,9 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { RPC, myPlayer } from "@/core/multiplayerState";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
 interface ChatTextInputProps {
-  text: string;
-  setText: (text: string) => void;
-  textInputRef: React.RefObject<HTMLTextAreaElement>;
+  chatType: "chat" | "rating";
   onClose: () => void;
 }
 
@@ -14,13 +12,10 @@ const hasText = (text?: string) => {
   return true;
 };
 
-const ChatTextInput: React.FC<ChatTextInputProps> = ({
-  text,
-  setText,
-  textInputRef,
-  onClose,
-}) => {
+const ChatTextInput: React.FC<ChatTextInputProps> = ({ chatType, onClose }) => {
   const thisPlayer = myPlayer();
+  const [text, setText] = useState("");
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     const focusInput = () => {
@@ -39,15 +34,17 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({
   }, [textInputRef]);
 
   const handleSend = () => {
-    if (hasText(text)) {
+    if (hasText(text) && chatType === "chat") {
       RPC.call(
         "rpc-chat",
         { player: thisPlayer.getState("name"), text },
         RPC.Mode.ALL,
       );
-      setText("");
-      onClose();
+    } else if (hasText(text) && chatType === "rating") {
+      console.log("rating", text);
     }
+    setText("");
+    onClose();
   };
 
   const textareaElement = (

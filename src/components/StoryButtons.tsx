@@ -26,7 +26,6 @@ const rootButtonsDesktop: ButtonConfig[] = [
 ];
 
 const rootButtonsMobile: ButtonConfig[] = [
-  { id: "chat", label: "Chat", color: "none" },
   { id: "investigate", label: "Investigate", color: "none" },
   { id: "say", label: "Say", color: "none" },
   { id: "do", label: "Do", color: "none" },
@@ -244,31 +243,27 @@ const DesktopControls = ({
     <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
       <div className="flex justify-between items-center self-center">
         <div className="flex justify-center relative">
-          {rootButtonsDesktop
-            .filter((button) => button.id !== "chat")
-            .map((button) => (
-              <button
-                key={button.id}
-                ref={button.id === "act" ? actButtonRef : undefined}
-                className={`game-button ${getColorClasses(button.color)} ml-4`}
-                data-id={button.id}
-                onPointerDown={() => {
-                  if (button.id === "act") {
-                    // nothing, just hover effect
-                  } else {
-                    onPointerDown(button.id);
-                  }
-                }}
-                onMouseEnter={() =>
-                  button.id === "act" && handleMouseEvent(true)
+          {rootButtonsDesktop.map((button) => (
+            <button
+              key={button.id}
+              ref={button.id === "act" ? actButtonRef : undefined}
+              className={`game-button ${getColorClasses(button.color)} ml-4`}
+              data-id={button.id}
+              onPointerDown={() => {
+                if (button.id === "act") {
+                  // nothing, just hover effect
+                } else {
+                  onPointerDown(button.id);
                 }
-                onMouseLeave={() => {
-                  button.id === "act" && handleMouseEvent(false);
-                }}
-              >
-                {button.label}
-              </button>
-            ))}
+              }}
+              onMouseEnter={() => button.id === "act" && handleMouseEvent(true)}
+              onMouseLeave={() => {
+                button.id === "act" && handleMouseEvent(false);
+              }}
+            >
+              {button.label}
+            </button>
+          ))}
           {showActChooser && (
             <div
               className={`z-20 ${sharedStyles.container}`}

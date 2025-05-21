@@ -13,7 +13,7 @@ import { doDiscordAuthRedirect } from "@/components/auth/DiscordAuth";
 const Play = () => {
   const { gameStarted, setGameStarted } = useGameStarted();
   const [showChatInput, setShowChatInput] = useState(false);
-  const [chatText, setChatText] = useState("");
+  const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const { showLaunchScreen, setShowLaunchScreen } = useShowLaunchScreen();
 
@@ -49,6 +49,19 @@ const Play = () => {
           return;
         }
         event.preventDefault();
+        setChatType("chat");
+        setShowChatInput(true);
+      } else if (import.meta.env.DEV && event.key === "e") {
+        // Check if the active element is an input
+        const activeElement = document.activeElement;
+        if (
+          activeElement instanceof HTMLInputElement ||
+          activeElement instanceof HTMLTextAreaElement
+        ) {
+          return;
+        }
+        event.preventDefault();
+        setChatType("rating");
         setShowChatInput(true);
       }
     };
@@ -66,9 +79,7 @@ const Play = () => {
       <ChatMessages />
       {showChatInput && (
         <ChatTextInput
-          text={chatText}
-          setText={setChatText}
-          textInputRef={chatInputRef}
+          chatType={chatType}
           onClose={() => setShowChatInput(false)}
         />
       )}

@@ -26,7 +26,7 @@ export class GameApi {
           throw new Error("No Discord access token found");
         }
       } else {
-        throw new Error("No auth mode set");
+        discordToken = null;
       }
 
       const response = await this.makeRequestWithToken(

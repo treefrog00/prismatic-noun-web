@@ -1,15 +1,16 @@
+import { BACKEND_URL } from "@/config";
+import { envConfig } from "@/envConfig";
 import { FC, useEffect } from "react";
 
 interface DiscordAuthProps {
   onSignInSuccess?: () => void;
 }
 
-const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const DISCORD_CLIENT_ID = envConfig.discordClientId;
 const REDIRECT_URI = `${window.location.origin}/auth/discord/callback`;
 const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI,
-)}&response_type=code&scope=identify`;
+)}&response_type=code&scope=identify+applications.entitlements`;
 
 const DiscordAuth: FC<DiscordAuthProps> = ({ onSignInSuccess }) => {
   const handleLogin = () => {

@@ -1,6 +1,6 @@
 import Lobby from "../components/lobby/Lobby";
 import Game from "../components/Game";
-import { HASH_QUEST_ID } from "../config";
+import { AuthMode, HASH_QUEST_ID } from "../config";
 import { useGameStarted, useShowLaunchScreen } from "../contexts/GameContext";
 import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useRef, useState } from "react";
@@ -16,15 +16,22 @@ const Play = () => {
   const [chatText, setChatText] = useState("");
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const [showAuthPopup, setShowAuthPopup] = useState(false);
-  const { firebaseUser, loading } = useAuth();
+  const {
+    validDiscordAccessToken: validDiscordAccessTokenFromLoginButton,
+    loading,
+  } = useAuth();
   const { showLaunchScreen, setShowLaunchScreen } = useShowLaunchScreen();
 
   // Show Firebase auth popup if necessary
   useEffect(() => {
-    if (!loading && !firebaseUser && envConfig.firebaseAuth) {
+    if (
+      !loading &&
+      envConfig.authMode == AuthMode.DiscordLoginButton &&
+      !validDiscordAccessTokenFromLoginButton
+    ) {
       setShowAuthPopup(true);
     }
-  }, [firebaseUser, loading]);
+  }, [validDiscordAccessTokenFromLoginButton, loading]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -52,7 +59,8 @@ const Play = () => {
       {!showLaunchScreen &&
         !gameStarted &&
         !HASH_QUEST_ID &&
-        (firebaseUser || !envConfig.firebaseAuth) && <Lobby />}
+        (validDiscordAccessTokenFromLoginButton ||
+          envConfig.authMode != AuthMode.DiscordLoginButton) && <Lobby />}
 
       {(gameStarted || HASH_QUEST_ID) && <Game />}
       <ChatMessages />
@@ -64,8 +72,7 @@ const Play = () => {
           onClose={() => setShowChatInput(false)}
         />
       )}
-      {/* I think the check for firebaseUser may be redundant */}
-      {showAuthPopup && !firebaseUser && !loading && (
+      {showAuthPopup && !loading && (
         <AuthPopup onClose={() => setShowAuthPopup(false)} />
       )}
     </div>

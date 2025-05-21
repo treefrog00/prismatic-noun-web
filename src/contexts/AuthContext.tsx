@@ -6,36 +6,15 @@ import {
   ReactNode,
 } from "react";
 import { envConfig } from "../envConfig";
-
-// Only import Firebase dependencies if firebaseAuth is enabled
-let auth: any;
-
-// Define a type that will be used when firebaseAuth is enabled
-type FirebaseUser = {
-  uid: string;
-  email: string | null;
-  // Add other Firebase User properties as needed
-};
-
-// Conditional type based on firebaseAuth config
-type AuthUser = typeof envConfig.firebaseAuth extends true
-  ? FirebaseUser
-  : null;
+import { AuthMode } from "@/config";
 
 interface AuthContextType {
-  firebaseUser: AuthUser;
+  validDiscordAccessToken: boolean;
   loading: boolean;
 }
 
-// Initialize auth if firebaseAuth is enabled
-if (envConfig.firebaseAuth) {
-  import("../firebaseConfig").then((module) => {
-    auth = module.auth;
-  });
-}
-
 const AuthContext = createContext<AuthContextType>({
-  firebaseUser: null,
+  validDiscordAccessToken: false,
   loading: true,
 });
 
@@ -44,41 +23,24 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<AuthUser>(null);
+  const [validDiscordAccessToken, setValidDiscordAccessToken] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!envConfig.firebaseAuth) {
+    if (envConfig.authMode == AuthMode.DiscordLoginButton) {
       setLoading(false);
       return;
     }
 
-    let unsubscribe: (() => void) | undefined;
-
-    const initializeAuth = async () => {
-      const module = await import("../firebaseConfig");
-      auth = module.auth;
-
-      unsubscribe = auth.onAuthStateChanged((user) => {
-        setUser(user);
-        setLoading(false);
-      });
-    };
-
-    initializeAuth();
-
-    return () => {
-      if (unsubscribe) {
-        unsubscribe();
-      }
-    };
+    const discordAccessToken = localStorage.getItem("discord_access_token");
+    if (discordAccessToken) {
+      setValidDiscordAccessToken(true);
+      setLoading(false);
+    }
   }, []);
 
-  if (!envConfig.firebaseAuth) {
-    return <>{children}</>;
-  }
   return (
-    <AuthContext.Provider value={{ firebaseUser: user, loading }}>
+    <AuthContext.Provider value={{ validDiscordAccessToken, loading }}>
       {children}
     </AuthContext.Provider>
   );

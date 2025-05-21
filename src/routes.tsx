@@ -6,6 +6,17 @@ import Terms from "./pages/terms";
 import Privacy from "./pages/privacy";
 import HomeLayout from "./layouts/HomeLayout";
 import Play from "./pages/play";
+import DiscordCallback from "./components/auth/DiscordCallback";
+
+// Create a wrapper component to handle the callback with the success handler
+const DiscordCallbackWrapper = () => {
+  const onSignInSuccess = () => {
+    // Close the auth popup by navigating back
+    window.history.back();
+  };
+
+  return <DiscordCallback onSignInSuccess={onSignInSuccess} />;
+};
 
 export const routes: RouteObject[] = [
   {
@@ -39,5 +50,9 @@ export const routes: RouteObject[] = [
         <Play />
       </GameLayout>
     ),
+  },
+  {
+    path: "/auth/discord/callback",
+    element: <DiscordCallbackWrapper />,
   },
 ];

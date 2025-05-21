@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { FirebaseAuth } from "@/components/auth/FirebaseAuth";
+import DiscordAuth from "../auth/DiscordAuth";
 
 interface AuthPopupProps {
   onClose: () => void;
@@ -20,7 +21,8 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
             ✕
           </button>
         </div>
-        <FirebaseAuth onSignInSuccess={onClose} />
+        {/* <FirebaseAuth onSignInSuccess={onClose} /> */}
+        <DiscordAuth onSignInSuccess={onClose} />
       </div>
     </div>
   );

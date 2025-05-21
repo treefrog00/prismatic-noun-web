@@ -6,7 +6,8 @@ import "./index.css";
 import { routes } from "./routes";
 import * as Sentry from "@sentry/react";
 import { envConfig } from "./envConfig";
-import { AuthMode, USE_SENTRY } from "./config";
+import { USE_SENTRY } from "./config";
+import { AuthMode } from "./types/auth";
 
 // Set font URL based on environment
 const font =

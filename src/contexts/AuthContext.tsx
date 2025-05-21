@@ -1,21 +1,15 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  ReactNode,
-} from "react";
-import { envConfig } from "../envConfig";
-import { AuthMode } from "@/config";
+import { createContext, useContext, ReactNode } from "react";
+
+export let discordLoginButtonAccessToken: string | null = null;
 
 interface AuthContextType {
-  validDiscordAccessToken: boolean;
-  loading: boolean;
+  discordLoginButtonAccessToken: string | null;
+  setDiscordLoginButtonAccessToken: (token: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
-  validDiscordAccessToken: false,
-  loading: true,
+  discordLoginButtonAccessToken: null,
+  setDiscordLoginButtonAccessToken: () => {},
 });
 
 interface AuthProviderProps {
@@ -23,24 +17,17 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [validDiscordAccessToken, setValidDiscordAccessToken] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (envConfig.authMode == AuthMode.DiscordLoginButton) {
-      setLoading(false);
-      return;
-    }
-
-    const discordAccessToken = localStorage.getItem("discord_access_token");
-    if (discordAccessToken) {
-      setValidDiscordAccessToken(true);
-      setLoading(false);
-    }
-  }, []);
+  const setDiscordLoginButtonAccessToken = (token: string | null) => {
+    discordLoginButtonAccessToken = token;
+  };
 
   return (
-    <AuthContext.Provider value={{ validDiscordAccessToken, loading }}>
+    <AuthContext.Provider
+      value={{
+        discordLoginButtonAccessToken,
+        setDiscordLoginButtonAccessToken,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

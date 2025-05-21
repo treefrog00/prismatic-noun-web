@@ -1,4 +1,4 @@
-import { AuthMode } from "./config";
+import { AuthMode } from "./types/auth";
 
 export const envConfig = {
   gameId: "YOUR_GAME_ID_HERE",

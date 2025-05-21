@@ -1,14 +1,9 @@
 import { envConfig } from "./envConfig";
+import { AuthMode } from "./types/auth";
 
 // Get the current backend URL from the hash parameters or default to current origin
 const hash = window.location.hash.slice(1); // Remove the # symbol
 const hashParams = new URLSearchParams(hash);
-
-export enum AuthMode {
-  Disabled = "Disabled",
-  DiscordEmbedded = "DiscordEmbedded",
-  DiscordLoginButton = "DiscordLoginButton",
-}
 
 let url: string;
 if (envConfig.backendUrl) {

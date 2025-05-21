@@ -1,36 +1,47 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "@/config";
+import { useAuth } from "@/contexts/AuthContext";
 
-interface DiscordCallbackProps {
-  onSignInSuccess?: () => void;
-}
+const DiscordCallback: React.FC = () => {
+  const { setDiscordLoginButtonAccessToken } = useAuth();
 
-const DiscordCallback: React.FC<DiscordCallbackProps> = ({
-  onSignInSuccess,
-}) => {
-  const navigate = useNavigate();
+  const handleCallback = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
 
-  useEffect(() => {
-    const handleCallback = () => {
-      // Get the access token from the URL hash
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const accessToken = params.get("access_token");
+    if (code) {
+      try {
+        const response = await fetch(`${BACKEND_URL}/auth/exchange_code`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ code }),
+        });
 
-      if (accessToken) {
-        // Store the access token
-        localStorage.setItem("discord_access_token", accessToken);
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("token", data.token);
+          setDiscordLoginButtonAccessToken(data.token);
+          localStorage.setItem("discord_username", data.discord_username);
 
-        // Call the success callback if provided
-        onSignInSuccess?.();
+          // Get the stored redirect URL or default to /play
+          const redirectUrl =
+            localStorage.getItem("auth_redirect_url") || "/play";
+          localStorage.removeItem("auth_redirect_url"); // Clean up
 
-        // Redirect back to the main page
-        navigate("/");
+          // Navigate to the stored URL
+          window.location.href = redirectUrl;
+        } else {
+          console.error("Failed to exchange code for token");
+        }
+      } catch (error) {
+        console.error("Error exchanging code for token:", error);
       }
-    };
+    }
+  };
 
-    handleCallback();
-  }, [navigate, onSignInSuccess]);
+  // Run the callback immediately
+  handleCallback();
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">

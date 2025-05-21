@@ -1,7 +1,9 @@
-import { getDiscordAccessToken } from "./multiplayerState";
-import { AuthMode, BACKEND_URL } from "../config";
+import { BACKEND_URL } from "../config";
+import { AuthMode } from "@/types/auth";
 import { z } from "zod/v4";
 import { envConfig } from "@/envConfig";
+import { getDiscordAccessToken } from "./multiplayerState";
+import { discordLoginButtonAccessToken } from "@/contexts/AuthContext";
 
 export class GameApi {
   /* This exchanges a Discord access token for a PN access token.
@@ -13,7 +15,7 @@ export class GameApi {
       if (envConfig.authMode == AuthMode.DiscordEmbedded) {
         discordToken = await getDiscordAccessToken();
       } else if (envConfig.authMode == AuthMode.DiscordLoginButton) {
-        discordToken = localStorage.getItem("discord_access_token");
+        discordToken = discordLoginButtonAccessToken;
         if (!discordToken) {
           throw new Error("No Discord access token found");
         }
@@ -26,6 +28,14 @@ export class GameApi {
         null,
         discordToken,
       );
+      // TODO handle error response from backend due to the Discord access token having
+      // expired. This could definitely happen with DiscordLoginButton mode.
+      // Not sure about the DiscordEmbedded mode, maybe playroomkit will refresh the
+      // Discord token when you call getDiscordAccessToken(), not sure, plus anyway if it's
+      // not stored in local storage, then it shouldn't be an issue
+      // wait, hang on, in embedded mode, is the call to getDiscordAccessToken() the thing
+      // that triggers the auth dialog? if so, it should be called when entering the game,
+      // not when first making a request to the API server
       const data = await response.json();
       localStorage.setItem("token", data.token);
       localStorage.setItem("discord_username", data.discord_username);

@@ -11,7 +11,7 @@ import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
 import { MiscProvider, useMisc } from "@/contexts/MiscContext";
-import { AuthMode } from "@/config";
+import { AuthMode } from "@/types/auth";
 import { DiscordOptions } from "playroomkit";
 
 const DISCORD_SCOPES = ["identify", "applications.entitlements"];

@@ -18,7 +18,21 @@ const Play = () => {
   const { showLaunchScreen, setShowLaunchScreen } = useShowLaunchScreen();
 
   useEffect(() => {
-    if (envConfig.authMode == AuthMode.DiscordLoginButton) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientToken = urlParams.get("client_token");
+
+    if (clientToken) {
+      localStorage.setItem("client_token", clientToken);
+
+      // Extract room code from hash if present (#r=...)
+      const hash = window.location.hash;
+      if (hash.startsWith("#r=")) {
+        const roomCode = hash.substring(3); // Remove '#r=' prefix
+        localStorage.setItem("room_code", roomCode);
+      }
+    }
+
+    if (envConfig.authMode == AuthMode.DiscordLoginButton && !clientToken) {
       doDiscordAuthRedirect();
     }
   }, []);

@@ -9,6 +9,9 @@ export class GameApi {
   /* This exchanges a Discord access token for a PN access token.
    */
   private async maybeExchangeDiscordTokenForPNToken(): Promise<string> {
+    // TODO if localstorage has client token, and room code matches up, then use that, or
+    // otherwise delete it
+
     const token = localStorage.getItem("token");
     if (!token) {
       let discordToken: string;

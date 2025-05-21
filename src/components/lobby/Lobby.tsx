@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import LobbyHome from "./LobbyHome";
 import LobbyNavBar from "./LobbyNavBar";
 import LobbyConfig from "./LobbyConfig";
-import {
-  insertCoin,
-} from "@/core/multiplayerState";
+import { insertCoin } from "@/core/multiplayerState";
 import { QuestSummary } from "@/types";
 import { useGameStarted, useQuestSummary } from "@/contexts/GameContext";
 import { starryTheme } from "@/styles/starryTheme";
@@ -14,6 +12,9 @@ import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
 import { MiscProvider, useMisc } from "@/contexts/MiscContext";
 import { AuthMode } from "@/config";
+import { DiscordOptions } from "playroomkit";
+
+const DISCORD_SCOPES = ["identify", "applications.entitlements"];
 
 const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
@@ -25,11 +26,19 @@ const LobbyContent = () => {
 
   useEffect(() => {
     const initializeGame = async () => {
+      const discordOptions: DiscordOptions = {
+        //prompt: "some prompt",
+        //state: "some state",
+        scope: DISCORD_SCOPES,
+      };
       // skip lobby means skip their UI and use custom lobby instead
       await insertCoin({
         skipLobby: true,
         gameId: envConfig.gameId,
-        discord: envConfig.authMode == AuthMode.DiscordEmbedded,
+        discord:
+          envConfig.authMode == AuthMode.DiscordEmbedded
+            ? discordOptions
+            : false,
       });
 
       // Fetch available quests

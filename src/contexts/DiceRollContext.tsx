@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import { useMultiplayerState } from "playroomkit";
+import React, { createContext, useContext, ReactNode } from "react";
 
 interface DiceRollState {
   show: boolean;
@@ -20,13 +21,16 @@ const DiceRollContext = createContext<DiceRollContextType | undefined>(
 export const DiceRollProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [diceRollState, setDiceRollState] = useState<DiceRollState>({
-    show: false,
-    beforeText: "",
-    afterText: "",
-    imageUrls: [],
-    targetValues: [],
-  });
+  const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState>(
+    "dice-roll-state",
+    {
+      show: false,
+      beforeText: "",
+      afterText: "",
+      imageUrls: [],
+      targetValues: [],
+    },
+  );
 
   return (
     <DiceRollContext.Provider

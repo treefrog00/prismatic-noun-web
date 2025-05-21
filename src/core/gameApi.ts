@@ -1,14 +1,26 @@
 import { getDiscordAccessToken } from "./multiplayerState";
-import { BACKEND_URL } from "../config";
+import { AuthMode, BACKEND_URL } from "../config";
 import { z } from "zod/v4";
+import { envConfig } from "@/envConfig";
 
 export class GameApi {
   /* This exchanges a Discord access token for a PN access token.
    */
-  private async exchangeDiscordTokenForPNToken(): Promise<string> {
+  private async maybeExchangeDiscordTokenForPNToken(): Promise<string> {
     const token = localStorage.getItem("token");
     if (!token) {
-      const discordToken = await getDiscordAccessToken();
+      let discordToken: string;
+      if (envConfig.authMode == AuthMode.DiscordEmbedded) {
+        discordToken = await getDiscordAccessToken();
+      } else if (envConfig.authMode == AuthMode.DiscordLoginButton) {
+        discordToken = localStorage.getItem("discord_access_token");
+        if (!discordToken) {
+          throw new Error("No Discord access token found");
+        }
+      } else {
+        throw new Error("No auth mode set");
+      }
+
       const response = await this.makeRequestWithToken(
         "/auth/exchange",
         null,
@@ -23,7 +35,7 @@ export class GameApi {
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
-    const token = await this.exchangeDiscordTokenForPNToken();
+    const token = await this.maybeExchangeDiscordTokenForPNToken();
     const response = await this._makeRequestWithTokenNoException(
       path,
       body,
@@ -43,7 +55,7 @@ export class GameApi {
         // when you call getDiscordAccessToken(), not sure.
         if (errorData.expired) {
           localStorage.removeItem("token");
-          const newToken = await this.exchangeDiscordTokenForPNToken();
+          const newToken = await this.maybeExchangeDiscordTokenForPNToken();
           const retryResponse = await this._makeRequestWithTokenNoException(
             path,
             body,

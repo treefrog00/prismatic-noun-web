@@ -4,12 +4,18 @@ import { envConfig } from "./envConfig";
 const hash = window.location.hash.slice(1); // Remove the # symbol
 const hashParams = new URLSearchParams(hash);
 
+export enum AuthMode {
+  Disabled = "Disabled",
+  DiscordEmbedded = "DiscordEmbedded",
+  DiscordLoginButton = "DiscordLoginButton",
+}
+
 let url: string;
 if (envConfig.backendUrl) {
   url = envConfig.backendUrl;
 } else if (import.meta.env.DEV) {
   url = "http://localhost:5000";
-} else if (envConfig.useDiscord) {
+} else if (envConfig.authMode == AuthMode.DiscordEmbedded) {
   // requires url-mapping to be set up
   url = "/api";
 } else {
@@ -19,7 +25,7 @@ if (envConfig.backendUrl) {
 export const BACKEND_URL = url;
 
 const GENERATED_IMAGES_URL =
-  import.meta.env.DEV || !envConfig.useDiscord
+  import.meta.env.DEV || envConfig.authMode != AuthMode.DiscordEmbedded
     ? "https://storage.googleapis.com/prismatic-noun-images"
     : "/images";
 

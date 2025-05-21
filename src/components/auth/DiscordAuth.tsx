@@ -1,19 +1,55 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 
 interface DiscordAuthProps {
   onSignInSuccess?: () => void;
 }
 
 const DISCORD_CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID;
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 const REDIRECT_URI = `${window.location.origin}/auth/discord/callback`;
 const DISCORD_OAUTH_URL = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI,
-)}&response_type=token&scope=identify`;
+)}&response_type=code&scope=identify`;
 
 const DiscordAuth: FC<DiscordAuthProps> = ({ onSignInSuccess }) => {
   const handleLogin = () => {
     window.location.href = DISCORD_OAUTH_URL;
   };
+
+  useEffect(() => {
+    const handleCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get("code");
+
+      if (code) {
+        try {
+          const response = await fetch(`${BACKEND_URL}/auth/exchange_code`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ code }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("discord_username", data.discord_username);
+            onSignInSuccess?.();
+          } else {
+            console.error("Failed to exchange code for token");
+          }
+        } catch (error) {
+          console.error("Error exchanging code for token:", error);
+        }
+      }
+    };
+
+    // Check if we're on the callback page
+    if (window.location.pathname === "/auth/discord/callback") {
+      handleCallback();
+    }
+  }, [onSignInSuccess]);
 
   return (
     <button

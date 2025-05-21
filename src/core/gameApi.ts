@@ -3,7 +3,9 @@ import { BACKEND_URL } from "../config";
 import { z } from "zod/v4";
 
 export class GameApi {
-  private async getAuthToken(): Promise<string> {
+  /* This exchanges a Discord access token for a PN access token.
+   */
+  private async exchangeDiscordTokenForPNToken(): Promise<string> {
     const token = localStorage.getItem("token");
     if (!token) {
       const discordToken = await getDiscordAccessToken();
@@ -21,7 +23,7 @@ export class GameApi {
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
-    const token = await this.getAuthToken();
+    const token = await this.exchangeDiscordTokenForPNToken();
     const response = await this._makeRequestWithTokenNoException(
       path,
       body,
@@ -32,9 +34,16 @@ export class GameApi {
     if (!response.ok) {
       if (response.status === 401) {
         const errorData = await response.json();
+
+        // this only handles expiry of the PN token, not of the Discord token
+        // the PN token has a 1 hour expiry, whilst I think Discord tokens are valid
+        // for a week. Also Discord tokens may get refreshed each time you open the app
+        // (depending on the playroom kit implementation), whilst PN tokens are stored
+        // in local storage. Also, possibly PlayroomKit will refresh the Discord token
+        // when you call getDiscordAccessToken(), not sure.
         if (errorData.expired) {
           localStorage.removeItem("token");
-          const newToken = await this.getAuthToken();
+          const newToken = await this.exchangeDiscordTokenForPNToken();
           const retryResponse = await this._makeRequestWithTokenNoException(
             path,
             body,

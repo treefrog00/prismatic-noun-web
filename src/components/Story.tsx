@@ -352,12 +352,11 @@ const Story = forwardRef<StoryRef>((_, ref) => {
   }));
 
   return (
-    <div className={`${sharedStyles.text} flex-1 h-full`}>
+    <div className={`${sharedStyles.text} h-full`}>
       <div
         className={`${sharedStyles.container} h-full overflow-auto`}
         id="textDisplay"
         ref={textDisplayRef}
-        style={{ height: "100%" }}
       />
 
       <style>{`

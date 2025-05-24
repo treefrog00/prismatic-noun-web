@@ -240,7 +240,7 @@ const DesktopControls = ({
   }
 
   return (
-    <div className="relative border-2 border-gray-700 rounded-lg p-4 h-24">
+    <div className="border-2 border-gray-700 rounded-lg p-4 h-24">
       <div className="flex justify-between items-center self-center">
         <div className="flex justify-center relative">
           {rootButtonsDesktop.map((button) => (

@@ -100,7 +100,7 @@ const MobileControls = ({
     if (!showMobileButtons) return null;
 
     return createPortal(
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30 mt-4">
         <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
           <div className="grid grid-cols-2 gap-2">
             {rootButtonsMobile.map((button) => (
@@ -240,7 +240,7 @@ const DesktopControls = ({
   }
 
   return (
-    <div className="border-2 border-gray-700 rounded-lg p-4 h-24">
+    <div className="border-2 border-gray-700 rounded-lg p-4 h-24 mt-4">
       <div className="flex justify-between items-center self-center">
         <div className="flex justify-center relative">
           {rootButtonsDesktop.map((button) => (

@@ -210,9 +210,7 @@ const GameContent = () => {
           </div>
           <div className="w-full h-full flex-shrink-0">
             <MobileLocationView />
-            <div className="relative mt-4">
-              <StoryButtons />
-            </div>
+            <StoryButtons />
           </div>
           <div className="w-full h-full flex-shrink-0">
             <div className={`w-full h-full flex flex-col`}>
@@ -235,9 +233,7 @@ const GameContent = () => {
             <Story ref={storyRef} />
             {diceRollState.show && <DiceRollWrapper />}
           </div>
-          <div className="relative mt-4">
-            <StoryButtons />
-          </div>
+          <StoryButtons />
         </div>
       </div>
     </AmbientBackground>

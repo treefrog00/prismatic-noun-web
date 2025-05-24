@@ -6,7 +6,6 @@ import {
   PlayerState,
   usePlayersList,
   RPC,
-  setRpcPlayer,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
@@ -46,6 +45,7 @@ const GameContent = () => {
   const [startX, setStartX] = useState(0);
   const [currentX, setCurrentX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
+  const [hashQuestInitializing, setHashQuestInitializing] = useState(false);
 
   // UI variables
   const storyRef = useRef<StoryRef>(null);
@@ -157,6 +157,7 @@ const GameContent = () => {
           ...miscSharedData,
           currentPlayer: startGame.currentPlayer,
         });
+        console.log("game started, my player is now", startGame.currentPlayer);
         setCharacters(startGame.characterState);
 
         if (HASH_QUEST_ID) {
@@ -168,19 +169,15 @@ const GameContent = () => {
             imageUrl: "https://placehold.co/100x100",
           });
 
-          // this is extremely hacky, setCurrentPlayer below will also result in updating this eventually,
-          // but only via lots of React indirection that won't take place until the next render
-          // when using real playroom it doesn't matter because the RPC call will take the
-          // player from playroom's internal state
-          // The only reason this is needed at all is because the RPC call is made to add
-          // the story intro before the current player turn is set, which is only there
-          // so people can start reading without having to wait for the first server response
-          setRpcPlayer(
-            localPlayers.find((p) => p.id === startGame.currentPlayer),
-          );
+          // // this is extremely hacky, but in HASH_QUEST_ID mode we need to set some things
+          // // immediately, such that handleTravel/appendToStoryRpc will use the most recent
+          // // data
+          // setRpcPlayer(
+          //   localPlayers.find((p) => p.id === startGame.currentPlayer),
+          // );
 
           if (HASH_LOCATION_ID) {
-            await handleTravel(HASH_LOCATION_ID, startGame.gameData.gameId);
+            setHashQuestInitializing(true);
           } else {
             appendToStoryRpc(startGame.gameData.intro);
           }
@@ -190,6 +187,20 @@ const GameContent = () => {
     }
     // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
   }, [isHost]);
+
+  useEffect(() => {
+    const hashQuestInitializeAsync = async () => {
+      await handleTravel(HASH_LOCATION_ID, gameData.gameId);
+    };
+    if (hashQuestInitializing) {
+      hashQuestInitializeAsync();
+      setHashQuestInitializing(false);
+    }
+  }, [hashQuestInitializing]);
+
+  useEffect(() => {
+    console.log("miscSharedData in useEffect", miscSharedData);
+  }, [miscSharedData]);
 
   if (isAndroidOrIOS()) {
     return (

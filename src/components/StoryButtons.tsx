@@ -238,7 +238,7 @@ const DesktopControls = ({
   };
 
   if (showTextarea) {
-    return renderTextInput();
+    return <div className="w-full mt-2">{renderTextInput()}</div>;
   }
 
   return (

@@ -2,10 +2,8 @@ import {
   setState,
   getState,
   PlayerState,
-  RPC,
   getRoomCode,
   LocalPlayerState,
-  setRpcPlayer,
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
 import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
@@ -44,7 +42,7 @@ export async function startIfNotStarted(
       let rolledCharacter = await gameApi.postTyped(
         `/quest/${HASH_QUEST_ID}/roll_character`,
         {
-          pronouns: "he",
+          pronouns: "he/him",
         },
         RolledCharacterSchema,
       );

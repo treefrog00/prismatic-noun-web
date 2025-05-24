@@ -13,11 +13,11 @@ import {
   useTimeRemaining,
   useGameConfig,
 } from "../contexts/GameContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { useDiceRoll } from "../contexts/DiceRollContext";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
-import { z } from "zod/v4";
+import { GameEvent } from "@/types";
 
 export function appendToStoryRpc(text: string, label?: string) {
   RPC.call("rpc-append-story", { label, text }, RPC.Mode.ALL);
@@ -44,6 +44,10 @@ export const useGameActions = () => {
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
+  const miscSharedDataRef = useRef(miscSharedData);
+  useEffect(() => {
+    miscSharedDataRef.current = miscSharedData;
+  }, [miscSharedData]);
   const { gameData } = useGameData();
   const { locationState, setLocationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
@@ -121,10 +125,9 @@ export const useGameActions = () => {
     );
     await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, {
       text,
-      ability,
-      player: thisPlayer,
+      prompt: "",
       targetId: actionTarget.targetId,
-      targetType: actionTarget.targetType,
+      weapon: "",
     });
   };
 
@@ -154,57 +157,59 @@ export const useGameActions = () => {
   const apiCallAndUpdate = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
 
-    // Process events sequentially
-    for (const event of response.events) {
-      // Create a promise that resolves after the event is fully processed
-      await new Promise<void>(async (resolve) => {
-        if (event.type === "Story") {
-          appendToStoryRpc(event.message, event.label);
-          setTimeout(resolve, 2000);
-        } else if (event.type === "DiceRoll") {
-          setDiceRollState({
-            show: true,
-            beforeText: event.beforeText,
-            afterText: event.afterText,
-            imageUrls: event.imageUrls,
-            targetValues: event.targetValues,
-          });
+    // Process all events and collect their promises
+    const eventPromises = response.events.map(async (event: GameEvent) => {
+      console.log("Processing", event.type, "event", event);
+      if (event.type === "Story") {
+        appendToStoryRpc(event.message, event.label);
+        console.log("story", event.message, event.label);
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+      } else if (event.type === "DiceRoll") {
+        setDiceRollState({
+          show: true,
+          beforeText: event.beforeText,
+          afterText: event.afterText,
+          imageUrls: event.imageUrls,
+          targetValues: event.targetValues,
+        });
 
-          setTimeout(() => {
-            setDiceRollState({
-              show: false,
-              beforeText: "",
-              afterText: "",
-              imageUrls: [],
-              targetValues: [],
-            });
-            resolve();
-          }, DICE_WRAPPER_ANIMATION_DURATION);
-        } else if (event.type === "CharacterStateUpdate") {
-          setCharacters(event.characterState);
-        } else if (event.type === "LocationStateUpdate") {
-          setLocationState(event.locationState);
-        } else if (event.type === "ChangeLocation") {
-          setLocationState(event.locationState);
-          setLocationData(event.locationData);
-        } else if (event.type === "ChangeTurn") {
-          setMiscSharedData({
-            ...miscSharedData,
-            currentPlayer: event.newPlayer,
-            turnPointsRemaining: event.turnPointsRemaining,
-          });
-          setTimeRemaining(gameConfig.turnTimeLimit);
-        } else if (event.type === "TurnPointsUpdate") {
-          setMiscSharedData({
-            ...miscSharedData,
-            turnPointsRemaining: event.turnPointsRemaining,
-          });
-        } else {
-          // For any unhandled event types, resolve immediately
-          resolve();
-        }
-      });
-    }
+        // Wait for dice roll animation
+        await new Promise((resolve) =>
+          setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
+        );
+
+        setDiceRollState({
+          show: false,
+          beforeText: "",
+          afterText: "",
+          imageUrls: [],
+          targetValues: [],
+        });
+      } else if (event.type === "CharacterStateUpdate") {
+        setCharacters(event.characterState);
+      } else if (event.type === "LocationStateUpdate") {
+        setLocationState(event.locationState);
+      } else if (event.type === "ChangeLocation") {
+        setLocationState(event.locationState);
+        setLocationData(event.locationData);
+      } else if (event.type === "ChangeTurn") {
+        setMiscSharedData({
+          ...miscSharedDataRef.current,
+          currentPlayer: event.newPlayer,
+          turnPointsRemaining: event.turnPointsRemaining,
+        });
+        setTimeRemaining(gameConfig.turnTimeLimit);
+      } else if (event.type === "TurnPointsUpdate") {
+        setMiscSharedData({
+          ...miscSharedDataRef.current,
+          turnPointsRemaining: event.turnPointsRemaining,
+        });
+      }
+    });
+
+    // Wait for all events to complete
+    await Promise.all(eventPromises);
+    console.log("Finished processing all events");
   };
 
   const getCharacterName = () => {
@@ -222,10 +227,7 @@ export const useGameActions = () => {
 
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStoryRpc(
-      textWithQuotes,
-      `${getCharacterName()} says to ${getTargetName()}`,
-    );
+    appendToStoryRpc(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
       targetId: actionTarget.targetId,
@@ -233,10 +235,13 @@ export const useGameActions = () => {
   };
 
   const handleInvestigateOk = async () => {
+    console.log("Starting investigate...");
     appendToStoryRpc(text, `${getCharacterName()} investigates`);
+    console.log("About to call investigate API...");
     await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, {
       prompt: text,
     });
+    console.log("investigate done");
   };
 
   const handleDoOk = async () => {
@@ -254,12 +259,12 @@ export const useGameActions = () => {
   };
 
   const getTextWithQuotes = (text: string) => {
-    return '"' + text.trim() + '"';
+    return "“" + text.trim() + "”";
   };
 
   const handleSayOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStoryRpc(textWithQuotes, `${getCharacterName()} says`);
+    appendToStoryRpc(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
     });
@@ -286,9 +291,11 @@ export const useGameActions = () => {
 
     const handler = handlers[buttonId];
     if (handler) {
-      await handler();
       if (buttonId.endsWith("-ok")) {
         setShowTextarea(false);
+      }
+      await handler();
+      if (buttonId.endsWith("-ok")) {
         setText("");
         setActionTarget(null);
         setAbility(null);

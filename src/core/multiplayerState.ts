@@ -126,13 +126,15 @@ const localRPCHandlers: Record<
 > = {};
 
 // only used in hash mode, for RPC calls
-let rpcLocalPlayer: PlayerState | null = null;
+// and actually no longer used at all, because RPC calls are all triggered
+// by server updates now anyway
+// let rpcLocalPlayer: PlayerState | null = null;
 
-export const setRpcPlayer = (player: PlayerState) => {
-  if (HASH_QUEST_ID) {
-    rpcLocalPlayer = player;
-  }
-};
+// export const setRpcPlayer = (player: PlayerState) => {
+//   if (HASH_QUEST_ID) {
+//     rpcLocalPlayer = player;
+//   }
+// };
 
 export const RPC = {
   ...originalRPC,
@@ -141,9 +143,13 @@ export const RPC = {
       const handler = localRPCHandlers[name];
 
       if (handler) {
+        // const mockCaller = {
+        //   state: { name: rpcLocalPlayer.getState("name") },
+        //   id: rpcLocalPlayer.id,
+        // };
         const mockCaller = {
-          state: { name: rpcLocalPlayer.getState("name") },
-          id: rpcLocalPlayer.id,
+          state: { name: "local" },
+          id: "local",
         };
         handler(data, mockCaller);
       }

@@ -6,6 +6,7 @@ import {
   useCharacters,
   useLocationData,
   useLocationState,
+  useMiscSharedData,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
@@ -140,6 +141,7 @@ const TopBar = () => {
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
   const locationOverlay = useOverlayState("location");
+  const { miscSharedData } = useMiscSharedData();
 
   const getNpcs = () => {
     if (!locationState) return [];
@@ -172,7 +174,11 @@ const TopBar = () => {
             {players.map((player) => (
               <div
                 key={player.id}
-                className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                className={`w-16 h-16 bg-gray-700 rounded-lg ${
+                  player.getProfile().name === miscSharedData.currentPlayer
+                    ? "border-2 border-amber-500"
+                    : "border border-gray-600"
+                } flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors`}
                 onMouseEnter={(e) =>
                   characterOverlay.handleMouseEvent(
                     player.id,

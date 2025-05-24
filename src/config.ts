@@ -24,6 +24,8 @@ const GENERATED_IMAGES_URL =
     ? "https://storage.googleapis.com/prismatic-noun-images"
     : "/images";
 
+export const HASH_HOST_KEY = hashParams.get("hostkey");
+
 export const HASH_QUEST_ID = hashParams.get("questid");
 
 export const HASH_LOCATION_ID = hashParams.get("locationid");

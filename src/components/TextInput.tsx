@@ -47,7 +47,7 @@ const TextInput: React.FC<TextInputProps> = ({
   const textareaElement = (
     <div>
       <textarea
-        className="font-['Crimson_Text'] w-full p-3 mb-4 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
+        className="font-['Crimson_Text'] w-full p-2 mb-2 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
         id="textInput"
         rows={4}
         placeholder={placeHolder}
@@ -71,7 +71,7 @@ const TextInput: React.FC<TextInputProps> = ({
         }}
         ref={textInputRef}
       />
-      <div className="text-right text-base text-gray-300 mb-4">
+      <div className="text-right text-base text-gray-300 mb-2">
         {text.length} / {PROMPT_LIMIT}
       </div>
     </div>

@@ -22,8 +22,6 @@ type VoteState = {
 
 type MiscSharedData = {
   currentPlayer: string | null;
-  pendingLocationUpdate: LocationState;
-  pendingCharacterUpdate: Record<string, CharacterState>;
   voteState: VoteState;
   turnPointsRemaining: number;
 };
@@ -134,8 +132,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [miscSharedData, setMiscSharedData] =
     useMultiplayerState<MiscSharedData>("miscSharedData", {
       currentPlayer: null,
-      pendingLocationUpdate: null,
-      pendingCharacterUpdate: null,
       voteState: {
         showVote: false,
         voteOptions: [],

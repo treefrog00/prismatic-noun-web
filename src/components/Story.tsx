@@ -352,9 +352,9 @@ const Story = forwardRef<StoryRef>((_, ref) => {
   }));
 
   return (
-    <div className={`${sharedStyles.text} h-full`}>
+    <>
       <div
-        className={`${sharedStyles.container} h-full overflow-auto`}
+        className={`${sharedStyles.container} ${sharedStyles.text} h-full overflow-auto`}
         id="textDisplay"
         ref={textDisplayRef}
       />
@@ -390,7 +390,7 @@ const Story = forwardRef<StoryRef>((_, ref) => {
           vertical-align: top;
         }
       `}</style>
-    </div>
+    </>
   );
 });
 

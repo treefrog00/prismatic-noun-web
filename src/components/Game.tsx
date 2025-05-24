@@ -228,13 +228,9 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar />
-        <div className="w-full h-full flex flex-col">
-          <div className="flex-1 flex flex-col min-h-0">
-            <Story ref={storyRef} />
-            {diceRollState.show && <DiceRollWrapper />}
-          </div>
-          <StoryButtons />
-        </div>
+        <Story ref={storyRef} />
+        {diceRollState.show && <DiceRollWrapper />}
+        <StoryButtons />
       </div>
     </AmbientBackground>
   );

@@ -84,11 +84,12 @@ type GameContextType = {
   setOkButtonId: (value: string | null) => void;
   inputPlaceHolder: string | null;
   setInputPlaceHolder: (value: string | null) => void;
+  timeRemaining: number;
+  setTimeRemaining: (value: number | ((prev: number) => number)) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
 
-const POINTS_PER_TURN = 5;
 const DEFAULT_TURN_TIME_LIMIT = 60;
 
 interface GameProviderProps {
@@ -140,7 +141,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         voteOptions: [],
         voteTitle: "",
       },
-      turnPointsRemaining: POINTS_PER_TURN,
+      turnPointsRemaining: 0,
     });
 
   // React only, not multiplayer state
@@ -154,6 +155,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonText, setOkButtonText] = useState<string | null>(null);
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState(0);
 
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
@@ -213,6 +215,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setOkButtonId,
         inputPlaceHolder,
         setInputPlaceHolder,
+        timeRemaining,
+        setTimeRemaining,
 
         showLaunchScreen,
         setShowLaunchScreen,
@@ -395,5 +399,16 @@ export const useGameConfig = () => {
   return {
     gameConfig: context.gameConfig,
     setGameConfig: context.setGameConfig,
+  };
+};
+
+export const useTimeRemaining = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useTimeRemaining must be used within a GameProvider");
+  }
+  return {
+    timeRemaining: context.timeRemaining,
+    setTimeRemaining: context.setTimeRemaining,
   };
 };

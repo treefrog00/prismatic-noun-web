@@ -10,6 +10,8 @@ import {
   useLocationData,
   useMiscSharedData,
   useCharacters,
+  useTimeRemaining,
+  useGameConfig,
 } from "../contexts/GameContext";
 import { useEffect } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
@@ -48,6 +50,8 @@ export const useGameActions = () => {
   const { locationData, setLocationData } = useLocationData();
   const { characters, setCharacters } = useCharacters();
   const { setDiceRollState } = useDiceRoll();
+  const { gameConfig } = useGameConfig();
+  const { setTimeRemaining } = useTimeRemaining();
   useEffect(() => {}, [actionTarget]);
 
   const setInputFields = (
@@ -189,6 +193,7 @@ export const useGameActions = () => {
             currentPlayer: event.newPlayer,
             turnPointsRemaining: event.turnPointsRemaining,
           });
+          setTimeRemaining(gameConfig.turnTimeLimit);
         } else if (event.type === "TurnPointsUpdate") {
           setMiscSharedData({
             ...miscSharedData,

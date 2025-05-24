@@ -7,6 +7,8 @@ import {
   useAbility,
   useMiscSharedData,
   useGameConfig,
+  useActionUIState,
+  useTimeRemaining,
 } from "@/contexts/GameContext";
 import MapPopup from "@/components/popups/MapPopup";
 import InventoryPopup from "@/components/popups/InventoryPopup";
@@ -174,7 +176,7 @@ const DesktopControls = ({
   const TIMEOUT = 500;
   const { miscSharedData } = useMiscSharedData();
   const { gameConfig } = useGameConfig();
-  const [timeRemaining, setTimeRemaining] = useState(gameConfig.turnTimeLimit);
+  const { timeRemaining, setTimeRemaining } = useTimeRemaining();
 
   useEffect(() => {
     const timer = setInterval(() => {

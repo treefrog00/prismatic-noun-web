@@ -166,7 +166,7 @@ const TopBar = () => {
 
   return (
     <>
-      <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-3 px-4">
+      <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
             {players.map((player) => (

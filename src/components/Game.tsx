@@ -28,10 +28,11 @@ import { startIfNotStarted } from "../core/startGame";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import Story, { StoryRef } from "./Story";
-import { useGameActions, appendToStoryRpc } from "@/hooks/useGameActions";
+import { useGameActions } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
 import { RpcStoryEvent } from "@/types/rpcEvent";
 import { useDiceRoll } from "@/contexts/DiceRollContext";
+import { appendToStoryRpc } from "@/core/rpc";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();

@@ -12,7 +12,7 @@ import {
   QuestSummary,
   RolledCharacterSchema,
 } from "../types/validatedTypes";
-import { appendToStoryRpc } from "../hooks/useGameActions";
+import { appendToStoryRpc } from "@/core/rpc";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";

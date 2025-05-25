@@ -16,12 +16,8 @@ import {
 import { useEffect, useRef } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { useDiceRoll } from "../contexts/DiceRollContext";
-import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
-import { GameEvent } from "@/types";
-
-export function appendToStoryRpc(text: string, label?: string) {
-  RPC.call("rpc-append-story", { label, text }, RPC.Mode.ALL);
-}
+import { useEventQueue } from "./useEventQueue";
+import { appendToStoryRpc } from "@/core/rpc";
 
 export const useGameActions = () => {
   const {
@@ -56,7 +52,7 @@ export const useGameActions = () => {
   const { setDiceRollState } = useDiceRoll();
   const { gameConfig } = useGameConfig();
   const { setTimeRemaining } = useTimeRemaining();
-  useEffect(() => {}, [actionTarget]);
+  const { addEvents } = useEventQueue();
 
   const setInputFields = (
     label: string,
@@ -153,59 +149,7 @@ export const useGameActions = () => {
 
   const apiCallAndUpdate = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
-
-    // Process all events sequentially
-    for (const event of response.events) {
-      console.log("Processing", event.type, "event", event);
-      if (event.type === "Story") {
-        appendToStoryRpc(event.message, event.label);
-        console.log("story", event.message, event.label);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      } else if (event.type === "DiceRoll") {
-        setDiceRollState({
-          show: true,
-          beforeText: event.beforeText,
-          afterText: event.afterText,
-          imageUrls: event.imageUrls,
-          targetValues: event.targetValues,
-        });
-
-        // Wait for dice roll animation
-        await new Promise((resolve) =>
-          setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
-        );
-        console.log("dice roll animation done");
-
-        setDiceRollState({
-          show: false,
-          beforeText: "",
-          afterText: "",
-          imageUrls: [],
-          targetValues: [],
-        });
-      } else if (event.type === "CharacterStateUpdate") {
-        setCharacters(event.characterState);
-      } else if (event.type === "LocationStateUpdate") {
-        setLocationState(event.locationState);
-      } else if (event.type === "ChangeLocation") {
-        setLocationState(event.locationState);
-        setLocationData(event.locationData);
-      } else if (event.type === "ChangeTurn") {
-        setMiscSharedData({
-          ...miscSharedDataRef.current,
-          currentPlayer: event.newPlayer,
-          turnPointsRemaining: event.turnPointsRemaining,
-        });
-        setTimeRemaining(gameConfig.turnTimeLimit);
-      } else if (event.type === "TurnPointsUpdate") {
-        setMiscSharedData({
-          ...miscSharedDataRef.current,
-          turnPointsRemaining: event.turnPointsRemaining,
-        });
-      }
-    }
-
-    console.log("Finished processing all events");
+    addEvents(response.events);
   };
 
   const getCharacterName = () => {

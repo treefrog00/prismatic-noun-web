@@ -7,7 +7,7 @@ import {
   LocationData,
   LocationState,
 } from "../types";
-import { createContext, useContext, ReactNode, useState } from "react";
+import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 
 interface DiceRollState2 {
   show: boolean;
@@ -36,6 +36,8 @@ type MiscSharedData = {
 
 type GameConfig = {
   turnTimeLimit: number;
+  shouldAnimateDice: boolean;
+  shouldAnimateText: boolean;
 };
 
 type GameContextType = {
@@ -168,10 +170,24 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
 
+  useEffect(() => {
+    const savedValue = localStorage.getItem("shouldAnimateStars");
+    if (savedValue !== null) {
+      setShouldAnimateStars(savedValue === "true");
+    }
+  }, []);
+
+  const handleSetShouldAnimateStars = (show: boolean) => {
+    setShouldAnimateStars(show);
+    localStorage.setItem("shouldAnimateStars", show.toString());
+  };
+
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
     {
       turnTimeLimit: DEFAULT_TURN_TIME_LIMIT,
+      shouldAnimateDice: true,
+      shouldAnimateText: true,
     },
   );
 

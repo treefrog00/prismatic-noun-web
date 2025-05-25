@@ -32,8 +32,6 @@ export const HASH_LOCATION_ID = hashParams.get("locationid");
 
 export const HASH_NUM_PLAYERS = hashParams.get("numplayers");
 
-export const HASH_SKIP_ANIMATION = hashParams.get("skipanimation");
-
 export const HASH_SKIP_VOTE = hashParams.get("skipvote");
 
 export const USE_SENTRY = import.meta.env.PROD || envConfig.backendUrl;

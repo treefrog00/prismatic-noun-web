@@ -1,6 +1,6 @@
 import { useRef, useImperativeHandle, forwardRef } from "react";
 import { sharedStyles } from "../styles/shared";
-import { HASH_SKIP_ANIMATION } from "../config";
+import { useGameConfig } from "@/contexts/GameContext";
 
 export interface StoryRef {
   updateText: (text: string, label?: string) => void;
@@ -11,6 +11,7 @@ const Story = forwardRef<StoryRef>((_, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
   const lineHeight = 16;
+  const { gameConfig } = useGameConfig();
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
@@ -49,8 +50,7 @@ const Story = forwardRef<StoryRef>((_, ref) => {
         });
       };
 
-      // If HASH_SKIP_ANIMATION is true, skip the animation and just show the text
-      if (HASH_SKIP_ANIMATION) {
+      if (!gameConfig.shouldAnimateText) {
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";

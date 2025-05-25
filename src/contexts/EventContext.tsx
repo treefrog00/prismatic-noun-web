@@ -61,6 +61,9 @@ export const EventProvider = ({
       appendToStoryRpc(event.message, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
+      if (!gameConfig.shouldAnimateDice)
+        return;
+      
       // the flushSync microtask is only needed for React 18+
       queueMicrotask(() => {
         ReactDOM.flushSync(() => {
@@ -125,30 +128,15 @@ export const EventProvider = ({
   };
 
   useEffect(() => {
-    console.log(
-      "Effect triggered - isProcessing:",
-      isProcessing,
-      "queue length:",
-      eventQueue.length,
-    );
-
+    if (!isHost) return;
     if (!isProcessing && eventQueue.length > 0) {
-      console.log("Starting queue processing");
       processNextEvent();
     }
   }, [isProcessing, eventQueue.length]);
 
   const addEvents = (events: GameEvent[]) => {
-    if (isHost) {
-      console.log(
-        "Adding events to queue, current length:",
-        eventQueue.length,
-        "adding:",
-        events.length,
-      );
-      const newQueue = [...eventQueue, ...events];
-      setEventQueue(newQueue);
-    }
+    const newQueue = [...eventQueue, ...events];
+    setEventQueue(newQueue);
   };
 
   return (

@@ -1,5 +1,5 @@
 import React from "react";
-import { useDiceRoll } from "../contexts/DiceRollContext";
+import { useDiceRoll } from "../contexts/GameContext";
 import DiceRoll, { DICE_ANIMATION_DURATION } from "./DiceRoll";
 
 export const DICE_WRAPPER_ANIMATION_DURATION = DICE_ANIMATION_DURATION + 2000;

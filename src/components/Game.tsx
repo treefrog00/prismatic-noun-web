@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  myPlayer,
   useIsHost,
   onPlayerJoin,
   PlayerState,
@@ -25,20 +24,18 @@ import {
 } from "../contexts/GameContext";
 import { HASH_LOCATION_ID, HASH_QUEST_ID } from "../config";
 import { startIfNotStarted } from "../core/startGame";
-import { ActionResponseSchema } from "../types/validatedTypes";
 import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import Story, { StoryRef } from "./Story";
 import { useGameActions } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
 import { RpcStoryEvent } from "@/types/rpcEvent";
-import { useDiceRoll } from "@/contexts/DiceRollContext";
+import { useDiceRoll } from "@/contexts/GameContext";
 import { appendToStoryRpc } from "@/core/rpc";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
 
   // state for React UI only
-  const { diceRollState } = useDiceRoll();
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
   const [isDragging, setIsDragging] = useState(false);
@@ -54,7 +51,6 @@ const GameContent = () => {
   // built-instate from PlayroomKit
   const isHost = useIsHost();
   const players = usePlayersList();
-  const thisPlayer = myPlayer();
 
   // multiplayer state
   const { setLocationData } = useLocationData();
@@ -64,13 +60,11 @@ const GameContent = () => {
   const { questSummary } = useQuestSummary();
   const { handlePlayerLeft } = useGameActions();
   const { localPlayers } = useLocalPlayers();
+  const { diceRollState } = useDiceRoll();
 
   const { characters, setCharacters } = useCharacters();
 
   const gameApi = useGameApi();
-
-  console.log("re-rendering game content", diceRollState.show);
-
   // Carousel swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);

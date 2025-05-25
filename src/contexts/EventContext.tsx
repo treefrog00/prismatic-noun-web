@@ -7,9 +7,8 @@ import {
 } from "react";
 import { GameEvent } from "@/types";
 import { useMultiplayerState } from "../core/multiplayerState";
-import { useDiceRoll } from "./DiceRollContext";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
-import { useCharacters } from "./GameContext";
+import { useCharacters, useQuestSummary } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useMiscSharedData } from "./GameContext";
@@ -17,6 +16,10 @@ import { useTimeRemaining } from "./GameContext";
 import { useGameConfig } from "./GameContext";
 import { appendToStoryRpc } from "@/core/rpc";
 import { useIsHost } from "@/core/multiplayerState";
+import { useDiceRoll } from "@/contexts/GameContext";
+import ReactDOM from "react-dom";
+import queueMicrotask from "queue-microtask";
+import { tr } from "zod/v4/locales";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -49,6 +52,7 @@ export const EventProvider = ({
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
+  const { setQuestSummary } = useQuestSummary();
 
   const processEvent = async (event: GameEvent) => {
     console.log("Processing", event.type, "event", event);
@@ -57,13 +61,17 @@ export const EventProvider = ({
       appendToStoryRpc(event.message, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
-      console.log("Setting dice roll show to true");
-      setDiceRollState({
-        show: true,
-        beforeText: event.beforeText,
-        afterText: event.afterText,
-        imageUrls: event.imageUrls,
-        targetValues: event.targetValues,
+      // the flushSync microtask is only needed for React 18+
+      queueMicrotask(() => {
+        ReactDOM.flushSync(() => {
+          setDiceRollState({
+            show: true,
+            beforeText: event.beforeText,
+            afterText: event.afterText,
+            imageUrls: event.imageUrls,
+            targetValues: event.targetValues,
+          });
+        });
       });
 
       await new Promise((resolve) =>
@@ -72,10 +80,10 @@ export const EventProvider = ({
 
       setDiceRollState({
         show: false,
-        beforeText: "",
-        afterText: "",
-        imageUrls: [],
-        targetValues: [],
+        beforeText: event.beforeText,
+        afterText: event.afterText,
+        imageUrls: event.imageUrls,
+        targetValues: event.targetValues,
       });
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);

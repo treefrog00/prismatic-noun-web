@@ -6,9 +6,16 @@ import {
   GameData,
   LocationData,
   LocationState,
-  GameEvent,
 } from "../types";
 import { createContext, useContext, ReactNode, useState } from "react";
+
+interface DiceRollState2 {
+  show: boolean;
+  beforeText: string;
+  afterText: string;
+  imageUrls: string[];
+  targetValues: number[][];
+}
 
 type ActionTarget = {
   targetId: string;
@@ -85,6 +92,9 @@ type GameContextType = {
   setInputPlaceHolder: (value: string | null) => void;
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
+
+  diceRollState: DiceRollState2;
+  setDiceRollState: (value: DiceRollState2) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -117,6 +127,17 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [gameStarted, setGameStarted] = useMultiplayerState<boolean>(
     "gameStarted",
     false,
+  );
+
+  const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState2>(
+    "dice-roll-state-2",
+    {
+      show: false,
+      beforeText: "",
+      afterText: "",
+      imageUrls: [],
+      targetValues: [],
+    },
   );
 
   const [characters, setCharacters] = useMultiplayerState<
@@ -155,6 +176,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   );
 
   const gameApi = new GameApi();
+
+  console.log("DiceRollProvider state:", diceRollState); // Add this l
 
   return (
     <GameContext.Provider
@@ -210,11 +233,25 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         showLaunchScreen,
         setShowLaunchScreen,
+
+        diceRollState,
+        setDiceRollState,
       }}
     >
       {children}
     </GameContext.Provider>
   );
+};
+
+export const useDiceRoll = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useDiceRollState must be used within a GameProvider");
+  }
+  return {
+    diceRollState: context.diceRollState,
+    setDiceRollState: context.setDiceRollState,
+  };
 };
 
 // Custom hooks for each piece of state

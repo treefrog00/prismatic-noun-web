@@ -6,6 +6,7 @@ import {
   GameData,
   LocationData,
   LocationState,
+  GameEvent,
 } from "../types";
 import { createContext, useContext, ReactNode, useState } from "react";
 
@@ -48,6 +49,9 @@ type GameContextType = {
 
   gameStarted: boolean;
   setGameStarted: (value: boolean) => void;
+
+  eventQueue: GameEvent[];
+  setEventQueue: (value: GameEvent[]) => void;
 
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
@@ -117,18 +121,15 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     "gameStarted",
     false,
   );
-
-  const [voteState, setVoteState] = useMultiplayerState<VoteState>(
-    "voteState",
-    {
-      showVote: false,
-      voteOptions: [],
-      voteTitle: "",
-    },
+  const [eventQueue, setEventQueue] = useMultiplayerState<GameEvent[]>(
+    "eventQueue",
+    [],
   );
+
   const [characters, setCharacters] = useMultiplayerState<
     Record<string, CharacterState>
   >("characters", {});
+
   const [miscSharedData, setMiscSharedData] =
     useMultiplayerState<MiscSharedData>("miscSharedData", {
       currentPlayer: null,
@@ -184,6 +185,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         gameStarted,
         setGameStarted,
+
+        eventQueue,
+        setEventQueue,
 
         miscSharedData,
         setMiscSharedData,
@@ -284,6 +288,17 @@ export const useCharacters = () => {
   return {
     characters: context.characters,
     setCharacters: context.setCharacters,
+  };
+};
+
+export const useEventQueue = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useEventQueue must be used within a GameProvider");
+  }
+  return {
+    eventQueue: context.eventQueue,
+    setEventQueue: context.setEventQueue,
   };
 };
 

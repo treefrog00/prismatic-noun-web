@@ -16,7 +16,7 @@ import {
 import { useEffect, useRef } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { useDiceRoll } from "../contexts/DiceRollContext";
-import { useEventQueue } from "./useEventQueue";
+import { useEventProcessor } from "./useEventQueue";
 import { appendToStoryRpc } from "@/core/rpc";
 
 export const useGameActions = () => {
@@ -39,7 +39,7 @@ export const useGameActions = () => {
   const thisPlayer = myPlayer();
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
-  const { miscSharedData, setMiscSharedData } = useMiscSharedData();
+  const { miscSharedData } = useMiscSharedData();
   const miscSharedDataRef = useRef(miscSharedData);
   useEffect(() => {
     miscSharedDataRef.current = miscSharedData;
@@ -47,12 +47,7 @@ export const useGameActions = () => {
   const { gameData } = useGameData();
   const { locationState, setLocationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
-  const { locationData, setLocationData } = useLocationData();
-  const { characters, setCharacters } = useCharacters();
-  const { setDiceRollState } = useDiceRoll();
-  const { gameConfig } = useGameConfig();
-  const { setTimeRemaining } = useTimeRemaining();
-  const { addEvents } = useEventQueue();
+  const { addEvents } = useEventProcessor();
 
   const setInputFields = (
     label: string,

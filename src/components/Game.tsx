@@ -69,6 +69,8 @@ const GameContent = () => {
 
   const gameApi = useGameApi();
 
+  console.log("re-rendering game content", diceRollState.show);
+
   // Carousel swipe handlers
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true);

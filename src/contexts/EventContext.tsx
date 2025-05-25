@@ -23,8 +23,6 @@ type EventContextType = {
   setEventQueue: (value: GameEvent[]) => void;
   isProcessing: boolean;
   setIsProcessing: (value: boolean) => void;
-  processedEvents: Set<string>;
-  setProcessedEvents: (value: Set<string>) => void;
   addEvents: (events: GameEvent[]) => void;
   queueLength: number;
 };
@@ -41,9 +39,7 @@ export const EventProvider = ({
     [],
   );
   const [isProcessing, setIsProcessing] = useState(false);
-  const [processedEvents, setProcessedEvents] = useState<Set<string>>(
-    new Set(),
-  );
+
   const isHost = useIsHost();
 
   const { setDiceRollState } = useDiceRoll();
@@ -61,6 +57,7 @@ export const EventProvider = ({
       appendToStoryRpc(event.message, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
+      console.log("Setting dice roll show to true");
       setDiceRollState({
         show: true,
         beforeText: event.beforeText,
@@ -108,18 +105,6 @@ export const EventProvider = ({
     setIsProcessing(true);
     try {
       const event = eventQueue[0];
-      const eventKey = JSON.stringify(event);
-
-      console.log("events processed", processedEvents);
-      if (processedEvents.has(eventKey)) {
-        console.log("Skipping already processed event", event.type);
-        if (isHost) {
-          setEventQueue(eventQueue.slice(1));
-        }
-        return;
-      } else {
-        setProcessedEvents(new Set([...processedEvents, eventKey]));
-      }
 
       await processEvent(event);
 
@@ -165,8 +150,6 @@ export const EventProvider = ({
         setEventQueue,
         isProcessing,
         setIsProcessing,
-        processedEvents,
-        setProcessedEvents,
         addEvents,
         queueLength: eventQueue.length,
       }}

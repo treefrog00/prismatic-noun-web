@@ -71,7 +71,7 @@ const Play = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-900 py-4 px-0">
+    <div className="min-h-screen bg-gray-900 px-0">
       {showLaunchScreen && !HASH_QUEST_ID && <LaunchScreen />}
       {!showLaunchScreen && !gameStarted && !HASH_QUEST_ID && <Lobby />}
 

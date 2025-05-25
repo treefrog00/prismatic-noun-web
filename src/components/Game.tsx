@@ -13,7 +13,6 @@ import MobileLocationView from "./mobile/MobileLocationView";
 import AmbientBackground from "./AmbientBackground";
 import DiceRollWrapper from "./DiceRollWrapper";
 
-import { GameEvent } from "../types";
 import {
   useQuestSummary,
   useMiscSharedData,
@@ -198,10 +197,6 @@ const GameContent = () => {
     }
   }, [hashQuestInitializing]);
 
-  useEffect(() => {
-    console.log("miscSharedData in useEffect", miscSharedData);
-  }, [miscSharedData]);
-
   if (isAndroidOrIOS()) {
     return (
       <AmbientBackground className="overflow-hidden">
@@ -234,6 +229,8 @@ const GameContent = () => {
       </AmbientBackground>
     );
   }
+
+  console.log("re-rendering game content");
 
   return (
     <AmbientBackground>

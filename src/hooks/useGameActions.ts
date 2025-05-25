@@ -119,15 +119,12 @@ export const useGameActions = () => {
   };
 
   const handleAttackOk = async () => {
-    appendToStoryRpc(
-      "",
-      `${thisPlayer.getState("name")} attacks ${getTargetName()}`,
-    );
+    appendToStoryRpc(getTargetName(), `${thisPlayer.getState("name")} attacks`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, {
       text,
       prompt: "",
       targetId: actionTarget.targetId,
-      weapon: "",
+      weapon: "sword",
     });
   };
 
@@ -157,8 +154,8 @@ export const useGameActions = () => {
   const apiCallAndUpdate = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
 
-    // Process all events and collect their promises
-    const eventPromises = response.events.map(async (event: GameEvent) => {
+    // Process all events sequentially
+    for (const event of response.events) {
       console.log("Processing", event.type, "event", event);
       if (event.type === "Story") {
         appendToStoryRpc(event.message, event.label);
@@ -177,6 +174,7 @@ export const useGameActions = () => {
         await new Promise((resolve) =>
           setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
         );
+        console.log("dice roll animation done");
 
         setDiceRollState({
           show: false,
@@ -205,10 +203,8 @@ export const useGameActions = () => {
           turnPointsRemaining: event.turnPointsRemaining,
         });
       }
-    });
+    }
 
-    // Wait for all events to complete
-    await Promise.all(eventPromises);
     console.log("Finished processing all events");
   };
 

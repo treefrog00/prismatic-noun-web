@@ -231,8 +231,6 @@ const GameContent = () => {
     );
   }
 
-  console.log("re-rendering game content");
-
   return (
     <AmbientBackground>
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">

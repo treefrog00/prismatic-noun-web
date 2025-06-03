@@ -46,15 +46,26 @@ const LaunchScreen = () => {
             Launch
           </button>
           {
-            <div className={`text-center text-gray-200 max-w-2xl`}>
-              <p className="mb-4">
-                Prismatic Noun is a collection of short role-playing adventure
-                stories that you can play through with friends on Discord or as
-                a jackbox-style party game.
-              </p>
-              <p className="mb-4">
-                The game is currently only available to alpha testers.
-              </p>
+            <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
+              <div className={`text-center text-gray-200`}>
+                <p className="mb-4">
+                  Prismatic Noun is a collection of short role-playing adventure
+                  stories that you can play through with friends, online or
+                  in-person. Online you can have a choice of playing in either a
+                  web browser or inside Discord (though Discord mode doesn't yet
+                  support mobile devices). Alternately, mobile devices can be
+                  used as input for a shared screen, allowing for a
+                  jackbox-style party game.
+                </p>
+                <p className="mb-4">Disclaimers:</p>
+                <ul className="list-disc list-inside mb-4">
+                  <li>
+                    The game makes heavy use of AI for generating images, music,
+                    code, stories, and more.
+                  </li>
+                  <li>The game is currently in alpha testing.</li>
+                </ul>
+              </div>
             </div>
           }
         </div>

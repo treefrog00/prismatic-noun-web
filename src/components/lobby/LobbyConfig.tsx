@@ -5,20 +5,17 @@ import { useGameConfig } from "@/contexts/GameContext";
 
 const LobbyConfig: React.FC = () => {
   const { shouldAnimateStars, setShouldAnimateStars } = useMisc();
-  const { gameConfig, setGameConfig } = useGameConfig();
+  const { gameConfig, handleSetShouldAnimateDice } = useGameConfig();
 
-  function setShouldAnimateDice() {
-    setGameConfig({
-      ...gameConfig,
-      shouldAnimateDice: !gameConfig.shouldAnimateDice,
-    });
+  function handleToggleAnimateDice() {
+    handleSetShouldAnimateDice(!gameConfig.shouldAnimateDice);
   }
 
   function setShouldAnimateText() {
-    setGameConfig({
-      ...gameConfig,
-      shouldAnimateText: !gameConfig.shouldAnimateText,
-    });
+    // setGameConfig({
+    //   ...gameConfig,
+    //   shouldAnimateText: !gameConfig.shouldAnimateText,
+    // });
   }
   return (
     <div className="space-y-6">
@@ -26,6 +23,23 @@ const LobbyConfig: React.FC = () => {
         <div className="space-y-2">
           <h3 className="text-lg text-gray-300">Lobby music:</h3>
           <StereoControl />
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-lg text-gray-300">Host-only game options:</h3>
+          <div className="flex items-center space-x-3">
+            <label className="text-gray-300">Animated dice</label>
+            <button
+              onClick={handleToggleAnimateDice}
+              className={`px-4 py-2 rounded ${
+                gameConfig.shouldAnimateDice
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-600 hover:bg-gray-700"
+              } text-white transition-colors`}
+            >
+              {gameConfig.shouldAnimateDice ? "Enabled" : "Disabled"}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -41,32 +55,6 @@ const LobbyConfig: React.FC = () => {
               } text-white transition-colors`}
             >
               {shouldAnimateStars ? "Enabled" : "Disabled"}
-            </button>
-          </div>
-          <div className="flex items-center space-x-3">
-            <label className="text-gray-300">Animated stars</label>
-            <button
-              onClick={setShouldAnimateDice}
-              className={`px-4 py-2 rounded ${
-                gameConfig.shouldAnimateDice
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-600 hover:bg-gray-700"
-              } text-white transition-colors`}
-            >
-              {gameConfig.shouldAnimateDice ? "Enabled" : "Disabled"}
-            </button>
-            </div>
-          <div className="flex items-center space-x-3">
-            <label className="text-gray-300">Animated stars</label>
-            <button
-              onClick={setShouldAnimateText}
-              className={`px-4 py-2 rounded ${
-                gameConfig.shouldAnimateText
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-600 hover:bg-gray-700"
-              } text-white transition-colors`}
-            >
-              {gameConfig.shouldAnimateText ? "Enabled" : "Disabled"}
             </button>
           </div>
         </div>

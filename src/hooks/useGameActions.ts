@@ -81,7 +81,7 @@ export const useGameActions = () => {
 
   const handleDo = async () => {
     if (actionTarget) {
-      setInputFields("Do", "What do you do to " + getTargetName() + "?");
+      setInputFields("Do", "How do you interact with " + getTargetName() + "?");
     } else {
       setInputFields("Do", "What do you do?");
     }
@@ -146,15 +146,6 @@ export const useGameActions = () => {
     return thisPlayer.getState("character").name;
   };
 
-  const getPlayerName = () => {
-    return thisPlayer.getProfile().name;
-  };
-
-  const handleSendOk = async () => {
-    // note that if you await RPC.call it seems to never return....
-    RPC.call("rpc-chat", { player: getPlayerName(), text }, RPC.Mode.ALL);
-  };
-
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStoryRpc(textWithQuotes, `${getCharacterName()}`);
@@ -205,6 +196,7 @@ export const useGameActions = () => {
       talk: handleTalk,
       investigate: handleInvestigate,
       do: handleDo,
+      interact: handleDo,
       say: handleSay,
       ability: handleAbility,
       chat: handleChat,
@@ -212,10 +204,10 @@ export const useGameActions = () => {
       "end-turn-ok": handleEndTurnOk,
       "proceed-ok": handleProceedOk,
       "attack-ok": handleAttackOk,
-      "send-ok": handleSendOk,
       "talk-ok": handleTalkOk,
       "investigate-ok": handleInvestigateOk,
       "do-ok": handleDoOk, // also handles using abilities
+      "interact-ok": handleDoOk,
       "say-ok": handleSayOk,
     };
 

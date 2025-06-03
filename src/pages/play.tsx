@@ -16,6 +16,7 @@ const Play = () => {
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const chatInputRef = useRef<HTMLTextAreaElement>(null);
   const { showLaunchScreen, setShowLaunchScreen } = useShowLaunchScreen();
+  const showLaunchScreenRef = useRef(showLaunchScreen);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -38,8 +39,15 @@ const Play = () => {
   }, []);
 
   useEffect(() => {
+    showLaunchScreenRef.current = showLaunchScreen;
+  }, [showLaunchScreen]);
+
+  useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "t") {
+        if (showLaunchScreenRef.current) {
+          return;
+        }
         // Check if the active element is an input
         const activeElement = document.activeElement;
         if (

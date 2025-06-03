@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 
-export type StereoMode = "off" | "retro" | "funky" | "jazzy" | "spooky";
+export type StereoMode = "off" | "chip" | "prime" | "jazzy" | "dream";
 
 const MODE_ANGLES: Record<StereoMode, number> = {
   off: 0,
-  retro: 72,
-  funky: 144,
+  chip: 72,
+  prime: 144,
   jazzy: 216,
-  spooky: 288,
+  dream: 288,
 };
 
 interface StereoKnobProps {
@@ -90,7 +90,7 @@ const StereoKnob = ({ onModeChange, mode = "off" }: StereoKnobProps) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 p-8 rounded-lg bg-gradient-to-b from-gray-400 via-gray-500 to-gray-600 shadow-xl">
+    <div className="rounded-lg bg-gradient-to-b from-gray-400 via-gray-500 to-gray-600">
       <svg
         width="200"
         height="200"

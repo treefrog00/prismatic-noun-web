@@ -7,9 +7,15 @@ import {
   LocationData,
   LocationState,
 } from "../types";
-import { createContext, useContext, ReactNode, useState, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useEffect,
+} from "react";
 
-interface DiceRollState2 {
+interface DiceRollState {
   show: boolean;
   beforeText: string;
   afterText: string;
@@ -78,6 +84,7 @@ type GameContextType = {
 
   gameConfig: GameConfig;
   setGameConfig: (value: GameConfig) => void;
+  handleSetShouldAnimateDice: (show: boolean) => void;
 
   // Action handler state
   showTextarea: boolean;
@@ -95,8 +102,11 @@ type GameContextType = {
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
 
-  diceRollState: DiceRollState2;
-  setDiceRollState: (value: DiceRollState2) => void;
+  diceRollState: DiceRollState;
+  setDiceRollState: (value: DiceRollState) => void;
+
+  characterRolled: boolean;
+  setCharacterRolled: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -131,7 +141,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     false,
   );
 
-  const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState2>(
+  const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState>(
     "dice-roll-state-2",
     {
       show: false,
@@ -169,17 +179,28 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [characterRolled, setCharacterRolled] = useState(false);
 
   useEffect(() => {
-    const savedValue = localStorage.getItem("shouldAnimateStars");
+    const savedValue = localStorage.getItem("shouldAnimateDice");
     if (savedValue !== null) {
-      setShouldAnimateStars(savedValue === "true");
+      setGameConfig({
+        ...gameConfig,
+        shouldAnimateDice: savedValue === "true",
+      });
     }
   }, []);
 
-  const handleSetShouldAnimateStars = (show: boolean) => {
-    setShouldAnimateStars(show);
-    localStorage.setItem("shouldAnimateStars", show.toString());
+  useEffect(() => {
+    setCharacterRolled(false);
+  }, [questSummary?.questId]);
+
+  const handleSetShouldAnimateDice = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateDice: show,
+    });
+    localStorage.setItem("shouldAnimateDice", show.toString());
   };
 
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
@@ -192,8 +213,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   );
 
   const gameApi = new GameApi();
-
-  console.log("DiceRollProvider state:", diceRollState); // Add this l
 
   return (
     <GameContext.Provider
@@ -230,6 +249,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         gameConfig,
         setGameConfig,
+        handleSetShouldAnimateDice,
 
         // Action handler state
         showTextarea,
@@ -252,6 +272,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         diceRollState,
         setDiceRollState,
+
+        characterRolled,
+        setCharacterRolled,
       }}
     >
       {children}
@@ -442,6 +465,7 @@ export const useGameConfig = () => {
   return {
     gameConfig: context.gameConfig,
     setGameConfig: context.setGameConfig,
+    handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
   };
 };
 
@@ -453,5 +477,16 @@ export const useTimeRemaining = () => {
   return {
     timeRemaining: context.timeRemaining,
     setTimeRemaining: context.setTimeRemaining,
+  };
+};
+
+export const useCharacterRolled = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useCharacterRolled must be used within a GameProvider");
+  }
+  return {
+    characterRolled: context.characterRolled,
+    setCharacterRolled: context.setCharacterRolled,
   };
 };

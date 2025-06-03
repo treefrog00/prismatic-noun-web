@@ -41,7 +41,7 @@ const NpcOverlay = ({
 
   const actions: ButtonConfig[] = [
     { id: "talk", label: "Talk", color: "teal" as const },
-    { id: "do", label: "Do", color: "violet" as const },
+    { id: "interact", label: "Interact", color: "violet" as const },
     { id: "ability", label: "Ability", color: "purple" as const },
     ...(npcData?.friendly !== "friend"
       ? [{ id: "attack-ok", label: "Attack", color: "indigo" as const }]

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { RPC } from "@/core/multiplayerState";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
-import { useGameStarted } from "@/contexts/GameContext";
+import { useGameStarted, useShowLaunchScreen } from "@/contexts/GameContext";
 
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<
@@ -9,6 +9,7 @@ const ChatMessages = () => {
   >([]);
   const MESSAGE_LIFETIME = 15000;
   const { gameStarted } = useGameStarted();
+  const { showLaunchScreen } = useShowLaunchScreen();
 
   useEffect(() => {
     RPC.register("rpc-chat", (data: any, caller: any) => {
@@ -23,8 +24,10 @@ const ChatMessages = () => {
       });
       return Promise.resolve();
     });
+  }, []);
 
-    if (!isAndroidOrIOS()) {
+  useEffect(() => {
+    if (!showLaunchScreen && !isAndroidOrIOS()) {
       // Show initial "press t to chat" message
       const initialMessage = {
         player: null,
@@ -33,7 +36,7 @@ const ChatMessages = () => {
       };
       setChatMessages([initialMessage]);
     }
-  }, []);
+  }, [showLaunchScreen]);
 
   // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {

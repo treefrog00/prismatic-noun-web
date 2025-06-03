@@ -5,7 +5,7 @@ interface DiceRollProps {
   targetValues: number[];
 }
 
-export const DICE_ANIMATION_DURATION = 3300; // ms
+export const DICE_ANIMATION_DURATION = 3600; // ms
 
 export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);

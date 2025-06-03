@@ -11,11 +11,14 @@ import {
   useCharacters,
   useGameStarted,
   useQuestSummary,
+  useCharacterRolled,
 } from "@/contexts/GameContext";
 import { CharacterInstance } from "@/types/CharacterInstance";
 import { GameApi } from "@/core/gameApi";
 import { RolledCharacterSchema } from "@/types/validatedTypes";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { LOBBY_DICE_ROLL_ANIMATION_DURATION } from "./LobbyRollWrapper";
+import { useMisc } from "@/contexts/MiscContext";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
@@ -25,15 +28,28 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   const players = usePlayersList();
   const { questSummary, setQuestSummary } = useQuestSummary();
   const gameApi = new GameApi();
-  const [characterRolled, setCharacterRolled] = useState(false);
   const isHost = useIsHost();
   const { setGameStarted } = useGameStarted();
-
-  useEffect(() => {
-    setCharacterRolled(false);
-  }, [questSummary]);
+  const { characterRolled, setCharacterRolled } = useCharacterRolled();
+  const { setLobbyDiceRollState } = useMisc();
 
   const handleRollCharacter = async () => {
+    setLobbyDiceRollState({
+      show: true,
+      beforeText: "Rolling character...",
+      afterText: "Character rolled!",
+      targetValues: [1, 2],
+    });
+
+    setTimeout(() => {
+      setLobbyDiceRollState({
+        show: false,
+        beforeText: "",
+        afterText: "",
+        targetValues: [],
+      });
+    }, LOBBY_DICE_ROLL_ANIMATION_DURATION);
+
     let rolledCharacter = await gameApi.postTyped(
       `/quest/${questSummary.questId}/roll_character`,
       {
@@ -99,6 +115,11 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 >
                   {questSummary.description}
                 </p>
+                <p
+                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
+                >
+                  Tags: some tag
+                </p>
               </>
             ) : (
               <>
@@ -111,6 +132,11 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
                 >
                   {questSummary.description}
+                </p>
+                <p
+                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
+                >
+                  Tags: some tag
                 </p>
               </>
             )}

@@ -1,13 +1,12 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { StereoMode } from "../components/stereo/StereoKnob";
 import { useGameStarted } from "./GameContext";
-import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
-const DEFAULT_MODE = "spooky";
+const DEFAULT_MODE = "dream";
 const STORAGE_KEY = "stereo-mode";
-const FADE_DURATION = 2000;
+const FADE_DURATION = 10000;
 
-const STEREO_MODES: StereoMode[] = ["retro", "funky", "jazzy", "spooky"];
+const STEREO_MODES: StereoMode[] = ["chip", "prime", "jazzy", "dream"];
 
 interface StereoContextType {
   currentMode: StereoMode;
@@ -34,7 +33,10 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   );
   const { gameStarted } = useGameStarted();
 
-  const fadeOut = async (audio: HTMLAudioElement): Promise<void> => {
+  const fadeOut = async (
+    audio: HTMLAudioElement,
+    duration: number = FADE_DURATION,
+  ): Promise<void> => {
     // If audio is already paused or has no source, resolve immediately
     if (audio.paused || !audio.src) {
       return Promise.resolve();
@@ -53,7 +55,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         }
 
         const elapsed = performance.now() - startTime;
-        const progress = Math.min(elapsed / FADE_DURATION, 1);
+        const progress = Math.min(elapsed / duration, 1);
 
         audio.volume = startVolume * (1 - progress);
 
@@ -111,7 +113,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     if (!audioElementRef.current) return;
 
     if (mode === "off") {
-      await fadeOut(audioElementRef.current);
+      await fadeOut(audioElementRef.current, 1000);
     } else {
       try {
         // Clear any existing timeout
@@ -124,11 +126,11 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         await audioElementRef.current.play();
 
         // Set timeout for auto fadeout after 1 minute
-        fadeTimeoutRef.current = setTimeout(() => {
-          if (audioElementRef.current && !audioElementRef.current.paused) {
-            fadeOut(audioElementRef.current);
-          }
-        }, 60000); // 1 minute
+        // fadeTimeoutRef.current = setTimeout(() => {
+        //   if (audioElementRef.current && !audioElementRef.current.paused) {
+        //     fadeOut(audioElementRef.current);
+        //   }
+        // }, 60000); // 1 minute
       } catch (error) {
         // Ignore errors when audio is blocked or turned off
         if (

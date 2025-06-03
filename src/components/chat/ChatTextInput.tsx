@@ -37,7 +37,7 @@ const ChatTextInput: React.FC<ChatTextInputProps> = ({ chatType, onClose }) => {
     if (hasText(text) && chatType === "chat") {
       RPC.call(
         "rpc-chat",
-        { player: thisPlayer.getState("name"), text },
+        { player: thisPlayer.getProfile().name, text },
         RPC.Mode.ALL,
       );
     } else if (hasText(text) && chatType === "rating") {

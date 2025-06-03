@@ -4,15 +4,16 @@ import LobbyNavBar from "./LobbyNavBar";
 import LobbyConfig from "./LobbyConfig";
 import { insertCoin } from "@/core/multiplayerState";
 import { QuestSummary } from "@/types";
-import { useGameStarted, useQuestSummary } from "@/contexts/GameContext";
+import { useQuestSummary } from "@/contexts/GameContext";
 import { starryTheme } from "@/styles/starryTheme";
 import { envConfig } from "@/envConfig";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
-import { MiscProvider, useMisc } from "@/contexts/MiscContext";
+import { useMisc } from "@/contexts/MiscContext";
 import { AuthMode } from "@/types/auth";
 import { DiscordOptions } from "playroomkit";
+import LobbyDiceRollWrapper from "./LobbyRollWrapper";
 
 const DISCORD_SCOPES = ["identify", "applications.entitlements"];
 
@@ -21,7 +22,7 @@ const LobbyContent = () => {
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
   const { questSummary, setQuestSummary } = useQuestSummary();
-  const { shouldAnimateStars } = useMisc();
+  const { shouldAnimateStars, lobbyDiceRollState } = useMisc();
   const gameApi = new GameApi();
 
   useEffect(() => {
@@ -90,6 +91,7 @@ const LobbyContent = () => {
           </div>
         </div>
       </div>
+      {lobbyDiceRollState.show && <LobbyDiceRollWrapper />}
     </div>
   );
 };

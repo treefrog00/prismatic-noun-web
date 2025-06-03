@@ -31,13 +31,7 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
               {index === tabs.length - 1 && (
                 <img
                   src={artUrl("logo_wide.webp")}
-                  className={`${responsiveStyles.sizes.logo} object-contain opacity-90 mx-4 md:mx-8 hidden md:block`}
-                  style={{
-                    maskImage:
-                      "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-                    WebkitMaskImage:
-                      "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-                  }}
+                  className={`${responsiveStyles.sizes.logo} mx-4 md:mx-8`}
                 />
               )}
             </li>

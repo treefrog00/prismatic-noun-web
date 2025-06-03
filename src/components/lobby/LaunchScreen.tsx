@@ -31,13 +31,7 @@ const LaunchScreen = () => {
           <img
             src="/ai_art/logo_wide.webp"
             alt="Game Logo"
-            className="w-80 xl:w-[640px] mb-8 opacity-90"
-            style={{
-              maskImage:
-                "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent, black 15%, black 85%, transparent)",
-            }}
+            className="w-80 xl:w-[640px] mb-8"
           />
           <button
             onClick={handleLaunch}

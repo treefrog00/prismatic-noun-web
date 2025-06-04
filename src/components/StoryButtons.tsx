@@ -10,7 +10,6 @@ import {
   useActionUIState,
   useTimeRemaining,
 } from "@/contexts/GameContext";
-import MapPopup from "@/components/popups/MapPopup";
 import InventoryPopup from "@/components/popups/InventoryPopup";
 import artUrl from "@/util/artUrls";
 import LogbookPopup from "@/components/popups/LogbookPopup";
@@ -20,6 +19,7 @@ import { sharedStyles } from "@/styles/shared";
 import Overlay from "./overlays/Overlay";
 import { createPortal } from "react-dom";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
+import SettingsPopup from "./popups/SettingsPopup";
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: "Act", color: "amber-border" },
@@ -35,7 +35,7 @@ const rootButtonsMobile: ButtonConfig[] = [
   { id: "proceed-ok", label: "Proceed", color: "none" },
   { id: "inventory", label: "Inventory", color: "none" },
   { id: "logbook", label: "Logbook", color: "none" },
-  { id: "map", label: "Map", color: "none" },
+  { id: "settings", label: "Settings", color: "none" },
   { id: "end-turn-ok", label: "End Turn", color: "none" },
 ];
 
@@ -52,7 +52,7 @@ interface ControlProps {
   renderTextInput: () => JSX.Element;
   showActChooser: boolean;
   setShowActChooser: (show: boolean) => void;
-  setIsMapOpen: (open: boolean) => void;
+  setIsSettingsOpen: (open: boolean) => void;
   setIsInventoryOpen: (open: boolean) => void;
   setIsLogbookOpen: (open: boolean) => void;
 }
@@ -63,7 +63,7 @@ const MobileControls = ({
   renderTextInput,
   showActChooser,
   setShowActChooser,
-  setIsMapOpen,
+  setIsSettingsOpen,
   setIsInventoryOpen,
   setIsLogbookOpen,
 }: ControlProps) => {
@@ -162,7 +162,7 @@ const DesktopControls = ({
   renderTextInput,
   showActChooser,
   setShowActChooser,
-  setIsMapOpen,
+  setIsSettingsOpen,
   setIsInventoryOpen,
   setIsLogbookOpen,
 }: ControlProps) => {
@@ -333,14 +333,14 @@ const DesktopControls = ({
           </div>
           <div
             className="w-16 h-16 cursor-pointer relative group"
-            onPointerDown={() => setIsMapOpen(true)}
+            onPointerDown={() => setIsSettingsOpen(true)}
           >
             <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Map
+              Settings
             </div>
             <img
-              src={artUrl("map2.webp")}
-              alt="Map"
+              src={artUrl("settings.webp")}
+              alt="Settings"
               className="hover:scale-105 transition-transform"
             />
           </div>
@@ -387,13 +387,13 @@ const StoryButtons: React.FC = () => {
   const { setAbility } = useAbility();
 
   const [showActChooser, setShowActChooser] = useState(false);
-  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
 
   const handleMobileClick = (buttonId: string) => {
-    if (buttonId === "map") {
-      setIsMapOpen(true);
+    if (buttonId === "settings") {
+      setIsSettingsOpen(true);
     } else if (buttonId === "inventory") {
       setIsInventoryOpen(true);
     } else if (buttonId === "logbook") {
@@ -502,7 +502,7 @@ const StoryButtons: React.FC = () => {
           renderTextInput={renderTextInput}
           showActChooser={showActChooser}
           setShowActChooser={setShowActChooser}
-          setIsMapOpen={setIsMapOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
           setIsInventoryOpen={setIsInventoryOpen}
           setIsLogbookOpen={setIsLogbookOpen}
         />
@@ -513,7 +513,7 @@ const StoryButtons: React.FC = () => {
           renderTextInput={renderTextInput}
           showActChooser={showActChooser}
           setShowActChooser={setShowActChooser}
-          setIsMapOpen={setIsMapOpen}
+          setIsSettingsOpen={setIsSettingsOpen}
           setIsInventoryOpen={setIsInventoryOpen}
           setIsLogbookOpen={setIsLogbookOpen}
         />
@@ -523,7 +523,10 @@ const StoryButtons: React.FC = () => {
         onClose={() => setShowAbilityChooser(false)}
         onSelectAbility={handleSelectAbility}
       />
-      <MapPopup isOpen={isMapOpen} onClose={() => setIsMapOpen(false)} />
+      <SettingsPopup
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
       <InventoryPopup
         isOpen={isInventoryOpen}
         onClose={() => setIsInventoryOpen(false)}

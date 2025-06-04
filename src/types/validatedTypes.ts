@@ -87,7 +87,6 @@ const LocationStateSchema = z.object({
   npcs: z.record(z.string(), NpcStateSchema),
   items: z.array(NameAndQuantitySchema),
   features: z.array(z.string()),
-  isVisited: z.boolean(),
 });
 
 const WeaponSchema = z.object({
@@ -104,16 +103,10 @@ const GameDataSchema = z.object({
   characters: z.record(z.string(), CharacterSchema),
 });
 
-const LinkSchema = z.object({
-  target: z.string(),
-  imageUrl: z.string().nullable(),
-});
-
 const LocationDataSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  links: z.array(LinkSchema),
   npcs: z.record(z.string(), NpcSchema),
   features: z.record(z.string(), FeatureSchema),
 });
@@ -186,6 +179,5 @@ export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type Weapon = z.infer<typeof WeaponSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
-export type Link = z.infer<typeof LinkSchema>;
 export type ActionResponse = z.infer<typeof ActionResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;

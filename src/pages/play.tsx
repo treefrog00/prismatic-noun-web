@@ -2,7 +2,6 @@ import Lobby from "../components/lobby/Lobby";
 import Game from "../components/Game";
 import { HASH_QUEST_ID } from "../config";
 import { AuthMode } from "@/types/auth";
-import { useGameStage, useMiscSharedData } from "../contexts/GameContext";
 import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useRef, useState } from "react";
 import ChatTextInput from "../components/chat/ChatTextInput";
@@ -12,7 +11,7 @@ import { doDiscordAuthRedirect } from "@/components/auth/DiscordAuth";
 import { useLocalGameStage } from "@/contexts/GameContext";
 
 const Play = () => {
-  const { localGameStage } = useLocalGameStage();
+  const { localGameStage, setLocalGameStage } = useLocalGameStage();
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
 
@@ -33,6 +32,10 @@ const Play = () => {
 
     if (envConfig.authMode == AuthMode.DiscordLoginButton && !clientToken) {
       doDiscordAuthRedirect();
+    }
+
+    if (envConfig.skipLaunchScreen) {
+      setLocalGameStage("lobby");
     }
   }, []);
 

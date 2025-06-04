@@ -12,7 +12,6 @@ const LaunchScreen = () => {
 
   const handleLaunch = () => {
     initialPlay();
-    console.log(localGameStage);
     setLocalGameStage("lobby");
   };
 

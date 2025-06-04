@@ -7,7 +7,6 @@ import {
 } from "react";
 import { GameEvent } from "@/types";
 import { useMultiplayerState } from "../core/multiplayerState";
-import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWrapper";
 import { useCharacters, useQuestSummary } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
@@ -19,7 +18,7 @@ import { useIsHost } from "@/core/multiplayerState";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
-import { tr } from "zod/v4/locales";
+import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -61,9 +60,8 @@ export const EventProvider = ({
       appendToStoryRpc(event.message, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
-      if (!gameConfig.shouldAnimateDice)
-        return;
-      
+      if (!gameConfig.shouldAnimateDice) return;
+
       // the flushSync microtask is only needed for React 18+
       queueMicrotask(() => {
         ReactDOM.flushSync(() => {

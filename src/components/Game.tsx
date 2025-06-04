@@ -10,7 +10,6 @@ import TopBar from "./TopBar";
 import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
 import MobileLocationView from "./mobile/MobileLocationView";
 import AmbientBackground from "./AmbientBackground";
-import DiceRollWrapper from "./DiceRollWrapper";
 
 import {
   useQuestSummary,
@@ -31,6 +30,7 @@ import StoryButtons from "./StoryButtons";
 import { RpcStoryEvent } from "@/types/rpcEvent";
 import { useDiceRoll } from "@/contexts/GameContext";
 import { appendToStoryRpc } from "@/core/rpc";
+import DiceRollWithText from "./DiceRollWithText";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
@@ -232,7 +232,9 @@ const GameContent = () => {
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar />
         <Story ref={storyRef} />
-        {diceRollState.show && <DiceRollWrapper />}
+        {diceRollState.show && (
+          <DiceRollWithText diceRollState={diceRollState} />
+        )}
         <StoryButtons />
       </div>
     </AmbientBackground>

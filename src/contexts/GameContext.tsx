@@ -15,7 +15,7 @@ import {
   useEffect,
 } from "react";
 
-interface DiceRollState {
+export interface DiceRollState {
   show: boolean;
   beforeText: string;
   afterText: string;

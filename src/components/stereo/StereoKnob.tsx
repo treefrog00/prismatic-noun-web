@@ -11,7 +11,7 @@ const MODE_ANGLES: Record<StereoMode, number> = {
 };
 
 interface StereoKnobProps {
-  onModeChange?: (mode: StereoMode) => void;
+  onModeChange?: (mode: StereoMode, updateLocalStorage: boolean) => void;
   mode?: StereoMode;
 }
 
@@ -36,57 +36,7 @@ const StereoKnob = ({ onModeChange, mode = "off" }: StereoKnobProps) => {
 
     currentMode = mode;
     setRotation(MODE_ANGLES[mode]);
-    await onModeChange(mode);
-  };
-
-  const getAngleFromEvent = (
-    e: React.MouseEvent | React.TouchEvent,
-    element: SVGSVGElement,
-  ) => {
-    const rect = element.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    const clientX = "touches" in e ? e.touches[0].clientX : e.clientX;
-    const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
-    return Math.atan2(clientY - centerY, clientX - centerX) * (180 / Math.PI);
-  };
-
-  const handleStart = (e: React.MouseEvent | React.TouchEvent) => {
-    setIsDragging(true);
-    const startAngle = getAngleFromEvent(e, e.currentTarget as SVGSVGElement);
-    setStartAngle(startAngle);
-  };
-
-  const handleMove = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDragging) return;
-
-    const currentAngle = getAngleFromEvent(e, e.currentTarget as SVGSVGElement);
-    const angleDiff = currentAngle - startAngle;
-
-    let newRotation = rotation + angleDiff;
-    newRotation = ((newRotation % 360) + 360) % 360;
-    setRotation(newRotation);
-    setStartAngle(currentAngle);
-
-    // Find the closest mode
-    currentMode = Object.entries(MODE_ANGLES).reduce(
-      (closest, [mode, angle]) => {
-        const diff = Math.abs(newRotation - angle);
-        return diff < Math.abs(newRotation - MODE_ANGLES[closest as StereoMode])
-          ? mode
-          : closest;
-      },
-      "retro",
-    ) as StereoMode;
-  };
-
-  const handleEnd = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-    // Snap to the closest mode
-    setRotation(MODE_ANGLES[currentMode]);
-
-    onModeChange(currentMode);
+    await onModeChange(mode, true);
   };
 
   return (
@@ -95,10 +45,6 @@ const StereoKnob = ({ onModeChange, mode = "off" }: StereoKnobProps) => {
         width="200"
         height="200"
         viewBox="-30 -30 260 260"
-        onPointerDown={handleStart}
-        onPointerMove={handleMove}
-        onPointerUp={handleEnd}
-        onPointerLeave={handleEnd}
         className="cursor-pointer touch-none"
       >
         <defs>

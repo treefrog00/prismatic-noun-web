@@ -361,13 +361,6 @@ const DesktopControls = ({
         >
           <div className="p-2">
             <div className="text-gray-300 text-base">
-              <div>
-                Actions cost both points and time.
-                <br />
-              </div>
-              <div>&nbsp;</div>
-              <div>Points per action:</div>
-              <div>&nbsp;</div>
               <div>Say, Talk, Investigate: 2 points</div>
               <div>&nbsp;</div>
               <div>Do, Ability, Proceed, Attack: 3 points</div>

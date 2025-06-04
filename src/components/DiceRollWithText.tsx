@@ -1,12 +1,12 @@
 import React from "react";
-import { useDiceRoll } from "../contexts/GameContext";
 import DiceRoll, { DICE_ANIMATION_DURATION } from "./DiceRoll";
+import { DiceRollState } from "@/contexts/GameContext";
 
 export const DICE_WRAPPER_ANIMATION_DURATION = DICE_ANIMATION_DURATION + 2000;
 
-const DiceRollWrapper: React.FC = () => {
-  const { diceRollState } = useDiceRoll();
-  console.log("diceRollState", diceRollState);
+const DiceRollWithText: React.FC<{ diceRollState: DiceRollState }> = ({
+  diceRollState,
+}) => {
   let showAdjacentRolls =
     diceRollState.targetValues && diceRollState.targetValues.length > 1;
 
@@ -24,4 +24,4 @@ const DiceRollWrapper: React.FC = () => {
   );
 };
 
-export default DiceRollWrapper;
+export default DiceRollWithText;

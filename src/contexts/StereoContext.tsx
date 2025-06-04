@@ -82,7 +82,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const savedMode = localStorage.getItem(STORAGE_KEY) as StereoMode;
-    const startMode = savedMode || DEFAULT_MODE;
+    const startMode = savedMode === "off" ? "off" : DEFAULT_MODE;
     const startIndex = STEREO_MODES.indexOf(startMode);
 
     const audioElement = new Audio();
@@ -105,14 +105,20 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [gameStarted]);
 
-  const handleModeChange = async (mode: StereoMode) => {
+  const handleModeChange = async (
+    mode: StereoMode,
+    updateLocalStorage: boolean = false,
+  ) => {
     setCurrentMode(mode);
     setCurrentModeIndex(STEREO_MODES.indexOf(mode));
 
     if (!audioElementRef.current) return;
 
-    if (mode === "off") {
+    if (updateLocalStorage || mode === "off") {
       localStorage.setItem(STORAGE_KEY, mode);
+    }
+
+    if (mode === "off") {
       await fadeOut(audioElementRef.current, 1000);
       return;
     }

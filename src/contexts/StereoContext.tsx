@@ -4,7 +4,7 @@ import { useGameStarted } from "./GameContext";
 
 const DEFAULT_MODE = "dream";
 const STORAGE_KEY = "stereo-mode";
-const FADE_DURATION = 10000;
+const FADE_DURATION = 2000;
 
 const STEREO_MODES: StereoMode[] = ["chip", "prime", "jazzy", "dream"];
 
@@ -100,48 +100,58 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (gameStarted && audioElementRef.current) {
-      fadeOut(audioElementRef.current);
+    if (gameStarted && audioElementRef.current && currentMode !== "off") {
+      handleModeChange("prime");
     }
   }, [gameStarted]);
 
   const handleModeChange = async (mode: StereoMode) => {
-    localStorage.setItem(STORAGE_KEY, mode);
     setCurrentMode(mode);
     setCurrentModeIndex(STEREO_MODES.indexOf(mode));
 
     if (!audioElementRef.current) return;
 
     if (mode === "off") {
+      localStorage.setItem(STORAGE_KEY, mode);
       await fadeOut(audioElementRef.current, 1000);
-    } else {
-      try {
-        // Clear any existing timeout
-        if (fadeTimeoutRef.current) {
-          clearTimeout(fadeTimeoutRef.current);
-        }
+      return;
+    }
 
-        audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
-        audioElementRef.current.volume = 1;
-        await audioElementRef.current.play();
+    try {
+      // Clear any existing timeout
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
 
-        // Set timeout for auto fadeout after 1 minute
-        // fadeTimeoutRef.current = setTimeout(() => {
-        //   if (audioElementRef.current && !audioElementRef.current.paused) {
-        //     fadeOut(audioElementRef.current);
-        //   }
-        // }, 60000); // 1 minute
-      } catch (error) {
-        // Ignore errors when audio is blocked or turned off
-        if (
-          error instanceof DOMException &&
-          (error.name === "NotAllowedError" ||
-            error.message.includes("aborted by the user agent"))
-        ) {
-          console.log("Audio playback stopped by user");
-        } else {
-          console.error("Error playing audio:", error);
-        }
+      // Clear any existing ended listener
+      if (audioElementRef.current.onended) {
+        audioElementRef.current.onended = null;
+      }
+
+      // If there's currently playing audio, fade it out first
+      if (!audioElementRef.current.paused && audioElementRef.current.src) {
+        await fadeOut(audioElementRef.current);
+      }
+
+      audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
+      audioElementRef.current.volume = 1;
+      await audioElementRef.current.play();
+
+      // Set up ended event listener
+      audioElementRef.current.onended = () => {
+        const nextIndex = (currentModeIndex + 1) % STEREO_MODES.length;
+        handleModeChange(STEREO_MODES[nextIndex]);
+      };
+    } catch (error) {
+      // Ignore errors when audio is blocked or turned off
+      if (
+        error instanceof DOMException &&
+        (error.name === "NotAllowedError" ||
+          error.message.includes("aborted by the user agent"))
+      ) {
+        console.log("Audio playback stopped by user");
+      } else {
+        console.error("Error playing audio:", error);
       }
     }
   };
@@ -151,6 +161,12 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     return () => {
       if (fadeTimeoutRef.current) {
         clearTimeout(fadeTimeoutRef.current);
+      }
+      // Clean up audio element and its listeners
+      if (audioElementRef.current) {
+        audioElementRef.current.onended = null;
+        audioElementRef.current.pause();
+        audioElementRef.current.src = "";
       }
     };
   }, []);

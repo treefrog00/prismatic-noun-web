@@ -21,7 +21,7 @@ const LobbyConfig: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <h3 className="text-lg text-gray-300">Lobby music:</h3>
+          <h3 className="text-lg text-gray-300">Music:</h3>
           <StereoControl />
         </div>
 

@@ -12,7 +12,6 @@ export type {
   CharacterState,
   NpcState,
   Weapon,
-  Armour,
   GameData,
   LocationData,
   LocationState,

@@ -30,18 +30,6 @@ const CharacterAbilitySchema = z.object({
   level: z.number(),
 });
 
-const ArmourLevel = z.enum([
-  "UNARMOURED",
-  "LIGHTLY_ARMOURED",
-  "MODESTLY_ARMOURED",
-  "HEAVILY_ARMOURED",
-]);
-
-const ArmourSchema = z.object({
-  name: z.string(),
-  level: ArmourLevel,
-});
-
 const FeatureSchema = z.object({
   name: z.string(),
   description: z.string(),
@@ -52,7 +40,6 @@ const BaseCharacterSchema = z.object({
   level: z.number(),
   maxStamina: z.number(),
   weapons: z.array(z.string()),
-  armour: z.string(),
   inventory: z.array(z.string()),
 });
 
@@ -82,7 +69,6 @@ export const CharacterStateSchema = z.object({
   stamina: z.number(),
   inventory: z.array(z.string()),
   weapons: z.array(z.string()),
-  armour: z.string(),
   luck: z.number(),
 });
 
@@ -90,7 +76,6 @@ const NpcStateSchema = z.object({
   name: z.string(),
   stamina: z.number(),
   weapons: z.array(z.string()),
-  armour: z.string(),
 });
 
 const NameAndQuantitySchema = z.object({
@@ -114,7 +99,6 @@ const GameDataSchema = z.object({
   intro: z.string(),
   title: z.string(),
   weapons: z.record(z.string(), WeaponSchema),
-  armour: z.record(z.string(), ArmourSchema),
   items: z.record(z.string(), ItemSchema),
   abilities: z.record(z.string(), AbilityDataSchema),
   characters: z.record(z.string(), CharacterSchema),
@@ -200,7 +184,6 @@ export type StartGame = z.infer<typeof StartGameSchema>;
 export type FriendlyLevel = z.infer<typeof FriendlyLevel>;
 export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type Weapon = z.infer<typeof WeaponSchema>;
-export type Armour = z.infer<typeof ArmourSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
 export type Link = z.infer<typeof LinkSchema>;

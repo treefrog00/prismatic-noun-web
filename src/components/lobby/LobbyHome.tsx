@@ -8,8 +8,7 @@ import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
 import {
-  useCharacters,
-  useGameStarted,
+  useGameStage,
   useQuestSummary,
   useCharacterRolled,
 } from "@/contexts/GameContext";
@@ -29,7 +28,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   const { questSummary, setQuestSummary } = useQuestSummary();
   const gameApi = new GameApi();
   const isHost = useIsHost();
-  const { setGameStarted } = useGameStarted();
+  const { setGameStage } = useGameStage();
   const { characterRolled, setCharacterRolled } = useCharacterRolled();
   const { setLobbyDiceRollState } = useMisc();
 
@@ -72,7 +71,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   };
 
   const handleStartAdventure = () => {
-    setGameStarted(true);
+    setGameStage("player-action");
   };
 
   const handleInvite = () => {

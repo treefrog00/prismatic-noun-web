@@ -1,18 +1,19 @@
-import { useShowLaunchScreen } from "@/contexts/GameContext";
 import { starryTheme } from "@/styles/starryTheme";
 import { useStereo } from "@/contexts/StereoContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
 import { useMisc } from "@/contexts/MiscContext";
+import { useLocalGameStage } from "@/contexts/GameContext";
 
 const LaunchScreen = () => {
-  const { setShowLaunchScreen } = useShowLaunchScreen();
+  const { localGameStage, setLocalGameStage } = useLocalGameStage();
   const { initialPlay } = useStereo();
   const { shouldAnimateStars } = useMisc();
 
   const handleLaunch = () => {
     initialPlay();
-    setShowLaunchScreen(false);
+    console.log(localGameStage);
+    setLocalGameStage("lobby");
   };
 
   return (

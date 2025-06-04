@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { StereoMode } from "../components/stereo/StereoKnob";
-import { useGameStarted } from "./GameContext";
+import { useGameStage } from "./GameContext";
 
 const DEFAULT_MODE = "dream";
 const STORAGE_KEY = "stereo-mode";
@@ -31,7 +31,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const [currentModeIndex, setCurrentModeIndex] = useState<number>(
     STEREO_MODES.indexOf(DEFAULT_MODE),
   );
-  const { gameStarted } = useGameStarted();
+  const { gameStage } = useGameStage();
 
   const fadeOut = async (
     audio: HTMLAudioElement,
@@ -108,10 +108,14 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (gameStarted && audioElementRef.current && currentMode !== "off") {
+    if (
+      gameStage === "player-action" &&
+      audioElementRef.current &&
+      currentMode !== "off"
+    ) {
       handleModeChange("prime");
     }
-  }, [gameStarted]);
+  }, [gameStage]);
 
   const handleModeChange = async (
     mode: StereoMode,

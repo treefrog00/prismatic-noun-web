@@ -1,15 +1,14 @@
 import { useState, useEffect } from "react";
 import { RPC } from "@/core/multiplayerState";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
-import { useGameStarted, useShowLaunchScreen } from "@/contexts/GameContext";
+import { useLocalGameStage } from "@/contexts/GameContext";
 
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<
     { player: string; text: string; id: number }[]
   >([]);
   const MESSAGE_LIFETIME = 15000;
-  const { gameStarted } = useGameStarted();
-  const { showLaunchScreen } = useShowLaunchScreen();
+  const { localGameStage } = useLocalGameStage();
 
   useEffect(() => {
     RPC.register("rpc-chat", (data: any, caller: any) => {
@@ -27,7 +26,7 @@ const ChatMessages = () => {
   }, []);
 
   useEffect(() => {
-    if (!showLaunchScreen && !isAndroidOrIOS()) {
+    if (localGameStage === "lobby" && !isAndroidOrIOS()) {
       // Show initial "press t to chat" message
       const initialMessage = {
         player: null,
@@ -36,7 +35,7 @@ const ChatMessages = () => {
       };
       setChatMessages([initialMessage]);
     }
-  }, [showLaunchScreen]);
+  }, [localGameStage]);
 
   // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {
@@ -45,9 +44,6 @@ const ChatMessages = () => {
       text: string;
       id: number;
     }) => {
-      if (gameStarted) {
-        return msg.text !== "press t to chat";
-      }
       const now = Date.now();
       return now - msg.id < MESSAGE_LIFETIME;
     };

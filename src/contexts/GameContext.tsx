@@ -23,6 +23,14 @@ export interface DiceRollState {
   targetValues: number[][];
 }
 
+export type GameStage =
+  | "launch-screen"
+  | "lobby"
+  | "player-action"
+  | "replays"
+  | "voting"
+  | "end";
+
 type ActionTarget = {
   targetId: string;
   targetType: string;
@@ -35,6 +43,7 @@ type VoteState = {
 };
 
 type MiscSharedData = {
+  gameStage: GameStage;
   voteState: VoteState;
   turnPointsRemaining: number;
 };
@@ -61,9 +70,6 @@ type GameContextType = {
   characters: Record<string, CharacterState>;
   setCharacters: (value: Record<string, CharacterState>) => void;
 
-  gameStarted: boolean;
-  setGameStarted: (value: boolean) => void;
-
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
 
@@ -76,8 +82,8 @@ type GameContextType = {
   actionTarget: ActionTarget;
   setActionTarget: (value: ActionTarget) => void;
 
-  showLaunchScreen: boolean;
-  setShowLaunchScreen: (value: boolean) => void;
+  localGameStage: GameStage;
+  setLocalGameStage: (value: GameStage) => void;
 
   gameApi: GameApi;
 
@@ -131,10 +137,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     "locationData",
     null,
   );
-  const [gameStarted, setGameStarted] = useMultiplayerState<boolean>(
-    "gameStarted",
-    false,
-  );
 
   const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState>(
     "dice-roll-state",
@@ -149,6 +151,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   const [miscSharedData, setMiscSharedData] =
     useMultiplayerState<MiscSharedData>("miscSharedData", {
+      gameStage: "launch-screen",
       voteState: {
         showVote: false,
         voteOptions: [],
@@ -175,10 +178,13 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   //////////////////////////// end of state with both multiplayer and local versions
 
   //// React local-only state ////
+  // we need a local version of game stage to handle launch screen, probably because it
+  // is before playroomkit is initialized
+  const [localGameStage, setLocalGameStage] =
+    useState<GameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
   const [ability, setAbility] = useState<string | null>(null);
-  const [showLaunchScreen, setShowLaunchScreen] = useState(true);
   const [showTextarea, setShowTextarea] = useState(false);
   const [showAbilityChooser, setShowAbilityChooser] = useState(false);
   const [actionText, setActionText] = useState("");
@@ -242,11 +248,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         characters,
         setCharacters,
 
-        gameStarted,
-        setGameStarted,
-
         miscSharedData,
         setMiscSharedData,
+
+        localGameStage,
+        setLocalGameStage,
 
         localPlayers,
         setLocalPlayers,
@@ -275,9 +281,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         timeRemaining,
         setTimeRemaining,
 
-        showLaunchScreen,
-        setShowLaunchScreen,
-
         diceRollState,
         setDiceRollState,
 
@@ -304,9 +307,6 @@ export const useDiceRoll = () => {
 // Custom hooks for each piece of state
 export const useQuestSummary = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useQuestSummary must be used within a GameProvider");
-  }
   return {
     questSummary: context.questSummary,
     setQuestSummary: context.setQuestSummary,
@@ -315,28 +315,37 @@ export const useQuestSummary = () => {
 
 export const useGameData = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useGameData must be used within a GameProvider");
-  }
   return { gameData: context.gameData, setGameData: context.setGameData };
 };
 
-export const useGameStarted = () => {
+export const useGameStage = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useGameStarted must be used within a GameProvider");
-  }
+  const gameStage = context.miscSharedData.gameStage;
+  const setGameStage = (stage: GameStage) => {
+    context.setMiscSharedData({
+      ...context.miscSharedData,
+      gameStage: stage,
+    });
+
+    // the local state exists to handle game change stages when playroomkit isn't yet initialized
+    context.setLocalGameStage(stage);
+  };
   return {
-    gameStarted: context.gameStarted,
-    setGameStarted: context.setGameStarted,
+    gameStage,
+    setGameStage,
+  };
+};
+
+export const useLocalGameStage = () => {
+  const context = useContext(GameContext);
+  return {
+    localGameStage: context.localGameStage,
+    setLocalGameStage: context.setLocalGameStage,
   };
 };
 
 export const useLocationData = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useLocationData must be used within a GameProvider");
-  }
   return {
     locationData: context.locationData,
     setLocationData: context.setLocationData,
@@ -345,9 +354,6 @@ export const useLocationData = () => {
 
 export const useLocationState = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useLocationState must be used within a GameProvider");
-  }
   return {
     locationState: context.locationState,
     setLocationState: context.setLocationState,
@@ -356,9 +362,6 @@ export const useLocationState = () => {
 
 export const useCharacters = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useCharacters must be used within a GameProvider");
-  }
   return {
     characters: context.characters,
     setCharacters: context.setCharacters,
@@ -430,17 +433,6 @@ export const useActionTarget = () => {
   return {
     actionTarget: context.actionTarget,
     setActionTarget: context.setActionTarget,
-  };
-};
-
-export const useShowLaunchScreen = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useShowLaunchScreen must be used within a GameProvider");
-  }
-  return {
-    showLaunchScreen: context.showLaunchScreen,
-    setShowLaunchScreen: context.setShowLaunchScreen,
   };
 };
 

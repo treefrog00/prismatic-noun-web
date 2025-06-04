@@ -298,9 +298,9 @@ export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
 
       // Add extra rotations for animation effect (random spins)
       const extraRotations = {
-        x: Math.floor(Math.random() * 5 + 2) * 360,
-        y: Math.floor(Math.random() * 5 + 2) * 360,
-        z: Math.floor(Math.random() * 3) * 90,
+        x: Math.floor(Math.random() * 4 + 5) * 360,
+        y: Math.floor(Math.random() * 4 + 5) * 360,
+        z: Math.floor(Math.random() * 3 + 2) * 90,
       };
 
       // Calculate final rotation

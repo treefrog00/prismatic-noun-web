@@ -6,7 +6,7 @@ const DEFAULT_MODE = "dream";
 const STORAGE_KEY = "stereo-mode";
 const FADE_DURATION = 2000;
 
-const STEREO_MODES: StereoMode[] = ["chip", "prime", "jazzy", "dream"];
+const STEREO_MODES: StereoMode[] = ["chip", "prime", "noodle", "dream"];
 
 interface StereoContextType {
   currentMode: StereoMode;

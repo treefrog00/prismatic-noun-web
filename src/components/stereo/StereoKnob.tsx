@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
-export type StereoMode = "off" | "chip" | "prime" | "jazzy" | "dream";
+export type StereoMode = "off" | "chip" | "prime" | "noodle" | "dream";
 
 const MODE_ANGLES: Record<StereoMode, number> = {
   off: 0,
   chip: 72,
   prime: 144,
-  jazzy: 216,
+  noodle: 216,
   dream: 288,
 };
 

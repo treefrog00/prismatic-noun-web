@@ -144,12 +144,12 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         {questSummary ? (
           <img
             src={questSummary.imageUrl}
-            className={`${responsiveStyles.sizes.adventureImage} object-contain opacity-70 ${responsiveStyles.margins.adventureImage}`}
+            className={`${responsiveStyles.sizes.adventureImage} object-contain ${responsiveStyles.margins.adventureImage}`}
             style={{
               maskImage:
-                "linear-gradient(to right, transparent 7%, black 15%, black 85%, transparent 93%), linear-gradient(to bottom, transparent 7%, black 15%, black 85%, transparent 93%)",
+                "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
               WebkitMaskImage:
-                "linear-gradient(to right, transparent 7%, black 15%, black 85%, transparent 93%), linear-gradient(to bottom, transparent 7%, black 15%, black 85%, transparent 93%)",
+                "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
               maskComposite: "intersect",
               WebkitMaskComposite: "destination-in",
             }}

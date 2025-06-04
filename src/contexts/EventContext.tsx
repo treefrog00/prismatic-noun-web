@@ -40,6 +40,7 @@ export const EventProvider = ({
     "eventQueue",
     [],
   );
+  const [localEventQueue, setLocalEventQueue] = useState<GameEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isHost = useIsHost();
@@ -51,7 +52,6 @@ export const EventProvider = ({
   const { miscSharedData, setMiscSharedData } = useMiscSharedData();
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
-  const { setQuestSummary } = useQuestSummary();
 
   const processEvent = async (event: GameEvent) => {
     console.log("Processing", event.type, "event", event);

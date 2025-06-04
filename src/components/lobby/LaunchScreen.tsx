@@ -29,9 +29,9 @@ const LaunchScreen = () => {
       >
         <div className="flex flex-col items-center justify-center flex-1">
           <img
-            src="/ai_art/logo_wide.webp"
+            src="/ai_art/logo.webp"
             alt="Game Logo"
-            className="w-80 xl:w-[640px] mb-8"
+            className="w-40 xl:w-[320px] mb-8"
           />
           <button
             onClick={handleLaunch}

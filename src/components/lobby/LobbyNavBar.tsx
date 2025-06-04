@@ -30,7 +30,7 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
               </button>
               {index === tabs.length - 1 && (
                 <img
-                  src={artUrl("logo_wide.webp")}
+                  src={artUrl("logo.webp")}
                   className={`${responsiveStyles.sizes.logo} mx-4 md:mx-8`}
                 />
               )}

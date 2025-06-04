@@ -370,9 +370,7 @@ const DesktopControls = ({
               <div>&nbsp;</div>
               <div>Say, Talk, Investigate: 2 points</div>
               <div>&nbsp;</div>
-              <div>Do, Ability, Proceed, Travel: 3 points</div>
-              <div>&nbsp;</div>
-              <div>Attack: 5 points</div>
+              <div>Do, Ability, Proceed, Attack: 3 points</div>
             </div>
           </div>
         </Overlay>

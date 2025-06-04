@@ -114,11 +114,6 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 >
                   {questSummary.description}
                 </p>
-                <p
-                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
-                >
-                  Tags: some tag
-                </p>
               </>
             ) : (
               <>
@@ -131,11 +126,6 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
                 >
                   {questSummary.description}
-                </p>
-                <p
-                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
-                >
-                  Tags: some tag
                 </p>
               </>
             )}

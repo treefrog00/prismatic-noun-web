@@ -19,10 +19,6 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const { miscSharedData, setMiscSharedData, setShowVote } =
     useMiscSharedData();
   const thisPlayer = myPlayer();
-  const onClose =
-    miscSharedData.currentPlayer === thisPlayer?.getState("name")
-      ? () => setShowVote(false)
-      : null;
 
   useEffect(() => {
     thisPlayer.setState(voteKey(voteState.voteTitle), null);
@@ -54,34 +50,23 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
     }
   }, [isHost, players, onVoteComplete]);
 
-  const handleVote = (choice: boolean, currentPlayer: string) => {
-    // Prevent changing vote, unless this is the initiator. haven't implemented events for changing vote
-    if (myVote !== null && currentPlayer !== thisPlayer.getState("name"))
-      return;
-
-    if (currentPlayer === thisPlayer.getState("name") && !choice) {
-      setShowVote(false);
-      return;
-    }
-
+  const handleVote = (choice: boolean) => {
     setMyVote(choice);
     const key = voteKey(voteState.voteTitle);
     myPlayer().setState(key, choice);
   };
 
   const voteState = miscSharedData.voteState;
-  const currentPlayer = miscSharedData.currentPlayer;
 
   return (
     <Popup
       isOpen={voteState.showVote}
-      onClose={onClose}
       title={voteState.voteTitle}
       maxWidth="max-w-sm"
     >
       <div className="space-y-4">
         <button
-          onPointerDown={() => handleVote(true, currentPlayer)}
+          onPointerDown={() => handleVote(true)}
           disabled={myVote !== null}
           className={`w-full py-2 px-4 rounded-lg transition-colors ${
             myVote === true
@@ -92,7 +77,7 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
           {voteState.voteOptions[0]}
         </button>
         <button
-          onPointerDown={() => handleVote(false, currentPlayer)}
+          onPointerDown={() => handleVote(false)}
           disabled={myVote !== null}
           className={`w-full py-2 px-4 rounded-lg transition-colors ${
             myVote === false

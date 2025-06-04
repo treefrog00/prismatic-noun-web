@@ -77,9 +77,8 @@ const localStateStore: Record<string, any> = {};
 
 export const myPlayer = () => {
   if (HASH_QUEST_ID) {
-    const { miscSharedData } = useMiscSharedData();
     const { localPlayers } = useLocalPlayers();
-    return localPlayers.find((p) => p.id === miscSharedData.currentPlayer);
+    return localPlayers[0];
   }
   return originalMyPlayer();
 };

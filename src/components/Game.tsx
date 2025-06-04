@@ -149,11 +149,6 @@ const GameContent = () => {
         setLocationData(startGame.locationData);
         setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
-        setMiscSharedData({
-          ...miscSharedData,
-          currentPlayer: startGame.currentPlayer,
-        });
-        console.log("game started, my player is now", startGame.currentPlayer);
         setCharacters(startGame.characterState);
 
         if (HASH_QUEST_ID) {
@@ -164,13 +159,6 @@ const GameContent = () => {
             intro: startGame.gameData.intro,
             imageUrl: "https://placehold.co/100x100",
           });
-
-          // // this is extremely hacky, but in HASH_QUEST_ID mode we need to set some things
-          // // immediately, such that handleTravel/appendToStoryRpc will use the most recent
-          // // data
-          // setRpcPlayer(
-          //   localPlayers.find((p) => p.id === startGame.currentPlayer),
-          // );
 
           if (HASH_LOCATION_ID) {
             setHashQuestInitializing(true);

@@ -70,6 +70,13 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const addEndedListener = () => {
+    audioElementRef.current.onended = () => {
+      const nextIndex = (currentModeIndex + 1) % STEREO_MODES.length;
+      handleModeChange(STEREO_MODES[nextIndex]);
+    };
+  };
+
   const initialPlay = () => {
     if (audioElementRef.current && currentMode !== "off") {
       audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
@@ -77,6 +84,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       audioElementRef.current.play().catch((error) => {
         console.error("Error playing audio:", error);
       });
+      addEndedListener();
     }
   };
 
@@ -138,16 +146,10 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       if (!audioElementRef.current.paused && audioElementRef.current.src) {
         await fadeOut(audioElementRef.current);
       }
-
       audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
       audioElementRef.current.volume = 1;
       await audioElementRef.current.play();
-
-      // Set up ended event listener
-      audioElementRef.current.onended = () => {
-        const nextIndex = (currentModeIndex + 1) % STEREO_MODES.length;
-        handleModeChange(STEREO_MODES[nextIndex]);
-      };
+      addEndedListener();
     } catch (error) {
       // Ignore errors when audio is blocked or turned off
       if (

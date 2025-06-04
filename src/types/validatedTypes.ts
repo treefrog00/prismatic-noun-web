@@ -139,7 +139,6 @@ export const StartGameSchema = z.object({
   locationData: LocationDataSchema,
   locationState: LocationStateSchema,
   characterState: z.record(z.string(), CharacterStateSchema),
-  currentPlayer: z.string(),
 });
 
 const GameEventSchema = z.discriminatedUnion("type", [

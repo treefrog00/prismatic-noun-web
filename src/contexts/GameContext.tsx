@@ -35,7 +35,6 @@ type VoteState = {
 };
 
 type MiscSharedData = {
-  currentPlayer: string | null;
   voteState: VoteState;
   turnPointsRemaining: number;
 };
@@ -118,6 +117,7 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
+  //// Multiplayer state ////
   const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>(
     "questSummary",
     null,
@@ -131,18 +131,13 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     "locationData",
     null,
   );
-  const [locationState, setLocationState] = useMultiplayerState<LocationState>(
-    "locationState",
-    null,
-  );
-
   const [gameStarted, setGameStarted] = useMultiplayerState<boolean>(
     "gameStarted",
     false,
   );
 
   const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState>(
-    "dice-roll-state-2",
+    "dice-roll-state",
     {
       show: false,
       beforeText: "",
@@ -152,13 +147,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     },
   );
 
-  const [characters, setCharacters] = useMultiplayerState<
-    Record<string, CharacterState>
-  >("characters", {});
-
   const [miscSharedData, setMiscSharedData] =
     useMultiplayerState<MiscSharedData>("miscSharedData", {
-      currentPlayer: null,
       voteState: {
         showVote: false,
         voteOptions: [],
@@ -166,8 +156,25 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       },
       turnPointsRemaining: 0,
     });
+  //////////////////////////// end of multiplayer state ////////////////////////////
 
-  // React only, not multiplayer state
+  // These have both multiplayer state and a different local version for use during player actions
+  const [characters, setCharacters] = useMultiplayerState<
+    Record<string, CharacterState>
+  >("characters", {});
+  const [charactersLocal, setCharactersLocal] = useState<
+    Record<string, CharacterState>
+  >({});
+
+  const [locationState, setLocationState] = useMultiplayerState<LocationState>(
+    "locationState",
+    null,
+  );
+  const [locationStateLocal, setLocationStateLocal] =
+    useState<LocationState>(null);
+  //////////////////////////// end of state with both multiplayer and local versions
+
+  //// React local-only state ////
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
   const [ability, setAbility] = useState<string | null>(null);
@@ -180,6 +187,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [characterRolled, setCharacterRolled] = useState(false);
+  //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateDice");

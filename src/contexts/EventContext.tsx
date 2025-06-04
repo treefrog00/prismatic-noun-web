@@ -96,7 +96,6 @@ export const EventProvider = ({
     } else if (event.type === "ChangeTurn") {
       setMiscSharedData({
         ...miscSharedData,
-        currentPlayer: event.newPlayer,
         turnPointsRemaining: event.turnPointsRemaining,
       });
       setTimeRemaining(gameConfig.turnTimeLimit);

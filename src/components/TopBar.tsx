@@ -1,4 +1,4 @@
-import { usePlayersList } from "../core/multiplayerState";
+import { myPlayer, usePlayersList } from "../core/multiplayerState";
 import { useState, useRef, useCallback } from "react";
 import CharacterOverlay from "./overlays/CharacterOverlay";
 import {
@@ -175,7 +175,7 @@ const TopBar = () => {
               <div
                 key={player.id}
                 className={`w-16 h-16 bg-gray-700 rounded-lg ${
-                  player.getProfile().name === miscSharedData.currentPlayer
+                  player.id === myPlayer().id
                     ? "border-2 border-amber-500"
                     : "border border-gray-600"
                 } flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors`}

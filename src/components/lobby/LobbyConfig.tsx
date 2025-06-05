@@ -1,7 +1,7 @@
 import React from "react";
-import StereoControl from "../stereo/StereoControl";
 import { useMisc } from "@/contexts/MiscContext";
 import { useGameConfig } from "@/contexts/GameContext";
+import MusicToggle from "@/components/settings/MusicToggle";
 
 const LobbyConfig: React.FC = () => {
   const { shouldAnimateStars, setShouldAnimateStars } = useMisc();
@@ -21,8 +21,22 @@ const LobbyConfig: React.FC = () => {
     <div className="space-y-6">
       <div className="space-y-4">
         <div className="space-y-2">
-          <h3 className="text-lg text-gray-300">Music:</h3>
-          <StereoControl />
+          <h3 className="text-lg text-gray-300">Local options:</h3>
+          <div className="flex items-center space-x-3">
+            <label className="text-gray-300">Music</label>
+            <MusicToggle />
+            <label className="text-gray-300">Animated stars</label>
+            <button
+              onClick={() => setShouldAnimateStars(!shouldAnimateStars)}
+              className={`px-4 py-2 rounded ${
+                shouldAnimateStars
+                  ? "bg-blue-600 hover:bg-blue-700"
+                  : "bg-gray-600 hover:bg-gray-700"
+              } text-white transition-colors`}
+            >
+              {shouldAnimateStars ? "Enabled" : "Disabled"}
+            </button>
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -38,23 +52,6 @@ const LobbyConfig: React.FC = () => {
               } text-white transition-colors`}
             >
               {gameConfig.shouldAnimateDice ? "Enabled" : "Disabled"}
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <h3 className="text-lg text-gray-300">Lobby visual effects:</h3>
-          <div className="flex items-center space-x-3">
-            <label className="text-gray-300">Animated stars</label>
-            <button
-              onClick={() => setShouldAnimateStars(!shouldAnimateStars)}
-              className={`px-4 py-2 rounded ${
-                shouldAnimateStars
-                  ? "bg-blue-600 hover:bg-blue-700"
-                  : "bg-gray-600 hover:bg-gray-700"
-              } text-white transition-colors`}
-            >
-              {shouldAnimateStars ? "Enabled" : "Disabled"}
             </button>
           </div>
         </div>

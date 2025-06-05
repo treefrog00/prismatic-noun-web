@@ -5,6 +5,5 @@ export interface CharacterInstance {
   name: string;
   pronouns: string;
   imageUrl: string;
-  luck: number;
   data: Character;
 }

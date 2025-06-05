@@ -138,9 +138,7 @@ export const useGameActions = () => {
   };
 
   const getCharacterName = () => {
-    return selectedCharacter == "all"
-      ? "All"
-      : gameData.characters[selectedCharacter].name;
+    return gameData.characters[selectedCharacter].name;
   };
 
   const getTextWithQuotes = (text: string) => {

@@ -13,7 +13,6 @@ import StarryBackground from "../StarryBackground";
 import { useMisc } from "@/contexts/MiscContext";
 import { AuthMode } from "@/types/auth";
 import { DiscordOptions } from "playroomkit";
-import LobbyDiceRollWrapper from "./LobbyRollWrapper";
 
 const DISCORD_SCOPES = ["identify", "applications.entitlements"];
 
@@ -22,7 +21,7 @@ const LobbyContent = () => {
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
   const { questSummary, setQuestSummary } = useQuestSummary();
-  const { shouldAnimateStars, lobbyDiceRollState } = useMisc();
+  const { shouldAnimateStars } = useMisc();
   const gameApi = new GameApi();
 
   useEffect(() => {
@@ -91,7 +90,6 @@ const LobbyContent = () => {
           </div>
         </div>
       </div>
-      {lobbyDiceRollState.show && <LobbyDiceRollWrapper />}
     </div>
   );
 };

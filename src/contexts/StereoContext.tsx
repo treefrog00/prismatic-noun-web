@@ -1,16 +1,15 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { StereoMode } from "../components/stereo/StereoKnob";
-import { useGameStage } from "./GameContext";
 
-const DEFAULT_MODE = "dream";
-const STORAGE_KEY = "stereo-mode";
+const MUSIC_ENABLED_STORAGE_KEY = "music_enabled";
 const FADE_DURATION = 2000;
 
-const STEREO_MODES: StereoMode[] = ["chip", "prime", "noodle", "dream"];
+const LOBBY_PLAYLIST: string[] = ["dream"];
 
 interface StereoContextType {
-  currentMode: StereoMode;
-  handleModeChange: (mode: StereoMode) => Promise<void>;
+  currentMode: string;
+  turnOffMusic: () => void;
+  turnOnMusic: () => void;
+  setPlayList: (playList: string[]) => void;
   initialPlay: () => void;
 }
 
@@ -27,11 +26,9 @@ export const useStereo = () => {
 export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
-  const [currentMode, setCurrentMode] = useState<StereoMode>(DEFAULT_MODE);
-  const [currentModeIndex, setCurrentModeIndex] = useState<number>(
-    STEREO_MODES.indexOf(DEFAULT_MODE),
-  );
-  const { gameStage } = useGameStage();
+  const [currentMode, setCurrentMode] = useState<string>(LOBBY_PLAYLIST[0]);
+  const [playListIndex, setPlaylistIndex] = useState<number>(0);
+  const [playList, setPlayList] = useState<string[]>(LOBBY_PLAYLIST);
 
   const fadeOut = async (
     audio: HTMLAudioElement,
@@ -70,33 +67,29 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  // take currentIndex as a parameter so it doesn't accidentally use an
+  // out of date value
   const addEndedListener = (currentIndex: number) => {
     audioElementRef.current.onended = () => {
-      const nextIndex = (currentIndex + 1) % STEREO_MODES.length;
-      handleModeChange(STEREO_MODES[nextIndex]);
+      const nextIndex = (currentIndex + 1) % playList.length;
+      playNext(nextIndex);
     };
   };
 
   const initialPlay = () => {
     if (audioElementRef.current && currentMode !== "off") {
-      audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
-      audioElementRef.current.volume = 1;
-      audioElementRef.current.play().catch((error) => {
-        console.error("Error playing audio:", error);
-      });
-      addEndedListener(currentModeIndex);
+      turnOnMusic();
     }
   };
 
   useEffect(() => {
-    const savedMode = localStorage.getItem(STORAGE_KEY) as StereoMode;
-    const startMode = savedMode === "off" ? "off" : DEFAULT_MODE;
-    const startIndex = STEREO_MODES.indexOf(startMode);
+    const musicEnabled =
+      localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true";
+    const startMode = musicEnabled ? playList[0] : "off";
 
     const audioElement = new Audio();
     audioElementRef.current = audioElement;
 
-    setCurrentModeIndex(startIndex);
     setCurrentMode(startMode);
 
     return () => {
@@ -108,32 +101,37 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (
-      gameStage === "player-action" &&
-      audioElementRef.current &&
-      currentMode !== "off"
-    ) {
-      handleModeChange("prime");
-    }
-  }, [gameStage]);
+    //TODO: fade out current tune and play the next one (note playNext already
+    //supports fading out current tune )
+    // the server event that updates the playlist should only send a new playlist
+    // if it is genuinely different to the current one
+  }, [playList]);
 
-  const handleModeChange = async (
-    mode: StereoMode,
-    updateLocalStorage: boolean = false,
-  ) => {
+  const turnOffMusic = async () => {
+    setCurrentMode("off");
+    setPlaylistIndex(null);
+    localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "false");
+    await fadeOut(audioElementRef.current, 1000);
+  };
+
+  const turnOnMusic = () => {
+    localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
+    setCurrentMode(playList[0]);
+    setPlaylistIndex(0);
+    audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
+    audioElementRef.current.volume = 1;
+    audioElementRef.current.play().catch((error) => {
+      console.error("Error playing audio:", error);
+    });
+    addEndedListener(0);
+  };
+
+  const playNext = async (index: number) => {
+    const mode = playList[index];
     setCurrentMode(mode);
-    setCurrentModeIndex(STEREO_MODES.indexOf(mode));
+    setPlaylistIndex(index);
 
     if (!audioElementRef.current) return;
-
-    if (updateLocalStorage || mode === "off") {
-      localStorage.setItem(STORAGE_KEY, mode);
-    }
-
-    if (mode === "off") {
-      await fadeOut(audioElementRef.current, 1000);
-      return;
-    }
 
     try {
       // Clear any existing timeout
@@ -154,7 +152,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       audioElementRef.current.volume = 1;
       await audioElementRef.current.play();
       // not using currentModeIndex here because it's not updated yet
-      addEndedListener(STEREO_MODES.indexOf(mode));
+      addEndedListener(index);
     } catch (error) {
       // Ignore errors when audio is blocked or turned off
       if (
@@ -188,7 +186,9 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     <StereoContext.Provider
       value={{
         currentMode,
-        handleModeChange,
+        turnOffMusic,
+        turnOnMusic,
+        setPlayList,
         initialPlay,
       }}
     >

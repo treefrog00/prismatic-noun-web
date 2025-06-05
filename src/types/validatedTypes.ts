@@ -46,7 +46,6 @@ const BaseCharacterSchema = z.object({
 });
 
 const CharacterSchema = BaseCharacterSchema.extend({
-  luck: z.number(),
   special: z.string(),
   abilities: z.array(CharacterAbilitySchema),
 });
@@ -58,7 +57,6 @@ const NpcSchema = BaseCharacterSchema.extend({
 export const RolledCharacterSchema = z.object({
   name: z.string(),
   characterId: z.string(),
-  luck: z.number(),
   pronouns: z.string(),
   imageUrl: z.string(),
   character: CharacterSchema,
@@ -68,7 +66,6 @@ export const CharacterStateSchema = z.object({
   stamina: z.number(),
   inventory: z.array(z.string()),
   weapons: z.array(z.string()),
-  luck: z.number(),
 });
 
 const NpcStateSchema = z.object({
@@ -77,14 +74,8 @@ const NpcStateSchema = z.object({
   weapons: z.array(z.string()),
 });
 
-const NameAndQuantitySchema = z.object({
-  name: z.string(),
-  quantity: z.number(),
-});
-
 const LocationStateSchema = z.object({
   npcs: z.record(z.string(), NpcStateSchema),
-  items: z.array(NameAndQuantitySchema),
   features: z.array(z.string()),
 });
 

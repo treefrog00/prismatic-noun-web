@@ -1,6 +1,6 @@
 import React from "react";
 import Popup from "@/components/popups/Popup";
-import StereoControl from "../stereo/StereoControl";
+import MusicToggle from "@/components/settings/MusicToggle";
 
 interface SettingsPopupProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
       <div className="grid grid-cols-4 gap-4">
         <div className="col-span-1">
           <h3 className="text-lg text-gray-300">Music:</h3>
-          <StereoControl />
+          <MusicToggle />
         </div>
       </div>
     </Popup>

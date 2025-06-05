@@ -15,7 +15,6 @@ export type {
   GameData,
   LocationData,
   LocationState,
-  Link,
   ActionResponse,
   GameEvent,
   RolledCharacter,

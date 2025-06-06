@@ -12,7 +12,7 @@ import {
   QuestSummary,
   RolledCharacterSchema,
 } from "../types/validatedTypes";
-import { appendToStoryRpc } from "@/core/rpc";
+import { appendToStory } from "@/core/storyEvents";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";
@@ -32,7 +32,7 @@ export async function startIfNotStarted(
   let questId = HASH_QUEST_ID || questSummary.questId;
 
   if (!HASH_QUEST_ID) {
-    appendToStoryRpc(questSummary.intro);
+    appendToStory(questSummary.intro);
   } else {
     const numPlayers = parseInt(HASH_NUM_PLAYERS || "1", 10);
     for (let i = 0; i < numPlayers; i++) {

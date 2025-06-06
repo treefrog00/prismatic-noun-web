@@ -12,7 +12,7 @@ import { useLocationData } from "./GameContext";
 import { useMiscSharedData } from "./GameContext";
 import { useTimeRemaining } from "./GameContext";
 import { useGameConfig } from "./GameContext";
-import { appendToStoryRpc } from "@/core/rpc";
+import { appendToStory } from "@/core/storyEvents";
 import { useIsHost } from "@/core/multiplayerState";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
@@ -52,7 +52,7 @@ export const EventProvider = ({
     console.log("Processing", event.type, "event", event);
 
     if (event.type === "Story") {
-      appendToStoryRpc(event.message, event.label);
+      appendToStory(event.message, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
       if (!gameConfig.shouldAnimateDice) return;

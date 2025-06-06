@@ -12,7 +12,7 @@ import {
 import { useEffect, useRef } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
 import { useEventProcessor } from "./useEventQueue";
-import { appendToStoryRpc } from "@/core/rpc";
+import { appendToStory } from "@/core/storyEvents";
 
 export const useGameActions = () => {
   const {
@@ -101,7 +101,7 @@ export const useGameActions = () => {
   };
 
   const handleAttackOk = async () => {
-    appendToStoryRpc(getTargetName(), `${thisPlayer.getState("name")} attacks`);
+    appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, {
       text,
       prompt: "",
@@ -144,7 +144,7 @@ export const useGameActions = () => {
 
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStoryRpc(textWithQuotes, `${getCharacterName()}`);
+    appendToStory(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
       targetId: actionTarget.targetId,
@@ -156,7 +156,7 @@ export const useGameActions = () => {
     if (ability) {
       label = `${getCharacterName()} uses ${ability}`;
     }
-    appendToStoryRpc(text, label);
+    appendToStory(text, label);
     await apiCallAndUpdate(`/game/${gameData.gameId}/do`, {
       prompt: text,
       ability,
@@ -171,7 +171,7 @@ export const useGameActions = () => {
 
   const handleSayOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStoryRpc(textWithQuotes, `${getCharacterName()}`);
+    appendToStory(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
     });

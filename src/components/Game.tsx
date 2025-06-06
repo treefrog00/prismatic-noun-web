@@ -4,7 +4,6 @@ import {
   onPlayerJoin,
   PlayerState,
   usePlayersList,
-  RPC,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
@@ -27,9 +26,8 @@ import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import Story, { StoryRef } from "./Story";
 import { useGameActions } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
-import { RpcStoryEvent } from "@/types/rpcEvent";
 import { useDiceRoll } from "@/contexts/GameContext";
-import { appendToStoryRpc } from "@/core/rpc";
+import { storyEvents } from "@/core/storyEvents";
 import DiceRollWithText from "./DiceRollWithText";
 
 const GameContent = () => {
@@ -118,15 +116,11 @@ const GameContent = () => {
   };
 
   useEffect(() => {
-    const appendStoryHandler = async (data: RpcStoryEvent, caller: any) => {
+    const unsubscribe = storyEvents.subscribe((text, label) => {
       if (storyRef.current) {
-        storyRef.current.updateText(data.text, data.label);
+        storyRef.current.updateText(text, label);
       }
-
-      return Promise.resolve();
-    };
-
-    RPC.register("rpc-append-story", appendStoryHandler);
+    });
 
     onPlayerJoin((player: PlayerState) => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
@@ -135,6 +129,10 @@ const GameContent = () => {
 
       return unsubscribe;
     });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   useEffect(() => {
@@ -163,7 +161,7 @@ const GameContent = () => {
           if (HASH_LOCATION_ID) {
             setHashQuestInitializing(true);
           } else {
-            appendToStoryRpc(startGame.gameData.intro);
+            storyEvents.emit(startGame.gameData.intro);
           }
         }
       };

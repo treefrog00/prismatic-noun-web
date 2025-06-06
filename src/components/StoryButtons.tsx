@@ -170,8 +170,8 @@ const DesktopControls = ({
 }: ControlProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [isHovering, setIsHovering] = useState(false);
-  const [isTurnPointsOverlayOpen, setIsTurnPointsOverlayOpen] = useState(false);
-  const [turnPointsOverlayPosition, setTurnPointsOverlayPosition] = useState({
+  const [isHelpOverlayOpen, setIsHelpOverlayOpen] = useState(false);
+  const [helpOverlayPosition, setHelpOverlayPosition] = useState({
     x: 0,
     y: 0,
   });
@@ -228,18 +228,18 @@ const DesktopControls = ({
     }
   };
 
-  const handleTurnPointsMouseEnter = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setTurnPointsOverlayPosition({
-      x: rect.left,
-      y: rect.top - 10,
-    });
-    setIsTurnPointsOverlayOpen(true);
-  };
+  // const handleTurnPointsMouseEnter = (e: React.MouseEvent) => {
+  //   const rect = e.currentTarget.getBoundingClientRect();
+  //   setTurnPointsOverlayPosition({
+  //     x: rect.left,
+  //     y: rect.top - 10,
+  //   });
+  //   setIsHelpOverlayOpen(true);
+  // };
 
-  const handleTurnPointsMouseLeave = () => {
-    setIsTurnPointsOverlayOpen(false);
-  };
+  // const handleTurnPointsMouseLeave = () => {
+  //   setIsHelpOverlayOpen(false);
+  // };
 
   if (showTextarea) {
     return <div className="w-full mt-2">{renderTextInput()}</div>;
@@ -293,11 +293,7 @@ const DesktopControls = ({
         </div>
         <div className="text-gray-300 flex items-center gap-4"></div>
         <div className="flex gap-4 items-center">
-          <div
-            className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help"
-            onMouseEnter={handleTurnPointsMouseEnter}
-            onMouseLeave={handleTurnPointsMouseLeave}
-          >
+          <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
             <div>
               <div>Turn time:</div>
               <div className="text-4xl font-bold">{timeRemaining}s</div>
@@ -348,24 +344,24 @@ const DesktopControls = ({
           </div>
         </div>
       </div>
-      {isTurnPointsOverlayOpen && (
+      {isHelpOverlayOpen && (
         <Overlay
           className="w-96"
           style={{
             position: "fixed",
-            left: `${turnPointsOverlayPosition.x}px`,
-            top: `${turnPointsOverlayPosition.y}px`,
+            left: `${helpOverlayPosition.x}px`,
+            top: `${helpOverlayPosition.y}px`,
             transform: "translateY(-100%)",
             zIndex: 50,
           }}
-          onMouseEnter={() => setIsTurnPointsOverlayOpen(true)}
-          onMouseLeave={() => setIsTurnPointsOverlayOpen(false)}
+          onMouseEnter={() => setIsHelpOverlayOpen(true)}
+          onMouseLeave={() => setIsHelpOverlayOpen(false)}
         >
           <div className="p-2">
             <div className="text-gray-300 text-base">
-              <div>Say, Talk, Investigate: 2 points</div>
+              <div>Some help text</div>
               <div>&nbsp;</div>
-              <div>Do, Ability, Proceed, Attack: 3 points</div>
+              <div>Some more help text</div>
             </div>
           </div>
         </Overlay>

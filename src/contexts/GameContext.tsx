@@ -42,12 +42,6 @@ type VoteState = {
   voteTitle: string;
 };
 
-type MiscSharedData = {
-  gameStage: GameStage;
-  voteState: VoteState;
-  turnPointsRemaining: number;
-};
-
 type GameConfig = {
   turnTimeLimit: number;
   shouldAnimateDice: boolean;
@@ -76,8 +70,11 @@ type GameContextType = {
   ability: string | null;
   setAbility: (value: string | null) => void;
 
-  miscSharedData: MiscSharedData;
-  setMiscSharedData: (value: MiscSharedData) => void;
+  gameStage: GameStage;
+  setGameStage: (value: GameStage) => void;
+
+  voteState: VoteState;
+  setVoteState: (value: VoteState) => void;
 
   actionTarget: ActionTarget;
   setActionTarget: (value: ActionTarget) => void;
@@ -112,6 +109,9 @@ type GameContextType = {
 
   characterRolled: boolean;
   setCharacterRolled: (value: boolean) => void;
+
+  actionsRemaining: number;
+  setActionsRemaining: (value: number) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -138,16 +138,28 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     null,
   );
 
-  const [miscSharedData, setMiscSharedData] =
-    useMultiplayerState<MiscSharedData>("miscSharedData", {
-      gameStage: "launch-screen",
-      voteState: {
-        showVote: false,
-        voteOptions: [],
-        voteTitle: "",
-      },
-      turnPointsRemaining: 0,
-    });
+  const [gameStage, setGameStage] = useMultiplayerState<GameStage>(
+    "gameStage",
+    "launch-screen",
+  );
+  const [voteState, setVoteState] = useMultiplayerState<VoteState>(
+    "voteState",
+    {
+      showVote: false,
+      voteOptions: [],
+      voteTitle: "",
+    },
+  );
+
+  const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
+    "gameConfig",
+    {
+      turnTimeLimit: DEFAULT_TURN_TIME_LIMIT,
+      shouldAnimateDice: true,
+      shouldAnimateText: true,
+    },
+  );
+
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
@@ -165,6 +177,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     imageUrls: [],
     targetValues: [],
   });
+
+  const [actionsRemaining, setActionsRemaining] = useState(0);
 
   const [localGameStage, setLocalGameStage] =
     useState<GameStage>("launch-screen");
@@ -203,15 +217,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     localStorage.setItem("shouldAnimateDice", show.toString());
   };
 
-  const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
-    "gameConfig",
-    {
-      turnTimeLimit: DEFAULT_TURN_TIME_LIMIT,
-      shouldAnimateDice: true,
-      shouldAnimateText: true,
-    },
-  );
-
   const gameApi = new GameApi();
 
   return (
@@ -233,9 +238,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         characters,
         setCharacters,
-
-        miscSharedData,
-        setMiscSharedData,
 
         localGameStage,
         setLocalGameStage,
@@ -272,6 +274,15 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         characterRolled,
         setCharacterRolled,
+
+        gameStage,
+        setGameStage,
+
+        voteState,
+        setVoteState,
+
+        actionsRemaining,
+        setActionsRemaining,
       }}
     >
       {children}
@@ -306,19 +317,9 @@ export const useGameData = () => {
 
 export const useGameStage = () => {
   const context = useContext(GameContext);
-  const gameStage = context.miscSharedData.gameStage;
-  const setGameStage = (stage: GameStage) => {
-    context.setMiscSharedData({
-      ...context.miscSharedData,
-      gameStage: stage,
-    });
-
-    // the local state exists to handle game change stages when playroomkit isn't yet initialized
-    context.setLocalGameStage(stage);
-  };
   return {
-    gameStage,
-    setGameStage,
+    gameStage: context.gameStage,
+    setGameStage: context.setGameStage,
   };
 };
 
@@ -362,29 +363,6 @@ export const useLocalPlayers = () => {
   return {
     localPlayers: context.localPlayers,
     setLocalPlayers: context.setLocalPlayers,
-  };
-};
-
-export const useMiscSharedData = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useMiscSharedData must be used within a GameProvider");
-  }
-
-  const setShowVote = (showVote: boolean) => {
-    context.setMiscSharedData({
-      ...context.miscSharedData,
-      voteState: {
-        ...context.miscSharedData.voteState,
-        showVote,
-      },
-    });
-  };
-
-  return {
-    miscSharedData: context.miscSharedData,
-    setMiscSharedData: context.setMiscSharedData,
-    setShowVote,
   };
 };
 
@@ -474,5 +452,31 @@ export const useCharacterRolled = () => {
   return {
     characterRolled: context.characterRolled,
     setCharacterRolled: context.setCharacterRolled,
+  };
+};
+
+export const useVoteState = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error("useVoteState must be used within a GameProvider");
+  }
+  const setShowVote = (showVote: boolean) => {
+    context.setVoteState({
+      ...context.voteState,
+      showVote,
+    });
+  };
+  return {
+    voteState: context.voteState,
+    setVoteState: context.setVoteState,
+    setShowVote,
+  };
+};
+
+export const useActionsRemaining = () => {
+  const context = useContext(GameContext);
+  return {
+    actionsRemaining: context.actionsRemaining,
+    setActionsRemaining: context.setActionsRemaining,
   };
 };

@@ -12,7 +12,6 @@ import AmbientBackground from "./AmbientBackground";
 
 import {
   useQuestSummary,
-  useMiscSharedData,
   useGameApi,
   useLocalPlayers,
   useGameData,
@@ -29,12 +28,15 @@ import StoryButtons from "./StoryButtons";
 import { useDiceRoll } from "@/contexts/GameContext";
 import { storyEvents } from "@/core/storyEvents";
 import DiceRollWithText from "./DiceRollWithText";
+import { useGameStage } from "@/contexts/GameContext";
+import { useVoteState } from "@/contexts/GameContext";
 
 const GameContent = () => {
   const { handleTravel } = useGameActions();
 
   // state for React UI only
-  const { miscSharedData, setMiscSharedData } = useMiscSharedData();
+  const { gameStage, setGameStage } = useGameStage();
+  const { voteState, setVoteState } = useVoteState();
   const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);

@@ -6,11 +6,12 @@ import {
   useCharacters,
   useLocationData,
   useLocationState,
-  useMiscSharedData,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
 import LocationOverlay from "./overlays/LocationOverlay";
+import { useGameStage } from "@/contexts/GameContext";
+import { useVoteState } from "@/contexts/GameContext";
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;
@@ -141,7 +142,8 @@ const TopBar = () => {
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
   const locationOverlay = useOverlayState("location");
-  const { miscSharedData } = useMiscSharedData();
+  const { gameStage } = useGameStage();
+  const { voteState } = useVoteState();
 
   const getNpcs = () => {
     if (!locationState) return [];

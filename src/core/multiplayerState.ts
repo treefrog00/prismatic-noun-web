@@ -17,7 +17,7 @@ import {
 } from "playroomkit";
 import { HASH_QUEST_ID } from "../config";
 import { useState } from "react";
-import { useLocalPlayers, useMiscSharedData } from "../contexts/GameContext";
+import { useLocalPlayers } from "../contexts/GameContext";
 
 export type { PlayerState };
 

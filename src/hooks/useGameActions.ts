@@ -7,7 +7,6 @@ import {
   useLocationState,
   useActionTarget,
   useAbility,
-  useMiscSharedData,
 } from "../contexts/GameContext";
 import { useEffect, useRef } from "react";
 import { ActionResponseSchema } from "../types/validatedTypes";
@@ -34,11 +33,6 @@ export const useGameActions = () => {
   const thisPlayer = myPlayer();
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
-  const { miscSharedData } = useMiscSharedData();
-  const miscSharedDataRef = useRef(miscSharedData);
-  useEffect(() => {
-    miscSharedDataRef.current = miscSharedData;
-  }, [miscSharedData]);
   const { gameData } = useGameData();
   const { locationState, setLocationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();

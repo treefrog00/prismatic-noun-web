@@ -9,7 +9,7 @@ import { GameEvent } from "@/types";
 import { useCharacters } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
-import { useMiscSharedData } from "./GameContext";
+import { useActionsRemaining } from "./GameContext";
 import { useTimeRemaining } from "./GameContext";
 import { useGameConfig } from "./GameContext";
 import { appendToStory } from "@/core/storyEvents";
@@ -44,7 +44,7 @@ export const EventProvider = ({
   const { setCharacters } = useCharacters();
   const { setLocationState } = useLocationState();
   const { setLocationData } = useLocationData();
-  const { miscSharedData, setMiscSharedData } = useMiscSharedData();
+  const { setActionsRemaining } = useActionsRemaining();
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
 
@@ -88,17 +88,11 @@ export const EventProvider = ({
     } else if (event.type === "ChangeLocation") {
       setLocationState(event.locationState);
       setLocationData(event.locationData);
-    } else if (event.type === "ChangeTurn") {
-      setMiscSharedData({
-        ...miscSharedData,
-        turnPointsRemaining: event.turnPointsRemaining,
-      });
+    } else if (event.type === "StartTurn") {
+      setActionsRemaining(event.actionsRemaining);
       setTimeRemaining(gameConfig.turnTimeLimit);
-    } else if (event.type === "TurnPointsUpdate") {
-      setMiscSharedData({
-        ...miscSharedData,
-        turnPointsRemaining: event.turnPointsRemaining,
-      });
+    } else if (event.type === "SetActionsRemaining") {
+      setActionsRemaining(event.actionsRemaining);
     }
   };
 

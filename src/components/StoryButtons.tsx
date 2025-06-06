@@ -5,7 +5,6 @@ import {
   useQuestSummary,
   useActionTarget,
   useAbility,
-  useMiscSharedData,
   useGameConfig,
   useActionUIState,
   useTimeRemaining,
@@ -20,6 +19,11 @@ import Overlay from "./overlays/Overlay";
 import { createPortal } from "react-dom";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 import SettingsPopup from "./popups/SettingsPopup";
+import {
+  useGameStage,
+  useVoteState,
+  useActionsRemaining,
+} from "@/contexts/GameContext";
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: "Act", color: "amber-border" },
@@ -66,7 +70,9 @@ const MobileControls = ({
   setIsLogbookOpen,
 }: ControlProps) => {
   const [showMobileButtons, setShowMobileButtons] = useState(false);
-  const { miscSharedData } = useMiscSharedData();
+  const { gameStage } = useGameStage();
+  const { voteState } = useVoteState();
+  const { actionsRemaining } = useActionsRemaining();
   const { gameConfig } = useGameConfig();
   const [timeRemaining, setTimeRemaining] = useState(gameConfig.turnTimeLimit);
 
@@ -116,10 +122,8 @@ const MobileControls = ({
               </button>
             ))}
             <div className="col-span-2 text-center text-gray-300 mt-2">
-              <div>Turn points:</div>
-              <div className="text-2xl font-bold">
-                {miscSharedData.turnPointsRemaining}
-              </div>
+              <div>Actions remaining:</div>
+              <div className="text-2xl font-bold">{actionsRemaining}</div>
               <div className="mt-2">Turn time:</div>
               <div className="text-2xl font-bold">{timeRemaining}s</div>
             </div>
@@ -172,7 +176,9 @@ const DesktopControls = ({
     y: 0,
   });
   const TIMEOUT = 500;
-  const { miscSharedData } = useMiscSharedData();
+  const { gameStage } = useGameStage();
+  const { voteState } = useVoteState();
+  const { actionsRemaining } = useActionsRemaining();
   const { gameConfig } = useGameConfig();
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
 
@@ -297,10 +303,8 @@ const DesktopControls = ({
               <div className="text-4xl font-bold">{timeRemaining}s</div>
             </div>
             <div>
-              <div>Turn points:</div>
-              <div className="text-4xl font-bold">
-                {miscSharedData.turnPointsRemaining}
-              </div>
+              <div>Actions remaining:</div>
+              <div className="text-4xl font-bold">{actionsRemaining}</div>
             </div>
           </div>
           <div

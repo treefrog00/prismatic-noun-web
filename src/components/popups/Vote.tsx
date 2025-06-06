@@ -5,7 +5,7 @@ import {
   useIsHost,
   myPlayer,
 } from "../../core/multiplayerState";
-import { useMiscSharedData } from "../../contexts/GameContext";
+import { useVoteState } from "@/contexts/GameContext";
 interface VoteProps {
   onVoteComplete: (result: boolean) => void;
 }
@@ -16,16 +16,15 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const [myVote, setMyVote] = useState<boolean | null>(null);
   const players = usePlayersList(true);
   const isHost = useIsHost();
-  const { miscSharedData, setMiscSharedData, setShowVote } =
-    useMiscSharedData();
+  const { voteState, setShowVote } = useVoteState();
   const thisPlayer = myPlayer();
 
   useEffect(() => {
     thisPlayer.setState(voteKey(voteState.voteTitle), null);
-    if (miscSharedData.voteState.showVote) {
+    if (voteState.showVote) {
       setMyVote(null);
     }
-  }, [miscSharedData.voteState.showVote, isHost]);
+  }, [voteState.showVote, isHost]);
 
   useEffect(() => {
     if (!isHost) return;
@@ -55,8 +54,6 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
     const key = voteKey(voteState.voteTitle);
     myPlayer().setState(key, choice);
   };
-
-  const voteState = miscSharedData.voteState;
 
   return (
     <Popup

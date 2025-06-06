@@ -148,12 +148,12 @@ const GameEventSchema = z.discriminatedUnion("type", [
     locationData: LocationDataSchema,
   }),
   z.object({
-    type: z.literal("ChangeTurn"),
-    turnPointsRemaining: z.number(),
+    type: z.literal("StartTurn"),
+    actionsRemaining: z.number(),
   }),
   z.object({
-    type: z.literal("TurnPointsUpdate"),
-    turnPointsRemaining: z.number(),
+    type: z.literal("SetActionsRemaining"),
+    actionsRemaining: z.number(),
   }),
 ]);
 

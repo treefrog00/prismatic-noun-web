@@ -6,8 +6,7 @@ import {
   useEffect,
 } from "react";
 import { GameEvent } from "@/types";
-import { useMultiplayerState } from "../core/multiplayerState";
-import { useCharacters, useQuestSummary } from "./GameContext";
+import { useCharacters } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useMiscSharedData } from "./GameContext";
@@ -36,11 +35,7 @@ export const EventProvider = ({
 }: {
   children: ReactNode;
 }): JSX.Element => {
-  const [eventQueue, setEventQueue] = useMultiplayerState<GameEvent[]>(
-    "eventQueue",
-    [],
-  );
-  const [localEventQueue, setLocalEventQueue] = useState<GameEvent[]>([]);
+  const [eventQueue, setEventQueue] = useState<GameEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const isHost = useIsHost();

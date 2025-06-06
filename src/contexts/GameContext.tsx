@@ -27,8 +27,8 @@ export type GameStage =
   | "launch-screen"
   | "lobby"
   | "player-action"
-  | "replays"
   | "voting"
+  | "replays"
   | "end";
 
 type ActionTarget = {
@@ -138,17 +138,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     null,
   );
 
-  const [diceRollState, setDiceRollState] = useMultiplayerState<DiceRollState>(
-    "dice-roll-state",
-    {
-      show: false,
-      beforeText: "",
-      afterText: "",
-      imageUrls: [],
-      targetValues: [],
-    },
-  );
-
   const [miscSharedData, setMiscSharedData] =
     useMultiplayerState<MiscSharedData>("miscSharedData", {
       gameStage: "launch-screen",
@@ -161,25 +150,22 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     });
   //////////////////////////// end of multiplayer state ////////////////////////////
 
-  // These have both multiplayer state and a different local version for use during player actions
-  const [characters, setCharacters] = useMultiplayerState<
-    Record<string, CharacterState>
-  >("characters", {});
-  const [charactersLocal, setCharactersLocal] = useState<
-    Record<string, CharacterState>
-  >({});
-
-  const [locationState, setLocationState] = useMultiplayerState<LocationState>(
-    "locationState",
-    null,
-  );
-  const [locationStateLocal, setLocationStateLocal] =
-    useState<LocationState>(null);
-  //////////////////////////// end of state with both multiplayer and local versions
-
   //// React local-only state ////
   // we need a local version of game stage to handle launch screen, probably because it
   // is before playroomkit is initialized
+  const [characters, setCharacters] = useState<Record<string, CharacterState>>(
+    {},
+  );
+  const [locationState, setLocationState] = useState<LocationState>(null);
+
+  const [diceRollState, setDiceRollState] = useState<DiceRollState>({
+    show: false,
+    beforeText: "",
+    afterText: "",
+    imageUrls: [],
+    targetValues: [],
+  });
+
   const [localGameStage, setLocalGameStage] =
     useState<GameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);

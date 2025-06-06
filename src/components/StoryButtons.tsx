@@ -28,7 +28,6 @@ const rootButtonsDesktop: ButtonConfig[] = [
 ];
 
 const rootButtonsMobile: ButtonConfig[] = [
-  { id: "investigate", label: "Investigate", color: "none" },
   { id: "say", label: "Say", color: "none" },
   { id: "do", label: "Do", color: "none" },
   { id: "ability", label: "Ability", color: "none" },
@@ -40,7 +39,6 @@ const rootButtonsMobile: ButtonConfig[] = [
 ];
 
 const subActions: ButtonConfig[] = [
-  { id: "investigate", label: "Investigate", color: "stone" },
   { id: "say", label: "Say", color: "teal" },
   { id: "do", label: "Do", color: "violet" },
   { id: "ability", label: "Ability", color: "purple" },

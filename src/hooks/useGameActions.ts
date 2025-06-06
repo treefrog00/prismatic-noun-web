@@ -75,10 +75,6 @@ export const useGameActions = () => {
     setInputFields("Talk", "What do you say to " + getTargetName() + "?");
   };
 
-  const handleInvestigate = async () => {
-    setInputFields("Investigate", "What do you investigate?");
-  };
-
   const handleDo = async () => {
     if (actionTarget) {
       setInputFields("Do", "How do you interact with " + getTargetName() + "?");
@@ -155,16 +151,6 @@ export const useGameActions = () => {
     });
   };
 
-  const handleInvestigateOk = async () => {
-    console.log("Starting investigate...");
-    appendToStoryRpc(text, `${getCharacterName()} investigates`);
-    console.log("About to call investigate API...");
-    await apiCallAndUpdate(`/game/${gameData.gameId}/investigate`, {
-      prompt: text,
-    });
-    console.log("investigate done");
-  };
-
   const handleDoOk = async () => {
     let label = `${getCharacterName()} acts`;
     if (ability) {
@@ -194,7 +180,6 @@ export const useGameActions = () => {
   const globalHandleClick = async (buttonId: string) => {
     const handlers: Record<string, () => Promise<void>> = {
       talk: handleTalk,
-      investigate: handleInvestigate,
       do: handleDo,
       interact: handleDo,
       say: handleSay,
@@ -205,7 +190,6 @@ export const useGameActions = () => {
       "proceed-ok": handleProceedOk,
       "attack-ok": handleAttackOk,
       "talk-ok": handleTalkOk,
-      "investigate-ok": handleInvestigateOk,
       "do-ok": handleDoOk, // also handles using abilities
       "interact-ok": handleDoOk,
       "say-ok": handleSayOk,

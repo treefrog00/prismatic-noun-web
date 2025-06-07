@@ -107,11 +107,11 @@ type GameContextType = {
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
 
-  characterRolled: boolean;
-  setCharacterRolled: (value: boolean) => void;
-
   actionsRemaining: number;
   setActionsRemaining: (value: number) => void;
+
+  selectedCharacter: string | null;
+  setSelectedCharacter: (value: string | null) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -192,7 +192,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
-  const [characterRolled, setCharacterRolled] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
+    null,
+  );
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
@@ -204,10 +206,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       });
     }
   }, []);
-
-  useEffect(() => {
-    setCharacterRolled(false);
-  }, [questSummary?.questId]);
 
   const handleSetShouldAnimateDice = (show: boolean) => {
     setGameConfig({
@@ -268,12 +266,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setInputPlaceHolder,
         timeRemaining,
         setTimeRemaining,
+        selectedCharacter,
+        setSelectedCharacter,
 
         diceRollState,
         setDiceRollState,
-
-        characterRolled,
-        setCharacterRolled,
 
         gameStage,
         setGameStage,
@@ -435,23 +432,17 @@ export const useGameConfig = () => {
 
 export const useTimeRemaining = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useTimeRemaining must be used within a GameProvider");
-  }
   return {
     timeRemaining: context.timeRemaining,
     setTimeRemaining: context.setTimeRemaining,
   };
 };
 
-export const useCharacterRolled = () => {
+export const useSelectedCharacter = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useCharacterRolled must be used within a GameProvider");
-  }
   return {
-    characterRolled: context.characterRolled,
-    setCharacterRolled: context.setCharacterRolled,
+    selectedCharacter: context.selectedCharacter,
+    setSelectedCharacter: context.setSelectedCharacter,
   };
 };
 

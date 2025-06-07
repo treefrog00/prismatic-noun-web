@@ -1,5 +1,4 @@
 import {
-  myPlayer,
   openDiscordInviteDialog,
   useIsHost,
   usePlayersList,
@@ -7,17 +6,7 @@ import {
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
-import {
-  useGameStage,
-  useQuestSummary,
-  useCharacterRolled,
-} from "@/contexts/GameContext";
-import { CharacterInstance } from "@/types/CharacterInstance";
-import { GameApi } from "@/core/gameApi";
-import { RolledCharacterSchema } from "@/types/validatedTypes";
-import { useState, useEffect, useRef } from "react";
-import { LOBBY_DICE_ROLL_ANIMATION_DURATION } from "./LobbyRollWrapper";
-import { useMisc } from "@/contexts/MiscContext";
+import { useGameStage, useQuestSummary } from "@/contexts/GameContext";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
@@ -26,49 +15,9 @@ interface LobbyHomeProps {
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   const players = usePlayersList();
   const { questSummary, setQuestSummary } = useQuestSummary();
-  const gameApi = new GameApi();
+
   const isHost = useIsHost();
   const { setGameStage } = useGameStage();
-  const { characterRolled, setCharacterRolled } = useCharacterRolled();
-  const { setLobbyDiceRollState } = useMisc();
-
-  const handleRollCharacter = async () => {
-    setLobbyDiceRollState({
-      show: true,
-      beforeText: "Rolling character...",
-      afterText: "Character rolled!",
-      targetValues: [1, 2],
-    });
-
-    setTimeout(() => {
-      setLobbyDiceRollState({
-        show: false,
-        beforeText: "",
-        afterText: "",
-        targetValues: [],
-      });
-    }, LOBBY_DICE_ROLL_ANIMATION_DURATION);
-
-    let rolledCharacter = await gameApi.postTyped(
-      `/quest/${questSummary.questId}/roll_character`,
-      {
-        pronouns: "he",
-      },
-      RolledCharacterSchema,
-    );
-
-    const player = myPlayer();
-    const character: CharacterInstance = {
-      characterId: rolledCharacter.characterId,
-      name: rolledCharacter.name,
-      luck: rolledCharacter.luck,
-      pronouns: rolledCharacter.pronouns,
-      imageUrl: rolledCharacter.imageUrl,
-      data: rolledCharacter.character,
-    };
-    player.setState("character", character, true);
-    setCharacterRolled(true);
-  };
 
   const handleStartAdventure = () => {
     setGameStage("player-action");
@@ -165,23 +114,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         </div>
       </div>
       <div className="flex gap-4">
-        {questSummary && !characterRolled && (
-          <button
-            className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-            onClick={handleRollCharacter}
-          >
-            Roll character
-          </button>
-        )}
-        {questSummary && !isHost && characterRolled && (
-          <button
-            className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-            disabled
-          >
-            Ready!
-          </button>
-        )}
-        {questSummary && isHost && characterRolled && (
+        {questSummary && isHost && (
           <button
             className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
             onClick={handleStartAdventure}

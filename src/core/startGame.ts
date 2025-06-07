@@ -38,36 +38,14 @@ export async function startIfNotStarted(
     for (let i = 0; i < numPlayers; i++) {
       const playerName = `Player ${i + 1}`;
       const player = new LocalPlayerState(playerName);
-
-      let rolledCharacter = await gameApi.postTyped(
-        `/quest/${HASH_QUEST_ID}/roll_character`,
-        {
-          pronouns: "he/him",
-        },
-        RolledCharacterSchema,
-      );
-
-      player.setState("character", {
-        characterId: rolledCharacter.characterId,
-        name: rolledCharacter.name,
-        imageUrl: rolledCharacter.imageUrl,
-        luck: rolledCharacter.luck,
-        pronouns: rolledCharacter.pronouns,
-      });
       addLocalPlayer(player, localPlayers);
     }
   }
 
   const playerDetails = startingPlayers.map((p) => {
-    let details = p.getState("character");
     return {
       username: p.id,
       globalName: p.getProfile().name,
-      characterId: details.characterId,
-      pronouns: details.pronouns,
-      characterName: details.name,
-      characterImageUrl: details.imageUrl,
-      luck: details.luck,
     };
   });
 

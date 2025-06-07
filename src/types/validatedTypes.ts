@@ -36,7 +36,9 @@ const FeatureSchema = z.object({
 });
 
 const BaseCharacterSchema = z.object({
+  name: z.string(),
   description: z.string(),
+  imageUrl: z.string(),
   level: z.number(),
   maxStamina: z.number(),
   weapons: z.array(z.string()),
@@ -44,16 +46,13 @@ const BaseCharacterSchema = z.object({
 });
 
 const CharacterSchema = BaseCharacterSchema.extend({
-  characterId: z.string(),
-  shortName: z.string(),
+  luck: z.number(),
   special: z.string(),
   abilities: z.array(CharacterAbilitySchema),
 });
 
 const NpcSchema = BaseCharacterSchema.extend({
-  name: z.string(),
   friendly: FriendlyLevel,
-  imageUrl: z.string(),
 });
 
 export const RolledCharacterSchema = z.object({

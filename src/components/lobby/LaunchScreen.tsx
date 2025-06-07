@@ -43,17 +43,18 @@ const LaunchScreen = () => {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200`}>
                 <p className="mb-4">
-                  A collection of short role-playing stories you can play
-                  through with friends, online or in-person. You have a choice
-                  of playing either in a web browser (including on mobile
-                  devices) or inside Discord (Windows/Mac/Linux only).
+                  A social game about story-telling and imaginative task-solving
+                  that you can play with friends, online or in-person.
                 </p>
                 <p className="mb-4">
-                  Mobile devices can also be used as input for a shared screen,
-                  allowing it to be played as a party game.
+                  You have a choice of playing either in a web browser
+                  (including on mobile devices) or inside Discord
+                  (Windows/Mac/Linux only). Mobile devices can also be used as
+                  input for a shared screen, allowing it to be played as an
+                  in-person party game.
                 </p>
                 <p className="mb-4">
-                  Be warned that the game makes heavy use of AI for generating
+                  As a disclaimer, the game makes heavy use of AI for generating
                   images, music, code, stories, and more. It is currently in
                   alpha testing, and likely has numerous bugs and issues.
                 </p>

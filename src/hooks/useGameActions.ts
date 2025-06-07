@@ -7,8 +7,8 @@ import {
   useLocationState,
   useActionTarget,
   useAbility,
+  useSelectedCharacter,
 } from "../contexts/GameContext";
-import { useEffect, useRef } from "react";
 import { ActionResponseSchema, GameEvent } from "../types/validatedTypes";
 import { useEventProcessor } from "../contexts/EventContext";
 import { appendToStory } from "@/core/storyEvents";
@@ -34,9 +34,10 @@ export const useGameActions = () => {
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
   const { gameData } = useGameData();
-  const { locationState, setLocationState } = useLocationState();
+  const { locationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
   const isHost = useIsHost();
+  const { selectedCharacter } = useSelectedCharacter();
   const { addEvents } = useEventProcessor();
 
   const setInputFields = (
@@ -157,27 +158,35 @@ export const useGameActions = () => {
   };
 
   const getCharacterName = () => {
-    return thisPlayer.getState("character").name;
+    return selectedCharacter == "all"
+      ? "All"
+      : gameData.characters[selectedCharacter].name;
   };
 
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
+      character: selectedCharacter,
       message: textWithQuotes,
       targetId: actionTarget.targetId,
     });
   };
 
   const handleDoOk = async () => {
-    let label = `${getCharacterName()} acts`;
+    let label =
+      selectedCharacter == "all" ? "All act" : `${getCharacterName()} acts`;
     if (ability) {
-      label = `${getCharacterName()} uses ${ability}`;
+      label =
+        selectedCharacter == "all"
+          ? `All use ${ability}`
+          : `${getCharacterName()} uses ${ability}`;
     }
     appendToStory(text, label);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
       prompt: text,
       ability,
+      character: selectedCharacter,
       targetId: actionTarget?.targetId,
       targetType: actionTarget?.targetType,
     });

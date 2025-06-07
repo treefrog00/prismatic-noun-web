@@ -6,6 +6,7 @@ import {
   useCharacters,
   useLocationData,
   useLocationState,
+  useSelectedCharacter,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
@@ -131,19 +132,23 @@ const useOverlayState = (overlayId: string) => {
 };
 
 const TopBar = () => {
-  const players = usePlayersList(true);
   const { locationData } = useLocationData();
   const { locationState } = useLocationState();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const rightHandListRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
+  const { selectedCharacter, setSelectedCharacter } = useSelectedCharacter();
 
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
   const locationOverlay = useOverlayState("location");
   const { gameStage } = useGameStage();
   const { voteState } = useVoteState();
+
+  const sharedBoxStyles =
+    "w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors";
+  const selectedBoxStyles = "border-2 border-amber-500";
 
   const getNpcs = () => {
     if (!locationState) return [];
@@ -173,26 +178,31 @@ const TopBar = () => {
       <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
-            {players.map((player) => (
+            <div
+              className={`${sharedBoxStyles} ${
+                selectedCharacter === "all" ? selectedBoxStyles : ""
+              }`}
+              onPointerDown={() => setSelectedCharacter("all")}
+            >
+              <span className="text-gray-400 text-xs">All</span>
+            </div>
+            {Object.entries(characters).map(([name, character]) => (
               <div
-                key={player.id}
-                className={`w-16 h-16 bg-gray-700 rounded-lg ${
-                  player.id === myPlayer().id
-                    ? "border-2 border-amber-500"
-                    : "border border-gray-600"
-                } flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors`}
+                key={name}
+                className={`${sharedBoxStyles} ${
+                  name === selectedCharacter ? selectedBoxStyles : ""
+                }`}
                 onMouseEnter={(e) =>
                   characterOverlay.handleMouseEvent(
-                    player.id,
+                    name,
                     e,
                     getCharacterPosition,
                   )
                 }
                 onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
+                onPointerDown={() => setSelectedCharacter(name)}
               >
-                <span className="text-gray-400 text-xs">
-                  {player.getProfile().name}
-                </span>
+                <span className="text-gray-400 text-xs">{name}</span>
               </div>
             ))}
           </div>
@@ -200,7 +210,7 @@ const TopBar = () => {
             {getNpcs().map((npc) => (
               <div
                 key={npc.instanceId}
-                className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors"
+                className={sharedBoxStyles}
                 onMouseEnter={(e) =>
                   npcOverlay.handleMouseEvent(npc.instanceId, e, () =>
                     getRightAlignedPosition(),
@@ -213,7 +223,7 @@ const TopBar = () => {
             ))}
             {locationData && (
               <div
-                className="w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors overflow-hidden"
+                className={`${sharedBoxStyles} overflow-hidden`}
                 onMouseEnter={(e) =>
                   locationOverlay.handleMouseEvent("location", e, () =>
                     getRightAlignedPosition(),

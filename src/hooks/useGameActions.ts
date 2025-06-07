@@ -96,27 +96,7 @@ export const useGameActions = () => {
     );
   };
 
-  const handleAttackOk = async () => {
-    appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
-      text,
-      prompt: "",
-      targetId: actionTarget.targetId,
-      weapon: "sword",
-    });
-  };
-
-  const handleProceedOk = async () => {
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/proceed`, {});
-  };
-
-  const handleEndTurnOk = async () => {
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/end_turn`, {
-      questId: questSummary.questId,
-    });
-  };
-
-  ////// actions that are called by the host and then teed to all clients via RPC//////
+  /// actions that are called by the host and then teed to all clients via RPC ////////////
   const handlePlayerLeft = async (playerId: string) => {
     if (!isHost) {
       return;
@@ -163,6 +143,33 @@ export const useGameActions = () => {
       : gameData.characters[selectedCharacter].name;
   };
 
+  const getTextWithQuotes = (text: string) => {
+    return "“" + text.trim() + "”";
+  };
+
+  //////////////////////// OK handlers ////////////////////////
+
+  const handleAttackOk = async () => {
+    appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
+      character: selectedCharacter,
+      text,
+      prompt: "",
+      targetId: actionTarget.targetId,
+      weapon: "sword",
+    });
+  };
+
+  const handleProceedOk = async () => {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/proceed`, {});
+  };
+
+  const handleEndTurnOk = async () => {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/end_turn`, {
+      questId: questSummary.questId,
+    });
+  };
+
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
@@ -184,25 +191,24 @@ export const useGameActions = () => {
     }
     appendToStory(text, label);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
+      character: selectedCharacter,
       prompt: text,
       ability,
-      character: selectedCharacter,
       targetId: actionTarget?.targetId,
       targetType: actionTarget?.targetType,
     });
-  };
-
-  const getTextWithQuotes = (text: string) => {
-    return "“" + text.trim() + "”";
   };
 
   const handleSayOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
+      character: selectedCharacter,
       message: textWithQuotes,
     });
   };
+
+  //////////////////////// end of OK handlers ////////////////////////
 
   const globalHandleClick = async (buttonId: string) => {
     const handlers: Record<string, () => Promise<void>> = {

@@ -4,6 +4,7 @@ import {
   onPlayerJoin,
   PlayerState,
   usePlayersList,
+  RPC,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
@@ -58,7 +59,7 @@ const GameContent = () => {
   const { gameData, setGameData } = useGameData();
   const { setQuestSummary } = useQuestSummary();
   const { questSummary } = useQuestSummary();
-  const { handlePlayerLeft } = useGameActions();
+  const { handlePlayerLeft, appendEventsHandler } = useGameActions();
   const { localPlayers } = useLocalPlayers();
   const { diceRollState } = useDiceRoll();
 
@@ -118,6 +119,8 @@ const GameContent = () => {
   };
 
   useEffect(() => {
+    RPC.register("rpc-append-events", appendEventsHandler);
+
     const unsubscribe = storyEvents.subscribe((text, label) => {
       if (storyRef.current) {
         storyRef.current.updateText(text, label);

@@ -1,4 +1,4 @@
-import { myPlayer, RPC } from "../core/multiplayerState";
+import { myPlayer, RPC, useIsHost } from "../core/multiplayerState";
 import {
   useGameApi,
   useQuestSummary,
@@ -9,8 +9,8 @@ import {
   useAbility,
 } from "../contexts/GameContext";
 import { useEffect, useRef } from "react";
-import { ActionResponseSchema } from "../types/validatedTypes";
-import { useEventProcessor } from "./useEventQueue";
+import { ActionResponseSchema, GameEvent } from "../types/validatedTypes";
+import { useEventProcessor } from "../contexts/EventContext";
 import { appendToStory } from "@/core/storyEvents";
 
 export const useGameActions = () => {
@@ -36,6 +36,7 @@ export const useGameActions = () => {
   const { gameData } = useGameData();
   const { locationState, setLocationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
+  const isHost = useIsHost();
   const { addEvents } = useEventProcessor();
 
   const setInputFields = (
@@ -96,7 +97,7 @@ export const useGameActions = () => {
 
   const handleAttackOk = async () => {
     appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/attack`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
       text,
       prompt: "",
       targetId: actionTarget.targetId,
@@ -105,31 +106,54 @@ export const useGameActions = () => {
   };
 
   const handleProceedOk = async () => {
-    await apiCallAndUpdate(`/game/${gameData.gameId}/proceed`, {});
-  };
-
-  const handleTravel = async (location: string, gameId?: string) => {
-    await apiCallAndUpdate(`/game/${gameId || gameData.gameId}/travel`, {
-      location,
-    });
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/proceed`, {});
   };
 
   const handleEndTurnOk = async () => {
-    await apiCallAndUpdate(`/game/${gameData.gameId}/end_turn`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/end_turn`, {
       questId: questSummary.questId,
     });
   };
 
+  ////// actions that are called by the host and then teed to all clients via RPC//////
   const handlePlayerLeft = async (playerId: string) => {
-    await apiCallAndUpdate(
+    if (!isHost) {
+      return;
+    }
+
+    await apiCallAndUpdateTeeEvents(
       `/game/${gameData.gameId}/player_left/${playerId}`,
       {},
     );
   };
 
-  const apiCallAndUpdate = async (url: string, postData: any) => {
+  const handleTravel = async (location: string, gameId?: string) => {
+    await apiCallAndUpdateTeeEvents(
+      `/game/${gameId || gameData.gameId}/travel`,
+      {
+        location,
+      },
+    );
+  };
+
+  ////// end actions that are called by the host and then teed to all clients via RPC //////
+
+  const apiCallAndUpdateTeeEvents = async (url: string, postData: any) => {
+    let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
+    callRpcAppendEvents(response.events);
+  };
+
+  const apiCallAndUpdateLocalEvents = async (url: string, postData: any) => {
     let response = await gameApi.postTyped(url, postData, ActionResponseSchema);
     addEvents(response.events);
+  };
+
+  const appendEventsHandler = async (data: GameEvent[], caller: any) => {
+    addEvents(data);
+  };
+
+  const callRpcAppendEvents = (events: any) => {
+    RPC.call("rpc-append-events", { events }, RPC.Mode.ALL);
   };
 
   const getCharacterName = () => {
@@ -139,7 +163,7 @@ export const useGameActions = () => {
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
       targetId: actionTarget.targetId,
     });
@@ -151,7 +175,7 @@ export const useGameActions = () => {
       label = `${getCharacterName()} uses ${ability}`;
     }
     appendToStory(text, label);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/do`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
       prompt: text,
       ability,
       targetId: actionTarget?.targetId,
@@ -166,7 +190,7 @@ export const useGameActions = () => {
   const handleSayOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
-    await apiCallAndUpdate(`/game/${gameData.gameId}/say`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
       message: textWithQuotes,
     });
   };
@@ -219,5 +243,6 @@ export const useGameActions = () => {
     handleSelectAbility,
     handleTravel,
     handlePlayerLeft,
+    appendEventsHandler,
   };
 };

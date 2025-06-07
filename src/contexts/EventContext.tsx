@@ -141,10 +141,12 @@ export const EventProvider = ({
   );
 };
 
-export const useEventQueue = () => {
+export const useEventProcessor = () => {
   const context = useContext(EventContext);
-  if (!context) {
-    throw new Error("useEventQueue must be used within an EventProvider");
-  }
-  return context;
+
+  return {
+    addEvents: context.addEvents,
+    isProcessing: context.isProcessing,
+    queueLength: context.queueLength,
+  };
 };

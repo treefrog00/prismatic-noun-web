@@ -6,7 +6,6 @@ const QuestSummarySchema = z.object({
   questId: z.string(),
   title: z.string(),
   description: z.string(),
-  intro: z.string(),
   imageUrl: z.string(),
 });
 
@@ -85,7 +84,6 @@ const WeaponSchema = z.object({
 
 const GameDataSchema = z.object({
   gameId: z.string(),
-  intro: z.string(),
   title: z.string(),
   weapons: z.record(z.string(), WeaponSchema),
   items: z.record(z.string(), ItemSchema),
@@ -93,12 +91,32 @@ const GameDataSchema = z.object({
   characters: z.record(z.string(), CharacterSchema),
 });
 
+const StoryEventSchema = z.object({
+  label: z.string().nullable(),
+  text: z.string(),
+  imageUrl: z.string().nullable(),
+});
+
+const SceneType = z.enum([
+  "auto_advance",
+  "player_actions",
+  "player_actions_paid_only",
+  "timer_free_only",
+  "game_end",
+]);
+
+const SceneDataSchema = z.object({
+  sceneType: SceneType,
+  storyEvents: z.array(StoryEventSchema),
+  npcs: z.record(z.string(), NpcSchema),
+  features: z.record(z.string(), FeatureSchema),
+});
+
 const LocationDataSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  npcs: z.record(z.string(), NpcSchema),
-  features: z.record(z.string(), FeatureSchema),
+  scenes: z.array(SceneDataSchema),
 });
 
 export const StartGameSchema = z.object({

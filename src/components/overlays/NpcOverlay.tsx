@@ -52,7 +52,7 @@ const NpcOverlay = ({
     if (locationState && locationData && npcId) {
       const stateData = locationState.npcs[npcId];
       setNpcState(stateData);
-      setNpcData(locationData?.npcs[stateData?.name]);
+      setNpcData(locationData.scenes[0].npcs[stateData.name]);
     } else {
       setNpcState(null);
       setNpcData(null);

@@ -159,14 +159,16 @@ const GameContent = () => {
             questId: HASH_QUEST_ID,
             title: startGame.gameData.title,
             description: "",
-            intro: startGame.gameData.intro,
             imageUrl: "https://placehold.co/100x100",
           });
 
           if (HASH_LOCATION_ID) {
             setHashQuestInitializing(true);
-          } else {
-            storyEvents.emit(startGame.gameData.intro);
+          }
+        }
+        if (!HASH_LOCATION_ID) {
+          for (const event of startGame.locationData.scenes[0].storyEvents) {
+            storyEvents.emit(event.text, event.label);
           }
         }
       };

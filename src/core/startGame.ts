@@ -31,9 +31,7 @@ export async function startIfNotStarted(
 
   let questId = HASH_QUEST_ID || questSummary.questId;
 
-  if (!HASH_QUEST_ID) {
-    appendToStory(questSummary.intro);
-  } else {
+  if (HASH_QUEST_ID) {
     const numPlayers = parseInt(HASH_NUM_PLAYERS || "1", 10);
     for (let i = 0; i < numPlayers; i++) {
       const playerName = `Player ${i + 1}`;

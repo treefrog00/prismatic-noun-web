@@ -42,26 +42,18 @@ const LaunchScreen = () => {
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200`}>
+                <p>copy from existing launch screen...</p>
                 <p className="mb-4">
-                  A social game involving story-telling and imaginative
-                  task-solving, featuring a series of weird and spooky science
-                  fiction and fantasy stories.
+                  ... and then carefully curated and merged over the course of 6
+                  months full time work. This was followed by several more
+                  months testing and refinement. Hopefully this creates a game
+                  that is engaging and fun.
                 </p>
                 <p className="mb-4">
-                  You can play in a web browser or launch the app inside Discord
-                  on Windows/Mac/Linux, but mobile devices are not supported.
-                </p>
-                <p className="mb-4">
-                  The game is currently in early alpha testing, and undoubtedly
-                  has numerous serious bugs and issues.
-                </p>
-                <p className="mb-4">
-                  As a disclaimer, the development process made heavy use of AI
-                  for generating images, music, code, and stories. AI was used
-                  to generate thousands of images and code functions, and
-                  hundreds of stories and musical compositions. These were then
-                  carefully curated, merged, and refined over the course of 6
-                  months full time work.
+                  The first, shortest scenario is free to play twice a day. The
+                  longer scenarios are available for purchase in the Discord App
+                  store. Buying scenarios allows replaying them as often as you
+                  wish, and unlocks them in the web version as well.
                 </p>
               </div>
             </div>

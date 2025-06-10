@@ -31,17 +31,6 @@ const rootButtonsDesktop: ButtonConfig[] = [
   { id: "end-turn-ok", label: "End Turn", color: "stone" },
 ];
 
-const rootButtonsMobile: ButtonConfig[] = [
-  { id: "say", label: "Say", color: "none" },
-  { id: "do", label: "Do", color: "none" },
-  { id: "ability", label: "Ability", color: "none" },
-  { id: "proceed-ok", label: "Proceed", color: "none" },
-  { id: "inventory", label: "Inventory", color: "none" },
-  { id: "logbook", label: "Logbook", color: "none" },
-  { id: "settings", label: "Settings", color: "none" },
-  { id: "end-turn-ok", label: "End Turn", color: "none" },
-];
-
 const subActions: ButtonConfig[] = [
   { id: "say", label: "Say", color: "teal" },
   { id: "do", label: "Do", color: "violet" },
@@ -59,105 +48,6 @@ interface ControlProps {
   setIsLogbookOpen: (open: boolean) => void;
 }
 
-const MobileControls = ({
-  onPointerDown,
-  showTextarea,
-  renderTextInput,
-  showActChooser,
-  setShowActChooser,
-  setIsSettingsOpen,
-  setIsInventoryOpen,
-  setIsLogbookOpen,
-}: ControlProps) => {
-  const [showMobileButtons, setShowMobileButtons] = useState(false);
-  const { gameStage } = useGameStage();
-  const { voteState } = useVoteState();
-  const { actionsRemaining } = useActionsRemaining();
-  const { gameConfig } = useGameConfig();
-  const [timeRemaining, setTimeRemaining] = useState(gameConfig.turnTimeLimit);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 0) return 0;
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  if (showTextarea) {
-    return renderTextInput();
-  }
-
-  const chequerColors = ["teal", "slate"];
-  const numCols = 2;
-  const action_colors = Object.fromEntries(
-    rootButtonsMobile.map((ability, index) => {
-      const row = Math.floor(index / numCols);
-      const col = index % numCols;
-      const color = chequerColors[(row + col) % 2];
-      return [ability.id, color];
-    }),
-  );
-
-  const renderDropdown = () => {
-    if (!showMobileButtons) return null;
-
-    return createPortal(
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30 mt-4">
-        <div className="bg-gray-800 p-4 rounded-lg w-4/5 max-w-md">
-          <div className="grid grid-cols-2 gap-2">
-            {rootButtonsMobile.map((button) => (
-              <button
-                key={button.id}
-                className={`game-button ${getColorClasses(action_colors[button.id])} w-full text-center px-4 py-2`}
-                onPointerDown={() => {
-                  setShowMobileButtons(false);
-                  onPointerDown(button.id);
-                }}
-              >
-                {button.label}
-              </button>
-            ))}
-            <div className="col-span-2 text-center text-gray-300 mt-2">
-              <div>Actions remaining:</div>
-              <div className="text-2xl font-bold">{actionsRemaining}</div>
-              <div className="mt-2">Turn time:</div>
-              <div className="text-2xl font-bold">{timeRemaining}s</div>
-            </div>
-          </div>
-          <button
-            className={`game-button ${getColorClasses("slate")} w-full mt-4`}
-            onPointerDown={() => {
-              setShowMobileButtons(false);
-            }}
-          >
-            Close
-          </button>
-        </div>
-      </div>,
-      document.body,
-    );
-  };
-
-  return (
-    <div className="flex flex-col self-center mt-2">
-      <div className="flex gap-2">
-        <button
-          className={`game-button ${getColorClasses("amber-border")} flex-1 flex items-center justify-center gap-1`}
-          onPointerDown={() => setShowMobileButtons(!showMobileButtons)}
-        >
-          <span>Actions</span>
-          <span>▼</span>
-        </button>
-      </div>
-      {renderDropdown()}
-    </div>
-  );
-};
-
 const DesktopControls = ({
   onPointerDown,
   showTextarea,
@@ -170,11 +60,7 @@ const DesktopControls = ({
 }: ControlProps) => {
   const timeoutRef = useRef<NodeJS.Timeout>();
   const [isHovering, setIsHovering] = useState(false);
-  const [isHelpOverlayOpen, setIsHelpOverlayOpen] = useState(false);
-  const [helpOverlayPosition, setHelpOverlayPosition] = useState({
-    x: 0,
-    y: 0,
-  });
+
   const TIMEOUT = 500;
   const { gameStage } = useGameStage();
   const { voteState } = useVoteState();
@@ -227,19 +113,6 @@ const DesktopControls = ({
       }, TIMEOUT);
     }
   };
-
-  // const handleTurnPointsMouseEnter = (e: React.MouseEvent) => {
-  //   const rect = e.currentTarget.getBoundingClientRect();
-  //   setTurnPointsOverlayPosition({
-  //     x: rect.left,
-  //     y: rect.top - 10,
-  //   });
-  //   setIsHelpOverlayOpen(true);
-  // };
-
-  // const handleTurnPointsMouseLeave = () => {
-  //   setIsHelpOverlayOpen(false);
-  // };
 
   if (showTextarea) {
     return <div className="w-full mt-2">{renderTextInput()}</div>;
@@ -344,28 +217,6 @@ const DesktopControls = ({
           </div>
         </div>
       </div>
-      {isHelpOverlayOpen && (
-        <Overlay
-          className="w-96"
-          style={{
-            position: "fixed",
-            left: `${helpOverlayPosition.x}px`,
-            top: `${helpOverlayPosition.y}px`,
-            transform: "translateY(-100%)",
-            zIndex: 50,
-          }}
-          onMouseEnter={() => setIsHelpOverlayOpen(true)}
-          onMouseLeave={() => setIsHelpOverlayOpen(false)}
-        >
-          <div className="p-2">
-            <div className="text-gray-300 text-base">
-              <div>Some help text</div>
-              <div>&nbsp;</div>
-              <div>Some more help text</div>
-            </div>
-          </div>
-        </Overlay>
-      )}
     </div>
   );
 };
@@ -484,29 +335,16 @@ const StoryButtons: React.FC = () => {
           }
         }
       `}</style>
-      {isAndroidOrIOS() ? (
-        <MobileControls
-          onPointerDown={handleMobileClick}
-          showTextarea={showTextarea}
-          renderTextInput={renderTextInput}
-          showActChooser={showActChooser}
-          setShowActChooser={setShowActChooser}
-          setIsSettingsOpen={setIsSettingsOpen}
-          setIsInventoryOpen={setIsInventoryOpen}
-          setIsLogbookOpen={setIsLogbookOpen}
-        />
-      ) : (
-        <DesktopControls
-          onPointerDown={globalHandleClick}
-          showTextarea={showTextarea}
-          renderTextInput={renderTextInput}
-          showActChooser={showActChooser}
-          setShowActChooser={setShowActChooser}
-          setIsSettingsOpen={setIsSettingsOpen}
-          setIsInventoryOpen={setIsInventoryOpen}
-          setIsLogbookOpen={setIsLogbookOpen}
-        />
-      )}
+      <DesktopControls
+        onPointerDown={globalHandleClick}
+        showTextarea={showTextarea}
+        renderTextInput={renderTextInput}
+        showActChooser={showActChooser}
+        setShowActChooser={setShowActChooser}
+        setIsSettingsOpen={setIsSettingsOpen}
+        setIsInventoryOpen={setIsInventoryOpen}
+        setIsLogbookOpen={setIsLogbookOpen}
+      />
       <AbilityChooser
         isOpen={showAbilityChooser}
         onClose={() => setShowAbilityChooser(false)}

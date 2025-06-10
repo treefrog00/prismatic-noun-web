@@ -119,13 +119,6 @@ const LocationDataSchema = z.object({
   scenes: z.array(SceneDataSchema),
 });
 
-export const StartGameSchema = z.object({
-  gameData: GameDataSchema,
-  locationData: LocationDataSchema,
-  locationState: LocationStateSchema,
-  characterState: z.record(z.string(), CharacterStateSchema),
-});
-
 const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("Story"),
@@ -156,6 +149,10 @@ const GameEventSchema = z.discriminatedUnion("type", [
     locationData: LocationDataSchema,
   }),
   z.object({
+    type: z.literal("ChangePlaylist"),
+    playlist: z.array(z.string()),
+  }),
+  z.object({
     type: z.literal("StartTurn"),
     actionsRemaining: z.number(),
   }),
@@ -164,6 +161,14 @@ const GameEventSchema = z.discriminatedUnion("type", [
     actionsRemaining: z.number(),
   }),
 ]);
+
+export const StartGameSchema = z.object({
+  gameData: GameDataSchema,
+  locationData: LocationDataSchema,
+  locationState: LocationStateSchema,
+  characterState: z.record(z.string(), CharacterStateSchema),
+  events: z.array(GameEventSchema),
+});
 
 export const ActionResponseSchema = z.object({
   events: z.array(GameEventSchema),

@@ -43,7 +43,7 @@ const NpcOverlay = ({
     { id: "talk", label: "Talk", color: "teal" as const },
     { id: "interact", label: "Interact", color: "violet" as const },
     ...(npcData?.friendly !== "friend"
-      ? [{ id: "attack-ok", label: "Attack", color: "indigo" as const }]
+      ? [{ id: "attack", label: "Attack", color: "stone" as const }]
       : []),
   ];
 

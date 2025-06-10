@@ -168,7 +168,7 @@ const GameContent = () => {
           RPC.call(
             "rpc-append-events",
             {
-              events: startGame.locationData.scenes[0].storyEvents,
+              events: startGame.events,
             },
             RPC.Mode.ALL,
           );

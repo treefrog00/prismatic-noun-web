@@ -18,6 +18,7 @@ import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
+import { useStereo } from "./StereoContext";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -47,6 +48,7 @@ export const EventProvider = ({
   const { setActionsRemaining } = useActionsRemaining();
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
+  const { setPlaylist } = useStereo();
 
   const processEvent = async (event: GameEvent) => {
     console.log("Processing", event.type, "event", event);
@@ -88,6 +90,8 @@ export const EventProvider = ({
     } else if (event.type === "ChangeLocation") {
       setLocationState(event.locationState);
       setLocationData(event.locationData);
+    } else if (event.type === "ChangePlaylist") {
+      setPlaylist(event.playlist);
     } else if (event.type === "StartTurn") {
       setActionsRemaining(event.actionsRemaining);
       setTimeRemaining(gameConfig.turnTimeLimit);

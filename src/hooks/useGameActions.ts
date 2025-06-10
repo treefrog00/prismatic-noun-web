@@ -79,6 +79,10 @@ export const useGameActions = () => {
     setInputFields("Say", "What do you say?");
   };
 
+  const handleAttack = async () => {
+    setInputFields("Attack", "What are your tactics?");
+  };
+
   /// actions that are called by the host and then teed to all clients via RPC ////////////
   const handlePlayerLeft = async (playerId: string) => {
     if (!isHost) {
@@ -135,7 +139,7 @@ export const useGameActions = () => {
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
       character: selectedCharacter,
       text,
-      prompt: "",
+      prompt: text,
       targetId: actionTarget.targetId,
       weapon: "sword",
     });
@@ -180,6 +184,7 @@ export const useGameActions = () => {
       do: handleDo,
       interact: handleDo,
       say: handleSay,
+      attack: handleAttack,
       chat: handleChat,
 
       "attack-ok": handleAttackOk,

@@ -9,7 +9,7 @@ interface StereoContextType {
   currentMode: string;
   turnOffMusic: () => void;
   turnOnMusic: () => void;
-  setPlayList: (playList: string[]) => void;
+  setPlaylist: (playlist: string[]) => void;
   initialPlay: () => void;
 }
 
@@ -27,8 +27,8 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [currentMode, setCurrentMode] = useState<string>(LOBBY_PLAYLIST[0]);
-  const [playListIndex, setPlaylistIndex] = useState<number>(0);
-  const [playList, setPlayList] = useState<string[]>(LOBBY_PLAYLIST);
+  const [playlistIndex, setPlaylistIndex] = useState<number>(0);
+  const [playlist, setPlaylist] = useState<string[]>(LOBBY_PLAYLIST);
 
   const fadeOut = async (
     audio: HTMLAudioElement,
@@ -71,7 +71,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   // out of date value
   const addEndedListener = (currentIndex: number) => {
     audioElementRef.current.onended = () => {
-      const nextIndex = (currentIndex + 1) % playList.length;
+      const nextIndex = (currentIndex + 1) % playlist.length;
       playNext(nextIndex);
     };
   };
@@ -85,7 +85,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const musicEnabled =
       localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true";
-    const startMode = musicEnabled ? playList[0] : "off";
+    const startMode = musicEnabled ? playlist[0] : "off";
 
     const audioElement = new Audio();
     audioElementRef.current = audioElement;
@@ -101,11 +101,11 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    //TODO: fade out current tune and play the next one (note playNext already
+    //TODO: fade out current tune, set playlist index to 0, play if music is not configured as stopped (note playNext already
     //supports fading out current tune )
     // the server event that updates the playlist should only send a new playlist
     // if it is genuinely different to the current one
-  }, [playList]);
+  }, [playlist]);
 
   const turnOffMusic = async () => {
     setCurrentMode("off");
@@ -116,7 +116,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
   const turnOnMusic = () => {
     localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
-    setCurrentMode(playList[0]);
+    setCurrentMode(playlist[0]);
     setPlaylistIndex(0);
     audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
     audioElementRef.current.volume = 1;
@@ -127,7 +127,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const playNext = async (index: number) => {
-    const mode = playList[index];
+    const mode = playlist[index];
     setCurrentMode(mode);
     setPlaylistIndex(index);
 
@@ -188,7 +188,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         currentMode,
         turnOffMusic,
         turnOnMusic,
-        setPlayList,
+        setPlaylist,
         initialPlay,
       }}
     >

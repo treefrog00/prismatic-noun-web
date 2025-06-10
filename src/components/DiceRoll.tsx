@@ -366,7 +366,7 @@ export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
         /* start of dice roll animation */
         /* Custom perspective on body that Tailwind doesn't have */
         .dice-container {
-            perspective: 600px; /* Default for mobile */
+            perspective: 600px; /* Default for smaller screens */
         }
 
         /* Adjust for larger screens */

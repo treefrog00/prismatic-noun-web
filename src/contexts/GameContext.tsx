@@ -67,9 +67,6 @@ type GameContextType = {
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
 
-  ability: string | null;
-  setAbility: (value: string | null) => void;
-
   gameStage: GameStage;
   setGameStage: (value: GameStage) => void;
 
@@ -91,8 +88,6 @@ type GameContextType = {
   // Action handler state
   showTextarea: boolean;
   setShowTextarea: (value: boolean) => void;
-  showAbilityChooser: boolean;
-  setShowAbilityChooser: (value: boolean) => void;
   actionText: string;
   setActionText: (value: string) => void;
   okButtonText: string | null;
@@ -184,9 +179,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     useState<GameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
-  const [ability, setAbility] = useState<string | null>(null);
   const [showTextarea, setShowTextarea] = useState(false);
-  const [showAbilityChooser, setShowAbilityChooser] = useState(false);
   const [actionText, setActionText] = useState("");
   const [okButtonText, setOkButtonText] = useState<string | null>(null);
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
@@ -244,8 +237,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setLocalPlayers,
         actionTarget,
         setActionTarget,
-        ability,
-        setAbility,
 
         gameConfig,
         setGameConfig,
@@ -254,8 +245,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         // Action handler state
         showTextarea,
         setShowTextarea,
-        showAbilityChooser,
-        setShowAbilityChooser,
         actionText,
         setActionText,
         okButtonText,
@@ -363,14 +352,6 @@ export const useLocalPlayers = () => {
   };
 };
 
-export const useAbility = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useAbility must be used within a GameProvider");
-  }
-  return { ability: context.ability, setAbility: context.setAbility };
-};
-
 export const addLocalPlayer = (
   player: PlayerState,
   localPlayers: PlayerState[],
@@ -405,8 +386,6 @@ export const useActionUIState = () => {
   return {
     showTextarea: context.showTextarea,
     setShowTextarea: context.setShowTextarea,
-    showAbilityChooser: context.showAbilityChooser,
-    setShowAbilityChooser: context.setShowAbilityChooser,
     actionText: context.actionText,
     setActionText: context.setActionText,
     okButtonText: context.okButtonText,

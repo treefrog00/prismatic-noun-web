@@ -1,5 +1,6 @@
 import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
+import artUrl from "@/util/artUrls";
 
 interface LocationOverlayProps {
   isOpen: boolean;
@@ -35,7 +36,7 @@ const LocationOverlay = ({
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2">
           <img
-            src={locationData.imageUrl}
+            src={artUrl(locationData.imageUrl)}
             alt={locationData.name}
             className="w-16 h-16 object-cover rounded"
           />

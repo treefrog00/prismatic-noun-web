@@ -6,7 +6,6 @@ import {
   useGameData,
   useLocationState,
   useActionTarget,
-  useAbility,
   useSelectedCharacter,
 } from "../contexts/GameContext";
 import { ActionResponseSchema, GameEvent } from "../types/validatedTypes";
@@ -17,8 +16,6 @@ export const useGameActions = () => {
   const {
     showTextarea,
     setShowTextarea,
-    showAbilityChooser,
-    setShowAbilityChooser,
     actionText: text,
     setActionText: setText,
     okButtonText,
@@ -29,7 +26,6 @@ export const useGameActions = () => {
     setInputPlaceHolder,
   } = useActionUIState();
 
-  const { ability, setAbility } = useAbility();
   const thisPlayer = myPlayer();
   const gameApi = useGameApi();
   const { questSummary } = useQuestSummary();
@@ -81,19 +77,6 @@ export const useGameActions = () => {
 
   const handleSay = async () => {
     setInputFields("Say", "What do you say?");
-  };
-
-  const handleAbility = async () => {
-    setShowAbilityChooser(true);
-  };
-
-  const handleSelectAbility = (ability: string) => {
-    setAbility(ability);
-    setInputFields(
-      `Use ${ability}`,
-      `What do you do with ${ability}?`,
-      "do-ok",
-    );
   };
 
   /// actions that are called by the host and then teed to all clients via RPC ////////////
@@ -158,16 +141,6 @@ export const useGameActions = () => {
     });
   };
 
-  const handleProceedOk = async () => {
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/proceed`, {});
-  };
-
-  const handleEndTurnOk = async () => {
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/end_turn`, {
-      questId: questSummary.questId,
-    });
-  };
-
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
     appendToStory(textWithQuotes, `${getCharacterName()}`);
@@ -181,17 +154,10 @@ export const useGameActions = () => {
   const handleDoOk = async () => {
     let label =
       selectedCharacter == "all" ? "All act" : `${getCharacterName()} acts`;
-    if (ability) {
-      label =
-        selectedCharacter == "all"
-          ? `All use ${ability}`
-          : `${getCharacterName()} uses ${ability}`;
-    }
     appendToStory(text, label);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
       character: selectedCharacter,
       prompt: text,
-      ability,
       targetId: actionTarget?.targetId,
       targetType: actionTarget?.targetType,
     });
@@ -214,11 +180,8 @@ export const useGameActions = () => {
       do: handleDo,
       interact: handleDo,
       say: handleSay,
-      ability: handleAbility,
       chat: handleChat,
 
-      "end-turn-ok": handleEndTurnOk,
-      "proceed-ok": handleProceedOk,
       "attack-ok": handleAttackOk,
       "talk-ok": handleTalkOk,
       "do-ok": handleDoOk, // also handles using abilities
@@ -235,7 +198,6 @@ export const useGameActions = () => {
       if (buttonId.endsWith("-ok")) {
         setText("");
         setActionTarget(null);
-        setAbility(null);
       }
     } else {
       // this is expected for inventory, logbook, map, etc.
@@ -245,15 +207,12 @@ export const useGameActions = () => {
   return {
     showTextarea,
     setShowTextarea,
-    showAbilityChooser,
-    setShowAbilityChooser,
     text,
     setText,
     okButtonText,
     okButtonId,
     inputPlaceHolder,
     globalHandleClick,
-    handleSelectAbility,
     handleTravel,
     handlePlayerLeft,
     appendEventsHandler,

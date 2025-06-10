@@ -7,6 +7,7 @@ import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
 import { useGameStage, useQuestSummary } from "@/contexts/GameContext";
+import artUrl from "@/util/artUrls";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
@@ -82,7 +83,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         </div>
         {questSummary ? (
           <img
-            src={questSummary.imageUrl}
+            src={artUrl(questSummary.imageUrl)}
             className={`${responsiveStyles.sizes.adventureImage} object-contain ${responsiveStyles.margins.adventureImage}`}
             style={{
               maskImage:

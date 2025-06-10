@@ -1,12 +1,8 @@
 import { useRef, useState, useEffect } from "react";
-import AbilityChooser from "@/components/popups/AbilityChooser";
 import TextInput from "@/components/TextInput";
 import {
-  useQuestSummary,
   useActionTarget,
-  useAbility,
   useGameConfig,
-  useActionUIState,
   useTimeRemaining,
 } from "@/contexts/GameContext";
 import InventoryPopup from "@/components/popups/InventoryPopup";
@@ -15,9 +11,6 @@ import LogbookPopup from "@/components/popups/LogbookPopup";
 import { ButtonConfig, getColorClasses } from "@/types/button";
 import { useGameActions } from "@/hooks/useGameActions";
 import { sharedStyles } from "@/styles/shared";
-import Overlay from "./overlays/Overlay";
-import { createPortal } from "react-dom";
-import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 import SettingsPopup from "./popups/SettingsPopup";
 import {
   useGameStage,
@@ -27,14 +20,11 @@ import {
 
 const rootButtonsDesktop: ButtonConfig[] = [
   { id: "act", label: "Act", color: "amber-border" },
-  { id: "proceed-ok", label: "Proceed", color: "teal" },
-  { id: "end-turn-ok", label: "End Turn", color: "stone" },
 ];
 
 const subActions: ButtonConfig[] = [
   { id: "say", label: "Say", color: "teal" },
   { id: "do", label: "Do", color: "violet" },
-  { id: "ability", label: "Ability", color: "purple" },
 ];
 
 interface ControlProps {
@@ -224,24 +214,11 @@ const DesktopControls = ({
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const { setActionTarget } = useActionTarget();
-  const { setAbility } = useAbility();
 
   const [showActChooser, setShowActChooser] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
-
-  const handleMobileClick = (buttonId: string) => {
-    if (buttonId === "settings") {
-      setIsSettingsOpen(true);
-    } else if (buttonId === "inventory") {
-      setIsInventoryOpen(true);
-    } else if (buttonId === "logbook") {
-      setIsLogbookOpen(true);
-    } else {
-      globalHandleClick(buttonId);
-    }
-  };
 
   const {
     showTextarea,
@@ -252,9 +229,6 @@ const StoryButtons: React.FC = () => {
     okButtonId,
     inputPlaceHolder,
     globalHandleClick,
-    handleSelectAbility,
-    showAbilityChooser,
-    setShowAbilityChooser,
   } = useGameActions();
 
   const renderTextInput = () => (
@@ -266,9 +240,8 @@ const StoryButtons: React.FC = () => {
         setShowTextarea(false);
         setText("");
         setActionTarget(null);
-        setAbility(null);
       }}
-      onOk={() => handleMobileClick(okButtonId!)}
+      onOk={() => globalHandleClick(okButtonId!)}
       placeHolder={inputPlaceHolder}
       okButtonText={okButtonText}
       okButtonId={okButtonId}
@@ -344,11 +317,6 @@ const StoryButtons: React.FC = () => {
         setIsSettingsOpen={setIsSettingsOpen}
         setIsInventoryOpen={setIsInventoryOpen}
         setIsLogbookOpen={setIsLogbookOpen}
-      />
-      <AbilityChooser
-        isOpen={showAbilityChooser}
-        onClose={() => setShowAbilityChooser(false)}
-        onSelectAbility={handleSelectAbility}
       />
       <SettingsPopup
         isOpen={isSettingsOpen}

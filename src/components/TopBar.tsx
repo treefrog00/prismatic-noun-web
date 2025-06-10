@@ -13,6 +13,7 @@ import NpcOverlay from "./overlays/NpcOverlay";
 import LocationOverlay from "./overlays/LocationOverlay";
 import { useGameStage } from "@/contexts/GameContext";
 import { useVoteState } from "@/contexts/GameContext";
+import artUrl from "@/util/artUrls";
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;
@@ -232,7 +233,7 @@ const TopBar = () => {
                 onMouseLeave={() => locationOverlay.handleMouseEvent(null)}
               >
                 <img
-                  src={locationData.imageUrl}
+                  src={artUrl(locationData.imageUrl)}
                   alt={locationData.name}
                   className="w-full h-full object-cover"
                 />

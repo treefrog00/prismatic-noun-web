@@ -7,8 +7,6 @@ import {
   RPC,
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
-import MobileCharacterSheet from "./mobile/MobileCharacterSheet";
-import MobileLocationView from "./mobile/MobileLocationView";
 import AmbientBackground from "./AmbientBackground";
 
 import {
@@ -190,39 +188,6 @@ const GameContent = () => {
       setHashQuestInitializing(false);
     }
   }, [hashQuestInitializing]);
-
-  if (isAndroidOrIOS()) {
-    return (
-      <AmbientBackground className="overflow-hidden">
-        <div
-          ref={carouselRef}
-          className="w-full h-dynamic flex transition-transform duration-300 ease-out"
-          style={{
-            transform: `translateX(calc(${-carouselPosition * 100}% + ${dragOffset * 100}%))`,
-            transition: isDragging ? "none" : "transform 300ms ease-out",
-          }}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          <div className="w-full h-full flex-shrink-0">
-            <MobileCharacterSheet />
-          </div>
-          <div className="w-full h-full flex-shrink-0">
-            <MobileLocationView />
-            <StoryButtons />
-          </div>
-          <div className="w-full h-full flex-shrink-0">
-            <div className={`w-full h-full flex flex-col`}>
-              <div className="flex-1 flex flex-col min-h-0">
-                <Story ref={storyRef} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </AmbientBackground>
-    );
-  }
 
   return (
     <AmbientBackground>

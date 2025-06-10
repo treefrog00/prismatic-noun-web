@@ -167,9 +167,13 @@ const GameContent = () => {
           }
         }
         if (!HASH_LOCATION_ID) {
-          for (const event of startGame.locationData.scenes[0].storyEvents) {
-            storyEvents.emit(event.text, event.label);
-          }
+          RPC.call(
+            "rpc-append-events",
+            {
+              events: startGame.locationData.scenes[0].storyEvents,
+            },
+            RPC.Mode.ALL,
+          );
         }
       };
       startGameAsync();

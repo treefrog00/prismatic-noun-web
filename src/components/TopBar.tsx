@@ -6,7 +6,6 @@ import {
   useCharacters,
   useLocationData,
   useLocationState,
-  useSelectedCharacter,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
@@ -139,7 +138,6 @@ const TopBar = () => {
   const listRef = useRef<HTMLDivElement>(null);
   const rightHandListRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
-  const { selectedCharacter, setSelectedCharacter } = useSelectedCharacter();
 
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
@@ -179,20 +177,11 @@ const TopBar = () => {
       <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
-            <div
-              className={`${sharedBoxStyles} ${
-                selectedCharacter === "all" ? selectedBoxStyles : ""
-              }`}
-              onPointerDown={() => setSelectedCharacter("all")}
-            >
+            <div>
               <span className="text-gray-400 text-xs">All</span>
             </div>
             {Object.entries(characters).map(([name, character]) => (
               <div
-                key={name}
-                className={`${sharedBoxStyles} ${
-                  name === selectedCharacter ? selectedBoxStyles : ""
-                }`}
                 onMouseEnter={(e) =>
                   characterOverlay.handleMouseEvent(
                     name,
@@ -201,7 +190,6 @@ const TopBar = () => {
                   )
                 }
                 onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
-                onPointerDown={() => setSelectedCharacter(name)}
               >
                 <span className="text-gray-400 text-xs">{name}</span>
               </div>

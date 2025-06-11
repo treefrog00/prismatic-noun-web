@@ -6,7 +6,6 @@ import {
   useGameData,
   useLocationState,
   useActionTarget,
-  useSelectedCharacter,
 } from "../contexts/GameContext";
 import { ActionResponseSchema, GameEvent } from "../types/validatedTypes";
 import { useEventProcessor } from "../contexts/EventContext";
@@ -33,7 +32,6 @@ export const useGameActions = () => {
   const { locationState } = useLocationState();
   const { actionTarget, setActionTarget } = useActionTarget();
   const isHost = useIsHost();
-  const { selectedCharacter } = useSelectedCharacter();
   const { addEvents } = useEventProcessor();
 
   const setInputFields = (
@@ -124,10 +122,6 @@ export const useGameActions = () => {
     RPC.call("rpc-append-events", { events }, RPC.Mode.ALL);
   };
 
-  const getCharacterName = () => {
-    return gameData.characters[selectedCharacter].name;
-  };
-
   const getTextWithQuotes = (text: string) => {
     return "“" + text.trim() + "”";
   };
@@ -137,7 +131,6 @@ export const useGameActions = () => {
   const handleAttackOk = async () => {
     appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
-      character: selectedCharacter,
       text,
       prompt: text,
       targetId: actionTarget.targetId,
@@ -147,20 +140,17 @@ export const useGameActions = () => {
 
   const handleTalkOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStory(textWithQuotes, `${getCharacterName()}`);
+    appendToStory(textWithQuotes, gameData.partyLabel);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
-      character: selectedCharacter,
       message: textWithQuotes,
       targetId: actionTarget.targetId,
     });
   };
 
   const handleDoOk = async () => {
-    let label =
-      selectedCharacter == "all" ? "All act" : `${getCharacterName()} acts`;
+    let label = `${gameData.partyLabel} act`;
     appendToStory(text, label);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
-      character: selectedCharacter,
       prompt: text,
       targetId: actionTarget?.targetId,
       targetType: actionTarget?.targetType,
@@ -169,9 +159,8 @@ export const useGameActions = () => {
 
   const handleSayOk = async () => {
     const textWithQuotes = getTextWithQuotes(text);
-    appendToStory(textWithQuotes, `${getCharacterName()}`);
+    appendToStory(textWithQuotes, gameData.partyLabel);
     await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
-      character: selectedCharacter,
       message: textWithQuotes,
     });
   };

@@ -104,9 +104,6 @@ type GameContextType = {
 
   actionsRemaining: number;
   setActionsRemaining: (value: number) => void;
-
-  selectedCharacter: string | null;
-  setSelectedCharacter: (value: string | null) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -185,9 +182,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [okButtonId, setOkButtonId] = useState<string | null>(null);
   const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
-    null,
-  );
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
@@ -255,8 +249,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setInputPlaceHolder,
         timeRemaining,
         setTimeRemaining,
-        selectedCharacter,
-        setSelectedCharacter,
 
         diceRollState,
         setDiceRollState,
@@ -414,14 +406,6 @@ export const useTimeRemaining = () => {
   return {
     timeRemaining: context.timeRemaining,
     setTimeRemaining: context.setTimeRemaining,
-  };
-};
-
-export const useSelectedCharacter = () => {
-  const context = useContext(GameContext);
-  return {
-    selectedCharacter: context.selectedCharacter,
-    setSelectedCharacter: context.setSelectedCharacter,
   };
 };
 

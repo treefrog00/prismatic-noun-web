@@ -85,6 +85,7 @@ const WeaponSchema = z.object({
 const GameDataSchema = z.object({
   gameId: z.string(),
   title: z.string(),
+  partyLabel: z.string(),
   weapons: z.record(z.string(), WeaponSchema),
   items: z.record(z.string(), ItemSchema),
   abilities: z.record(z.string(), AbilityDataSchema),

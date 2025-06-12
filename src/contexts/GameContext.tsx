@@ -31,11 +31,6 @@ export type GameStage =
   | "replays"
   | "end";
 
-type ActionTarget = {
-  targetId: string;
-  targetType: string;
-} | null;
-
 type VoteState = {
   showVote: boolean;
   voteOptions: string[];
@@ -73,9 +68,6 @@ type GameContextType = {
   voteState: VoteState;
   setVoteState: (value: VoteState) => void;
 
-  actionTarget: ActionTarget;
-  setActionTarget: (value: ActionTarget) => void;
-
   localGameStage: GameStage;
   setLocalGameStage: (value: GameStage) => void;
 
@@ -88,14 +80,10 @@ type GameContextType = {
   // Action handler state
   showTextarea: boolean;
   setShowTextarea: (value: boolean) => void;
+  showStaticText: boolean;
+  setShowStaticText: (value: boolean) => void;
   actionText: string;
   setActionText: (value: string) => void;
-  okButtonText: string | null;
-  setOkButtonText: (value: string | null) => void;
-  okButtonId: string | null;
-  setOkButtonId: (value: string | null) => void;
-  inputPlaceHolder: string | null;
-  setInputPlaceHolder: (value: string | null) => void;
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
 
@@ -175,12 +163,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [localGameStage, setLocalGameStage] =
     useState<GameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
-  const [actionTarget, setActionTarget] = useState<ActionTarget>(null);
   const [showTextarea, setShowTextarea] = useState(false);
+  const [showStaticText, setShowStaticText] = useState(false);
   const [actionText, setActionText] = useState("");
-  const [okButtonText, setOkButtonText] = useState<string | null>(null);
-  const [okButtonId, setOkButtonId] = useState<string | null>(null);
-  const [inputPlaceHolder, setInputPlaceHolder] = useState<string | null>(null);
   const [timeRemaining, setTimeRemaining] = useState(0);
   //////////////////////////// end of React only state ////////////////////////////
 
@@ -229,8 +214,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         localPlayers,
         setLocalPlayers,
-        actionTarget,
-        setActionTarget,
 
         gameConfig,
         setGameConfig,
@@ -239,14 +222,10 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         // Action handler state
         showTextarea,
         setShowTextarea,
+        showStaticText,
+        setShowStaticText,
         actionText,
         setActionText,
-        okButtonText,
-        setOkButtonText,
-        okButtonId,
-        setOkButtonId,
-        inputPlaceHolder,
-        setInputPlaceHolder,
         timeRemaining,
         setTimeRemaining,
 
@@ -359,17 +338,6 @@ export const useGameApi = () => {
   return context.gameApi;
 };
 
-export const useActionTarget = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useActionTarget must be used within a GameProvider");
-  }
-  return {
-    actionTarget: context.actionTarget,
-    setActionTarget: context.setActionTarget,
-  };
-};
-
 export const useActionUIState = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -378,14 +346,10 @@ export const useActionUIState = () => {
   return {
     showTextarea: context.showTextarea,
     setShowTextarea: context.setShowTextarea,
+    showStaticText: context.showStaticText,
+    setShowStaticText: context.setShowStaticText,
     actionText: context.actionText,
     setActionText: context.setActionText,
-    okButtonText: context.okButtonText,
-    setOkButtonText: context.setOkButtonText,
-    okButtonId: context.okButtonId,
-    setOkButtonId: context.setOkButtonId,
-    inputPlaceHolder: context.inputPlaceHolder,
-    setInputPlaceHolder: context.setInputPlaceHolder,
   };
 };
 

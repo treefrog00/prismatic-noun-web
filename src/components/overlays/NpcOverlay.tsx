@@ -1,8 +1,4 @@
-import {
-  useActionTarget,
-  useLocationData,
-  useLocationState,
-} from "@/contexts/GameContext";
+import { useLocationData, useLocationState } from "@/contexts/GameContext";
 import { ButtonConfig, getColorClasses } from "@/types/button";
 import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
@@ -29,23 +25,6 @@ const NpcOverlay = ({
   const { locationData } = useLocationData();
   const [npcState, setNpcState] = useState(null);
   const [npcData, setNpcData] = useState(null);
-  const { setActionTarget } = useActionTarget();
-
-  useEffect(() => {
-    if (npcId) {
-      setActionTarget({ targetId: npcId, targetType: "npc" });
-    }
-  }, [npcId, setActionTarget]);
-
-  const { globalHandleClick } = useGameActions();
-
-  const actions: ButtonConfig[] = [
-    { id: "talk", label: "Talk", color: "teal" as const },
-    { id: "interact", label: "Interact", color: "violet" as const },
-    ...(npcData?.friendly !== "friend"
-      ? [{ id: "attack", label: "Attack", color: "stone" as const }]
-      : []),
-  ];
 
   useEffect(() => {
     if (locationState && locationData && npcId) {
@@ -82,22 +61,6 @@ const NpcOverlay = ({
             <span className="text-gray-400 text-xs">{npcState.name?.[0]}</span>
           </div>
           <span className="text-gray-300">{npcState.name}</span>
-        </div>
-      </div>
-      <div className="backdrop-blur-sm rounded-lg">
-        <div className="flex gap-4">
-          {actions.map((btn) => (
-            <button
-              key={btn.id}
-              onPointerDown={() => {
-                globalHandleClick(btn.id);
-                onClose();
-              }}
-              className={`px-4 py-2 ${getColorClasses(btn.color)} text-white rounded-lg transition-colors font-['Cinzel'] text-base`}
-            >
-              {btn.label}
-            </button>
-          ))}
         </div>
       </div>
     </Overlay>

@@ -2,7 +2,6 @@ import { myPlayer, usePlayersList } from "../core/multiplayerState";
 import { useState, useRef, useCallback } from "react";
 import CharacterOverlay from "./overlays/CharacterOverlay";
 import {
-  useActionTarget,
   useCharacters,
   useLocationData,
   useLocationState,
@@ -33,7 +32,6 @@ const useOverlayState = (overlayId: string) => {
     isOverOverlay: false,
   });
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
-  const { setActionTarget } = useActionTarget();
 
   const clearTimeout = useCallback(() => {
     if (timeoutRef.current) {
@@ -108,7 +106,6 @@ const useOverlayState = (overlayId: string) => {
 
   const handleOverlayMouseLeave = useCallback(() => {
     clearTimeout();
-    setActionTarget(null);
     setState((prev) => ({ ...prev, isOverOverlay: false }));
     timeoutRef.current = setTimeout(() => {
       if (activeOverlayId === overlayId) {

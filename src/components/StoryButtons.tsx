@@ -1,62 +1,33 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import {
-  useActionTarget,
-  useGameConfig,
-  useTimeRemaining,
-} from "@/contexts/GameContext";
+import { useTimeRemaining } from "@/contexts/GameContext";
 import InventoryPopup from "@/components/popups/InventoryPopup";
 import artUrl from "@/util/artUrls";
 import LogbookPopup from "@/components/popups/LogbookPopup";
-import { ButtonConfig, getColorClasses } from "@/types/button";
+import { getColorClasses } from "@/types/button";
 import { useGameActions } from "@/hooks/useGameActions";
-import { sharedStyles } from "@/styles/shared";
 import SettingsPopup from "./popups/SettingsPopup";
-import {
-  useGameStage,
-  useVoteState,
-  useActionsRemaining,
-} from "@/contexts/GameContext";
+import { useActionsRemaining } from "@/contexts/GameContext";
 
-const rootButtonsDesktop: ButtonConfig[] = [
-  { id: "act", label: "Act", color: "amber-border" },
-];
+const StoryButtons: React.FC = () => {
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
 
-const subActions: ButtonConfig[] = [
-  { id: "say", label: "Say", color: "teal" },
-  { id: "do", label: "Do", color: "violet" },
-];
-
-interface ControlProps {
-  onPointerDown: (buttonId: string) => void;
-  showTextarea: boolean;
-  renderTextInput: () => JSX.Element;
-  showActChooser: boolean;
-  setShowActChooser: (show: boolean) => void;
-  setIsSettingsOpen: (open: boolean) => void;
-  setIsInventoryOpen: (open: boolean) => void;
-  setIsLogbookOpen: (open: boolean) => void;
-}
-
-const DesktopControls = ({
-  onPointerDown,
-  showTextarea,
-  renderTextInput,
-  showActChooser,
-  setShowActChooser,
-  setIsSettingsOpen,
-  setIsInventoryOpen,
-  setIsLogbookOpen,
-}: ControlProps) => {
-  const timeoutRef = useRef<NodeJS.Timeout>();
-  const [isHovering, setIsHovering] = useState(false);
-
-  const TIMEOUT = 500;
-  const { gameStage } = useGameStage();
-  const { voteState } = useVoteState();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
+  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const { actionsRemaining } = useActionsRemaining();
-  const { gameConfig } = useGameConfig();
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
+
+  const {
+    showTextarea,
+    setShowTextarea,
+    showStaticText,
+    setShowStaticText,
+    text,
+    setText,
+    handleActOk,
+    handleAttackOk,
+  } = useGameActions();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -69,184 +40,44 @@ const DesktopControls = ({
     return () => clearInterval(timer);
   }, []);
 
-  const [actChooserStyle, setActChooserStyle] = useState<React.CSSProperties>(
-    {},
-  );
-  const actButtonRef = useRef<HTMLButtonElement>(null);
-
-  const handleMouseEvent = (show: boolean) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-
-    if (show) {
-      setIsHovering(true);
-      setShowActChooser(true);
-      if (actButtonRef.current) {
-        const rect = actButtonRef.current.getBoundingClientRect();
-        const parentRect =
-          actButtonRef.current.parentElement?.getBoundingClientRect();
-
-        if (parentRect) {
-          setActChooserStyle({
-            position: "absolute",
-            top: rect.top - parentRect.top + rect.height / 2 - 2,
-            left: rect.width + 30,
-            transform: "translateY(-50%)",
-          });
-        }
-      }
-    } else {
-      setIsHovering(false);
-      timeoutRef.current = setTimeout(() => {
-        setShowActChooser(false);
-      }, TIMEOUT);
-    }
+  const hasSufficientTextInput = (text: string) => {
+    if (!text || text.length < 2) return false;
+    return true;
   };
 
-  if (showTextarea) {
-    return <div className="w-full mt-2">{renderTextInput()}</div>;
-  }
-
-  return (
-    <div className="border-2 border-gray-700 rounded-lg px-4 py-2 h-24 mt-2">
-      <div className="flex justify-between items-center self-center">
-        <div className="flex justify-center relative">
-          {rootButtonsDesktop.map((button) => (
-            <button
-              key={button.id}
-              ref={button.id === "act" ? actButtonRef : undefined}
-              className={`game-button ${getColorClasses(button.color)} ml-4`}
-              data-id={button.id}
-              onPointerDown={() => {
-                if (button.id === "act") {
-                  // nothing, just hover effect
-                } else {
-                  onPointerDown(button.id);
-                }
-              }}
-              onMouseEnter={() => button.id === "act" && handleMouseEvent(true)}
-              onMouseLeave={() => {
-                button.id === "act" && handleMouseEvent(false);
-              }}
-            >
-              {button.label}
-            </button>
-          ))}
-          {showActChooser && (
-            <div
-              className={`z-20 ${sharedStyles.container}`}
-              style={actChooserStyle}
-              onMouseEnter={() => handleMouseEvent(true)}
-              onMouseLeave={() => handleMouseEvent(false)}
-            >
-              <div className="flex justify-center">
-                {subActions.map((btn) => (
-                  <button
-                    key={btn.id}
-                    onPointerDown={() => onPointerDown(btn.id)}
-                    className={`game-button ${getColorClasses(btn.color)} text-white rounded-lg transition-colors`}
-                  >
-                    {btn.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-        <div className="text-gray-300 flex items-center gap-4"></div>
-        <div className="flex gap-4 items-center">
-          <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
-            <div>
-              <div>Turn time:</div>
-              <div className="text-4xl font-bold">{timeRemaining}s</div>
-            </div>
-            <div>
-              <div>Actions remaining:</div>
-              <div className="text-4xl font-bold">{actionsRemaining}</div>
-            </div>
-          </div>
-          <div
-            className="w-16 h-16 cursor-pointer relative group"
-            onPointerDown={() => setIsInventoryOpen(true)}
+  const renderTextInput = () => (
+    <div className="flex justify-center self-center mt-2">
+      <div className="w-full">
+        <TextInput
+          text={text}
+          setText={setText}
+          textInputRef={textInputRef}
+          onClose={() => {}}
+          onOk={() => {}}
+          placeHolder={"Describe your plan for the next 30 seconds..."}
+          hasSufficientText={hasSufficientTextInput}
+          showCharCount={true}
+        />
+        <div className="flex gap-2">
+          <button
+            className={`game-button ${getColorClasses("teal")} ml-4`}
+            onPointerDown={() => handlePlayerAction(handleActOk)}
+            disabled={!hasSufficientTextInput(text)}
           >
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Inventory
-            </div>
-            <img
-              src={artUrl("inventory3.webp")}
-              alt="Inventory"
-              className="hover:scale-105 transition-transform"
-            />
-          </div>
-          <div
-            className="w-16 h-16 cursor-pointer relative group"
-            onPointerDown={() => setIsLogbookOpen(true)}
+            Act
+          </button>
+          <button
+            className={`game-button ${getColorClasses("stone")} ml-4`}
+            onPointerDown={() => handlePlayerAction(handleAttackOk)}
           >
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Logbook
-            </div>
-            <img
-              src={artUrl("logbook.webp")}
-              alt="Logbook"
-              className="hover:scale-105 transition-transform"
-            />
-          </div>
-          <div
-            className="w-16 h-16 cursor-pointer relative group"
-            onPointerDown={() => setIsSettingsOpen(true)}
-          >
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Settings
-            </div>
-            <img
-              src={artUrl("settings.webp")}
-              alt="Settings"
-              className="hover:scale-105 transition-transform"
-            />
-          </div>
+            Attack
+          </button>
         </div>
       </div>
     </div>
   );
-};
 
-const StoryButtons: React.FC = () => {
-  const textInputRef = useRef<HTMLTextAreaElement>(null);
-  const { setActionTarget } = useActionTarget();
-
-  const [showActChooser, setShowActChooser] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isInventoryOpen, setIsInventoryOpen] = useState(false);
-  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
-
-  const {
-    showTextarea,
-    setShowTextarea,
-    text,
-    setText,
-    okButtonText,
-    okButtonId,
-    inputPlaceHolder,
-    globalHandleClick,
-  } = useGameActions();
-
-  const renderTextInput = () => (
-    <TextInput
-      text={text}
-      setText={setText}
-      textInputRef={textInputRef}
-      onClose={() => {
-        setShowTextarea(false);
-        setText("");
-        setActionTarget(null);
-      }}
-      onOk={() => globalHandleClick(okButtonId!)}
-      placeHolder={inputPlaceHolder}
-      okButtonText={okButtonText}
-      okButtonId={okButtonId}
-    />
-  );
+  const renderStaticText = () => <div className="w-full mt-2">{text}</div>;
 
   useEffect(() => {
     if (showTextarea && textInputRef.current) {
@@ -254,22 +85,19 @@ const StoryButtons: React.FC = () => {
     }
   }, [showTextarea]);
 
-  useEffect(() => {
-    if (showActChooser) {
-      const handlePointerDown = (e: PointerEvent) => {
-        const actButton = document.querySelector('button[data-id="act"]');
-        if (actButton && actButton.contains(e.target as Node)) {
-          return;
-        }
-        setShowActChooser(false);
-      };
+  if (showTextarea) {
+    return <div className="w-full mt-2">{renderTextInput()}</div>;
+  }
+  if (showStaticText) {
+    return <div className="w-full mt-2">{renderStaticText()}</div>;
+  }
 
-      document.addEventListener("pointerdown", handlePointerDown);
-      return () => {
-        document.removeEventListener("pointerdown", handlePointerDown);
-      };
-    }
-  }, [showActChooser]);
+  const handlePlayerAction = async (action: () => Promise<void>) => {
+    setShowTextarea(false);
+    setShowStaticText(true);
+    await action();
+    setShowStaticText(false);
+  };
 
   return (
     <>
@@ -308,16 +136,62 @@ const StoryButtons: React.FC = () => {
           }
         }
       `}</style>
-      <DesktopControls
-        onPointerDown={globalHandleClick}
-        showTextarea={showTextarea}
-        renderTextInput={renderTextInput}
-        showActChooser={showActChooser}
-        setShowActChooser={setShowActChooser}
-        setIsSettingsOpen={setIsSettingsOpen}
-        setIsInventoryOpen={setIsInventoryOpen}
-        setIsLogbookOpen={setIsLogbookOpen}
-      />
+      <div className="border-2 border-gray-700 rounded-lg px-4 py-2 h-24 mt-2">
+        <div className="flex justify-between items-center self-center">
+          <div className="text-gray-300 flex items-center gap-4"></div>
+          <div className="flex gap-4 items-center">
+            <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
+              <div>
+                <div>Turn time:</div>
+                <div className="text-4xl font-bold">{timeRemaining}s</div>
+              </div>
+              <div>
+                <div>Actions remaining:</div>
+                <div className="text-4xl font-bold">{actionsRemaining}</div>
+              </div>
+            </div>
+            <div
+              className="w-16 h-16 cursor-pointer relative group"
+              onPointerDown={() => setIsInventoryOpen(true)}
+            >
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Inventory
+              </div>
+              <img
+                src={artUrl("inventory3.webp")}
+                alt="Inventory"
+                className="hover:scale-105 transition-transform"
+              />
+            </div>
+            <div
+              className="w-16 h-16 cursor-pointer relative group"
+              onPointerDown={() => setIsLogbookOpen(true)}
+            >
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Logbook
+              </div>
+              <img
+                src={artUrl("logbook.webp")}
+                alt="Logbook"
+                className="hover:scale-105 transition-transform"
+              />
+            </div>
+            <div
+              className="w-16 h-16 cursor-pointer relative group"
+              onPointerDown={() => setIsSettingsOpen(true)}
+            >
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Settings
+              </div>
+              <img
+                src={artUrl("settings.webp")}
+                alt="Settings"
+                className="hover:scale-105 transition-transform"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <SettingsPopup
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}

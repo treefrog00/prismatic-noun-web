@@ -124,7 +124,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("Story"),
     label: z.string().nullable(),
-    message: z.string(),
+    text: z.string(),
   }),
 
   z.object({
@@ -165,9 +165,6 @@ const GameEventSchema = z.discriminatedUnion("type", [
 
 export const StartGameSchema = z.object({
   gameData: GameDataSchema,
-  locationData: LocationDataSchema,
-  locationState: LocationStateSchema,
-  characterState: z.record(z.string(), CharacterStateSchema),
   events: z.array(GameEventSchema),
 });
 

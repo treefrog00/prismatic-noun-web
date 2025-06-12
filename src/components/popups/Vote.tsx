@@ -17,10 +17,9 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const players = usePlayersList(true);
   const isHost = useIsHost();
   const { voteState, setShowVote } = useVoteState();
-  const thisPlayer = myPlayer();
 
   useEffect(() => {
-    thisPlayer.setState(voteKey(voteState.voteTitle), null);
+    myPlayer().setState(voteKey(voteState.voteTitle), null);
     if (voteState.showVote) {
       setMyVote(null);
     }

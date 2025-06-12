@@ -54,7 +54,7 @@ export const EventProvider = ({
     console.log("Processing", event.type, "event", event);
 
     if (event.type === "Story") {
-      appendToStory(event.message, event.label);
+      appendToStory(event.text, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "DiceRoll") {
       if (!gameConfig.shouldAnimateDice) return;

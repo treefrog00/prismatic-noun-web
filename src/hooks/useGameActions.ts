@@ -1,85 +1,26 @@
-import { myPlayer, RPC, useIsHost } from "../core/multiplayerState";
+import { RPC, useIsHost } from "@/core/multiplayerState";
 import {
   useGameApi,
-  useQuestSummary,
   useActionUIState,
   useGameData,
-  useLocationState,
-  useActionTarget,
-} from "../contexts/GameContext";
-import { ActionResponseSchema, GameEvent } from "../types/validatedTypes";
-import { useEventProcessor } from "../contexts/EventContext";
-import { appendToStory } from "@/core/storyEvents";
+} from "@/contexts/GameContext";
+import { ActionResponseSchema, GameEvent } from "@/types/validatedTypes";
+import { useEventProcessor } from "@/contexts/EventContext";
 
 export const useGameActions = () => {
   const {
     showTextarea,
     setShowTextarea,
+    showStaticText,
+    setShowStaticText,
     actionText: text,
     setActionText: setText,
-    okButtonText,
-    setOkButtonText,
-    okButtonId,
-    setOkButtonId,
-    inputPlaceHolder,
-    setInputPlaceHolder,
   } = useActionUIState();
 
-  const thisPlayer = myPlayer();
   const gameApi = useGameApi();
-  const { questSummary } = useQuestSummary();
   const { gameData } = useGameData();
-  const { locationState } = useLocationState();
-  const { actionTarget, setActionTarget } = useActionTarget();
   const isHost = useIsHost();
   const { addEvents } = useEventProcessor();
-
-  const setInputFields = (
-    label: string,
-    placeholder: string,
-    overrideOkButtonId?: string,
-  ) => {
-    setShowTextarea(true);
-    setOkButtonText(label);
-    setInputPlaceHolder(placeholder);
-    if (overrideOkButtonId) {
-      setOkButtonId(overrideOkButtonId);
-    } else {
-      setOkButtonId(label.toLowerCase() + "-ok");
-    }
-  };
-
-  const getTargetName = () => {
-    if (actionTarget.targetType === "npc") {
-      return locationState.npcs[actionTarget.targetId].name;
-    } else {
-      return actionTarget.targetId;
-    }
-  };
-
-  const handleChat = async () => {
-    setInputFields("Send", "...");
-  };
-
-  const handleTalk = async () => {
-    setInputFields("Talk", "What do you say to " + getTargetName() + "?");
-  };
-
-  const handleDo = async () => {
-    if (actionTarget) {
-      setInputFields("Do", "How do you interact with " + getTargetName() + "?");
-    } else {
-      setInputFields("Do", "What do you do?");
-    }
-  };
-
-  const handleSay = async () => {
-    setInputFields("Say", "What do you say?");
-  };
-
-  const handleAttack = async () => {
-    setInputFields("Attack", "What are your tactics?");
-  };
 
   /// actions that are called by the host and then teed to all clients via RPC ////////////
   const handlePlayerLeft = async (playerId: string) => {
@@ -122,91 +63,33 @@ export const useGameActions = () => {
     RPC.call("rpc-append-events", { events }, RPC.Mode.ALL);
   };
 
-  const getTextWithQuotes = (text: string) => {
-    return "“" + text.trim() + "”";
-  };
-
   //////////////////////// OK handlers ////////////////////////
 
   const handleAttackOk = async () => {
-    appendToStory(getTargetName(), `${thisPlayer.getState("name")} attacks`);
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/attack`, {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/act_part_one`, {
       text,
       prompt: text,
-      targetId: actionTarget.targetId,
-      weapon: "sword",
+      isAttack: true,
     });
   };
 
-  const handleTalkOk = async () => {
-    const textWithQuotes = getTextWithQuotes(text);
-    appendToStory(textWithQuotes, gameData.partyLabel);
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
-      message: textWithQuotes,
-      targetId: actionTarget.targetId,
-    });
-  };
-
-  const handleDoOk = async () => {
-    let label = `${gameData.partyLabel} act`;
-    appendToStory(text, label);
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/do`, {
+  const handleActOk = async () => {
+    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/act_part_one`, {
       prompt: text,
-      targetId: actionTarget?.targetId,
-      targetType: actionTarget?.targetType,
-    });
-  };
-
-  const handleSayOk = async () => {
-    const textWithQuotes = getTextWithQuotes(text);
-    appendToStory(textWithQuotes, gameData.partyLabel);
-    await apiCallAndUpdateLocalEvents(`/game/${gameData.gameId}/say`, {
-      message: textWithQuotes,
     });
   };
 
   //////////////////////// end of OK handlers ////////////////////////
 
-  const globalHandleClick = async (buttonId: string) => {
-    const handlers: Record<string, () => Promise<void>> = {
-      talk: handleTalk,
-      do: handleDo,
-      interact: handleDo,
-      say: handleSay,
-      attack: handleAttack,
-      chat: handleChat,
-
-      "attack-ok": handleAttackOk,
-      "talk-ok": handleTalkOk,
-      "do-ok": handleDoOk, // also handles using abilities
-      "interact-ok": handleDoOk,
-      "say-ok": handleSayOk,
-    };
-
-    const handler = handlers[buttonId];
-    if (handler) {
-      if (buttonId.endsWith("-ok")) {
-        setShowTextarea(false);
-      }
-      await handler();
-      if (buttonId.endsWith("-ok")) {
-        setText("");
-        setActionTarget(null);
-      }
-    } else {
-      // this is expected for inventory, logbook, map, etc.
-    }
-  };
-
   return {
     showTextarea,
     setShowTextarea,
+    showStaticText,
+    setShowStaticText,
     text,
     setText,
-    okButtonText,
-    okButtonId,
-    inputPlaceHolder,
-    globalHandleClick,
+    handleActOk,
+    handleAttackOk,
     handleTravel,
     handlePlayerLeft,
     appendEventsHandler,

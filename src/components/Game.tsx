@@ -147,10 +147,7 @@ const GameContent = () => {
           questSummary,
           localPlayers,
         );
-        setLocationData(startGame.locationData);
-        setLocationState(startGame.locationState);
         setGameData(startGame.gameData);
-        setCharacters(startGame.characterState);
 
         if (HASH_QUEST_ID) {
           setQuestSummary({
@@ -163,15 +160,6 @@ const GameContent = () => {
           if (HASH_LOCATION_ID) {
             setHashQuestInitializing(true);
           }
-        }
-        if (!HASH_LOCATION_ID) {
-          RPC.call(
-            "rpc-append-events",
-            {
-              events: startGame.events,
-            },
-            RPC.Mode.ALL,
-          );
         }
       };
       startGameAsync();

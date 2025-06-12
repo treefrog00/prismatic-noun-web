@@ -89,9 +89,6 @@ type GameContextType = {
 
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
-
-  actionsRemaining: number;
-  setActionsRemaining: (value: number) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -157,8 +154,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     imageUrls: [],
     targetValues: [],
   });
-
-  const [actionsRemaining, setActionsRemaining] = useState(0);
 
   const [localGameStage, setLocalGameStage] =
     useState<GameStage>("launch-screen");
@@ -237,9 +232,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         voteState,
         setVoteState,
-
-        actionsRemaining,
-        setActionsRemaining,
       }}
     >
       {children}
@@ -388,13 +380,5 @@ export const useVoteState = () => {
     voteState: context.voteState,
     setVoteState: context.setVoteState,
     setShowVote,
-  };
-};
-
-export const useActionsRemaining = () => {
-  const context = useContext(GameContext);
-  return {
-    actionsRemaining: context.actionsRemaining,
-    setActionsRemaining: context.setActionsRemaining,
   };
 };

@@ -7,7 +7,6 @@ import LogbookPopup from "@/components/popups/LogbookPopup";
 import { getColorClasses } from "@/types/button";
 import { useGameActions } from "@/hooks/useGameActions";
 import SettingsPopup from "./popups/SettingsPopup";
-import { useActionsRemaining } from "@/contexts/GameContext";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -15,7 +14,6 @@ const StoryButtons: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isInventoryOpen, setIsInventoryOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
-  const { actionsRemaining } = useActionsRemaining();
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
 
   const {
@@ -142,12 +140,7 @@ const StoryButtons: React.FC = () => {
           <div className="flex gap-4 items-center">
             <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
               <div>
-                <div>Turn time:</div>
                 <div className="text-4xl font-bold">{timeRemaining}s</div>
-              </div>
-              <div>
-                <div>Actions remaining:</div>
-                <div className="text-4xl font-bold">{actionsRemaining}</div>
               </div>
             </div>
             <div

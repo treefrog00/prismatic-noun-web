@@ -155,12 +155,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("StartTurn"),
-    actionsRemaining: z.number(),
-  }),
-  z.object({
-    type: z.literal("SetActionsRemaining"),
-    actionsRemaining: z.number(),
-  }),
+  })
 ]);
 
 export const StartGameSchema = z.object({

@@ -1,10 +1,9 @@
-export type VoteType = "Undo" | "Kick" | "Travel";
+export type VoteType = "PostScene";
 
 // Export types from validatedTypes.ts
 export type {
   QuestSummary,
   Item,
-  CharacterAbility,
   LocationFeature,
   Character,
   Npc,
@@ -15,7 +14,6 @@ export type {
   GameData,
   LocationData,
   LocationState,
-  ActionResponse,
+  SubmitPromptsResponse as ActionResponse,
   GameEvent,
-  RolledCharacter,
 } from "./validatedTypes";

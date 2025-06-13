@@ -1,15 +1,19 @@
+import { QuestSummary } from "@/types";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface MiscContextType {
+interface LobbyContextType {
   shouldAnimateStars: boolean;
   setShouldAnimateStars: (show: boolean) => void;
+  questSummary: QuestSummary | null;
+  setQuestSummary: (value: QuestSummary | null) => void;
 }
-const MiscContext = createContext<MiscContextType | undefined>(undefined);
+const LobbyContext = createContext<LobbyContextType | undefined>(undefined);
 
-export const MiscProvider: React.FC<{ children: React.ReactNode }> = ({
+export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [shouldAnimateStars, setShouldAnimateStars] = useState(true);
+  const [questSummary, setQuestSummary] = useState<QuestSummary | null>(null);
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateStars");
@@ -24,21 +28,20 @@ export const MiscProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <MiscContext.Provider
+    <LobbyContext.Provider
       value={{
         shouldAnimateStars,
         setShouldAnimateStars: handleSetShouldAnimateStars,
+        questSummary,
+        setQuestSummary,
       }}
     >
       {children}
-    </MiscContext.Provider>
+    </LobbyContext.Provider>
   );
 };
 
-export const useMisc = () => {
-  const context = useContext(MiscContext);
-  if (context === undefined) {
-    throw new Error("useMisc must be used within a MiscProvider");
-  }
+export const useLobbyContext = () => {
+  const context = useContext(LobbyContext);
   return context;
 };

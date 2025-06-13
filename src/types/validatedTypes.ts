@@ -1,7 +1,5 @@
 import { z } from "zod/v4";
 
-const FriendlyLevel = z.enum(["enemy", "neutral", "friend"]);
-
 const QuestSummarySchema = z.object({
   questId: z.string(),
   title: z.string(),
@@ -13,20 +11,9 @@ export const QuestSummariesSchema = z.object({
   quests: z.array(QuestSummarySchema),
 });
 
-const ItemSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-  imageUrl: z.string(),
-});
-
 const AbilityDataSchema = z.object({
   name: z.string(),
   description: z.string(),
-});
-
-const CharacterAbilitySchema = z.object({
-  name: z.string(),
-  level: z.number(),
 });
 
 const FeatureSchema = z.object({
@@ -38,39 +25,26 @@ const BaseCharacterSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  level: z.number(),
   maxStamina: z.number(),
-  weapons: z.array(z.string()),
+  weapon: z.string(),
+  abilities: z.array(z.string()),
   inventory: z.array(z.string()),
 });
 
-const CharacterSchema = BaseCharacterSchema.extend({
-  special: z.string(),
-  abilities: z.array(CharacterAbilitySchema),
-});
+const CharacterSchema = BaseCharacterSchema.extend({});
 
-const NpcSchema = BaseCharacterSchema.extend({
-  friendly: FriendlyLevel,
-});
-
-export const RolledCharacterSchema = z.object({
-  name: z.string(),
-  characterId: z.string(),
-  pronouns: z.string(),
-  imageUrl: z.string(),
-  character: CharacterSchema,
-});
+const NpcSchema = BaseCharacterSchema.extend({});
 
 export const CharacterStateSchema = z.object({
   stamina: z.number(),
   inventory: z.array(z.string()),
-  weapons: z.array(z.string()),
+  weapon: z.string(),
 });
 
 const NpcStateSchema = z.object({
   name: z.string(),
   stamina: z.number(),
-  weapons: z.array(z.string()),
+  weapon: z.string(),
 });
 
 const LocationStateSchema = z.object({
@@ -85,9 +59,7 @@ const WeaponSchema = z.object({
 const GameDataSchema = z.object({
   gameId: z.string(),
   title: z.string(),
-  partyLabel: z.string(),
   weapons: z.record(z.string(), WeaponSchema),
-  items: z.record(z.string(), ItemSchema),
   abilities: z.record(z.string(), AbilityDataSchema),
   characters: z.record(z.string(), CharacterSchema),
 });
@@ -154,8 +126,8 @@ const GameEventSchema = z.discriminatedUnion("type", [
     playlist: z.array(z.string()),
   }),
   z.object({
-    type: z.literal("StartTurn"),
-  })
+    type: z.literal("StartPlayerActions"),
+  }),
 ]);
 
 export const StartGameSchema = z.object({
@@ -163,7 +135,19 @@ export const StartGameSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
-export const ActionResponseSchema = z.object({
+export const PlayerLeftResponseSchema = z.object({
+  events: z.array(GameEventSchema),
+});
+
+export const SubmitPromptsResponseSchema = z.object({
+  rejectionReason: z.string().nullable(),
+});
+
+export const ActPartOneResponseSchema = z.object({
+  events: z.array(GameEventSchema),
+});
+
+export const ActPartTwoResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
@@ -171,19 +155,17 @@ export { GameEventSchema };
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
 export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;
-export type Item = z.infer<typeof ItemSchema>;
-export type CharacterAbility = z.infer<typeof CharacterAbilitySchema>;
 export type LocationFeature = z.infer<typeof FeatureSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
-export type RolledCharacter = z.infer<typeof RolledCharacterSchema>;
 export type Npc = z.infer<typeof NpcSchema>;
 export type NpcState = z.infer<typeof NpcStateSchema>;
 export type LocationData = z.infer<typeof LocationDataSchema>;
 export type StartGame = z.infer<typeof StartGameSchema>;
-export type FriendlyLevel = z.infer<typeof FriendlyLevel>;
 export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type Weapon = z.infer<typeof WeaponSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
-export type ActionResponse = z.infer<typeof ActionResponseSchema>;
+export type SubmitPromptsResponse = z.infer<typeof SubmitPromptsResponseSchema>;
+export type ActPartOneResponse = z.infer<typeof ActPartOneResponseSchema>;
+export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;

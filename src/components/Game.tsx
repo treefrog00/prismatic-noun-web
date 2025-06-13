@@ -8,116 +8,53 @@ import {
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
+import { ActPartOneResponseSchema, PlayerLeftResponseSchema } from "../types/validatedTypes";
 
 import {
-  useQuestSummary,
   useGameApi,
   useLocalPlayers,
   useGameData,
-  useLocationData,
-  useLocationState,
-  useCharacters,
 } from "../contexts/GameContext";
-import { HASH_LOCATION_ID, HASH_QUEST_ID } from "../config";
 import { startIfNotStarted } from "../core/startGame";
-import { isAndroidOrIOS } from "../hooks/useDeviceDetection";
 import Story, { StoryRef } from "./Story";
-import { useGameActions } from "@/hooks/useGameActions";
 import StoryButtons from "./StoryButtons";
 import { useDiceRoll } from "@/contexts/GameContext";
 import { storyEvents } from "@/core/storyEvents";
 import DiceRollWithText from "./DiceRollWithText";
-import { useGameStage } from "@/contexts/GameContext";
-import { useVoteState } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useEventProcessor } from "@/contexts/EventContext";
 
 const GameContent = () => {
-  const { handleTravel } = useGameActions();
-
-  // state for React UI only
-  const { gameStage, setGameStage } = useGameStage();
-  const { voteState, setVoteState } = useVoteState();
-  const [carouselPosition, setCarouselPosition] = useState(1); // Start at center (index 1)
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [currentX, setCurrentX] = useState(0);
-  const [dragOffset, setDragOffset] = useState(0);
-  const [hashQuestInitializing, setHashQuestInitializing] = useState(false);
-
   // UI variables
   const storyRef = useRef<StoryRef>(null);
-  const carouselRef = useRef<HTMLDivElement>(null);
 
-  // built-instate from PlayroomKit
+  // built-in state from PlayroomKit
   const isHost = useIsHost();
   const players = usePlayersList();
 
   // multiplayer state
-  const { setLocationData } = useLocationData();
-  const { setLocationState } = useLocationState();
   const { gameData, setGameData } = useGameData();
-  const { setQuestSummary } = useQuestSummary();
-  const { questSummary } = useQuestSummary();
-  const { handlePlayerLeft, appendEventsHandler } = useGameActions();
+  const { questSummary } = useLobbyContext();
+  const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
   const { diceRollState } = useDiceRoll();
 
-  const { characters, setCharacters } = useCharacters();
-
   const gameApi = useGameApi();
-  // Carousel swipe handlers
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true);
-    setStartX(e.touches[0].clientX);
-    setCurrentX(e.touches[0].clientX);
-    setDragOffset(0);
-  };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    setCurrentX(e.touches[0].clientX);
-
-    const diff = e.touches[0].clientX - startX;
-    const threshold = window.innerWidth * 0.05; // 5% threshold for animation
-
-    if (Math.abs(diff) > threshold) {
-      // Calculate proportional offset (-1 to 1 range)
-      const maxDrag = window.innerWidth * 0.5; // Maximum drag distance
-      let offset = Math.max(Math.min(diff / maxDrag, 1), -1);
-
-      // Prevent dragging beyond edges
-      if (carouselPosition === 0 && offset > 0) {
-        offset = 0; // Prevent dragging right when at leftmost position
-      } else if (carouselPosition === 2 && offset < 0) {
-        offset = 0; // Prevent dragging left when at rightmost position
-      }
-
-      setDragOffset(offset);
+  const handlePlayerLeft = async (playerId: string) => {
+    if (!isHost) {
+      return;
     }
-  };
 
-  const handleTouchEnd = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-
-    const diff = currentX - startX;
-    const threshold = window.innerWidth * 0.2; // 20% threshold for final position
-
-    if (Math.abs(diff) > threshold) {
-      // Move to next/previous position
-      const newPosition =
-        diff > 0
-          ? Math.max(carouselPosition - 1, 0) // Move left (show character sheet)
-          : Math.min(carouselPosition + 1, 2); // Move right (show location view)
-      setCarouselPosition(newPosition);
-    } else {
-      // Reset to original position
-      setCarouselPosition(carouselPosition);
-    }
-    setDragOffset(0);
+    let response = await gameApi.postTyped(
+      `/game/${gameData.gameId}/player_left/${playerId}`, {}, PlayerLeftResponseSchema);
+    RPC.call("rpc-append-events", { events: response.events }, RPC.Mode.ALL);
   };
 
   useEffect(() => {
-    RPC.register("rpc-append-events", appendEventsHandler);
+    RPC.register("rpc-append-events", async (data) => {
+      addEvents(data.events);
+    });
 
     const unsubscribe = storyEvents.subscribe((text, label) => {
       if (storyRef.current) {
@@ -148,34 +85,11 @@ const GameContent = () => {
           localPlayers,
         );
         setGameData(startGame.gameData);
-
-        if (HASH_QUEST_ID) {
-          setQuestSummary({
-            questId: HASH_QUEST_ID,
-            title: startGame.gameData.title,
-            description: "",
-            imageUrl: "https://placehold.co/100x100",
-          });
-
-          if (HASH_LOCATION_ID) {
-            setHashQuestInitializing(true);
-          }
-        }
       };
       startGameAsync();
     }
     // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
   }, [isHost]);
-
-  useEffect(() => {
-    const hashQuestInitializeAsync = async () => {
-      await handleTravel(HASH_LOCATION_ID, gameData.gameId);
-    };
-    if (hashQuestInitializing) {
-      hashQuestInitializeAsync();
-      setHashQuestInitializing(false);
-    }
-  }, [hashQuestInitializing]);
 
   return (
     <AmbientBackground>

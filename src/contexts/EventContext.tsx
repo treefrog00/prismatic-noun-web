@@ -90,7 +90,7 @@ export const EventProvider = ({
       setLocationData(event.locationData);
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
-    } else if (event.type === "StartTurn") {
+    } else if (event.type === "StartPlayerActions") {
       setTimeRemaining(gameConfig.turnTimeLimit);
     }
   };

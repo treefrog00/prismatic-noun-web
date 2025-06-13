@@ -2,13 +2,13 @@ import { starryTheme } from "@/styles/starryTheme";
 import { useStereo } from "@/contexts/StereoContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
-import { useMisc } from "@/contexts/MiscContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useLocalGameStage } from "@/contexts/GameContext";
 
 const LaunchScreen = () => {
   const { localGameStage, setLocalGameStage } = useLocalGameStage();
   const { initialPlay } = useStereo();
-  const { shouldAnimateStars } = useMisc();
+  const { shouldAnimateStars } = useLobbyContext();
 
   const handleLaunch = () => {
     initialPlay();

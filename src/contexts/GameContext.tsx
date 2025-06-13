@@ -44,9 +44,6 @@ type GameConfig = {
 };
 
 type GameContextType = {
-  questSummary: QuestSummary | null;
-  setQuestSummary: (value: QuestSummary | null) => void;
-
   gameData: GameData | null;
   setGameData: (value: GameData | null) => void;
 
@@ -77,13 +74,11 @@ type GameContextType = {
   setGameConfig: (value: GameConfig) => void;
   handleSetShouldAnimateDice: (show: boolean) => void;
 
-  // Action handler state
-  showTextarea: boolean;
-  setShowTextarea: (value: boolean) => void;
-  showStaticText: boolean;
-  setShowStaticText: (value: boolean) => void;
-  actionText: string;
-  setActionText: (value: string) => void;
+  showPromptsInput: boolean;
+  setShowPromptsInput: (value: boolean) => void;
+  prompts: Record<string, string>;
+  setPrompts: (value: Record<string, string>) => void;
+
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
 
@@ -101,11 +96,6 @@ interface GameProviderProps {
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   //// Multiplayer state ////
-  const [questSummary, setQuestSummary] = useMultiplayerState<QuestSummary>(
-    "questSummary",
-    null,
-  );
-
   const [gameData, setGameData] = useMultiplayerState<GameData>(
     "gameData",
     null,
@@ -158,9 +148,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [localGameStage, setLocalGameStage] =
     useState<GameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
-  const [showTextarea, setShowTextarea] = useState(false);
-  const [showStaticText, setShowStaticText] = useState(false);
-  const [actionText, setActionText] = useState("");
+  const [showPromptsInput, setShowPromptsInput] = useState(false);
+  const [prompts, setPrompts] = useState<Record<string, string>>({});
   const [timeRemaining, setTimeRemaining] = useState(0);
   //////////////////////////// end of React only state ////////////////////////////
 
@@ -189,9 +178,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       value={{
         gameApi,
 
-        questSummary,
-        setQuestSummary,
-
         gameData,
         setGameData,
 
@@ -215,12 +201,10 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         handleSetShouldAnimateDice,
 
         // Action handler state
-        showTextarea,
-        setShowTextarea,
-        showStaticText,
-        setShowStaticText,
-        actionText,
-        setActionText,
+        showPromptsInput,
+        setShowPromptsInput,
+        prompts,
+        setPrompts,
         timeRemaining,
         setTimeRemaining,
 
@@ -247,15 +231,6 @@ export const useDiceRoll = () => {
   return {
     diceRollState: context.diceRollState,
     setDiceRollState: context.setDiceRollState,
-  };
-};
-
-// Custom hooks for each piece of state
-export const useQuestSummary = () => {
-  const context = useContext(GameContext);
-  return {
-    questSummary: context.questSummary,
-    setQuestSummary: context.setQuestSummary,
   };
 };
 
@@ -330,18 +305,22 @@ export const useGameApi = () => {
   return context.gameApi;
 };
 
-export const useActionUIState = () => {
+export const useShowPrompts = () => {
   const context = useContext(GameContext);
   if (!context) {
     throw new Error("useActionUIState must be used within a GameProvider");
   }
   return {
-    showTextarea: context.showTextarea,
-    setShowTextarea: context.setShowTextarea,
-    showStaticText: context.showStaticText,
-    setShowStaticText: context.setShowStaticText,
-    actionText: context.actionText,
-    setActionText: context.setActionText,
+    showPromptsInput: context.showPromptsInput,
+    setShowPromptsInput: context.setShowPromptsInput,
+  };
+};
+
+export const usePrompts = () => {
+  const context = useContext(GameContext);
+  return {
+    prompts: context.prompts,
+    setPrompts: context.setPrompts,
   };
 };
 

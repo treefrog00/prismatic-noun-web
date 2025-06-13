@@ -2,7 +2,7 @@ import { Suspense, useEffect, useState, type ReactNode } from "react";
 import { StereoProvider } from "../contexts/StereoContext";
 import { GameProvider } from "../contexts/GameContext";
 import { ErrorProvider } from "../contexts/ErrorContext";
-import { MiscProvider } from "@/contexts/MiscContext";
+import { LobbyContextProvider } from "@/contexts/LobbyContext";
 import { EventProvider } from "@/contexts/EventContext";
 
 interface GameLayoutProps {
@@ -39,7 +39,7 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       }}
     >
       <ErrorProvider>
-        <MiscProvider>
+        <LobbyContextProvider>
           <GameProvider>
             <EventProvider>
               <StereoProvider>
@@ -47,7 +47,7 @@ const GameLayout = ({ children }: GameLayoutProps) => {
               </StereoProvider>
             </EventProvider>
           </GameProvider>
-        </MiscProvider>
+        </LobbyContextProvider>
       </ErrorProvider>
     </main>
   );

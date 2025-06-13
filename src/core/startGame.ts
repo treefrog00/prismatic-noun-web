@@ -6,13 +6,11 @@ import {
   LocalPlayerState,
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
-import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
+import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
 import {
   StartGameSchema,
   QuestSummary,
-  RolledCharacterSchema,
 } from "../types/validatedTypes";
-import { appendToStory } from "@/core/storyEvents";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";

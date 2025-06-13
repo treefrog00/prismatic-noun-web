@@ -4,13 +4,12 @@ import LobbyNavBar from "./LobbyNavBar";
 import LobbyConfig from "./LobbyConfig";
 import { insertCoin } from "@/core/multiplayerState";
 import { QuestSummary } from "@/types";
-import { useQuestSummary } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 import { starryTheme } from "@/styles/starryTheme";
 import { envConfig } from "@/envConfig";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
-import { useMisc } from "@/contexts/MiscContext";
 import { AuthMode } from "@/types/auth";
 import { DiscordOptions } from "playroomkit";
 
@@ -20,8 +19,8 @@ const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
-  const { questSummary, setQuestSummary } = useQuestSummary();
-  const { shouldAnimateStars } = useMisc();
+  const { questSummary, setQuestSummary } = useLobbyContext();
+  const { shouldAnimateStars } = useLobbyContext();
   const gameApi = new GameApi();
 
   useEffect(() => {

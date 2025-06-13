@@ -1,10 +1,10 @@
 import React from "react";
-import { useMisc } from "@/contexts/MiscContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useGameConfig } from "@/contexts/GameContext";
 import MusicToggle from "@/components/settings/MusicToggle";
 
 const LobbyConfig: React.FC = () => {
-  const { shouldAnimateStars, setShouldAnimateStars } = useMisc();
+  const { shouldAnimateStars, setShouldAnimateStars } = useLobbyContext();
   const { gameConfig, handleSetShouldAnimateDice } = useGameConfig();
 
   function handleToggleAnimateDice() {

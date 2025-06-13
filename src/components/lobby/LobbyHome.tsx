@@ -6,7 +6,8 @@ import {
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
-import { useGameStage, useQuestSummary } from "@/contexts/GameContext";
+import { useGameStage } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 
 interface LobbyHomeProps {
@@ -15,7 +16,7 @@ interface LobbyHomeProps {
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   const players = usePlayersList();
-  const { questSummary, setQuestSummary } = useQuestSummary();
+  const { questSummary, setQuestSummary } = useLobbyContext();
 
   const isHost = useIsHost();
   const { setGameStage } = useGameStage();

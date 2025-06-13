@@ -7,7 +7,10 @@ interface DiceRollProps {
 
 export const DICE_ANIMATION_DURATION = 3600; // ms
 
-export default function DiceRoll({ numDice, targetValues }: DiceRollProps) {
+export default function DiceRollAnimation({
+  numDice,
+  targetValues,
+}: DiceRollProps) {
   const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);

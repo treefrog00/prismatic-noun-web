@@ -8,7 +8,7 @@ import {
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
-import { ActPartOneResponseSchema, PlayerLeftResponseSchema } from "../types/validatedTypes";
+import { PlayerLeftResponseSchema } from "../types/validatedTypes";
 
 import {
   useGameApi,
@@ -18,11 +18,10 @@ import {
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
 import StoryButtons from "./StoryButtons";
-import { useDiceRoll } from "@/contexts/GameContext";
 import { storyEvents } from "@/core/storyEvents";
-import DiceRollWithText from "./DiceRollWithText";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useEventProcessor } from "@/contexts/EventContext";
+import DiceRollsScreen from "./popups/DiceRollsScreen";
 
 const GameContent = () => {
   // UI variables
@@ -37,7 +36,6 @@ const GameContent = () => {
   const { questSummary } = useLobbyContext();
   const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
-  const { diceRollState } = useDiceRoll();
 
   const gameApi = useGameApi();
 
@@ -47,7 +45,10 @@ const GameContent = () => {
     }
 
     let response = await gameApi.postTyped(
-      `/game/${gameData.gameId}/player_left/${playerId}`, {}, PlayerLeftResponseSchema);
+      `/game/${gameData.gameId}/player_left/${playerId}`,
+      {},
+      PlayerLeftResponseSchema,
+    );
     RPC.call("rpc-append-events", { events: response.events }, RPC.Mode.ALL);
   };
 
@@ -96,11 +97,9 @@ const GameContent = () => {
       <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
         <TopBar />
         <Story ref={storyRef} />
-        {diceRollState.show && (
-          <DiceRollWithText diceRollState={diceRollState} />
-        )}
         <StoryButtons />
       </div>
+      <DiceRollsScreen />
     </AmbientBackground>
   );
 };

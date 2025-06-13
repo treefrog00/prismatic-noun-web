@@ -6,6 +6,7 @@ import {
   GameData,
   LocationData,
   LocationState,
+  DiceRoll,
 } from "../types";
 import {
   createContext,
@@ -17,10 +18,8 @@ import {
 
 export interface DiceRollState {
   show: boolean;
-  beforeText: string;
-  afterText: string;
-  imageUrls: string[];
-  targetValues: number[][];
+  characterRolls: Record<string, DiceRoll>;
+  locationRoll: DiceRoll;
 }
 
 export type GameStage =
@@ -77,7 +76,11 @@ type GameContextType = {
   showPromptsInput: boolean;
   setShowPromptsInput: (value: boolean) => void;
   prompts: Record<string, string>;
-  setPrompts: (value: Record<string, string>) => void;
+  setPrompts: (
+    value:
+      | Record<string, string>
+      | ((prev: Record<string, string>) => Record<string, string>),
+  ) => void;
 
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
@@ -88,7 +91,7 @@ type GameContextType = {
 
 export const GameContext = createContext<GameContextType | null>(null);
 
-const DEFAULT_TURN_TIME_LIMIT = 90;
+const DEFAULT_TURN_TIME_LIMIT = 60;
 
 interface GameProviderProps {
   children: ReactNode;
@@ -139,10 +142,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   const [diceRollState, setDiceRollState] = useState<DiceRollState>({
     show: false,
-    beforeText: "",
-    afterText: "",
-    imageUrls: [],
-    targetValues: [],
+    characterRolls: {},
+    locationRoll: null,
   });
 
   const [localGameStage, setLocalGameStage] =

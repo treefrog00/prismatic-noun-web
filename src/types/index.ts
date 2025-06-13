@@ -3,7 +3,7 @@ export type VoteType = "PostScene";
 // Export types from validatedTypes.ts
 export type {
   QuestSummary,
-  Item,
+  DiceRoll,
   LocationFeature,
   Character,
   Npc,

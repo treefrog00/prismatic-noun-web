@@ -2,7 +2,6 @@ import React from "react";
 import { createPortal } from "react-dom";
 
 interface PopupProps {
-  isOpen: boolean;
   onClose?: () => void;
   title: string;
   children: React.ReactNode;
@@ -11,15 +10,12 @@ interface PopupProps {
 }
 
 const Popup: React.FC<PopupProps> = ({
-  isOpen,
   onClose,
   title,
   children,
   maxWidth = "max-w-md",
   className = "",
 }) => {
-  if (!isOpen) return null;
-
   return createPortal(
     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
       <div

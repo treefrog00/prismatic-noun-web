@@ -54,7 +54,7 @@ export const EventProvider = ({
     if (event.type === "Story") {
       appendToStory(event.text, event.label);
       await new Promise((resolve) => setTimeout(resolve, 2000));
-    } else if (event.type === "DiceRoll") {
+    } else if (event.type === "DiceRollScreen") {
       if (!gameConfig.shouldAnimateDice) return;
 
       // the flushSync microtask is only needed for React 18+
@@ -62,10 +62,8 @@ export const EventProvider = ({
         ReactDOM.flushSync(() => {
           setDiceRollState({
             show: true,
-            beforeText: event.beforeText,
-            afterText: event.afterText,
-            imageUrls: event.imageUrls,
-            targetValues: event.targetValues,
+            characterRolls: event.characterRolls,
+            locationRoll: event.locationRoll,
           });
         });
       });
@@ -76,10 +74,8 @@ export const EventProvider = ({
 
       setDiceRollState({
         show: false,
-        beforeText: event.beforeText,
-        afterText: event.afterText,
-        imageUrls: event.imageUrls,
-        targetValues: event.targetValues,
+        characterRolls: {},
+        locationRoll: null,
       });
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);

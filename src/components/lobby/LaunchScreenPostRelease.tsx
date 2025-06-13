@@ -44,6 +44,10 @@ const LaunchScreen = () => {
               <div className={`text-center text-gray-200`}>
                 <p>copy from existing launch screen...</p>
                 <p className="mb-4">
+                  You can play in a web browser or launch the app inside Discord
+                  on Windows/Mac/Linux, but mobile devices are not supported.
+                </p>
+                <p className="mb-4">
                   ... and then carefully curated and merged over the course of 6
                   months full time work. This was followed by several more
                   months testing and refinement. Hopefully this creates a game

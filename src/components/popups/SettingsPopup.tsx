@@ -8,9 +8,10 @@ interface SettingsPopupProps {
 }
 
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+
   return (
     <Popup
-      isOpen={isOpen}
       onClose={onClose}
       title="Settings"
       maxWidth="max-w-4xl"

@@ -1,20 +1,27 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useTimeRemaining, usePrompts, useShowPrompts } from "@/contexts/GameContext";
+import {
+  useTimeRemaining,
+  usePrompts,
+  useShowPrompts,
+} from "@/contexts/GameContext";
 import artUrl from "@/util/artUrls";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
+import { useGameApi, useGameData } from "@/contexts/GameContext";
+import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
+  const { gameData } = useGameData();
 
-  const {
-    showPromptsInput,
-    setShowPromptsInput } = useShowPrompts();
-    const {prompts, setPrompts} = usePrompts();
+  const gameApi = useGameApi();
+
+  const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
+  const { prompts, setPrompts } = usePrompts();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -27,39 +34,46 @@ const StoryButtons: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const hasSufficientTextInput = (text: string) => {
-    if (!text || text.length < 2) return false;
-    return true;
+  const checkPromptLengths = () => {
+    return Object.values(prompts).every(
+      (prompt) => prompt && prompt.length >= 4,
+    );
   };
 
   const handleActOk = async () => {
     let response = await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompts`,
       { prompts: prompts },
-      ActionResponseSchema,
+      SubmitPromptsResponseSchema,
     );
   };
 
   const renderTextInput = () => (
-    <div className="flex justify-center self-center mt-2">
+    <div className="flex flex-col gap-4 justify-center self-center mt-2">
       <div className="w-full">
-        <TextInput
-          text={text}
-          setText={setText}
-          textInputRef={textInputRef}
-          onClose={() => {}}
-          onOk={() => {}}
-          placeHolder={"Describe your plan for the next 30 seconds..."}
-          hasSufficientText={hasSufficientTextInput}
-          showCharCount={true}
-        />
+        {Object.entries(prompts).map(([key, _]) => (
+          <div key={key} className="mb-4">
+            <TextInput
+              text={prompts[key]}
+              setText={(value: string) => {
+                setPrompts((prev) => ({ ...prev, [key]: value }));
+              }}
+              textInputRef={textInputRef}
+              onClose={() => {}}
+              onOk={() => {}}
+              placeHolder={`Describe ${key}'s plan for the next 30 seconds...`}
+              hasSufficientText={() => prompts[key]?.length >= 4}
+              showCharCount={true}
+            />
+          </div>
+        ))}
         <div className="flex gap-2">
           <button
             className={`game-button ${getColorClasses("teal")} ml-4`}
             onPointerDown={() => handlePlayerAction(handleActOk)}
-            disabled={!hasSufficientTextInput(text)}
+            disabled={!checkPromptLengths()}
           >
-            Act
+            Submit
           </button>
         </div>
       </div>
@@ -143,10 +157,9 @@ const StoryButtons: React.FC = () => {
           </div>
         </div>
       </div>
-      <SettingsPopup
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
+      {isSettingsOpen && (
+        <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
+      )}
     </>
   );
 };

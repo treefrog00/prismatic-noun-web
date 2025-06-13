@@ -227,37 +227,42 @@ const TopBar = () => {
           </div>
         </div>
       </div>
-      <SettingsPopup
-        isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
-      />
-      <CharacterOverlay
-        isOpen={characterOverlay.state.isOpen}
-        onClose={() => {
-          characterOverlay.handleMouseEvent(null);
-        }}
-        position={characterOverlay.state.position}
-        playerId={characterOverlay.state.hoveredId}
-        onMouseEnter={characterOverlay.handleOverlayMouseEnter}
-        onMouseLeave={characterOverlay.handleOverlayMouseLeave}
-      />
-      <NpcOverlay
-        isOpen={npcOverlay.state.isOpen}
-        onClose={() => {
-          npcOverlay.handleMouseEvent(null);
-        }}
-        position={npcOverlay.state.position}
-        npcId={npcOverlay.state.hoveredId}
-        onMouseEnter={npcOverlay.handleOverlayMouseEnter}
-        onMouseLeave={npcOverlay.handleOverlayMouseLeave}
-      />
-      <LocationOverlay
-        isOpen={locationOverlay.state.isOpen}
-        onClose={() => locationOverlay.handleMouseEvent(null)}
-        position={locationOverlay.state.position}
-        onMouseEnter={locationOverlay.handleOverlayMouseEnter}
-        onMouseLeave={locationOverlay.handleOverlayMouseLeave}
-      />
+      {isSettingsOpen && (
+        <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
+      )}
+      {characterOverlay.state.isOpen && (
+        <CharacterOverlay
+          isOpen={true}
+          onClose={() => {
+            characterOverlay.handleMouseEvent(null);
+          }}
+          position={characterOverlay.state.position}
+          playerId={characterOverlay.state.hoveredId}
+          onMouseEnter={characterOverlay.handleOverlayMouseEnter}
+          onMouseLeave={characterOverlay.handleOverlayMouseLeave}
+        />
+      )}
+      {npcOverlay.state.isOpen && (
+        <NpcOverlay
+          isOpen={true}
+          onClose={() => {
+            npcOverlay.handleMouseEvent(null);
+          }}
+          position={npcOverlay.state.position}
+          npcId={npcOverlay.state.hoveredId}
+          onMouseEnter={npcOverlay.handleOverlayMouseEnter}
+          onMouseLeave={npcOverlay.handleOverlayMouseLeave}
+        />
+      )}
+      {locationOverlay.state.isOpen && (
+        <LocationOverlay
+          isOpen={true}
+          onClose={() => locationOverlay.handleMouseEvent(null)}
+          position={locationOverlay.state.position}
+          onMouseEnter={locationOverlay.handleOverlayMouseEnter}
+          onMouseLeave={locationOverlay.handleOverlayMouseLeave}
+        />
+      )}
     </>
   );
 };

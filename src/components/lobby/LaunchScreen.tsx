@@ -44,16 +44,18 @@ const LaunchScreen = () => {
               <div className={`text-center text-gray-200`}>
                 <p className="mb-4">
                   A social game involving story-telling and imaginative
-                  task-solving, featuring a series of weird and spooky science
-                  fiction and fantasy stories.
+                  task-solving, via a series of spooky and weird science fiction
+                  and fantasy tales.
                 </p>
                 <p className="mb-4">
-                  You can play in a web browser or launch the app inside Discord
-                  on Windows/Mac/Linux, but mobile devices are not supported.
+                  You can play in a web browser on Windows/Mac/Linux, but mobile
+                  devices are not supported. A single-player mode is available,
+                  but it's more fun as a multiplayer social game - press the
+                  "Invite" button in the lobby to invite your friends.
                 </p>
                 <p className="mb-4">
-                  The game is currently in early alpha testing, and undoubtedly
-                  has numerous serious bugs and issues.
+                  The game is free to play, however due to high server costs the
+                  API may stop responding at times of high demand.
                 </p>
                 <p className="mb-4">
                   As a disclaimer, the development process made heavy use of AI

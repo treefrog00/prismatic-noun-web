@@ -54,12 +54,10 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
     myPlayer().setState(key, choice);
   };
 
+  if (!voteState.showVote) return null;
+
   return (
-    <Popup
-      isOpen={voteState.showVote}
-      title={voteState.voteTitle}
-      maxWidth="max-w-sm"
-    >
+    <Popup title={voteState.voteTitle} maxWidth="max-w-sm">
       <div className="space-y-4">
         <button
           onPointerDown={() => handleVote(true)}

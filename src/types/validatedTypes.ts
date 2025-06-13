@@ -92,6 +92,11 @@ const LocationDataSchema = z.object({
   scenes: z.array(SceneDataSchema),
 });
 
+const DiceRollSchema = z.object({
+  label: z.string(),
+  targetValues: z.array(z.number()),
+});
+
 const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("Story"),
@@ -100,11 +105,9 @@ const GameEventSchema = z.discriminatedUnion("type", [
   }),
 
   z.object({
-    type: z.literal("DiceRoll"),
-    beforeText: z.string(),
-    afterText: z.string(),
-    imageUrls: z.array(z.string()),
-    targetValues: z.array(z.array(z.number())),
+    type: z.literal("DiceRollScreen"),
+    characterRolls: z.record(z.string(), DiceRollSchema),
+    locationRoll: DiceRollSchema,
   }),
 
   z.object({
@@ -140,7 +143,7 @@ export const PlayerLeftResponseSchema = z.object({
 });
 
 export const SubmitPromptsResponseSchema = z.object({
-  rejectionReason: z.string().nullable(),
+  rejectionMessage: z.string().nullable(),
 });
 
 export const ActPartOneResponseSchema = z.object({
@@ -169,3 +172,4 @@ export type SubmitPromptsResponse = z.infer<typeof SubmitPromptsResponseSchema>;
 export type ActPartOneResponse = z.infer<typeof ActPartOneResponseSchema>;
 export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
+export type DiceRoll = z.infer<typeof DiceRollSchema>;

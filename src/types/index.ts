@@ -10,7 +10,6 @@ export type {
   StartGame,
   CharacterState,
   NpcState,
-  Weapon,
   GameData,
   LocationData,
   LocationState,

@@ -73,7 +73,7 @@ const StoryButtons: React.FC = () => {
             onPointerDown={() => handlePlayerAction(handleActOk)}
             disabled={!checkPromptLengths()}
           >
-            Submit
+            Confirm
           </button>
         </div>
       </div>

@@ -25,9 +25,7 @@ const BaseCharacterSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  maxStamina: z.number(),
-  weapon: z.string(),
-  abilities: z.array(z.string()),
+  abilities: z.array(AbilityDataSchema),
   inventory: z.array(z.string()),
 });
 
@@ -36,15 +34,11 @@ const CharacterSchema = BaseCharacterSchema.extend({});
 const NpcSchema = BaseCharacterSchema.extend({});
 
 export const CharacterStateSchema = z.object({
-  stamina: z.number(),
   inventory: z.array(z.string()),
-  weapon: z.string(),
 });
 
 const NpcStateSchema = z.object({
   name: z.string(),
-  stamina: z.number(),
-  weapon: z.string(),
 });
 
 const LocationStateSchema = z.object({
@@ -52,15 +46,9 @@ const LocationStateSchema = z.object({
   features: z.array(z.string()),
 });
 
-const WeaponSchema = z.object({
-  name: z.string(),
-});
-
 const GameDataSchema = z.object({
   gameId: z.string(),
   title: z.string(),
-  weapons: z.record(z.string(), WeaponSchema),
-  abilities: z.record(z.string(), AbilityDataSchema),
   characters: z.record(z.string(), CharacterSchema),
 });
 
@@ -165,7 +153,6 @@ export type NpcState = z.infer<typeof NpcStateSchema>;
 export type LocationData = z.infer<typeof LocationDataSchema>;
 export type StartGame = z.infer<typeof StartGameSchema>;
 export type CharacterState = z.infer<typeof CharacterStateSchema>;
-export type Weapon = z.infer<typeof WeaponSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
 export type SubmitPromptsResponse = z.infer<typeof SubmitPromptsResponseSchema>;

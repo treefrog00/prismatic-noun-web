@@ -19,7 +19,7 @@ export class GameApi {
     if (!pnAccessToken) {
       let discordToken: string;
       if (envConfig.authMode == AuthMode.DiscordEmbedded) {
-        discordToken = await getDiscordAccessToken();
+        discordToken = getDiscordAccessToken();
       } else if (envConfig.authMode == AuthMode.DiscordLoginButton) {
         discordToken = discordLoginButtonAccessToken;
         if (!discordToken) {
@@ -48,6 +48,30 @@ export class GameApi {
       return data.token;
     }
     return pnAccessToken;
+  }
+
+
+  async oldMakeRequestWithExpireHandling(path: string, body: any) {
+    const token = await this.getAuthToken();
+    const response = await this._makeRequestWithTokenNoException(path, body, token);
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        const errorData = await response.json();
+        if (errorData.expired) {
+          localStorage.removeItem('token');
+          const newToken = await this.getAuthToken();
+          const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken);
+          if (!retryResponse.ok) {
+            throw new Error(`HTTP status: ${retryResponse.status}`);
+          }
+          return retryResponse.json();
+        }
+      }
+      throw new Error(`HTTP status: ${response.status}`);
+    }
+
+    return response.json();
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {

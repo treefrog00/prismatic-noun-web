@@ -1,6 +1,6 @@
 import { BACKEND_URL } from "@/config";
-import { setPnAccessToken } from "@/contexts/AuthContext";
-import { setDiscordLoginButtonAccessToken } from "@/contexts/AuthContext";
+import { setPnAccessToken } from "@/contexts/DiscordAuthFunctions";
+import { setDiscordLoginButtonAccessToken } from "@/contexts/DiscordAuthFunctions";
 
 const DiscordCallback: React.FC = () => {
   const handleCallback = async () => {

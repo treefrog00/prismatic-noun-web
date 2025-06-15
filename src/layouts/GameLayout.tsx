@@ -4,6 +4,7 @@ import { GameProvider } from "../contexts/GameContext";
 import { ErrorProvider } from "../contexts/ErrorContext";
 import { LobbyContextProvider } from "@/contexts/LobbyContext";
 import { EventProvider } from "@/contexts/EventContext";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -39,6 +40,7 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       }}
     >
       <ErrorProvider>
+        <AuthProvider>
         <LobbyContextProvider>
           <GameProvider>
             <StereoProvider>
@@ -48,6 +50,7 @@ const GameLayout = ({ children }: GameLayoutProps) => {
             </StereoProvider>
           </GameProvider>
         </LobbyContextProvider>
+        </AuthProvider>
       </ErrorProvider>
     </main>
   );

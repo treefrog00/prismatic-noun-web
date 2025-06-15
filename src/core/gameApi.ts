@@ -7,7 +7,7 @@ import {
   discordLoginButtonAccessToken,
   pnAccessToken,
   setPnAccessToken,
-} from "@/contexts/AuthContext";
+} from "@/contexts/DiscordAuthFunctions";
 
 export class GameApi {
   /* This exchanges a Discord access token for a PN access token.

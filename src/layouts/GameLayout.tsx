@@ -41,11 +41,11 @@ const GameLayout = ({ children }: GameLayoutProps) => {
       <ErrorProvider>
         <LobbyContextProvider>
           <GameProvider>
-            <EventProvider>
-              <StereoProvider>
+            <StereoProvider>
+              <EventProvider>
                 <Suspense fallback={""}>{children}</Suspense>
-              </StereoProvider>
-            </EventProvider>
+              </EventProvider>
+            </StereoProvider>
           </GameProvider>
         </LobbyContextProvider>
       </ErrorProvider>

@@ -43,26 +43,18 @@ const LaunchScreen = () => {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200`}>
                 <p className="mb-4">
-                  A social game involving story-telling and imaginative
-                  task-solving, via a series of spooky and weird tales.
+                  A collection of spooky and weird tales that can be played through either on your own or with friends online.
                 </p>
                 <p className="mb-4">
                   You can play in a web browser on Windows/Mac/Linux, but mobile
-                  devices are not supported. A single-player mode is available,
-                  but it's designed as a multiplayer social game. Press the
-                  "Invite" button in the lobby to invite your friends.
+                  devices are not supported. The game is desgined to be more fun in multiplayer, you can press the "Invite" button in the lobby to invite your friends.
                 </p>
                 <p className="mb-4">
-                  The game is free to play, however due to high server costs the
-                  API may stop responding at times of high demand.
+                  The game is currently an early alpha and may have many bugs and issues.
                 </p>
                 <p className="mb-4">
                   As a disclaimer, the development process made heavy use of AI
-                  for generating images, music, code, and stories. AI was used
-                  to generate thousands of images and code functions, and
-                  hundreds of stories and musical compositions. These were then
-                  carefully curated, merged, and refined over the course of 6
-                  months full time work.
+                  for generating images, music, code, and stories. I experimented, iterated, curated, merged and refined various game and story ideas over the course of 6 months full-timework. As such, despite the real issues around copyright regarding the use of AI generated content, I would hope that the game is at least somewhat interesting, and not just a collection of randomly generated noise.
                 </p>
               </div>
             </div>

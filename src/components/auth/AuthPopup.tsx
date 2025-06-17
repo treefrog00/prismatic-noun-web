@@ -8,6 +8,8 @@ import {
   GOOGLE_OAUTH_URL,
   SilentAuthResult,
   authRedirectForProvider,
+  GOOGLE_REDIRECT_URI,
+  DISCORD_REDIRECT_URI,
 } from "./OAuthButtonsAuth";
 import GoogleSignInButton from "./GoogleSignInButton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -39,12 +41,12 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
       if (provider === "google") {
         result = await doSilentAuth({
           authUrl: GOOGLE_OAUTH_URL,
-          callbackPath: "/auth/google/callback",
+          callbackPath: GOOGLE_REDIRECT_URI,
         });
       } else {
         result = await doSilentAuth({
           authUrl: DISCORD_OAUTH_URL,
-          callbackPath: "/auth/discord/callback",
+          callbackPath: DISCORD_REDIRECT_URI,
         });
       }
 

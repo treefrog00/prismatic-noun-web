@@ -23,7 +23,9 @@ export const GOOGLE_OAUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?cl
 
 const doAuthRedirect = (baseAuthUrl: string, isSilent: boolean) => {
   // Store the current URL with hash parameters before redirecting
-  localStorage.setItem("auth_redirect_url", window.location.href);
+  const currentUrl = window.location.href;
+  console.log("Storing current URL in localStorage:", currentUrl); // Debug log
+  localStorage.setItem("auth_redirect_url", currentUrl);
   const authUrl = isSilent ? baseAuthUrl + "&prompt=none" : baseAuthUrl;
   window.location.href = authUrl;
 };
@@ -43,16 +45,18 @@ export const exchangeCodeForToken = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({
+      code,
+      redirectUri: window.location.href,
+    }),
   });
 
   if (response.ok) {
     const data = await response.json();
     const tokenResult = ExchangeCodeResponseSchema.parse(data);
-
-    // Get the stored redirect URL or default to /play
-    const redirectUrl = localStorage.getItem("auth_redirect_url") || "/play";
-    localStorage.removeItem("auth_redirect_url"); // Clean up
+    const storedUrl = localStorage.getItem("auth_redirect_url");
+    const redirectUrl = storedUrl || "/";
+    localStorage.removeItem("auth_redirect_url");
 
     return {
       success: true,
@@ -61,10 +65,7 @@ export const exchangeCodeForToken = async (
     };
   } else {
     console.error(`Failed to exchange ${provider} code for token`);
-    return {
-      success: false,
-      error: `Failed to exchange ${provider} code for token`,
-    };
+    throw new Error(`Failed to exchange ${provider} code for token`);
   }
 };
 
@@ -73,19 +74,11 @@ export const handleSuccessfulAuthProvider = async (
   provider: "google" | "discord",
   setPnAccessToken: (token: string | null) => void,
 ) => {
-  try {
-    const result = await exchangeCodeForToken(code, provider);
+  const result = await exchangeCodeForToken(code, provider);
 
-    setPnAccessToken(result.token);
-    window.location.href = result.redirectUrl;
-    return { success: true };
-  } catch (error) {
-    console.error(`Error exchanging ${provider} code for token:`, error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
+  setPnAccessToken(result.token);
+  window.location.href = result.redirectUrl;
+  return { success: true };
 };
 
 export const authRedirectForProvider = (

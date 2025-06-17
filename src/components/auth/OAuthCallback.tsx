@@ -58,9 +58,8 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
         provider,
         setAccessTokenInStorage,
       );
-      if (!result.success) {
-        console.error(`OAuth callback failed:`, result.error);
-      }
+      // If we get here, the operation was successful
+      console.log("OAuth callback successful");
     }
   }, [provider]);
 

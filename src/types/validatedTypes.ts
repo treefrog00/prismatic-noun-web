@@ -4,7 +4,7 @@ export const ExchangeCodeResponseSchema = z.object({
   prismaticNounToken: z.string(),
   username: z.string(),
   authProvider: z.enum(["discord", "google"]),
-  expiry: z.number(),
+  expiry: z.iso.datetime(),
 });
 
 const QuestSummarySchema = z.object({

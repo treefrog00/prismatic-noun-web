@@ -19,7 +19,7 @@ const GOOGLE_OAUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id
 const doAuthRedirect = (baseAuthUrl: string, isSilent: boolean) => {
   // Store the current URL with hash parameters before redirecting
   localStorage.setItem("auth_redirect_url", window.location.href);
-  const authUrl = isSilent ? baseAuthUrl : baseAuthUrl + "&prompt=none";
+  const authUrl = isSilent ? baseAuthUrl + "&prompt=none" : baseAuthUrl;
   window.location.href = authUrl;
 };
 

@@ -1,8 +1,8 @@
-import { BACKEND_URL } from "@/config";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   doGoogleAuthRedirect,
   doDiscordAuthRedirect,
+  exchangeCodeForToken,
 } from "./OAuthButtonsAuth";
 
 interface OAuthCallbackProps {
@@ -16,6 +16,31 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     const error = urlParams.get("error");
+    const state = urlParams.get("state");
+
+    // Check if we're running in an iframe (silent auth)
+    const isInIframe = window !== window.parent;
+
+    if (isInIframe) {
+      // We're in an iframe, send result back to parent window
+      const result = {
+        success: !error && !!code,
+        code: code || undefined,
+        error: error || undefined,
+        state: state || undefined,
+      };
+
+      // Send message to parent window
+      window.parent.postMessage(
+        {
+          type: "oauth_result",
+          result,
+        },
+        window.location.origin,
+      );
+
+      return;
+    }
 
     // Check if we were redirected back here because a silent login failed.
     if (
@@ -35,32 +60,16 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
 
     if (code) {
       try {
-        const endpoint =
-          provider === "discord"
-            ? "/auth/exchange_discord_code"
-            : "/auth/exchange_google_code";
+        const tokenResult = await exchangeCodeForToken(code, provider);
 
-        const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setPnAccessToken(data.pn_access_token);
-
-          // Get the stored redirect URL or default to /play
-          const redirectUrl =
-            localStorage.getItem("auth_redirect_url") || "/play";
-          localStorage.removeItem("auth_redirect_url"); // Clean up
-
-          // Navigate to the stored URL
-          window.location.href = redirectUrl;
+        if (tokenResult.success && tokenResult.token) {
+          setPnAccessToken(tokenResult.token);
+          window.location.href = tokenResult.redirectUrl;
         } else {
-          console.error(`Failed to exchange ${provider} code for token`);
+          console.error(
+            `Failed to exchange ${provider} code for token:`,
+            tokenResult.error,
+          );
         }
       } catch (error) {
         console.error(`Error exchanging ${provider} code for token:`, error);

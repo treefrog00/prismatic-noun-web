@@ -1,13 +1,7 @@
 import { FC } from "react";
 import { useState } from "react";
 import {
-  doSilentAuth,
-  DISCORD_OAUTH_URL,
-  GOOGLE_OAUTH_URL,
-  SilentAuthResult,
   authRedirectForProvider,
-  GOOGLE_REDIRECT_URI,
-  DISCORD_REDIRECT_URI,
   handleSuccessfulAuthProvider,
 } from "./OAuthButtonsAuth";
 import GoogleSignInButton from "./GoogleSignInButton";
@@ -36,40 +30,8 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
     localStorage.setItem("auth_redirect_url", window.location.href);
 
     try {
-      // First try silent login with iframe
-      let result: SilentAuthResult;
-      if (provider === "google") {
-        result = await doSilentAuth({
-          authUrl: GOOGLE_OAUTH_URL,
-          callbackPath: GOOGLE_REDIRECT_URI,
-        });
-      } else {
-        result = await doSilentAuth({
-          authUrl: DISCORD_OAUTH_URL,
-          callbackPath: DISCORD_REDIRECT_URI,
-        });
-      }
-
-      if (result.success && result.code) {
-        // Silent auth succeeded, exchange code for token
-        const tokenResult = await handleSuccessfulAuthProvider(
-          result.code,
-          provider,
-          setPnAccessToken,
-        );
-        if (!tokenResult.success) {
-          console.error(
-            "Failed to exchange code for token:",
-            tokenResult.error,
-          );
-          setIsAttemptingLogin(false);
-          setLoginProvider(null);
-        }
-      } else {
-        // Silent auth failed, fall back to interactive login
-        console.log("Silent login failed, falling back to interactive login");
-        authRedirectForProvider(provider, false);
-      }
+      // Attempt silent auth first
+      authRedirectForProvider(provider, true);
     } catch (error) {
       console.error("Error during silent auth:", error);
       // Fall back to interactive login

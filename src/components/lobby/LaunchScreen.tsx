@@ -6,13 +6,28 @@ import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useLocalGameStage } from "@/contexts/GameContext";
 
 const LaunchScreen = () => {
-  const { localGameStage, setLocalGameStage } = useLocalGameStage();
+  const { setLocalGameStage } = useLocalGameStage();
   const { initialPlay } = useStereo();
   const { shouldAnimateStars } = useLobbyContext();
+  const isLoggedIn = true;
 
-  const handleLaunch = () => {
+  // Stub handlers for the new buttons
+  const handleLogin = () => {
+    // TODO: Implement login logic
+  };
+  const handleCreateAccount = () => {
+    // TODO: Implement create account logic
+  };
+  const handleJoinNoAccount = () => {
+    // TODO: show a modal to enter a room code
+  };
+  const handleHostGame = () => {
     initialPlay();
     setLocalGameStage("lobby");
+
+  };
+  const handleJoinGame = () => {
+    // TODO: Implement join game logic
   };
 
   return (
@@ -33,12 +48,44 @@ const LaunchScreen = () => {
             alt="Game Logo"
             className="w-40 xl:w-[320px] mb-8"
           />
-          <button
-            onClick={handleLaunch}
-            className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base} mb-8`}
-          >
-            Launch
-          </button>
+          {!isLoggedIn ? (
+            <div className="flex flex-row gap-4 mb-8">
+              <button
+                onClick={handleLogin}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Log in
+              </button>
+              <button
+                onClick={handleCreateAccount}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Create free account
+              </button>
+              <button
+                onClick={handleJoinNoAccount}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Join game (no account required)
+              </button>
+            </div>
+          ) : null}
+          {isLoggedIn ? (
+            <div className="flex flex-row gap-4 mb-8">
+              <button
+                onClick={handleHostGame}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Host game
+              </button>
+              <button
+                onClick={handleJoinGame}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Join game
+              </button>
+            </div>
+          ) : null}
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200`}>
@@ -47,14 +94,15 @@ const LaunchScreen = () => {
                 </p>
                 <p className="mb-4">
                   You can play in a web browser on Windows/Mac/Linux, but mobile
-                  devices are not supported. The game is desgined to be more fun in multiplayer, you can press the "Invite" button in the lobby to invite your friends.
+                  devices are not supported. The game is desgined to be more fun in multiplayer, press the "Invite" button in the lobby to invite your friends, or ask them to click "Join game" and type in the room code.
                 </p>
                 <p className="mb-4">
-                  The game is currently an early alpha and may have many bugs and issues.
+                  The game is currently in alpha and may have many bugs and issues.
                 </p>
                 <p className="mb-4">
                   As a disclaimer, the development process made heavy use of AI
-                  for generating images, music, code, and stories. I experimented, iterated, curated, merged and refined various game and story ideas over the course of 6 months full-timework. As such, despite the real issues around copyright regarding the use of AI generated content, I would hope that the game is at least somewhat interesting, and not just a collection of randomly generated noise.
+                  for generating images, music, code, and stories. I experimented, iterated, curated, merged and refined various game and story ideas over the course of 6 months full-time work. This was followed by several more
+                  months testing and refinement. As such, despite the many issues around copyright regarding the use of AI generated content, I would hope that the game is at least somewhat interesting, and not just a collection of randomly generated noise.
                 </p>
               </div>
             </div>

@@ -81,7 +81,7 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
 
   return (
     <Popup title="Sign In" onClose={onClose}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col gap-4 mb-6">
         <h2 className="font-['Cinzel'] text-2xl font-bold text-amber-500 tracking-wide">
           Please sign in to continue.
         </h2>

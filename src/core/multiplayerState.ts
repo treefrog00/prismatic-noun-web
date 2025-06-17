@@ -3,6 +3,7 @@ import {
   onPlayerJoin as originalOnPlayerJoin,
   PlayerState,
   usePlayersList as originalUsePlayersList,
+  usePlayersState as originalUsePlayersState,
   RPC as originalRPC,
   useMultiplayerState as originalUseMultiplayerState,
   openDiscordInviteDialog as originalOpenDiscordInviteDialog,
@@ -14,10 +15,14 @@ import {
   getRoomCode as originalGetRoomCode,
   InitOptions,
   useIsHost as originalUseIsHost,
+  usePlayerState as originalUsePlayerState,
 } from "playroomkit";
 import { HASH_QUEST_ID } from "../config";
 import { useState } from "react";
-import { useLocalPlayers } from "../contexts/GameContext";
+import {
+  useLocalPlayerPrompts,
+  useLocalPlayers,
+} from "../contexts/GameContext";
 
 export type { PlayerState };
 
@@ -27,6 +32,9 @@ interface PlayerProfile {
   photo: string;
   avatarIndex: number;
 }
+
+type SetStateFunction<T> = (value: T, reliable?: boolean) => void;
+type MultiplayerStateHookResult<T> = [T, SetStateFunction<T>];
 
 export class LocalPlayerState implements PlayerState {
   private state: Record<string, any> = {};
@@ -99,6 +107,34 @@ export const usePlayersList = (triggerOnPlayerStateChange?: boolean) => {
     return localPlayers;
   }
   return originalUsePlayersList(triggerOnPlayerStateChange);
+};
+
+export const usePlayersState = (key: string): any[] => {
+  if (HASH_QUEST_ID) {
+    const { localPlayers } = useLocalPlayers();
+    // this won't work as a hook with updates, but doesn't matter for now
+    // because it's only used for prompts from other players, and in local mode
+    // there are no other players
+    return localPlayers.map((player) => ({
+      player: player,
+      state: player.getState(key),
+    }));
+  }
+  return originalUsePlayersState(key);
+};
+
+export const usePlayerStatePrompts = (
+  player: PlayerState,
+  key: string,
+  defaultValue: Record<string, string>,
+): MultiplayerStateHookResult<Record<string, string>> => {
+  if (HASH_QUEST_ID) {
+    // this assumes the only thing this ever gets used for is the player prompts
+    const { localPlayerPrompts, setLocalPlayerPrompts } =
+      useLocalPlayerPrompts();
+    return [localPlayerPrompts, setLocalPlayerPrompts];
+  }
+  return originalUsePlayerState(player, key, defaultValue);
 };
 
 export const openDiscordInviteDialog = () => {

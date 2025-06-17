@@ -13,11 +13,13 @@ const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps)
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
   const hasSufficientChatText = (text: string) => {
-    if (!text || text.length < 2) return false;
+    if (!text || text.length < 1) return false;
     return true;
   };
 
   const handleSendChat = () => {
+    if (!hasSufficientChatText(chatText)) return;
+
     if (chatType === "chat") {
       RPC.call(
         "rpc-chat",
@@ -42,7 +44,6 @@ const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps)
           text={chatText}
           setText={setChatText}
           textInputRef={textInputRef}
-          hasSufficientText={hasSufficientChatText}
         />
       </div>
       <div className="flex gap-2">

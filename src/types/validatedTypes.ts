@@ -33,19 +33,21 @@ const BaseCharacterSchema = z.object({
   description: z.string(),
   imageUrl: z.string(),
   abilities: z.array(AbilityDataSchema),
-  inventory: z.array(z.string()),
 });
 
-const CharacterSchema = BaseCharacterSchema.extend({});
+const CharacterSchema = BaseCharacterSchema.extend({
+  inventory: z.array(z.string()),
+});
 
 const NpcSchema = BaseCharacterSchema.extend({});
 
 export const CharacterStateSchema = z.object({
   inventory: z.array(z.string()),
+  effects: z.array(z.string()),
 });
 
 const NpcStateSchema = z.object({
-  name: z.string(),
+  effects: z.array(z.string()),
 });
 
 const LocationStateSchema = z.object({
@@ -124,7 +126,13 @@ const GameEventSchema = z.discriminatedUnion("type", [
     playlist: z.array(z.string()),
   }),
   z.object({
-    type: z.literal("StartPlayerActions"),
+    type: z.literal("PlayerActionsStart"),
+  }),
+  z.object({
+    type: z.literal("PlayerActionsEnd"),
+  }),
+  z.object({
+    type: z.literal("GameEnd"),
   }),
 ]);
 

@@ -2,14 +2,14 @@ import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
 import {
   useTimeRemaining,
-  usePrompts,
   useShowPrompts,
+  useMyPrompts,
 } from "@/contexts/GameContext";
-import artUrl from "@/util/artUrls";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
+import { usePlayersState } from "@/core/multiplayerState";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -21,7 +21,8 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
-  const { prompts, setPrompts } = usePrompts();
+  const { myPrompts, setMyPrompts } = useMyPrompts();
+  const otherPrompts = usePlayersState("prompts");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,35 +35,42 @@ const StoryButtons: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const checkPromptLengths = () => {
-    return Object.values(prompts).every(
-      (prompt) => prompt && prompt.length >= 4,
-    );
-  };
-
   const handleActOk = async () => {
     let response = await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompts`,
-      { prompts: prompts },
+      { prompts: myPrompts },
       SubmitPromptsResponseSchema,
     );
+  };
+
+  const handleActEnterButton = () => {
+    if (Object.values(myPrompts).every(
+      (prompt) => prompt && prompt.length >= 4,
+    )) {
+      handlePlayerAction(handleActOk);
+    }
   };
 
   const renderTextInput = () => (
     <div className="flex flex-col gap-4 justify-center self-center mt-2">
       <div className="w-full">
-        {Object.entries(prompts).map(([key, _]) => (
+        {otherPrompts.map((prompt) => (
+          <div key={prompt.player.id}>
+            <div>{prompt.player.id}</div>
+            <div>{prompt.state}</div>
+          </div>
+        ))}
+        {Object.entries(myPrompts).map(([key, _]) => (
           <div key={key} className="mb-4">
             <TextInput
-              text={prompts[key]}
+              text={myPrompts[key]}
               setText={(value: string) => {
-                setPrompts((prev) => ({ ...prev, [key]: value }));
+                setMyPrompts((prev) => ({ ...prev, [key]: value }));
               }}
               textInputRef={textInputRef}
               onClose={() => {}}
-              onOk={() => {}}
+              onOk={handleActEnterButton}
               placeHolder={`Describe ${key}'s plan for the next 30 seconds...`}
-              hasSufficientText={() => prompts[key]?.length >= 4}
               showCharCount={true}
             />
           </div>
@@ -71,7 +79,6 @@ const StoryButtons: React.FC = () => {
           <button
             className={`game-button ${getColorClasses("teal")} ml-4`}
             onPointerDown={() => handlePlayerAction(handleActOk)}
-            disabled={!checkPromptLengths()}
           >
             Confirm
           </button>
@@ -140,19 +147,6 @@ const StoryButtons: React.FC = () => {
               <div>
                 <div className="text-4xl font-bold">{timeRemaining}s</div>
               </div>
-            </div>
-            <div
-              className="w-16 h-16 cursor-pointer relative group"
-              onPointerDown={() => setIsSettingsOpen(true)}
-            >
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                Settings
-              </div>
-              <img
-                src={artUrl("settings.webp")}
-                alt="Settings"
-                className="hover:scale-105 transition-transform"
-              />
             </div>
           </div>
         </div>

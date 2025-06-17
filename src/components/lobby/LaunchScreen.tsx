@@ -53,19 +53,9 @@ const LaunchScreen = () => {
           {!pnAccessToken ? (
             <div className="flex flex-col gap-4 mb-8">
               <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-                Sign up for a free account to host a new game (including
-                single-player), or join an existing game with no sign up
-                required
+                Sign in with Google or Discord to continue
               </div>
-              <div className="flex flex-row gap-4 justify-center">
-                <AuthButtons />
-                <button
-                  onClick={handleJoinGame}
-                  className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-                >
-                  Join game
-                </button>
-              </div>
+              <AuthButtons />
             </div>
           ) : null}
           {pnAccessToken ? (

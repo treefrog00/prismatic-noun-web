@@ -9,7 +9,6 @@ interface TextInputProps {
   onClose: () => void;
   onOk: () => void;
   placeHolder: string;
-  hasSufficientText: (text: string) => boolean;
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -17,7 +16,6 @@ const TextInput: React.FC<TextInputProps> = ({
   setText,
   textInputRef,
   showCharCount,
-  hasSufficientText,
   onClose,
   onOk,
   placeHolder,
@@ -58,9 +56,7 @@ const TextInput: React.FC<TextInputProps> = ({
               return;
             }
             e.preventDefault();
-            if (hasSufficientText(text)) {
-              onOk();
-            }
+            onOk();
           } else if (e.key === "Escape") {
             e.preventDefault();
             onClose();

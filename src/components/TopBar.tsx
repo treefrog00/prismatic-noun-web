@@ -133,7 +133,6 @@ const TopBar = () => {
   const { locationState } = useLocationState();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const rightHandListRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
 
   const characterOverlay = useOverlayState("character");
@@ -152,65 +151,24 @@ const TopBar = () => {
     }));
   };
 
-  const getCharacterPosition = () => ({
+  const getLeftAlignedPosition = () => ({
     x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
-
-  const getRightAlignedPosition = () => {
-    const overlayWidth = window.innerWidth * 0.4;
-    const lastItemRect =
-      rightHandListRef.current?.lastElementChild?.getBoundingClientRect();
-    return {
-      x: (lastItemRect?.right ?? 0) - overlayWidth,
-      y: lastItemRect?.bottom ?? 0,
-    };
-  };
 
   return (
     <>
       <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
-            <div>
-              <span className="text-gray-400 text-xs">All</span>
-            </div>
-            {Object.entries(characters).map(([name, character]) => (
-              <div
-                onMouseEnter={(e) =>
-                  characterOverlay.handleMouseEvent(
-                    name,
-                    e,
-                    getCharacterPosition,
-                  )
-                }
-                onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
-              >
-                <span className="text-gray-400 text-xs">{name}</span>
-              </div>
-            ))}
-          </div>
-          <div ref={rightHandListRef} className="flex gap-4">
-            {getNpcs().map((npc) => (
-              <div
-                key={npc.instanceId}
-                className={sharedBoxStyles}
-                onMouseEnter={(e) =>
-                  npcOverlay.handleMouseEvent(npc.instanceId, e, () =>
-                    getRightAlignedPosition(),
-                  )
-                }
-                onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
-              >
-                <span className="text-gray-400 text-xs">{npc.name}</span>
-              </div>
-            ))}
+
+            {/* Location */}
             {locationData && (
               <div
                 className={`${sharedBoxStyles} overflow-hidden`}
                 onMouseEnter={(e) =>
                   locationOverlay.handleMouseEvent("location", e, () =>
-                    getRightAlignedPosition(),
+                    getLeftAlignedPosition(),
                   )
                 }
                 onMouseLeave={() => locationOverlay.handleMouseEvent(null)}
@@ -222,6 +180,57 @@ const TopBar = () => {
                 />
               </div>
             )}
+
+            <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
+
+            {/* Characters list */}
+            {Object.entries(characters).map(([name, character], idx, arr) => (
+              <div
+                key={name}
+                onMouseEnter={(e) =>
+                  characterOverlay.handleMouseEvent(
+                    name,
+                    e,
+                    getLeftAlignedPosition,
+                  )
+                }
+                onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
+              >
+                <span className="text-gray-400 text-xs">{name}</span>
+              </div>
+            ))}
+
+            <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
+
+            {/* NPCs list */}
+            {getNpcs().map((npc) => (
+              <div
+                key={npc.instanceId}
+                className={sharedBoxStyles}
+                onMouseEnter={(e) =>
+                  npcOverlay.handleMouseEvent(npc.instanceId, e, getLeftAlignedPosition
+                  )
+                }
+                onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
+              >
+                <span className="text-gray-400 text-xs">{npc.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-4">
+            <div
+              className="w-16 h-16 cursor-pointer relative group"
+              onPointerDown={() => setIsSettingsOpen(true)}
+            >
+              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                Settings
+              </div>
+              <img
+                src={artUrl("settings.webp")}
+                alt="Settings"
+                className="hover:scale-105 transition-transform"
+              />
+            </div>
           </div>
         </div>
       </div>

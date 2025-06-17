@@ -6,11 +6,8 @@ import {
   LocalPlayerState,
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
-import { HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
-import {
-  StartGameSchema,
-  QuestSummary,
-} from "../types/validatedTypes";
+import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
+import { StartGameSchema, QuestSummary } from "../types/validatedTypes";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";
@@ -50,6 +47,7 @@ export async function startIfNotStarted(
     {
       roomCode: getRoomCode(),
       players: playerDetails,
+      locationId: HASH_LOCATION_ID,
     },
     StartGameSchema,
   );

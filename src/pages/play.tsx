@@ -1,12 +1,10 @@
 import Lobby from "../components/lobby/Lobby";
 import Game from "../components/Game";
 import { HASH_QUEST_ID } from "../config";
-import { AuthMode } from "@/types/auth";
 import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useState } from "react";
 import { envConfig } from "../envConfig";
 import LaunchScreen from "@/components/lobby/LaunchScreen";
-import { doDiscordAuthRedirect } from "@/components/auth/OAuthButtonsAuth";
 import { useLocalGameStage } from "@/contexts/GameContext";
 import ChatInput from "@/components/chat/ChatInput";
 import AuthPopup from "@/components/auth/AuthPopup";
@@ -20,26 +18,6 @@ const Play = () => {
   const [chatText, setChatText] = useState("");
 
   useEffect(() => {
-    // client token is for Discord login button auth mode, i.e. totally
-    // unused for now
-    // const urlParams = new URLSearchParams(window.location.search);
-    // const clientToken = urlParams.get("client_token");
-
-    // if (clientToken) {
-    //   localStorage.setItem("client_token", clientToken);
-
-    //   // Extract room code from hash if present (#r=...)
-    //   const hash = window.location.hash;
-    //   if (hash.startsWith("#r=")) {
-    //     const roomCode = hash.substring(3); // Remove '#r=' prefix
-    //     localStorage.setItem("room_code", roomCode);
-    //   }
-    // }
-
-    // if (envConfig.authMode == AuthMode.DiscordLoginButton && !clientToken) {
-    //   doDiscordAuthRedirect();
-    // }
-
     if (envConfig.skipLaunchScreen) {
       setLocalGameStage("lobby");
     }

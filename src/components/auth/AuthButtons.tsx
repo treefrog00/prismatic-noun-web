@@ -1,20 +1,12 @@
-import { FC } from "react";
 import { useState } from "react";
-import {
-  authRedirectForProvider,
-  handleSuccessfulAuthProvider,
-} from "./OAuthButtonsAuth";
+import { authRedirectForProvider } from "./OAuthButtonsAuth";
 import GoogleSignInButton from "./GoogleSignInButton";
 import DiscordButton from "./DiscordButton";
 import { useAuth } from "@/contexts/AuthContext";
 
 type LoginProvider = "google" | "discord";
 
-interface AuthPopupProps {
-  onClose: () => void;
-}
-
-const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
+const AuthButtons = () => {
   const [isAttemptingLogin, setIsAttemptingLogin] = useState(false);
   const [loginProvider, setLoginProvider] = useState<LoginProvider | null>(
     null,
@@ -67,4 +59,4 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
   );
 };
 
-export default AuthPopup;
+export default AuthButtons;

@@ -58,7 +58,7 @@ const LaunchScreen = () => {
                 required
               </div>
               <div className="flex flex-row gap-4 justify-center">
-                <AuthButtons onClose={() => {}} />
+                <AuthButtons />
                 <button
                   onClick={handleJoinGame}
                   className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}

@@ -7,12 +7,9 @@ import { envConfig } from "../envConfig";
 import LaunchScreen from "@/components/lobby/LaunchScreen";
 import { useLocalGameStage } from "@/contexts/GameContext";
 import ChatInput from "@/components/chat/ChatInput";
-import AuthPopup from "@/components/auth/AuthButtons";
-import { useAuth } from "@/contexts/AuthContext";
 
 const Play = () => {
   const { localGameStage, setLocalGameStage } = useLocalGameStage();
-  const { showAuthPopup, setShowAuthPopup } = useAuth();
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const [chatText, setChatText] = useState("");
@@ -69,9 +66,7 @@ const Play = () => {
     <div className="min-h-screen bg-gray-900 px-0">
       {localGameStage === "launch-screen" && !HASH_QUEST_ID && <LaunchScreen />}
       {localGameStage === "lobby" && !HASH_QUEST_ID && <Lobby />}
-
-      {(!["launch-screen", "lobby"].includes(localGameStage) ||
-        HASH_QUEST_ID) && <Game />}
+      {(localGameStage === "game" || HASH_QUEST_ID) && <Game />}
       <ChatMessages />
       {showChatInput && (
         <ChatInput
@@ -81,7 +76,6 @@ const Play = () => {
           chatType={chatType}
         />
       )}
-      {showAuthPopup && <AuthPopup onClose={() => setShowAuthPopup(false)} />}
     </div>
   );
 };

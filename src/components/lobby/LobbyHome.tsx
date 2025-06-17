@@ -2,7 +2,7 @@ import { useIsHost, usePlayersList } from "@/core/multiplayerState";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
-import { useGameStage } from "@/contexts/GameContext";
+import { useGameStage, useLocalGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 import { useState } from "react";
@@ -19,9 +19,11 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
 
   const isHost = useIsHost();
   const { setGameStage } = useGameStage();
+  const { setLocalGameStage } = useLocalGameStage();
 
   const handleStartAdventure = () => {
-    setGameStage("player-action");
+    setLocalGameStage("game");
+    setGameStage("scripted-scene");
   };
 
   const handleInvite = () => {
@@ -30,8 +32,8 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
 
   return (
     <>
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex-1 flex flex-col justify-center">
+      <div className="flex items-start justify-between mb-8">
+        <div className="flex-1 flex flex-col justify-start mt-5">
           <h2
             style={{
               ...starryTheme.lobbyHeading,
@@ -60,7 +62,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   ))}
                 </select>
                 <p
-                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
+                  className={`mt-5 text-gray-400 ${responsiveStyles.text.small}`}
                 >
                   {questSummary.description}
                 </p>
@@ -73,7 +75,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   {questSummary.title}
                 </div>
                 <p
-                  className={`mt-2 text-gray-400 ${responsiveStyles.text.small}`}
+                  className={`mt-5 text-gray-400 ${responsiveStyles.text.small}`}
                 >
                   {questSummary.description}
                 </p>

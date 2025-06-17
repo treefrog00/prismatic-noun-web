@@ -139,8 +139,6 @@ const TopBar = () => {
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
   const locationOverlay = useOverlayState("location");
-  const { gameStage } = useGameStage();
-  const { voteState } = useVoteState();
 
   const sharedBoxStyles =
     "w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors";

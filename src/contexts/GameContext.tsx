@@ -22,13 +22,13 @@ export interface DiceRollState {
   locationRoll: DiceRoll;
 }
 
-export type GameStage =
-  | "launch-screen"
-  | "lobby"
+export type LocalGameStage = "launch-screen" | "lobby" | "game";
+
+export type MultiplayerGameStage =
+  | "no-game"
+  | "scripted-scene"
   | "player-action"
-  | "voting"
-  | "replays"
-  | "end";
+  | "scene-end";
 
 type VoteState = {
   showVote: boolean;
@@ -58,14 +58,14 @@ type GameContextType = {
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
 
-  gameStage: GameStage;
-  setGameStage: (value: GameStage) => void;
+  gameStage: MultiplayerGameStage;
+  setGameStage: (value: MultiplayerGameStage) => void;
 
   voteState: VoteState;
   setVoteState: (value: VoteState) => void;
 
-  localGameStage: GameStage;
-  setLocalGameStage: (value: GameStage) => void;
+  localGameStage: LocalGameStage;
+  setLocalGameStage: (value: LocalGameStage) => void;
 
   gameApi: GameApi;
 
@@ -108,9 +108,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     null,
   );
 
-  const [gameStage, setGameStage] = useMultiplayerState<GameStage>(
+  const [gameStage, setGameStage] = useMultiplayerState<MultiplayerGameStage>(
     "gameStage",
-    "launch-screen",
+    "no-game",
   );
   const [voteState, setVoteState] = useMultiplayerState<VoteState>(
     "voteState",
@@ -147,7 +147,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   });
 
   const [localGameStage, setLocalGameStage] =
-    useState<GameStage>("launch-screen");
+    useState<LocalGameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
   const [showPromptsInput, setShowPromptsInput] = useState(false);
   const [prompts, setPrompts] = useState<Record<string, string>>({});

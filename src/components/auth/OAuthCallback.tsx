@@ -1,17 +1,15 @@
-import { useAuth } from "@/contexts/AuthContext";
 import {
   authRedirectForProvider,
   handleSuccessfulAuthProvider,
 } from "./OAuthButtonsAuth";
 import { useCallback, useEffect } from "react";
+import { setAccessTokenInStorage } from "@/contexts/AuthContext";
 
 interface OAuthCallbackProps {
   provider: "discord" | "google";
 }
 
 const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
-  const { setPnAccessToken } = useAuth();
-
   const handleCallback = useCallback(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
@@ -58,13 +56,13 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
       const result = await handleSuccessfulAuthProvider(
         code,
         provider,
-        setPnAccessToken,
+        setAccessTokenInStorage,
       );
       if (!result.success) {
         console.error(`OAuth callback failed:`, result.error);
       }
     }
-  }, [provider, setPnAccessToken]);
+  }, [provider]);
 
   useEffect(() => {
     handleCallback();

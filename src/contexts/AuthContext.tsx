@@ -20,6 +20,16 @@ export const getCurrentPnAccessToken = (): string | null => {
   return currentPnAccessToken;
 };
 
+// Utility function to set access token without needing React context
+export const setAccessTokenInStorage = (token: string | null) => {
+  currentPnAccessToken = token; // Keep global accessor in sync
+  if (token) {
+    localStorage.setItem("pn_access_token", token);
+  } else {
+    localStorage.removeItem("pn_access_token");
+  }
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
@@ -42,13 +52,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   // Update localStorage and global accessor whenever pnAccessToken changes
+  // this is currently never used, as only the oauth callback ever sets the token
   useEffect(() => {
-    currentPnAccessToken = pnAccessToken; // Keep global accessor in sync
-    if (pnAccessToken) {
-      localStorage.setItem("pn_access_token", pnAccessToken);
-    } else {
-      localStorage.removeItem("pn_access_token");
-    }
+    setAccessTokenInStorage(pnAccessToken);
   }, [pnAccessToken]);
 
   const setPnAccessToken = (token: string | null) => {

@@ -71,7 +71,7 @@ export const exchangeCodeForToken = async (
 export const handleSuccessfulAuthProvider = async (
   code: string,
   provider: "google" | "discord",
-  setPnAccessToken: (token: string) => void,
+  setPnAccessToken: (token: string | null) => void,
 ) => {
   try {
     const result = await exchangeCodeForToken(code, provider);

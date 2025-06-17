@@ -11,11 +11,17 @@ const DiscordButton: FC<DiscordButtonProps> = ({
   disabled = false,
   loadingText = "Continue with Discord",
 }) => {
+  const baseClasses =
+    "flex items-center justify-center px-4 py-2 border rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
+
+  const darkThemeClasses =
+    "bg-gray-800 border-gray-600 text-white hover:bg-gray-700";
+
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className="flex items-center bg-white border border-gray-300 rounded-lg shadow-md px-6 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
+      className={`${baseClasses} ${darkThemeClasses}`}
     >
       <svg
         className="h-6 w-6 mr-2"

@@ -1,5 +1,5 @@
 const GoogleSignInButton = ({
-  theme = "light",
+  theme = "dark",
   onClick,
   disabled = false,
   loadingText,
@@ -48,7 +48,7 @@ const GoogleSignInButton = ({
           d="M24 9.4c3.54 0 6.6.96 8.78 3.03l6.04-6.01C35.91 2.19 30.47 0 24 0 14.48 0 6.21 5.34 2.25 13.5l7.22 5.68C11.53 13.95 17.24 9.4 24 9.4z"
         />
       </svg>
-      {loadingText || "Sign in with Google"}
+      {loadingText || "Continue with Google"}
     </button>
   );
 };

@@ -53,10 +53,11 @@ const LaunchScreen = () => {
           />
           {!isLoggedIn ? (
             <div className="flex flex-col gap-4 mb-8">
-              <p className="font-['Cinzel'] tracking-wide text-center">
-                Sign up for a free account, or join an existing game with no
-                account required
-              </p>
+              <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
+                Sign up for a free account to host a new game (including
+                single-player), or join an existing game with no sign up
+                required
+              </div>
               <div className="flex flex-row gap-4 justify-center">
                 <AuthButtons onClose={() => {}} />
                 <button

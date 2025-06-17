@@ -1,5 +1,9 @@
 import { BACKEND_URL } from "@/config";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  doGoogleAuthRedirect,
+  doDiscordAuthRedirect,
+} from "./OAuthButtonsAuth";
 
 interface OAuthCallbackProps {
   provider: "discord" | "google";
@@ -11,6 +15,23 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
   const handleCallback = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
+    const error = urlParams.get("error");
+
+    // Check if we were redirected back here because a silent login failed.
+    if (
+      error === "login_required" ||
+      error === "consent_required" ||
+      error === "interaction_required"
+    ) {
+      console.log("Silent login failed. Retrying with interactive login.");
+      // Retry with silent=false for interactive login
+      if (provider === "google") {
+        doGoogleAuthRedirect(false);
+      } else {
+        doDiscordAuthRedirect(false);
+      }
+      return;
+    }
 
     if (code) {
       try {

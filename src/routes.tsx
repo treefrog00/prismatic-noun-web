@@ -6,7 +6,7 @@ import Terms from "./pages/terms";
 import Privacy from "./pages/privacy";
 import HomeLayout from "./layouts/HomeLayout";
 import Play from "./pages/play";
-import DiscordCallback from "./components/auth/DiscordCallback";
+import OAuthCallback from "./components/auth/OAuthCallback";
 
 export const routes: RouteObject[] = [
   {
@@ -43,6 +43,10 @@ export const routes: RouteObject[] = [
   },
   {
     path: "/auth/discord/callback",
-    element: <DiscordCallback />,
+    element: <OAuthCallback provider="discord" />,
+  },
+  {
+    path: "/auth/google/callback",
+    element: <OAuthCallback provider="google" />,
   },
 ];

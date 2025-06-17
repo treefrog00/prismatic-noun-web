@@ -1,46 +1,13 @@
 import { BACKEND_URL } from "../config";
-import { AuthMode } from "@/types/auth";
 import { z } from "zod/v4";
-import { envConfig } from "@/envConfig";
-import { getDiscordAccessToken } from "./multiplayerState";
-import {
-  pnAccessToken,
-  firebaseToken,
-  setPnAccessToken,
-  discordLoginButtonAccessToken,
-} from "@/contexts/DiscordAuthFunctions";
+import { getCurrentPnAccessToken } from "@/contexts/AuthContext";
 
 export class GameApi {
-
-
-  async oldMakeRequestWithExpireHandling(path: string, body: any) {
-    const token = await this.getAuthToken();
-    const response = await this._makeRequestWithTokenNoException(path, body, token);
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        const errorData = await response.json();
-        if (errorData.expired) {
-          localStorage.removeItem('token');
-          const newToken = await this.getAuthToken();
-          const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken);
-          if (!retryResponse.ok) {
-            throw new Error(`HTTP status: ${retryResponse.status}`);
-          }
-          return retryResponse.json();
-        }
-      }
-      throw new Error(`HTTP status: ${response.status}`);
-    }
-
-    return response.json();
-  }
-
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
     const response = await this._makeRequestWithTokenNoException(
       path,
       body,
-      pnAccessToken,
+      getCurrentPnAccessToken(),
       method,
     );
 
@@ -51,13 +18,8 @@ export class GameApi {
     if (response.status === 401) {
       const errorData = await response.json();
       if (errorData.expired) {
-        const newToken = await getNewPnToken();
-
-        const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken);
-        if (!retryResponse.ok) {
-          throw new Error(`HTTP status: ${retryResponse.status}`);
-        }
-        return retryResponse.json();
+        console.log("Token expired");
+        throw new Error("Token expired");
       }
     }
     const responseBody = await response.json();

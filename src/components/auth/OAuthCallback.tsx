@@ -1,15 +1,25 @@
 import { BACKEND_URL } from "@/config";
-import { setPnAccessToken } from "@/contexts/DiscordAuthFunctions";
-import { setDiscordLoginButtonAccessToken } from "@/contexts/DiscordAuthFunctions";
+import { useAuth } from "@/contexts/AuthContext";
 
-const DiscordCallback: React.FC = () => {
+interface OAuthCallbackProps {
+  provider: "discord" | "google";
+}
+
+const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
+  const { setPnAccessToken } = useAuth();
+
   const handleCallback = async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
 
     if (code) {
       try {
-        const response = await fetch(`${BACKEND_URL}/auth/exchange_code`, {
+        const endpoint =
+          provider === "discord"
+            ? "/auth/exchange_discord_code"
+            : "/auth/exchange_google_code";
+
+        const response = await fetch(`${BACKEND_URL}${endpoint}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -20,8 +30,6 @@ const DiscordCallback: React.FC = () => {
         if (response.ok) {
           const data = await response.json();
           setPnAccessToken(data.pn_access_token);
-          setDiscordLoginButtonAccessToken(data.discord_access_token);
-          localStorage.setItem("discord_username", data.discord_username);
 
           // Get the stored redirect URL or default to /play
           const redirectUrl =
@@ -31,10 +39,10 @@ const DiscordCallback: React.FC = () => {
           // Navigate to the stored URL
           window.location.href = redirectUrl;
         } else {
-          console.error("Failed to exchange code for token");
+          console.error(`Failed to exchange ${provider} code for token`);
         }
       } catch (error) {
-        console.error("Error exchanging code for token:", error);
+        console.error(`Error exchanging ${provider} code for token:`, error);
       }
     }
   };
@@ -49,4 +57,4 @@ const DiscordCallback: React.FC = () => {
   );
 };
 
-export default DiscordCallback;
+export default OAuthCallback;

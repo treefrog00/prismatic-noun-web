@@ -33,8 +33,6 @@
   },
   "dependencies": {
     "@sentry/react": "^9.13.0",
-    "firebase": "^10.14.1",
-    "firebaseui": "^6.1.0",
     "playroomkit": "^0.0.87",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",

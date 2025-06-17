@@ -6,21 +6,20 @@ import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useState } from "react";
 import { envConfig } from "../envConfig";
 import LaunchScreen from "@/components/lobby/LaunchScreen";
-import { doDiscordAuthRedirect } from "@/components/auth/DiscordAuth";
+import { doDiscordAuthRedirect } from "@/components/auth/OAuthButtonsAuth";
 import { useLocalGameStage } from "@/contexts/GameContext";
-import { useFirebaseAuth } from "@/contexts/FirebaseAuthContext";
 import ChatInput from "@/components/chat/ChatInput";
-import AuthPopup from "@/components/popups/AuthPopup";
+import AuthPopup from "@/components/auth/AuthPopup";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Play = () => {
   const { localGameStage, setLocalGameStage } = useLocalGameStage();
+  const { showAuthPopup, setShowAuthPopup } = useAuth();
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const [chatText, setChatText] = useState("");
-  const { showAuthPopup, setShowAuthPopup } = useFirebaseAuth();
 
   useEffect(() => {
-
     // client token is for Discord login button auth mode, i.e. totally
     // unused for now
     // const urlParams = new URLSearchParams(window.location.search);
@@ -104,9 +103,7 @@ const Play = () => {
           chatType={chatType}
         />
       )}
-      {showAuthPopup && (
-        <AuthPopup onClose={() => setShowAuthPopup(false)} />
-      )}
+      {showAuthPopup && <AuthPopup onClose={() => setShowAuthPopup(false)} />}
     </div>
   );
 };

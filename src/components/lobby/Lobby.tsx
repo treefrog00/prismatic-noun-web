@@ -34,10 +34,6 @@ const LobbyContent = () => {
       await insertCoin({
         skipLobby: true,
         gameId: envConfig.gameId,
-        discord:
-          envConfig.authMode == AuthMode.DiscordEmbedded
-            ? discordOptions
-            : false,
       });
 
       // Fetch available quests

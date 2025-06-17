@@ -12,10 +12,11 @@ import { AuthMode } from "./types/auth";
 // Set font URL based on environment
 const font =
   "family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@500;700&display=swap";
-const fontUrl =
-  import.meta.env.DEV || envConfig.authMode != AuthMode.DiscordEmbedded
-    ? `https://fonts.googleapis.com/css2?${font}`
-    : `/fonts-styles/css2?${font}`;
+const fontUrl = `https://fonts.googleapis.com/css2?${font}`;
+// const fontUrl =
+//   import.meta.env.DEV || envConfig.authMode != AuthMode.DiscordEmbedded
+//     ? `https://fonts.googleapis.com/css2?${font}`
+//     : `/fonts-styles/css2?${font}`;
 
 // Add font stylesheet
 const fontStylesheet = document.createElement("link");

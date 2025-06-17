@@ -10,19 +10,14 @@ if (envConfig.backendUrl) {
   url = envConfig.backendUrl;
 } else if (import.meta.env.DEV) {
   url = "http://localhost:5000";
-} else if (envConfig.authMode == AuthMode.DiscordEmbedded) {
-  // requires url-mapping to be set up
-  url = "/api";
+  // } else if (envConfig.authMode == AuthMode.DiscordEmbedded) {
+  //   // requires url-mapping to be set up
+  //   url = "/api";
 } else {
   url = "https://api.prismaticnoun.xyz/api";
 }
 
 export const BACKEND_URL = url;
-
-const GENERATED_IMAGES_URL =
-  import.meta.env.DEV || envConfig.authMode != AuthMode.DiscordEmbedded
-    ? "https://storage.googleapis.com/prismatic-noun-images"
-    : "/images";
 
 export const HASH_HOST_KEY = hashParams.get("hostkey");
 

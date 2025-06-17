@@ -7,7 +7,7 @@ import { envConfig } from "../envConfig";
 import LaunchScreen from "@/components/lobby/LaunchScreen";
 import { useLocalGameStage } from "@/contexts/GameContext";
 import ChatInput from "@/components/chat/ChatInput";
-import AuthPopup from "@/components/auth/AuthPopup";
+import AuthPopup from "@/components/auth/AuthButtons";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Play = () => {

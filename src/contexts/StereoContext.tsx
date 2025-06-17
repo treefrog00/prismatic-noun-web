@@ -118,7 +118,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
     setCurrentMode(playlist[0]);
     setPlaylistIndex(0);
-    audioElementRef.current.src = `/ai_sound/${currentMode}.mp3`;
+    audioElementRef.current.src = `/ai_sound/${playlist[0]}.mp3`;
     audioElementRef.current.volume = 1;
     audioElementRef.current.play().catch((error) => {
       console.error("Error playing audio:", error);

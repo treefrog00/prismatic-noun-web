@@ -5,6 +5,7 @@ import { ErrorProvider } from "../contexts/ErrorContext";
 import { LobbyContextProvider } from "@/contexts/LobbyContext";
 import { EventProvider } from "@/contexts/EventContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 interface GameLayoutProps {
   children: ReactNode;
@@ -41,15 +42,17 @@ const GameLayout = ({ children }: GameLayoutProps) => {
     >
       <ErrorProvider>
         <AuthProvider>
-        <LobbyContextProvider>
-          <GameProvider>
-            <StereoProvider>
-              <EventProvider>
-                <Suspense fallback={""}>{children}</Suspense>
-              </EventProvider>
-            </StereoProvider>
-          </GameProvider>
-        </LobbyContextProvider>
+          <LobbyContextProvider>
+            <GameProvider>
+              <StereoProvider>
+                <EventProvider>
+                  <ToastProvider>
+                    <Suspense fallback={""}>{children}</Suspense>
+                  </ToastProvider>
+                </EventProvider>
+              </StereoProvider>
+            </GameProvider>
+          </LobbyContextProvider>
         </AuthProvider>
       </ErrorProvider>
     </main>

@@ -1,14 +1,12 @@
-import {
-  openDiscordInviteDialog,
-  useIsHost,
-  usePlayersList,
-} from "@/core/multiplayerState";
+import { useIsHost, usePlayersList } from "@/core/multiplayerState";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
 import { useGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
+import { useState } from "react";
+import InvitePopup from "@/components/popups/InvitePopup";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
@@ -17,6 +15,7 @@ interface LobbyHomeProps {
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   const players = usePlayersList();
   const { questSummary, setQuestSummary } = useLobbyContext();
+  const [showInvitePopup, setShowInvitePopup] = useState(false);
 
   const isHost = useIsHost();
   const { setGameStage } = useGameStage();
@@ -26,7 +25,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
   };
 
   const handleInvite = () => {
-    openDiscordInviteDialog();
+    setShowInvitePopup(true);
   };
 
   return (
@@ -131,6 +130,10 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
           Invite
         </button>
       </div>
+      <InvitePopup
+        isOpen={showInvitePopup}
+        onClose={() => setShowInvitePopup(false)}
+      />
     </>
   );
 };

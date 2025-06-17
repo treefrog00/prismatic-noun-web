@@ -1,5 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { starryTheme } from "../../styles/starryTheme";
 
 interface PopupProps {
   onClose?: () => void;
@@ -22,7 +23,10 @@ const Popup: React.FC<PopupProps> = ({
         className={`bg-gray-800/90 rounded-lg shadow-xl p-8 ${maxWidth} w-full border border-gray-700 ${className}`}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="font-['Cinzel'] text-2xl font-bold text-amber-500 tracking-wide">
+          <h2
+            className="font-['Cinzel'] text-2xl font-bold tracking-wide"
+            style={starryTheme.heading}
+          >
             {title}
           </h2>
           {onClose && (

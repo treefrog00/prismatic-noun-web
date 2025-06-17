@@ -4,51 +4,13 @@ import { z } from "zod/v4";
 import { envConfig } from "@/envConfig";
 import { getDiscordAccessToken } from "./multiplayerState";
 import {
-  discordLoginButtonAccessToken,
   pnAccessToken,
+  firebaseToken,
   setPnAccessToken,
+  discordLoginButtonAccessToken,
 } from "@/contexts/DiscordAuthFunctions";
 
 export class GameApi {
-  /* This exchanges a Discord access token for a PN access token.
-   */
-  private async maybeExchangeDiscordTokenForPNToken(): Promise<string> {
-    // TODO if localstorage has client token, and room code matches up, then use that, or
-    // otherwise delete it
-
-    if (!pnAccessToken) {
-      let discordToken: string;
-      if (envConfig.authMode == AuthMode.DiscordEmbedded) {
-        discordToken = getDiscordAccessToken();
-      } else if (envConfig.authMode == AuthMode.DiscordLoginButton) {
-        discordToken = discordLoginButtonAccessToken;
-        if (!discordToken) {
-          throw new Error("No Discord access token found");
-        }
-      } else {
-        discordToken = null;
-      }
-
-      const response = await this.makeRequestWithToken(
-        "/auth/exchange",
-        null,
-        discordToken,
-      );
-      // TODO handle error response from backend due to the Discord access token having
-      // expired. This could definitely happen with DiscordLoginButton mode.
-      // Not sure about the DiscordEmbedded mode, maybe playroomkit will refresh the
-      // Discord token when you call getDiscordAccessToken(), not sure, plus anyway if it's
-      // not stored in local storage, then it shouldn't be an issue
-      // wait, hang on, in embedded mode, is the call to getDiscordAccessToken() the thing
-      // that triggers the auth dialog? if so, it should be called when entering the game,
-      // not when first making a request to the API server
-      const data = await response.json();
-      setPnAccessToken(data.token);
-      localStorage.setItem("discord_username", data.discord_username);
-      return data.token;
-    }
-    return pnAccessToken;
-  }
 
 
   async oldMakeRequestWithExpireHandling(path: string, body: any) {
@@ -75,25 +37,33 @@ export class GameApi {
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
-    const token = await this.maybeExchangeDiscordTokenForPNToken();
     const response = await this._makeRequestWithTokenNoException(
       path,
       body,
-      token,
+      pnAccessToken,
       method,
     );
 
-    if (!response.ok) {
-      if (response.status === 401) {
-        throw new Error("Unauthorized 401");
-      }
-      const responseBody = await response.json();
-      throw new Error(
-        `HTTP error ${response.status}: ${JSON.stringify(responseBody)}`,
-      );
+    if (response.ok) {
+      return response.json();
     }
 
-    return response.json();
+    if (response.status === 401) {
+      const errorData = await response.json();
+      if (errorData.expired) {
+        const newToken = await getNewPnToken();
+
+        const retryResponse = await this._makeRequestWithTokenNoException(path, body, newToken);
+        if (!retryResponse.ok) {
+          throw new Error(`HTTP status: ${retryResponse.status}`);
+        }
+        return retryResponse.json();
+      }
+    }
+    const responseBody = await response.json();
+    throw new Error(
+      `HTTP error ${response.status}: ${JSON.stringify(responseBody)}`,
+    );
   }
 
   async makeRequestWithToken(

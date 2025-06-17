@@ -17,37 +17,29 @@ const Play = () => {
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const [chatText, setChatText] = useState("");
-  const [showAuthPopup, setShowAuthPopup] = useState(false);
-  const { firebaseUser, authLoading } = useFirebaseAuth();
-
-    // Show Firebase auth popup if necessary
-    useEffect(() => {
-      if (!authLoading && !firebaseUser && envConfig.authMode === AuthMode.Firebase) {
-        setShowAuthPopup(true);
-      }
-      console.log('firebaseUser', firebaseUser);
-      console.log('authLoading', authLoading);
-      console.log('showAuthPopup', showAuthPopup);
-    }, [firebaseUser, authLoading]);
+  const { showAuthPopup, setShowAuthPopup } = useFirebaseAuth();
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const clientToken = urlParams.get("client_token");
 
-    if (clientToken) {
-      localStorage.setItem("client_token", clientToken);
+    // client token is for Discord login button auth mode, i.e. totally
+    // unused for now
+    // const urlParams = new URLSearchParams(window.location.search);
+    // const clientToken = urlParams.get("client_token");
 
-      // Extract room code from hash if present (#r=...)
-      const hash = window.location.hash;
-      if (hash.startsWith("#r=")) {
-        const roomCode = hash.substring(3); // Remove '#r=' prefix
-        localStorage.setItem("room_code", roomCode);
-      }
-    }
+    // if (clientToken) {
+    //   localStorage.setItem("client_token", clientToken);
 
-    if (envConfig.authMode == AuthMode.DiscordLoginButton && !clientToken) {
-      doDiscordAuthRedirect();
-    }
+    //   // Extract room code from hash if present (#r=...)
+    //   const hash = window.location.hash;
+    //   if (hash.startsWith("#r=")) {
+    //     const roomCode = hash.substring(3); // Remove '#r=' prefix
+    //     localStorage.setItem("room_code", roomCode);
+    //   }
+    // }
+
+    // if (envConfig.authMode == AuthMode.DiscordLoginButton && !clientToken) {
+    //   doDiscordAuthRedirect();
+    // }
 
     if (envConfig.skipLaunchScreen) {
       setLocalGameStage("lobby");
@@ -112,7 +104,7 @@ const Play = () => {
           chatType={chatType}
         />
       )}
-      {showAuthPopup && !firebaseUser && !authLoading && (
+      {showAuthPopup && (
         <AuthPopup onClose={() => setShowAuthPopup(false)} />
       )}
     </div>

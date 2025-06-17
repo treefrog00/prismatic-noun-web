@@ -47,7 +47,7 @@ export const FirebaseAuth: React.FC<FirebaseAuthProps> = ({ onSignInSuccess }) =
           {
             provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
             requireDisplayName: false,
-            privacyPolicyUrl: '/privacy',
+            //privacyPolicyUrl: '/privacy',
             disableSignUp: {
               status: false
             }

@@ -19,6 +19,8 @@ type AuthUser = (typeof envConfig.authMode === AuthMode.Firebase ? FirebaseUser 
 interface AuthContextType {
   firebaseUser: AuthUser;
   authLoading: boolean;
+  showAuthPopup: boolean;
+  setShowAuthPopup: (show: boolean) => void;
 }
 
 // Initialize auth if firebaseAuth is enabled
@@ -28,15 +30,33 @@ if (envConfig.authMode === AuthMode.Firebase) {
   });
 }
 
-const FirebaseAuthContext = createContext<AuthContextType>({ firebaseUser: null, authLoading: true });
+const FirebaseAuthContext = createContext<AuthContextType | null>(null);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
 export const FirebaseAuthProvider = ({ children }: AuthProviderProps) => {
-  const [user, setUser] = useState<AuthUser>(null);
+  const [firebaseUser, setFirebaseUser] = useState<AuthUser>(null);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [pnAccessToken, setPnAccessToken] = useState<string | null>(localStorage.getItem("pn_access_token"));
+
+  const exchangeFirebaseTokenForPNToken = async (firebaseToken: string): Promise<string> => {
+    // this is called when onAuthStateChanged gets a new user value
+    const response = await this.makeRequestWithToken("/auth/exchange", null, firebaseToken);
+    const data = await response.json();
+    setPnAccessToken(data.token);
+    return data.token;
+  }
+
+  useEffect(() => {
+    if (pnAccessToken) {
+      localStorage.setItem("pn_access_token", pnAccessToken);
+    } else {
+      localStorage.removeItem("pn_access_token");
+    }
+  }, [pnAccessToken]);
 
   useEffect(() => {
     if (envConfig.authMode !== AuthMode.Firebase) {
@@ -51,7 +71,10 @@ export const FirebaseAuthProvider = ({ children }: AuthProviderProps) => {
       auth = module.auth;
 
       unsubscribe = auth.onAuthStateChanged((user) => {
-        setUser(user);
+        setFirebaseUser(user);
+        if (user) {
+          exchangeFirebaseTokenForPNToken(user.getIdToken());
+        }
         setAuthLoading(false);
       });
     };
@@ -69,7 +92,7 @@ export const FirebaseAuthProvider = ({ children }: AuthProviderProps) => {
     return null;
   }
   return (
-    <FirebaseAuthContext.Provider value={{ firebaseUser: user, authLoading }}>
+    <FirebaseAuthContext.Provider value={{ firebaseUser: firebaseUser, authLoading, showAuthPopup, setShowAuthPopup }}>
       {children}
     </FirebaseAuthContext.Provider>
   );

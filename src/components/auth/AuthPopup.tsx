@@ -2,7 +2,6 @@ import { FC } from "react";
 import Popup from "../popups/Popup";
 import { useState } from "react";
 import {
-  exchangeCodeForToken,
   doSilentAuth,
   DISCORD_OAUTH_URL,
   GOOGLE_OAUTH_URL,
@@ -10,6 +9,7 @@ import {
   authRedirectForProvider,
   GOOGLE_REDIRECT_URI,
   DISCORD_REDIRECT_URI,
+  handleSuccessfulAuthProvider,
 } from "./OAuthButtonsAuth";
 import GoogleSignInButton from "./GoogleSignInButton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -52,11 +52,12 @@ const AuthPopup: FC<AuthPopupProps> = ({ onClose }) => {
 
       if (result.success && result.code) {
         // Silent auth succeeded, exchange code for token
-        const tokenResult = await exchangeCodeForToken(result.code, provider);
-        if (tokenResult.success && tokenResult.token) {
-          setPnAccessToken(tokenResult.token);
-          window.location.href = tokenResult.redirectUrl;
-        } else {
+        const tokenResult = await handleSuccessfulAuthProvider(
+          result.code,
+          provider,
+          setPnAccessToken,
+        );
+        if (!tokenResult.success) {
           console.error(
             "Failed to exchange code for token:",
             tokenResult.error,

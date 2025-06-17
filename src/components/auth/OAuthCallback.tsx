@@ -1,7 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import {
   authRedirectForProvider,
-  exchangeCodeForToken,
+  handleSuccessfulAuthProvider,
 } from "./OAuthButtonsAuth";
 import { useCallback, useEffect } from "react";
 
@@ -55,20 +55,13 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     }
 
     if (code) {
-      try {
-        const tokenResult = await exchangeCodeForToken(code, provider);
-
-        if (tokenResult.success && tokenResult.token) {
-          setPnAccessToken(tokenResult.token);
-          window.location.href = tokenResult.redirectUrl;
-        } else {
-          console.error(
-            `Failed to exchange ${provider} code for token:`,
-            tokenResult.error,
-          );
-        }
-      } catch (error) {
-        console.error(`Error exchanging ${provider} code for token:`, error);
+      const result = await handleSuccessfulAuthProvider(
+        code,
+        provider,
+        setPnAccessToken,
+      );
+      if (!result.success) {
+        console.error(`OAuth callback failed:`, result.error);
       }
     }
   }, [provider, setPnAccessToken]);

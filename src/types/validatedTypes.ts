@@ -1,5 +1,12 @@
 import { z } from "zod/v4";
 
+export const ExchangeCodeResponseSchema = z.object({
+  prismaticNounToken: z.string(),
+  username: z.string(),
+  authProvider: z.enum(["discord", "google"]),
+  expiry: z.number(),
+});
+
 const QuestSummarySchema = z.object({
   questId: z.string(),
   title: z.string(),

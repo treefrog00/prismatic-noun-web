@@ -1,5 +1,6 @@
 import { envConfig } from "@/envConfig";
 import { BACKEND_URL } from "@/config";
+import { ExchangeCodeResponseSchema } from "@/types/validatedTypes";
 
 const DISCORD_CLIENT_ID = envConfig.discordClientId;
 
@@ -47,17 +48,42 @@ export const exchangeCodeForToken = async (
 
   if (response.ok) {
     const data = await response.json();
+    const tokenResult = ExchangeCodeResponseSchema.parse(data);
 
     // Get the stored redirect URL or default to /play
     const redirectUrl = localStorage.getItem("auth_redirect_url") || "/play";
     localStorage.removeItem("auth_redirect_url"); // Clean up
 
-    return { success: true, token: data.pn_access_token, redirectUrl };
+    return {
+      success: true,
+      token: tokenResult.prismaticNounToken,
+      redirectUrl,
+    };
   } else {
     console.error(`Failed to exchange ${provider} code for token`);
     return {
       success: false,
       error: `Failed to exchange ${provider} code for token`,
+    };
+  }
+};
+
+export const handleSuccessfulAuthProvider = async (
+  code: string,
+  provider: "google" | "discord",
+  setPnAccessToken: (token: string) => void,
+) => {
+  try {
+    const result = await exchangeCodeForToken(code, provider);
+
+    setPnAccessToken(result.token);
+    window.location.href = result.redirectUrl;
+    return { success: true };
+  } catch (error) {
+    console.error(`Error exchanging ${provider} code for token:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error",
     };
   }
 };

@@ -7,12 +7,13 @@ import { useLocalGameStage } from "@/contexts/GameContext";
 import AuthButtons from "../auth/AuthButtons";
 import RoomCodePopup from "../popups/RoomCodePopup";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LaunchScreen = () => {
   const { setLocalGameStage } = useLocalGameStage();
   const { initialPlay } = useStereo();
   const { shouldAnimateStars } = useLobbyContext();
-  const isLoggedIn = false;
+  const { pnAccessToken } = useAuth();
   const [showRoomCodePopup, setShowRoomCodePopup] = useState(false);
 
   const handleHostGame = () => {
@@ -24,8 +25,6 @@ const LaunchScreen = () => {
   };
 
   const handleJoinRoom = (roomCode: string) => {
-    // TODO: Implement actual room joining logic
-    console.log("Joining room:", roomCode);
     setShowRoomCodePopup(false);
   };
 
@@ -51,7 +50,7 @@ const LaunchScreen = () => {
             alt="Game Logo"
             className="w-40 xl:w-[320px] mb-8"
           />
-          {!isLoggedIn ? (
+          {!pnAccessToken ? (
             <div className="flex flex-col gap-4 mb-8">
               <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
                 Sign up for a free account to host a new game (including
@@ -69,7 +68,7 @@ const LaunchScreen = () => {
               </div>
             </div>
           ) : null}
-          {isLoggedIn ? (
+          {pnAccessToken ? (
             <div className="flex flex-row gap-4 mb-8">
               <button
                 onClick={handleHostGame}

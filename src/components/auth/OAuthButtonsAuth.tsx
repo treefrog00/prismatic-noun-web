@@ -22,10 +22,7 @@ export const GOOGLE_OAUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?cl
 )}&response_type=code&scope=${encodeURIComponent(GOOGLE_SCOPES)}`;
 
 const doAuthRedirect = (baseAuthUrl: string, isSilent: boolean) => {
-  // Store the current URL with hash parameters before redirecting
-  const currentUrl = window.location.href;
-  console.log("Storing current URL in localStorage:", currentUrl); // Debug log
-  localStorage.setItem("auth_redirect_url", currentUrl);
+  localStorage.setItem("auth_redirect_url", window.location.href);
   const authUrl = isSilent ? baseAuthUrl + "&prompt=none" : baseAuthUrl;
   window.location.href = authUrl;
 };
@@ -54,15 +51,7 @@ export const exchangeCodeForToken = async (
   if (response.ok) {
     const data = await response.json();
     const tokenResult = ExchangeCodeResponseSchema.parse(data);
-    const storedUrl = localStorage.getItem("auth_redirect_url");
-    const redirectUrl = storedUrl || "/";
-    localStorage.removeItem("auth_redirect_url");
-
-    return {
-      success: true,
-      token: tokenResult.prismaticNounToken,
-      redirectUrl,
-    };
+    return tokenResult;
   } else {
     console.error(`Failed to exchange ${provider} code for token`);
     throw new Error(`Failed to exchange ${provider} code for token`);
@@ -75,10 +64,12 @@ export const handleSuccessfulAuthProvider = async (
   setPnAccessToken: (token: string | null) => void,
 ) => {
   const result = await exchangeCodeForToken(code, provider);
+  const storedUrl = localStorage.getItem("auth_redirect_url");
+  const redirectUrl = storedUrl || "/";
+  localStorage.removeItem("auth_redirect_url");
 
-  setPnAccessToken(result.token);
-  window.location.href = result.redirectUrl;
-  return { success: true };
+  setPnAccessToken(result.prismaticNounToken);
+  window.location.href = redirectUrl;
 };
 
 export const authRedirectForProvider = (

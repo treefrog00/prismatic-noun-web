@@ -16,30 +16,6 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     const error = urlParams.get("error");
     const state = urlParams.get("state");
 
-    // Check if we're running in an iframe (silent auth)
-    const isInIframe = window !== window.parent;
-
-    if (isInIframe) {
-      // We're in an iframe, send result back to parent window
-      const result = {
-        success: !error && !!code,
-        code: code || undefined,
-        error: error || undefined,
-        state: state || undefined,
-      };
-
-      // Send message to parent window
-      window.parent.postMessage(
-        {
-          type: "oauth_result",
-          result,
-        },
-        window.location.origin,
-      );
-
-      return;
-    }
-
     // Check if we were redirected back here because a silent login failed.
     if (
       error === "login_required" ||
@@ -53,13 +29,11 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     }
 
     if (code) {
-      const result = await handleSuccessfulAuthProvider(
+      await handleSuccessfulAuthProvider(
         code,
         provider,
         setAccessTokenInStorage,
       );
-      // If we get here, the operation was successful
-      console.log("OAuth callback successful");
     }
   }, [provider]);
 

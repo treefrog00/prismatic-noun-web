@@ -2,7 +2,9 @@ import { envConfig } from "@/envConfig";
 import { BACKEND_URL } from "@/config";
 
 const DISCORD_CLIENT_ID = envConfig.discordClientId;
+
 const REDIRECT_URI = `${window.location.origin}/auth/discord/callback`;
+
 // Discord suggests using %20 to separate scopes
 const DISCORD_SCOPES = "identify email";
 

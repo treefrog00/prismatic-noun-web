@@ -3,7 +3,7 @@ import {
   authRedirectForProvider,
   exchangeCodeForToken,
 } from "./OAuthButtonsAuth";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 
 interface OAuthCallbackProps {
   provider: "discord" | "google";
@@ -12,7 +12,7 @@ interface OAuthCallbackProps {
 const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
   const { setPnAccessToken } = useAuth();
 
-  const handleCallback = async () => {
+  const handleCallback = useCallback(async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
     const error = urlParams.get("error");
@@ -71,11 +71,11 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
         console.error(`Error exchanging ${provider} code for token:`, error);
       }
     }
-  };
+  }, [provider, setPnAccessToken]);
 
   useEffect(() => {
     handleCallback();
-  }, []);
+  }, [handleCallback]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">

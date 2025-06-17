@@ -1,95 +1,77 @@
 import { useState } from "react";
 import {
-  doGoogleAuthRedirect,
-  doDiscordAuthRedirect,
-  doGoogleSilentAuth,
-  doDiscordSilentAuth,
   exchangeCodeForToken,
+  doSilentAuth,
+  DISCORD_OAUTH_URL,
+  GOOGLE_OAUTH_URL,
+  SilentAuthResult,
+  authRedirectForProvider,
 } from "./OAuthButtonsAuth";
 import GoogleSignInButton from "./GoogleSignInButton";
 import { useAuth } from "@/contexts/AuthContext";
 
+type LoginProvider = "google" | "discord";
+
 const LoginPage = () => {
   const [isAttemptingLogin, setIsAttemptingLogin] = useState(false);
-  const [loginProvider, setLoginProvider] = useState<
-    "google" | "discord" | null
-  >(null);
+  const [loginProvider, setLoginProvider] = useState<LoginProvider | null>(
+    null,
+  );
   const { setPnAccessToken } = useAuth();
 
+  // Generic login handler that works for both Google and Discord
+  const handleLogin = async (provider: LoginProvider) => {
+    setIsAttemptingLogin(true);
+    setLoginProvider(provider);
+
+    // Store the current URL with hash parameters before attempting auth
+    localStorage.setItem("auth_redirect_url", window.location.href);
+
+    try {
+      // First try silent login with iframe
+      let result: SilentAuthResult;
+      if (provider === "google") {
+        result = await doSilentAuth({
+          authUrl: GOOGLE_OAUTH_URL,
+          callbackPath: "/auth/google/callback",
+        });
+      } else {
+        result = await doSilentAuth({
+          authUrl: DISCORD_OAUTH_URL,
+          callbackPath: "/auth/discord/callback",
+        });
+      }
+
+      if (result.success && result.code) {
+        // Silent auth succeeded, exchange code for token
+        const tokenResult = await exchangeCodeForToken(result.code, provider);
+        if (tokenResult.success && tokenResult.token) {
+          setPnAccessToken(tokenResult.token);
+          window.location.href = tokenResult.redirectUrl;
+        } else {
+          console.error(
+            "Failed to exchange code for token:",
+            tokenResult.error,
+          );
+          setIsAttemptingLogin(false);
+          setLoginProvider(null);
+        }
+      } else {
+        // Silent auth failed, fall back to interactive login
+        console.log("Silent login failed, falling back to interactive login");
+        authRedirectForProvider(provider, false);
+      }
+    } catch (error) {
+      console.error("Error during silent auth:", error);
+      // Fall back to interactive login
+      authRedirectForProvider(provider, false);
+    }
+  };
+
   // This is the interactive login triggered by the user.
-  const handleGoogleLogin = async () => {
-    setIsAttemptingLogin(true);
-    setLoginProvider("google");
+  const handleGoogleLogin = () => handleLogin("google");
 
-    // Store the current URL with hash parameters before attempting auth
-    localStorage.setItem("auth_redirect_url", window.location.href);
-
-    try {
-      // First try silent login with iframe
-      const result = await doGoogleSilentAuth();
-
-      if (result.success && result.code) {
-        // Silent auth succeeded, exchange code for token
-        const tokenResult = await exchangeCodeForToken(result.code, "google");
-        if (tokenResult.success && tokenResult.token) {
-          setPnAccessToken(tokenResult.token);
-          window.location.href = tokenResult.redirectUrl;
-        } else {
-          console.error(
-            "Failed to exchange code for token:",
-            tokenResult.error,
-          );
-          setIsAttemptingLogin(false);
-          setLoginProvider(null);
-        }
-      } else {
-        // Silent auth failed, fall back to interactive login
-        console.log("Silent login failed, falling back to interactive login");
-        doGoogleAuthRedirect(false);
-      }
-    } catch (error) {
-      console.error("Error during silent auth:", error);
-      // Fall back to interactive login
-      doGoogleAuthRedirect(false);
-    }
-  };
-
-  const handleDiscordLogin = async () => {
-    setIsAttemptingLogin(true);
-    setLoginProvider("discord");
-
-    // Store the current URL with hash parameters before attempting auth
-    localStorage.setItem("auth_redirect_url", window.location.href);
-
-    try {
-      // First try silent login with iframe
-      const result = await doDiscordSilentAuth();
-
-      if (result.success && result.code) {
-        // Silent auth succeeded, exchange code for token
-        const tokenResult = await exchangeCodeForToken(result.code, "discord");
-        if (tokenResult.success && tokenResult.token) {
-          setPnAccessToken(tokenResult.token);
-          window.location.href = tokenResult.redirectUrl;
-        } else {
-          console.error(
-            "Failed to exchange code for token:",
-            tokenResult.error,
-          );
-          setIsAttemptingLogin(false);
-          setLoginProvider(null);
-        }
-      } else {
-        // Silent auth failed, fall back to interactive login
-        console.log("Silent login failed, falling back to interactive login");
-        doDiscordAuthRedirect(false);
-      }
-    } catch (error) {
-      console.error("Error during silent auth:", error);
-      // Fall back to interactive login
-      doDiscordAuthRedirect(false);
-    }
-  };
+  const handleDiscordLogin = () => handleLogin("discord");
 
   // If silent login failed, we show the button. Otherwise, the user is being
   // redirected for the silent attempt, so we can show a loading message.

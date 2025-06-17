@@ -6,14 +6,14 @@ const REDIRECT_URI = `${window.location.origin}/auth/discord/callback`;
 // Discord suggests using %20 to separate scopes
 const DISCORD_SCOPES = "identify email";
 
-const DISCORD_OAUTH_URL = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+export const DISCORD_OAUTH_URL = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI,
 )}&response_type=code&scope=${encodeURIComponent(DISCORD_SCOPES)}`;
 
 // Google suggests using %20 to separate scopes
 const GOOGLE_SCOPES = "openid email profile";
 const GOOGLE_CLIENT_ID = envConfig.googleClientId;
-const GOOGLE_OAUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+export const GOOGLE_OAUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI,
 )}&response_type=code&scope=${encodeURIComponent(GOOGLE_SCOPES)}`;
 
@@ -22,14 +22,6 @@ const doAuthRedirect = (baseAuthUrl: string, isSilent: boolean) => {
   localStorage.setItem("auth_redirect_url", window.location.href);
   const authUrl = isSilent ? baseAuthUrl + "&prompt=none" : baseAuthUrl;
   window.location.href = authUrl;
-};
-
-export const doDiscordAuthRedirect = (isSilent: boolean) => {
-  doAuthRedirect(DISCORD_OAUTH_URL, isSilent);
-};
-
-export const doGoogleAuthRedirect = (isSilent: boolean) => {
-  doAuthRedirect(GOOGLE_OAUTH_URL, isSilent);
 };
 
 // Shared token exchange function
@@ -68,7 +60,7 @@ export const exchangeCodeForToken = async (
 };
 
 // New iframe-based silent authentication functions
-interface SilentAuthResult {
+export interface SilentAuthResult {
   success: boolean;
   code?: string;
   error?: string;
@@ -77,10 +69,11 @@ interface SilentAuthResult {
 interface OAuthConfig {
   authUrl: string;
   callbackPath: string;
-  addPromptNone?: boolean;
 }
 
-const doSilentAuth = (config: OAuthConfig): Promise<SilentAuthResult> => {
+export const doSilentAuth = (
+  config: OAuthConfig,
+): Promise<SilentAuthResult> => {
   return new Promise((resolve) => {
     // Create a unique state parameter to prevent CSRF attacks
     const state = Math.random().toString(36).substring(2, 15);
@@ -89,9 +82,7 @@ const doSilentAuth = (config: OAuthConfig): Promise<SilentAuthResult> => {
     sessionStorage.setItem("oauth_state", state);
 
     // Create the silent auth URL
-    const silentAuthUrl = config.addPromptNone
-      ? `${config.authUrl}&prompt=none&state=${state}`
-      : `${config.authUrl}&state=${state}`;
+    const silentAuthUrl = `${config.authUrl}&prompt=none&state=${state}`;
 
     // Create hidden iframe
     const iframe = document.createElement("iframe");
@@ -166,18 +157,11 @@ const doSilentAuth = (config: OAuthConfig): Promise<SilentAuthResult> => {
   });
 };
 
-export const doGoogleSilentAuth = (): Promise<SilentAuthResult> => {
-  return doSilentAuth({
-    authUrl: GOOGLE_OAUTH_URL,
-    callbackPath: "/auth/google/callback",
-    addPromptNone: true,
-  });
-};
-
-export const doDiscordSilentAuth = (): Promise<SilentAuthResult> => {
-  return doSilentAuth({
-    authUrl: DISCORD_OAUTH_URL,
-    callbackPath: "/auth/discord/callback",
-    addPromptNone: false, // Discord doesn't use prompt=none
-  });
+export const authRedirectForProvider = (
+  provider: "discord" | "google",
+  isSilent: boolean,
+) => {
+  provider === "discord"
+    ? doAuthRedirect(DISCORD_OAUTH_URL, isSilent)
+    : doAuthRedirect(GOOGLE_OAUTH_URL, isSilent);
 };

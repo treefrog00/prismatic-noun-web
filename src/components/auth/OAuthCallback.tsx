@@ -1,7 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import {
-  doGoogleAuthRedirect,
-  doDiscordAuthRedirect,
+  authRedirectForProvider,
   exchangeCodeForToken,
 } from "./OAuthButtonsAuth";
 
@@ -50,11 +49,7 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     ) {
       console.log("Silent login failed. Retrying with interactive login.");
       // Retry with silent=false for interactive login
-      if (provider === "google") {
-        doGoogleAuthRedirect(false);
-      } else {
-        doDiscordAuthRedirect(false);
-      }
+      authRedirectForProvider(provider, false);
       return;
     }
 

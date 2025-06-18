@@ -101,10 +101,28 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    //TODO: fade out current tune, set playlist index to 0, play if music is not configured as stopped (note playNext already
-    //supports fading out current tune )
-    // the server event that updates the playlist should only send a new playlist
-    // if it is genuinely different to the current one
+    // When the playlist changes, reset index and play if music is enabled
+    const musicEnabled =
+      localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true";
+    const audio = audioElementRef.current;
+    let cancelled = false;
+
+    const handlePlaylistChange = async () => {
+      if (!audio) return;
+      setPlaylistIndex(0);
+      if (musicEnabled && playlist.length > 0 && !cancelled) {
+        playNext(0);
+      } else {
+        // If music is off, ensure audio is stopped
+        audio.pause();
+        audio.src = "";
+      }
+    };
+
+    handlePlaylistChange();
+    return () => {
+      cancelled = true;
+    };
   }, [playlist]);
 
   const turnOffMusic = async () => {

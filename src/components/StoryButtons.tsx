@@ -1,6 +1,10 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useTimeRemaining, useShowPrompts } from "@/contexts/GameContext";
+import {
+  useTimeRemaining,
+  useShowPrompts,
+  useCharacters,
+} from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
@@ -17,7 +21,7 @@ const StoryButtons: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
   const { gameData } = useGameData();
-
+  const { characters } = useCharacters();
   const gameApi = useGameApi();
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
@@ -39,6 +43,18 @@ const StoryButtons: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    setMyPrompts(
+      Object.fromEntries(
+        Object.entries(characters)
+          .filter(
+            ([_, characterState]) => characterState.player === myPlayer().id,
+          )
+          .map(([characterId, _]) => [characterId, ""]),
+      ),
+    );
+  }, [characters]);
+
   const handleActOk = async () => {
     let response = await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompts`,
@@ -58,12 +74,13 @@ const StoryButtons: React.FC = () => {
   const renderTextInput = () => (
     <div className="flex flex-col gap-4 justify-center self-center mt-2">
       <div className="w-full">
-        {otherPrompts.map((prompt) => (
-          <div key={prompt.player.id}>
-            <div>{prompt.player.id}</div>
-            <div>{prompt.state}</div>
-          </div>
-        ))}
+        {otherPrompts
+          .filter((prompt) => prompt.player.id !== myPlayer().id)
+          .map((prompt) => (
+            <div key={prompt.player.id}>
+              <div>{prompt.player.id}</div>
+            </div>
+          ))}
         {Object.entries(myPrompts).map(([key, _]) => (
           <div key={key} className="mb-4">
             <TextInput

@@ -90,14 +90,15 @@ const LaunchScreen = () => {
                   issues.
                 </p>
                 <p className="mb-4">
-                  As a disclaimer, the development process made heavy use of AI
-                  for generating images, music, code, and stories. I
-                  experimented, iterated, curated, merged and refined various
-                  game and story ideas over the course of 6 months full-time
+                  AI disclaimer: the development process made heavy use of AI
+                  for generating images, music, code, and stories. This involved
+                  experimenting, iterating, curating, merging, and refining a
+                  large number of ideas over the course of 6 months full-time
                   work. This was followed by several more months testing and
                   refinement. As such, despite the many issues around copyright
                   regarding the use of AI generated content, I would hope that
-                  the game is at least somewhat interesting, and not just randomly generated noise.
+                  the game is at least somewhat interesting, and not just
+                  randomly generated noise.
                 </p>
               </div>
             </div>

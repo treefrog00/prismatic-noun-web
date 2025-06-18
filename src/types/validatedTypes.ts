@@ -39,6 +39,7 @@ const NpcSchema = BaseCharacterSchema.extend({});
 export const CharacterStateSchema = z.object({
   inventory: z.array(z.string()),
   effects: z.array(z.string()),
+  player: z.string(),
 });
 
 const NpcStateSchema = z.object({

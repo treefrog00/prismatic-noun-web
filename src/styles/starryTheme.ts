@@ -2,7 +2,6 @@ export const starryTheme = {
   container: {
     background: "linear-gradient(to bottom, #0a0a2a, #1a1a3a)",
     position: "relative" as const,
-    overflow: "hidden",
     minHeight: "100vh",
   },
   starryBackground: {

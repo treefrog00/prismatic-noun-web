@@ -33,8 +33,8 @@ interface PlayerProfile {
   avatarIndex: number;
 }
 
-type SetStateFunction<T> = (value: T, reliable?: boolean) => void;
-type MultiplayerStateHookResult<T> = [T, SetStateFunction<T>];
+export type SetStateFunction<T> = (value: T, reliable?: boolean) => void;
+export type MultiplayerStateHookResult<T> = [T, SetStateFunction<T>];
 
 export class LocalPlayerState implements PlayerState {
   private state: Record<string, any> = {};

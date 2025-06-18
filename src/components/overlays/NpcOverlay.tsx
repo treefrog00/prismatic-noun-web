@@ -3,19 +3,15 @@ import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
 
 interface NpcOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
   position: { x: number; y: number };
-  npcId: string | null;
+  npcName: string | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 const NpcOverlay = ({
-  isOpen,
-  onClose,
   position,
-  npcId,
+  npcName,
   onMouseEnter,
   onMouseLeave,
 }: NpcOverlayProps) => {
@@ -25,17 +21,16 @@ const NpcOverlay = ({
   const [npcData, setNpcData] = useState(null);
 
   useEffect(() => {
-    if (locationState && locationData && npcId) {
-      const stateData = locationState.npcs[npcId];
-      setNpcState(stateData);
-      setNpcData(locationData.scenes[0].npcs[stateData.name]);
+    if (locationState && locationData && npcName) {
+      setNpcState(locationState.npcs[npcName]);
+      setNpcData(locationData.scenes[0].npcs[npcName]);
     } else {
       setNpcState(null);
       setNpcData(null);
     }
-  }, [locationState, locationData, npcId]);
+  }, [locationState, locationData, npcName]);
 
-  if (!isOpen || !npcState || !npcData) return null;
+  if (!npcState || !npcData) return null;
 
   return (
     <Overlay
@@ -56,9 +51,9 @@ const NpcOverlay = ({
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2 mb-4">
           <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">{npcState.name?.[0]}</span>
+            <span className="text-gray-400 text-xs">{npcName}</span>
           </div>
-          <span className="text-gray-300">{npcState.name}</span>
+          <span className="text-gray-300">{npcState.effects.join(", ")}</span>
         </div>
       </div>
     </Overlay>

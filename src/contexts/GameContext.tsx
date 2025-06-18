@@ -2,8 +2,7 @@ import { GameApi } from "../core/gameApi";
 import {
   useMultiplayerState,
   PlayerState,
-  myPlayer,
-  usePlayerStatePrompts,
+  SetStateFunction,
 } from "../core/multiplayerState";
 import {
   CharacterState,
@@ -59,21 +58,13 @@ type GameContextType = {
   characters: Record<string, CharacterState>;
   setCharacters: (value: Record<string, CharacterState>) => void;
 
-  myPrompts: Record<string, string>;
-  setMyPrompts: (
-    value:
-      | Record<string, string>
-      | ((prev: Record<string, string>) => Record<string, string>),
-  ) => void;
-
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
 
   localPlayerPrompts: Record<string, string>;
   setLocalPlayerPrompts: (
-    value:
-      | Record<string, string>
-      | ((prev: Record<string, string>) => Record<string, string>),
+    value: Record<string, string>,
+    reliable?: boolean,
   ) => void;
 
   gameStage: MultiplayerGameStage;
@@ -142,12 +133,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     },
   );
 
-  const [myPrompts, setMyPrompts] = usePlayerStatePrompts(
-    myPlayer(),
-    "prompts",
-    {},
-  );
-
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
@@ -167,9 +152,16 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [localGameStage, setLocalGameStage] =
     useState<LocalGameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
-  const [localPlayerPrompts, setLocalPlayerPrompts] = useState<
+  const [localPlayerPrompts, _setLocalPlayerPrompts] = useState<
     Record<string, string>
   >({});
+  const setLocalPlayerPrompts = (
+    value: Record<string, string>,
+    reliable: boolean,
+  ) => {
+    _setLocalPlayerPrompts(value);
+    // 'reliable' is ignored
+  };
   const [showPromptsInput, setShowPromptsInput] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   //////////////////////////// end of React only state ////////////////////////////
@@ -210,9 +202,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         characters,
         setCharacters,
-
-        myPrompts,
-        setMyPrompts,
 
         localGameStage,
         setLocalGameStage,
@@ -346,15 +335,6 @@ export const useShowPrompts = () => {
   return {
     showPromptsInput: context.showPromptsInput,
     setShowPromptsInput: context.setShowPromptsInput,
-  };
-};
-
-export const useMyPrompts = () => {
-  const context = useContext(GameContext);
-
-  return {
-    myPrompts: context.myPrompts,
-    setMyPrompts: context.setMyPrompts,
   };
 };
 

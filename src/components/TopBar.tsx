@@ -20,7 +20,7 @@ let closeOtherOverlays: (() => void) | null = null;
 interface OverlayState {
   isOpen: boolean;
   position: { x: number; y: number };
-  hoveredId: string | null;
+  hoveredName: string | null;
   isOverOverlay: boolean;
 }
 
@@ -28,7 +28,7 @@ const useOverlayState = (overlayId: string) => {
   const [state, setState] = useState<OverlayState>({
     isOpen: false,
     position: { x: 0, y: 0 },
-    hoveredId: null,
+    hoveredName: null,
     isOverOverlay: false,
   });
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
@@ -65,7 +65,7 @@ const useOverlayState = (overlayId: string) => {
           setState((prev) => ({
             ...prev,
             isOpen: false,
-            hoveredId: null,
+            hoveredName: null,
           }));
         };
 
@@ -73,7 +73,7 @@ const useOverlayState = (overlayId: string) => {
           ...prev,
           position: getPosition(),
           isOpen: true,
-          hoveredId: id,
+          hoveredName: id,
         }));
       } else if (!state.isOverOverlay) {
         timeoutRef.current = setTimeout(() => {
@@ -84,14 +84,14 @@ const useOverlayState = (overlayId: string) => {
           setState((prev) => ({
             ...prev,
             isOpen: false,
-            hoveredId: null,
+            hoveredName: null,
           }));
         }, TIMEOUT);
       } else if (!id) {
         setState((prev) => ({
           ...prev,
           isOpen: false,
-          hoveredId: null,
+          hoveredName: null,
           isOverOverlay: false,
         }));
       }
@@ -115,7 +115,7 @@ const useOverlayState = (overlayId: string) => {
       setState((prev) => ({
         ...prev,
         isOpen: false,
-        hoveredId: null,
+        hoveredName: null,
       }));
     }, TIMEOUT);
   }, [clearTimeout, overlayId]);
@@ -145,9 +145,9 @@ const TopBar = () => {
 
   const getNpcs = () => {
     if (!locationState) return [];
-    return Object.entries(locationState.npcs).map(([instanceId, npc]) => ({
+    return Object.entries(locationState.npcs).map(([name, npc]) => ({
+      name,
       ...npc,
-      instanceId,
     }));
   };
 
@@ -205,10 +205,10 @@ const TopBar = () => {
             {/* NPCs list */}
             {getNpcs().map((npc) => (
               <div
-                key={npc.instanceId}
+                key={npc.name}
                 className={sharedBoxStyles}
                 onMouseEnter={(e) =>
-                  npcOverlay.handleMouseEvent(npc.instanceId, e, getLeftAlignedPosition
+                  npcOverlay.handleMouseEvent(npc.name, e, getLeftAlignedPosition
                   )
                 }
                 onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
@@ -239,32 +239,22 @@ const TopBar = () => {
       )}
       {characterOverlay.state.isOpen && (
         <CharacterOverlay
-          isOpen={true}
-          onClose={() => {
-            characterOverlay.handleMouseEvent(null);
-          }}
           position={characterOverlay.state.position}
-          playerId={characterOverlay.state.hoveredId}
+          characterName={characterOverlay.state.hoveredName}
           onMouseEnter={characterOverlay.handleOverlayMouseEnter}
           onMouseLeave={characterOverlay.handleOverlayMouseLeave}
         />
       )}
       {npcOverlay.state.isOpen && (
         <NpcOverlay
-          isOpen={true}
-          onClose={() => {
-            npcOverlay.handleMouseEvent(null);
-          }}
           position={npcOverlay.state.position}
-          npcId={npcOverlay.state.hoveredId}
+          npcName={npcOverlay.state.hoveredName}
           onMouseEnter={npcOverlay.handleOverlayMouseEnter}
           onMouseLeave={npcOverlay.handleOverlayMouseLeave}
         />
       )}
       {locationOverlay.state.isOpen && (
         <LocationOverlay
-          isOpen={true}
-          onClose={() => locationOverlay.handleMouseEvent(null)}
           position={locationOverlay.state.position}
           onMouseEnter={locationOverlay.handleOverlayMouseEnter}
           onMouseLeave={locationOverlay.handleOverlayMouseLeave}

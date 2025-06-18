@@ -83,11 +83,16 @@ export const EventProvider = ({
       setLocationState(event.locationState);
     } else if (event.type === "ChangeLocation") {
       setLocationState(event.locationState);
+      setLocationState(event.locationState);
       setLocationData(event.locationData);
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
-    } else if (event.type === "StartPlayerActions") {
+    } else if (event.type === "PlayerActionsStart") {
       setTimeRemaining(gameConfig.turnTimeLimit);
+    } else if (event.type === "PlayerActionsEnd") {
+      // TODO
+    } else if (event.type === "GameEnd") {
+      // TODO
     }
   };
 

@@ -1,15 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import {
-  useTimeRemaining,
-  useShowPrompts,
-  useMyPrompts,
-} from "@/contexts/GameContext";
+import { useTimeRemaining, useShowPrompts } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
-import { usePlayersState } from "@/core/multiplayerState";
+import {
+  myPlayer,
+  usePlayersState,
+  usePlayerStatePrompts,
+} from "@/core/multiplayerState";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -21,7 +21,11 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
-  const { myPrompts, setMyPrompts } = useMyPrompts();
+  const [myPrompts, setMyPrompts] = usePlayerStatePrompts(
+    myPlayer(),
+    "prompts",
+    {},
+  );
   const otherPrompts = usePlayersState("prompts");
 
   useEffect(() => {
@@ -44,9 +48,9 @@ const StoryButtons: React.FC = () => {
   };
 
   const handleActEnterButton = () => {
-    if (Object.values(myPrompts).every(
-      (prompt) => prompt && prompt.length >= 4,
-    )) {
+    if (
+      Object.values(myPrompts).every((prompt) => prompt && prompt.length >= 4)
+    ) {
       handlePlayerAction(handleActOk);
     }
   };
@@ -65,7 +69,7 @@ const StoryButtons: React.FC = () => {
             <TextInput
               text={myPrompts[key]}
               setText={(value: string) => {
-                setMyPrompts((prev) => ({ ...prev, [key]: value }));
+                setMyPrompts({ ...myPrompts, [key]: value }, true);
               }}
               textInputRef={textInputRef}
               onClose={() => {}}

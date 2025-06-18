@@ -62,7 +62,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   ))}
                 </select>
                 <p
-                  className={`mt-5 text-gray-400 ${responsiveStyles.text.small}`}
+                  className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}
                 >
                   {questSummary.description}
                 </p>
@@ -75,7 +75,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                   {questSummary.title}
                 </div>
                 <p
-                  className={`mt-5 text-gray-400 ${responsiveStyles.text.small}`}
+                  className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}
                 >
                   {questSummary.description}
                 </p>

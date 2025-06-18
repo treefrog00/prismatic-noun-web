@@ -3,23 +3,19 @@ import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
 
 interface LocationOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
   position: { x: number; y: number };
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 const LocationOverlay = ({
-  isOpen,
-  onClose,
   position,
   onMouseEnter,
   onMouseLeave,
 }: LocationOverlayProps) => {
   const { locationData } = useLocationData();
 
-  if (!isOpen || !locationData) return null;
+  if (!locationData) return null;
 
   return (
     <Overlay

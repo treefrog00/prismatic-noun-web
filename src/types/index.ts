@@ -4,7 +4,6 @@ export type VoteType = "PostScene";
 export type {
   QuestSummary,
   DiceRoll,
-  LocationFeature,
   Character,
   Npc,
   StartGame,

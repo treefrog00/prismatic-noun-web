@@ -76,10 +76,10 @@ const LaunchScreen = () => {
           ) : null}
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-              <div className={`text-center text-gray-200`}>
+              <div className={`text-center text-gray-200 text-lg`}>
                 <p className="mb-4">
                   A collection of spooky and weird tales that can be played
-                  through either on your own or with friends online.
+                  either with friends online or on your own.
                 </p>
                 <p className="mb-4">
                   You can play in a web browser on Windows/Mac/Linux, but mobile
@@ -97,8 +97,7 @@ const LaunchScreen = () => {
                   work. This was followed by several more months testing and
                   refinement. As such, despite the many issues around copyright
                   regarding the use of AI generated content, I would hope that
-                  the game is at least somewhat interesting, and not just a
-                  collection of randomly generated noise.
+                  the game is at least somewhat interesting, and not just randomly generated noise.
                 </p>
               </div>
             </div>

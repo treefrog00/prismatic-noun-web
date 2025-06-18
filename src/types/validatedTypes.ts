@@ -23,19 +23,14 @@ const AbilityDataSchema = z.object({
   description: z.string(),
 });
 
-const FeatureSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-});
-
 const BaseCharacterSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  abilities: z.array(AbilityDataSchema),
 });
 
 const CharacterSchema = BaseCharacterSchema.extend({
+  abilities: z.array(AbilityDataSchema),
   inventory: z.array(z.string()),
 });
 
@@ -61,32 +56,11 @@ const GameDataSchema = z.object({
   characters: z.record(z.string(), CharacterSchema),
 });
 
-const StoryEventSchema = z.object({
-  label: z.string().nullable(),
-  text: z.string(),
-  imageUrl: z.string().nullable(),
-});
-
-const SceneType = z.enum([
-  "auto_advance",
-  "player_actions",
-  "player_actions_paid_only",
-  "timer_free_only",
-  "game_end",
-]);
-
-const SceneDataSchema = z.object({
-  sceneType: SceneType,
-  storyEvents: z.array(StoryEventSchema),
-  npcs: z.record(z.string(), NpcSchema),
-  features: z.record(z.string(), FeatureSchema),
-});
-
 const LocationDataSchema = z.object({
   name: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  scenes: z.array(SceneDataSchema),
+  npcs: z.record(z.string(), NpcSchema),
 });
 
 const DiceRollSchema = z.object({
@@ -161,7 +135,6 @@ export { GameEventSchema };
 
 export type QuestSummary = z.infer<typeof QuestSummarySchema>;
 export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;
-export type LocationFeature = z.infer<typeof FeatureSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
 export type Npc = z.infer<typeof NpcSchema>;
 export type NpcState = z.infer<typeof NpcStateSchema>;

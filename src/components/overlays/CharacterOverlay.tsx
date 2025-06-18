@@ -1,27 +1,21 @@
-import { usePlayersList } from "../../core/multiplayerState";
+import { useCharacters } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
 
 interface CharacterOverlayProps {
-  isOpen: boolean;
-  onClose: () => void;
   position: { x: number; y: number };
-  playerId: string | null;
+  characterName: string | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
 }
 
 const CharacterOverlay = ({
-  isOpen,
-  onClose,
   position,
-  playerId,
+  characterName,
   onMouseEnter,
   onMouseLeave,
 }: CharacterOverlayProps) => {
-  const players = usePlayersList();
-  const player = players.find((p) => p.id === playerId);
-
-  if (!isOpen || !player) return null;
+  const { characters } = useCharacters();
+  const character = characters[characterName];
 
   return (
     <Overlay
@@ -39,10 +33,11 @@ const CharacterOverlay = ({
         <div className="flex items-center gap-2 p-2">
           <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600 flex items-center justify-center">
             <span className="text-gray-400 text-xs">
-              {player.getState("name")?.[0]}
+              {characterName}
             </span>
           </div>
-          <span className="text-gray-300">{player.getState("name")}</span>
+          <span className="text-gray-300">{character.inventory.join(", ")}</span>
+          <span className="text-gray-300">{character.effects.join(", ")}</span>
         </div>
       </div>
     </Overlay>

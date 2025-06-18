@@ -1,8 +1,8 @@
 export const responsiveStyles = {
   // Font sizes
   text: {
-    base: "text-base md:text-lg",
-    small: "text-sm md:text-base",
+    base: "text-lg",
+    small: "text-base",
     heading: "clamp(1.25rem, 4vw, 1.5rem)",
   },
 

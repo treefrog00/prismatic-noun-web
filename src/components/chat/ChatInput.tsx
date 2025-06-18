@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import TextInput from "@/components/TextInput";
 import { RPC, myPlayer } from "@/core/multiplayerState";
+import "@/styles/gameButton.css";
 
 interface ChatInputProps {
   chatText: string;

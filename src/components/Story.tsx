@@ -128,7 +128,6 @@ const Story = forwardRef<StoryRef>((_, ref) => {
       const words = text.split(/(\s+)/); // Split by spaces but keep the spaces
       let currentY = 0;
       let charIndex = 0;
-      let finalText = "";
       let longestAnimationTime = 0;
       let finishedFirstLine = false;
 
@@ -138,8 +137,8 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
       // Process each word
       words.forEach((word) => {
+        word = word.replace("<npc>", "").replace("</npc>", "");
         if (finishedFirstLine) {
-          finalText += word;
           return;
         }
         // Measure the word width
@@ -166,7 +165,6 @@ const Story = forwardRef<StoryRef>((_, ref) => {
         // Process each character in the word
         for (let i = 0; i < word.length; i++) {
           const char = word[i];
-          finalText += char;
 
           const charElement = document.createElement("span");
           charElement.className = "character";
@@ -282,6 +280,10 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
+        const finalText = text
+          .replace(/<npc>/g, '<span class="text-yellow-400">')
+          .replace(/<\/npc>/g, "</span>");
+
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";

@@ -15,7 +15,7 @@ import {
   myPlayer,
 } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
-import { usePlayersState as originalUsePlayersState, usePlayerState as originalUsePlayerState } from "playroomkit";
+import { usePlayersState as originalUsePlayersState, usePlayerState as originalUsePlayerState, PlayerState } from "playroomkit";
 import { HASH_QUEST_ID } from "@/config";
 
 const StoryButtons: React.FC = () => {
@@ -29,22 +29,30 @@ const StoryButtons: React.FC = () => {
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
 
-  // only needed when HASH_QUEST_ID is defined
-  const { localPlayerPrompts, setLocalPlayerPrompts } =
+  let myPrompts: Record<string, string>;
+  let setMyPrompts: (value: Record<string, string>) => void;
+  let otherPrompts: { player: PlayerState; state: Record<string, string> }[];
+
+  if (HASH_QUEST_ID) {
+    console.log("HASH_QUEST_ID");
+    const { localPlayerPrompts, setLocalPlayerPrompts } =
       useLocalPlayerPrompts();
-  const { localPlayers } = useLocalPlayers();
-
-  // not used when HASH_QUEST_ID is defined
-  const [remoteMyPrompts, setRemoteMyPrompts] = originalUsePlayerState(
-    myPlayer(),
-    "prompts",
-    {},
-  );
-  const myPrompts = HASH_QUEST_ID ? localPlayerPrompts : remoteMyPrompts;
-  const setMyPrompts = HASH_QUEST_ID ? setLocalPlayerPrompts : setRemoteMyPrompts;
-
-  // won't work in HASH_QUEST_ID mode, but doesn't matter as there won't be any other players
-  const otherPrompts = originalUsePlayersState("prompts");
+    myPrompts = localPlayerPrompts;
+    setMyPrompts = setLocalPlayerPrompts;
+    const { localPlayers } = useLocalPlayers();
+    otherPrompts = localPlayers.map((player) => ({
+      player: player,
+      state: player.getState("prompts"),
+    }));
+  } else {
+    console.log("NOT HASH_QUEST_ID");
+    [myPrompts, setMyPrompts] = originalUsePlayerState(
+      myPlayer(),
+      "prompts",
+      {},
+    );
+    otherPrompts = originalUsePlayersState("prompts");
+  }
 
   useEffect(() => {
     const timer = setInterval(() => {

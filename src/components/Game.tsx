@@ -22,6 +22,7 @@ import { storyEvents } from "@/core/storyEvents";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
+import StoryImage from "./StoryImage";
 
 const GameContent = () => {
   // UI variables
@@ -99,9 +100,12 @@ const GameContent = () => {
 
   return (
     <AmbientBackground>
-      <div className="w-4/5 max-w-5xl flex flex-col h-dynamic py-4">
+      <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
-        <Story ref={storyRef} />
+        <div className="flex flex-row justify-center items-center gap-8 flex-1">
+          <Story ref={storyRef} />
+          <StoryImage />
+        </div>
         <StoryButtons />
       </div>
       <DiceRollsScreen />

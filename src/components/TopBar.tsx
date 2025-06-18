@@ -161,7 +161,6 @@ const TopBar = () => {
       <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
-
             {/* Location */}
             {locationData && (
               <div
@@ -208,7 +207,10 @@ const TopBar = () => {
                 key={npc.name}
                 className={sharedBoxStyles}
                 onMouseEnter={(e) =>
-                  npcOverlay.handleMouseEvent(npc.name, e, getLeftAlignedPosition
+                  npcOverlay.handleMouseEvent(
+                    npc.name,
+                    e,
+                    getLeftAlignedPosition,
                   )
                 }
                 onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
@@ -222,7 +224,7 @@ const TopBar = () => {
               className="w-16 h-16 cursor-pointer relative group"
               onPointerDown={() => setIsSettingsOpen(true)}
             >
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
                 Settings
               </div>
               <img

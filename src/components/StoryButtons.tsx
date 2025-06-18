@@ -26,6 +26,7 @@ const StoryButtons: React.FC = () => {
     "prompts",
     {},
   );
+  console.log("myPrompts", myPrompts);
   const otherPrompts = usePlayersState("prompts");
 
   useEffect(() => {

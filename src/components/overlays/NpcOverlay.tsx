@@ -23,7 +23,7 @@ const NpcOverlay = ({
   useEffect(() => {
     if (locationState && locationData && npcName) {
       setNpcState(locationState.npcs[npcName]);
-      setNpcData(locationData.scenes[0].npcs[npcName]);
+      setNpcData(locationData.npcs[npcName]);
     } else {
       setNpcState(null);
       setNpcData(null);

@@ -1,17 +1,20 @@
 import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
+import { QuestSummary } from "@/types/validatedTypes";
 
 interface LocationOverlayProps {
   position: { x: number; y: number };
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  questSummary: QuestSummary;
 }
 
 const LocationOverlay = ({
   position,
   onMouseEnter,
   onMouseLeave,
+  questSummary,
 }: LocationOverlayProps) => {
   const { locationData } = useLocationData();
 
@@ -20,6 +23,7 @@ const LocationOverlay = ({
   return (
     <Overlay
       className="w-2/5"
+      questSummary={questSummary}
       style={{
         position: "fixed",
         left: `${position.x}px`,
@@ -37,12 +41,8 @@ const LocationOverlay = ({
             className="w-16 h-16 object-cover rounded"
           />
           <div className="flex flex-col">
-            <span className="text-gray-300 font-medium">
-              {locationData.name}
-            </span>
-            <span className="text-gray-400 text-sm">
-              {locationData.description}
-            </span>
+            <span className="font-medium">{locationData.name}</span>
+            <span className="text-sm">{locationData.description}</span>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
 import {
   useTimeRemaining,
-  useShowPrompts,
+  useShowPromptInput as useShowPromptInput,
   useCharacters,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
@@ -11,28 +11,28 @@ import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
-import {
-  usePlayersState,
-  usePlayerStatePrompts,
-} from "@/core/multiplayerState";
+import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [playerToCharacters, setPlayerToCharacters] = useState<
+    Record<string, string[]>
+  >({});
   const { timeRemaining, setTimeRemaining } = useTimeRemaining();
   const { gameData } = useGameData();
   const { characters } = useCharacters();
   const gameApi = useGameApi();
 
-  const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
+  const { showPromptInput, setShowPromptInput } = useShowPromptInput();
 
-  const [myPrompts, setMyPrompts] = usePlayerStatePrompts(
+  const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
-    "prompts",
-    {},
+    "prompt",
+    "",
   );
-  const otherPrompts = usePlayersState("prompts");
+  const otherPrompts = usePlayersState("prompt");
 
   const myPlayerId = myPlayer().id;
 
@@ -48,30 +48,51 @@ const StoryButtons: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    setMyPrompts(
-      Object.fromEntries(
-        Object.entries(characters)
-          .filter(([_, characterState]) => characterState.player === myPlayerId)
-          .map(([characterId, _]) => [characterId, ""]),
-      ),
-    );
+    // Create a record mapping player ID to a list of character name strings
+    const playerToCharactersMap = Object.entries(characters).reduce<
+      Record<string, string[]>
+    >((acc, [characterId, characterState]) => {
+      const playerId = characterState.player;
+      if (!acc[playerId]) {
+        acc[playerId] = [];
+      }
+      acc[playerId].push(characterId);
+      return acc;
+    }, {});
+    setPlayerToCharacters(playerToCharactersMap);
   }, [characters]);
 
   const handleActOk = async () => {
     await gameApi.postTyped(
-      `/game/${gameData.gameId}/submit_prompts`,
-      { prompts: myPrompts },
+      `/game/${gameData.gameId}/submit_prompt`,
+      { prompt: myPrompt },
       SubmitPromptsResponseSchema,
     );
   };
 
   const handleActEnterButton = () => {
-    if (
-      Object.values(myPrompts).every((prompt) => prompt && prompt.length >= 4)
-    ) {
-      handlePlayerAction(handleActOk);
-    }
+    handlePlayerAction(handleActOk);
   };
+
+  // Get the characters controlled by the current player
+  const myCharacters = playerToCharacters[myPlayerId] || [];
+
+  const formatCharacterList = (characters: string[]): string => {
+    if (characters.length === 0) return "";
+    if (characters.length === 1) return characters[0];
+    if (characters.length === 2) return characters.join(" and ");
+    // For 3+ characters, use Oxford comma: "A, B, and C"
+    return (
+      characters.slice(0, -1).join(", ") +
+      ", and " +
+      characters[characters.length - 1]
+    );
+  };
+
+  const placeHolder =
+    myCharacters.length > 0
+      ? `Describe the plan for ${formatCharacterList(myCharacters)} for the next 30 seconds...`
+      : "error";
 
   const renderTextInput = () => (
     <div className="flex flex-col gap-4 justify-center self-center">
@@ -84,21 +105,19 @@ const StoryButtons: React.FC = () => {
             </div>
           ))}
         <div className="flex gap-4 mb-4 items-end">
-          {Object.entries(myPrompts).map(([key, _]) => (
-            <div key={key} className="flex-1">
-              <TextInput
-                text={myPrompts[key]}
-                setText={(value: string) => {
-                  setMyPrompts({ ...myPrompts, [key]: value }, true);
-                }}
-                textInputRef={textInputRef}
-                onClose={() => {}}
-                onOk={handleActEnterButton}
-                placeHolder={`Describe ${key}'s plan for the next 30 seconds...`}
-                showCharCount={true}
-              />
-            </div>
-          ))}
+          <div className="flex-1">
+            <TextInput
+              text={myPrompt}
+              setText={(value: string) => {
+                setMyPrompt(value, true);
+              }}
+              textInputRef={textInputRef}
+              onClose={() => {}}
+              onOk={handleActEnterButton}
+              placeHolder={placeHolder}
+              showCharCount={true}
+            />
+          </div>
           <button
             className={`game-button ${getColorClasses("teal")} mb-12`}
             onPointerDown={() => handlePlayerAction(handleActOk)}
@@ -111,19 +130,19 @@ const StoryButtons: React.FC = () => {
   );
 
   useEffect(() => {
-    if (showPromptsInput && textInputRef.current) {
+    if (showPromptInput && textInputRef.current) {
       textInputRef.current.focus();
     }
-  }, [showPromptsInput]);
+  }, [showPromptInput]);
 
   const handlePlayerAction = async (action: () => Promise<void>) => {
-    setShowPromptsInput(false);
+    setShowPromptInput(false);
     await action();
   };
 
   return (
     <>
-      {showPromptsInput && (
+      {showPromptInput && (
         <div className="border-2 border-gray-700 rounded-lg h-48 p-4 mt-2">
           <div className="flex justify-between items-center self-center">
             <div className="text-gray-300 flex items-center gap-12">

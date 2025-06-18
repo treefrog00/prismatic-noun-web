@@ -8,7 +8,10 @@ import {
 } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
-import { PlayerLeftResponseSchema } from "../types/validatedTypes";
+import {
+  PlayerLeftResponseSchema,
+  QuestSummariesSchema,
+} from "../types/validatedTypes";
 
 import {
   useGameApi,
@@ -23,6 +26,7 @@ import { useLobbyContext } from "@/contexts/LobbyContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
+import { HASH_QUEST_ID } from "@/config";
 
 const GameContent = () => {
   // UI variables
@@ -34,9 +38,9 @@ const GameContent = () => {
 
   // multiplayer state
   const { gameData, setGameData } = useGameData();
-  const { questSummary } = useLobbyContext();
   const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
+  const { questSummary, setQuestSummary } = useLobbyContext();
 
   const gameApi = useGameApi();
 
@@ -80,10 +84,24 @@ const GameContent = () => {
   useEffect(() => {
     if (isHost) {
       const startGameAsync = async () => {
+        let summary = questSummary;
+
+        if (HASH_QUEST_ID) {
+          const questSummaries = await gameApi.getTyped(
+            "/quest/summaries",
+            QuestSummariesSchema,
+          );
+          const matchingSummary = questSummaries.quests.find(
+            (q) => q.questId === HASH_QUEST_ID,
+          );
+          summary = matchingSummary;
+          setQuestSummary(matchingSummary);
+        }
+
         let startGame = await startIfNotStarted(
           gameApi,
           players,
-          questSummary,
+          summary,
           localPlayers,
         );
         setGameData(startGame.gameData);
@@ -98,12 +116,16 @@ const GameContent = () => {
     // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
   }, [isHost]);
 
+  if (!questSummary) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
         <div className="flex flex-row gap-8 flex-1">
-          <Story ref={storyRef} />
+          <Story ref={storyRef} questSummary={questSummary} />
           <div className="w-128 min-w-0 flex flex-col h-full">
             <div className="flex-1" />
             <div className="flex justify-end">

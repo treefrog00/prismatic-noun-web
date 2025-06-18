@@ -3,14 +3,14 @@ import { useState, useRef, useCallback } from "react";
 import CharacterOverlay from "./overlays/CharacterOverlay";
 import {
   useCharacters,
+  useGameData,
   useLocationData,
   useLocationState,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
 import LocationOverlay from "./overlays/LocationOverlay";
-import { useGameStage } from "@/contexts/GameContext";
-import { useVoteState } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 
 // Track which overlay is currently open and provide a way to close others
@@ -134,6 +134,8 @@ const TopBar = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
+  const { questSummary } = useLobbyContext();
+  const { gameData } = useGameData();
 
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
@@ -141,24 +143,39 @@ const TopBar = () => {
 
   const sharedBoxStyles =
     "w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors";
-  const selectedBoxStyles = "border-2 border-amber-500";
-
-  const getNpcs = () => {
-    if (!locationState) return [];
-    return Object.entries(locationState.npcs).map(([name, npc]) => ({
-      name,
-      ...npc,
-    }));
-  };
 
   const getLeftAlignedPosition = () => ({
     x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
 
+  const characterList = Object.entries(characters).map(
+    ([name, characterState]) => {
+      const characterData = gameData?.characters?.[name];
+      return {
+        name,
+        ...characterState,
+        ...characterData,
+      };
+    },
+  );
+
+  const npcList = Object.entries(locationState?.npcs ?? {}).map(
+    ([name, npcState]) => {
+      const npcData = locationData?.npcs?.[name];
+      return {
+        name,
+        ...npcState,
+        ...npcData,
+      };
+    },
+  );
+
   return (
     <>
-      <div className="w-full bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2">
+      <div
+        className={`w-full backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2 ${questSummary?.containerColor}/80`}
+      >
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
             {/* Location */}
@@ -183,26 +200,31 @@ const TopBar = () => {
             <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
 
             {/* Characters list */}
-            {Object.entries(characters).map(([name, character], idx, arr) => (
+            {characterList.map((character) => (
               <div
-                key={name}
+                key={character.name}
+                className={sharedBoxStyles}
                 onMouseEnter={(e) =>
                   characterOverlay.handleMouseEvent(
-                    name,
+                    character.name,
                     e,
                     getLeftAlignedPosition,
                   )
                 }
                 onMouseLeave={() => characterOverlay.handleMouseEvent(null)}
               >
-                <span className="text-gray-400 text-xs">{name}</span>
+                <img
+                  src={artUrl(character.imageUrl)}
+                  alt={character.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
             ))}
 
             <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
 
             {/* NPCs list */}
-            {getNpcs().map((npc) => (
+            {npcList.map((npc) => (
               <div
                 key={npc.name}
                 className={sharedBoxStyles}
@@ -245,6 +267,7 @@ const TopBar = () => {
           characterName={characterOverlay.state.hoveredName}
           onMouseEnter={characterOverlay.handleOverlayMouseEnter}
           onMouseLeave={characterOverlay.handleOverlayMouseLeave}
+          questSummary={questSummary}
         />
       )}
       {npcOverlay.state.isOpen && (
@@ -253,6 +276,7 @@ const TopBar = () => {
           npcName={npcOverlay.state.hoveredName}
           onMouseEnter={npcOverlay.handleOverlayMouseEnter}
           onMouseLeave={npcOverlay.handleOverlayMouseLeave}
+          questSummary={questSummary}
         />
       )}
       {locationOverlay.state.isOpen && (
@@ -260,6 +284,7 @@ const TopBar = () => {
           position={locationOverlay.state.position}
           onMouseEnter={locationOverlay.handleOverlayMouseEnter}
           onMouseLeave={locationOverlay.handleOverlayMouseLeave}
+          questSummary={questSummary}
         />
       )}
     </>

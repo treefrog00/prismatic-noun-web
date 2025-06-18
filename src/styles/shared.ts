@@ -21,8 +21,14 @@ export const pageStyles = {
   tableCell: "px-6 py-4 whitespace-nowrap",
 };
 
-export const sharedStyles = {
-  container:
-    "font-['Crimson_Text'] relative p-5 bg-gray-800/80 rounded-lg shadow-xl shadow-black/30 border border-gray-700 backdrop-blur-sm",
-  text: "text-gray-300 text-xl leading-relaxed",
+export const getStyles = (
+  containerColor: string,
+  textColor: string,
+  highlightColor: string,
+) => {
+  return {
+    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-700 backdrop-blur-sm ${containerColor}/80`,
+    text: `${textColor} text-xl leading-relaxed`,
+    highlight: `${highlightColor}`,
+  };
 };

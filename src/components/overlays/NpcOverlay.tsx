@@ -1,12 +1,14 @@
 import { useLocationData, useLocationState } from "@/contexts/GameContext";
 import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
+import { QuestSummary } from "@/types/validatedTypes";
 
 interface NpcOverlayProps {
   position: { x: number; y: number };
   npcName: string | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  questSummary: QuestSummary;
 }
 
 const NpcOverlay = ({
@@ -14,6 +16,7 @@ const NpcOverlay = ({
   npcName,
   onMouseEnter,
   onMouseLeave,
+  questSummary,
 }: NpcOverlayProps) => {
   const { locationState } = useLocationState();
   const { locationData } = useLocationData();
@@ -35,6 +38,7 @@ const NpcOverlay = ({
   return (
     <Overlay
       className="w-2/5"
+      questSummary={questSummary}
       style={{
         position: "fixed",
         left: `${position.x}px`,

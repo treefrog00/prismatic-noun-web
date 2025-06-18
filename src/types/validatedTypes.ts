@@ -13,6 +13,10 @@ const QuestSummarySchema = z.object({
   description: z.string(),
   imageUrl: z.string(),
   maxPlayers: z.number(),
+  gradientColors: z.array(z.string()),
+  containerColor: z.string(),
+  textColor: z.string(),
+  highlightColor: z.string(),
 });
 
 export const QuestSummariesSchema = z.object({
@@ -78,8 +82,17 @@ const DiceRollSchema = z.object({
 const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("Story"),
-    label: z.string().nullable(),
     text: z.string(),
+  }),
+
+  z.object({
+    type: z.literal("Image"),
+    imageUrl: z.string(),
+  }),
+
+  z.object({
+    type: z.literal("Pause"),
+    prompt: z.string(),
   }),
 
   z.object({

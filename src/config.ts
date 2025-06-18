@@ -27,4 +27,4 @@ export const HASH_NUM_PLAYERS = hashParams.get("numplayers");
 
 export const USE_SENTRY = import.meta.env.PROD || envConfig.backendUrl;
 
-export const PROMPT_LIMIT = 130;
+export const PROMPT_LIMIT = 240;

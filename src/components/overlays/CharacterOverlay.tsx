@@ -1,11 +1,18 @@
-import { useCharacters } from "@/contexts/GameContext";
+import {
+  useCharacters,
+  useGameData,
+  useLocationData,
+} from "@/contexts/GameContext";
 import Overlay from "./Overlay";
+import artUrl from "@/util/artUrls";
+import { QuestSummary } from "@/types";
 
 interface CharacterOverlayProps {
   position: { x: number; y: number };
   characterName: string | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  questSummary: QuestSummary;
 }
 
 const CharacterOverlay = ({
@@ -13,13 +20,22 @@ const CharacterOverlay = ({
   characterName,
   onMouseEnter,
   onMouseLeave,
+  questSummary,
 }: CharacterOverlayProps) => {
   const { characters } = useCharacters();
-  const character = characters[characterName];
+  const { gameData } = useGameData();
+
+  const characterState = characters?.[characterName];
+  const characterData = gameData?.characters?.[characterName];
+
+  if (!characterState || !characterData) {
+    return null;
+  }
 
   return (
     <Overlay
       className="w-2/5"
+      questSummary={questSummary}
       style={{
         position: "fixed",
         left: `${position.x}px`,
@@ -30,14 +46,17 @@ const CharacterOverlay = ({
       onMouseLeave={onMouseLeave}
     >
       <div className="space-y-2">
-        <div className="flex items-center gap-2 p-2">
-          <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">
-              {characterName}
-            </span>
+        <div className="flex gap-2 p-2">
+          <img
+            src={artUrl(characterData.imageUrl)}
+            alt={characterData.name}
+            className="w-48 h-48 bg-gray-700 rounded-lg border border-gray-600"
+          />
+          <div className="mt-2">
+            <div>{characterData.name}</div>
+            <div>{characterState.inventory.join(", ")}</div>
+            <div>{characterState.effects.join(", ")}</div>
           </div>
-          <span className="text-gray-300">{character.inventory.join(", ")}</span>
-          <span className="text-gray-300">{character.effects.join(", ")}</span>
         </div>
       </div>
     </Overlay>

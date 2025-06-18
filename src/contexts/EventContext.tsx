@@ -6,7 +6,12 @@ import {
   useEffect,
 } from "react";
 import { GameEvent } from "@/types";
-import { useCharacters, useShowPrompts } from "./GameContext";
+import {
+  useCharacters,
+  useMainImage,
+  useShowContinueButton,
+  useShowPromptInput,
+} from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useTimeRemaining } from "./GameContext";
@@ -38,20 +43,32 @@ export const EventProvider = ({
   const [isProcessing, setIsProcessing] = useState(false);
 
   const { setDiceRollState } = useDiceRoll();
+  const { setMainImage } = useMainImage();
   const { setCharacters } = useCharacters();
   const { setLocationState } = useLocationState();
   const { setLocationData } = useLocationData();
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
-  const { setShowPromptsInput } = useShowPrompts();
+  const { setShowPromptInput } = useShowPromptInput();
+  const { setShowContinueButton } = useShowContinueButton();
 
   const processEvent = async (event: GameEvent) => {
     console.log("Processing", event.type, "event", event);
 
     if (event.type === "Story") {
-      appendToStory(event.text, event.label);
+      appendToStory(event.text);
       await new Promise((resolve) => setTimeout(resolve, 2000));
+    } else if (event.type === "Image") {
+      // the flushSync microtask is only needed for React 18+
+      queueMicrotask(() => {
+        ReactDOM.flushSync(() => {
+          setMainImage(event.imageUrl);
+        });
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    } else if (event.type === "Pause") {
+      setShowContinueButton(true);
     } else if (event.type === "DiceRollScreen") {
       if (!gameConfig.shouldAnimateDice) return;
 
@@ -87,7 +104,7 @@ export const EventProvider = ({
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerActionsStart") {
       setTimeRemaining(gameConfig.turnTimeLimit);
-      setShowPromptsInput(true);
+      setShowPromptInput(true);
     } else if (event.type === "PlayerActionsEnd") {
       // TODO
     } else if (event.type === "GameEnd") {

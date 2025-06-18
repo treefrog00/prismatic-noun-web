@@ -1,17 +1,27 @@
 import { useRef, useImperativeHandle, forwardRef } from "react";
-import { sharedStyles } from "../styles/shared";
+import { getStyles } from "../styles/shared";
 import { useGameConfig } from "@/contexts/GameContext";
+import { QuestSummary } from "@/types";
 
 export interface StoryRef {
   updateText: (text: string, label?: string) => void;
   appendNoAnimation: (text: string, label: string) => void;
 }
 
-const Story = forwardRef<StoryRef>((_, ref) => {
+interface StoryProps {
+  questSummary: QuestSummary;
+}
+
+const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
   const lineHeight = 16;
   const { gameConfig } = useGameConfig();
+  const sharedStyles = getStyles(
+    questSummary.containerColor,
+    questSummary.textColor,
+    questSummary.highlightColor,
+  );
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
@@ -138,8 +148,8 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
       // Process each word
       words.forEach((word) => {
-        if (word.startsWith("<npc>")) {
-          word = word.replace("<npc>", "").replace("</npc>", "");
+        if (word.startsWith("<hl>")) {
+          word = word.replace("<hl>", "").replace("</hl>", "");
           isYellow = true;
         } else {
           isYellow = false;
@@ -291,8 +301,8 @@ const Story = forwardRef<StoryRef>((_, ref) => {
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
         const finalText = text
-          .replace(/<npc>/g, '<span class="text-yellow-400">')
-          .replace(/<\/npc>/g, "</span>");
+          .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
+          .replace(/<\/hl>/g, "</span>");
 
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
@@ -362,6 +372,8 @@ const Story = forwardRef<StoryRef>((_, ref) => {
       });
     },
   }));
+
+  console.log("sharedStyles", sharedStyles);
 
   return (
     <>

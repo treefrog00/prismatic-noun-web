@@ -7,7 +7,11 @@ import {
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
 import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
-import { StartGameSchema, QuestSummary } from "../types/validatedTypes";
+import {
+  StartGameSchema,
+  QuestSummary,
+  QuestSummariesSchema,
+} from "../types/validatedTypes";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";

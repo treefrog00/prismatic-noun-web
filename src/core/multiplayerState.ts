@@ -19,10 +19,7 @@ import {
 } from "playroomkit";
 import { HASH_QUEST_ID } from "../config";
 import { useState } from "react";
-import {
-  useLocalPlayerPrompts,
-  useLocalPlayers,
-} from "../contexts/GameContext";
+import { useLocalPlayerPrompt, useLocalPlayers } from "../contexts/GameContext";
 
 export type { PlayerState };
 
@@ -218,16 +215,15 @@ export const usePlayersState = (key: string): any[] => {
   return originalUsePlayersState(key);
 };
 
-export const usePlayerStatePrompts = (
+export const usePlayerStatePrompt = (
   player: PlayerState,
   key: string,
-  defaultValue: Record<string, string>,
-): MultiplayerStateHookResult<Record<string, string>> => {
+  defaultValue: string,
+): MultiplayerStateHookResult<string> => {
   if (HASH_QUEST_ID) {
     // this assumes the only thing this ever gets used for is the player prompts
-    const { localPlayerPrompts, setLocalPlayerPrompts } =
-      useLocalPlayerPrompts();
-    return [localPlayerPrompts, setLocalPlayerPrompts];
+    const { localPlayerPrompt, setLocalPlayerPrompt } = useLocalPlayerPrompt();
+    return [localPlayerPrompt, setLocalPlayerPrompt];
   }
   return originalUsePlayerState(player, key, defaultValue);
 };

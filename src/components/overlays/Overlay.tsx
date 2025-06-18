@@ -1,5 +1,6 @@
 import { ReactNode, CSSProperties } from "react";
-import { sharedStyles } from "@/styles/shared";
+import { getStyles } from "@/styles/shared";
+import { QuestSummary } from "@/types/validatedTypes";
 
 interface OverlayProps {
   children: ReactNode;
@@ -7,6 +8,7 @@ interface OverlayProps {
   style?: CSSProperties;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  questSummary: QuestSummary;
 }
 
 const Overlay = ({
@@ -15,10 +17,16 @@ const Overlay = ({
   style,
   onMouseEnter,
   onMouseLeave,
+  questSummary,
 }: OverlayProps) => {
+  const sharedStyles = getStyles(
+    questSummary.containerColor,
+    questSummary.textColor,
+    questSummary.highlightColor,
+  );
   return (
     <div
-      className={`${sharedStyles.container} ${className} pointer-events-auto`}
+      className={`${questSummary.containerColor}/80 ${className} pointer-events-auto`}
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

@@ -2,7 +2,6 @@ import { GameApi } from "../core/gameApi";
 import {
   useMultiplayerState,
   PlayerState,
-  SetStateFunction,
   LocalPlayerState,
 } from "../core/multiplayerState";
 import {
@@ -62,11 +61,8 @@ type GameContextType = {
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
 
-  localPlayerPrompts: Record<string, string>;
-  setLocalPlayerPrompts: (
-    value: Record<string, string>,
-    reliable?: boolean,
-  ) => void;
+  localPlayerPrompt: string;
+  setLocalPlayerPrompt: (value: string, reliable?: boolean) => void;
 
   gameStage: MultiplayerGameStage;
   setGameStage: (value: MultiplayerGameStage) => void;
@@ -83,14 +79,20 @@ type GameContextType = {
   setGameConfig: (value: GameConfig) => void;
   handleSetShouldAnimateDice: (show: boolean) => void;
 
-  showPromptsInput: boolean;
-  setShowPromptsInput: (value: boolean) => void;
+  showPromptInput: boolean;
+  setShowPromptInput: (value: boolean) => void;
+
+  showContinueButton: boolean;
+  setShowContinueButton: (value: boolean) => void;
 
   timeRemaining: number;
   setTimeRemaining: (value: number | ((prev: number) => number)) => void;
 
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
+
+  mainImage: string;
+  setMainImage: (value: string) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -148,6 +150,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     locationRoll: null,
   });
 
+  const [mainImage, setMainImage] = useState<string | null>(null);
+
   // we need a local version of game stage to handle launch screen, probably because it
   // is before playroomkit is initialized
   const [localGameStage, setLocalGameStage] =
@@ -155,18 +159,14 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([
     new LocalPlayerState("Player 1"),
   ]);
-  const [localPlayerPrompts, _setLocalPlayerPrompts] = useState<
-    Record<string, string>
-  >({});
-  const setLocalPlayerPrompts = (
-    value: Record<string, string>,
-    reliable: boolean,
-  ) => {
-    _setLocalPlayerPrompts(value);
+  const [localPlayerPrompt, _setLocalPlayerPrompt] = useState<string>("");
+  const setLocalPlayerPrompt = (value: string, reliable: boolean) => {
+    _setLocalPlayerPrompt(value);
     // 'reliable' is ignored
   };
-  const [showPromptsInput, setShowPromptsInput] = useState(false);
+  const [showPromptInput, setShowPromptInput] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
+  const [showContinueButton, setShowContinueButton] = useState(false);
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
@@ -212,18 +212,22 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         localPlayers,
         setLocalPlayers,
 
-        localPlayerPrompts,
-        setLocalPlayerPrompts,
+        localPlayerPrompt,
+        setLocalPlayerPrompt,
 
         gameConfig,
         setGameConfig,
         handleSetShouldAnimateDice,
 
         // Action handler state
-        showPromptsInput,
-        setShowPromptsInput,
+        showPromptInput,
+        setShowPromptInput,
+
         timeRemaining,
         setTimeRemaining,
+
+        showContinueButton,
+        setShowContinueButton,
 
         diceRollState,
         setDiceRollState,
@@ -233,6 +237,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         voteState,
         setVoteState,
+
+        mainImage,
+        setMainImage,
       }}
     >
       {children}
@@ -307,11 +314,11 @@ export const useLocalPlayers = () => {
   };
 };
 
-export const useLocalPlayerPrompts = () => {
+export const useLocalPlayerPrompt = () => {
   const context = useContext(GameContext);
   return {
-    localPlayerPrompts: context.localPlayerPrompts,
-    setLocalPlayerPrompts: context.setLocalPlayerPrompts,
+    localPlayerPrompt: context.localPlayerPrompt,
+    setLocalPlayerPrompt: context.setLocalPlayerPrompt,
   };
 };
 
@@ -324,20 +331,22 @@ export const addLocalPlayer = (
 
 export const useGameApi = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useGameApi must be used within a GameProvider");
-  }
   return context.gameApi;
 };
 
-export const useShowPrompts = () => {
+export const useShowPromptInput = () => {
   const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useActionUIState must be used within a GameProvider");
-  }
   return {
-    showPromptsInput: context.showPromptsInput,
-    setShowPromptsInput: context.setShowPromptsInput,
+    showPromptInput: context.showPromptInput,
+    setShowPromptInput: context.setShowPromptInput,
+  };
+};
+
+export const useShowContinueButton = () => {
+  const context = useContext(GameContext);
+  return {
+    showContinueButton: context.showContinueButton,
+    setShowContinueButton: context.setShowContinueButton,
   };
 };
 
@@ -376,5 +385,13 @@ export const useVoteState = () => {
     voteState: context.voteState,
     setVoteState: context.setVoteState,
     setShowVote,
+  };
+};
+
+export const useMainImage = () => {
+  const context = useContext(GameContext);
+  return {
+    mainImage: context.mainImage,
+    setMainImage: context.setMainImage,
   };
 };

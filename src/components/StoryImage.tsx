@@ -2,7 +2,7 @@ import React from "react";
 
 const StoryImage: React.FC = () => {
   return (
-    <div className="w-96 h-96 flex items-center justify-center">
+    <div className="w-96 h-96 flex">
       <img
         src="/ai_art/placehold.png"
         alt="Story Placeholder"

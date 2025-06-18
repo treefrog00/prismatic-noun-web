@@ -102,9 +102,21 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
-        <div className="flex flex-row justify-center items-center gap-8 flex-1">
+        <div className="flex flex-row gap-8 flex-1">
           <Story ref={storyRef} />
-          <StoryImage />
+          <div style={{ flex: 1, position: "relative" }}>
+            <div
+              style={{
+                position: "absolute",
+                top: "33.33%",
+                left: 0,
+                right: 0,
+                transform: "translateY(-50%)",
+              }}
+            >
+              <StoryImage />
+            </div>
+          </div>
         </div>
         <StoryButtons />
       </div>

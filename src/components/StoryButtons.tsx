@@ -4,6 +4,8 @@ import {
   useTimeRemaining,
   useShowPrompts,
   useCharacters,
+  useLocalPlayerPrompts,
+  useLocalPlayers,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
@@ -11,10 +13,10 @@ import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
 import {
   myPlayer,
-  usePlayersState,
-  usePlayerStatePrompts,
 } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
+import { usePlayersState as originalUsePlayersState, usePlayerState as originalUsePlayerState } from "playroomkit";
+import { HASH_QUEST_ID } from "@/config";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -26,12 +28,23 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
-  const [myPrompts, setMyPrompts] = usePlayerStatePrompts(
+
+  // only needed when HASH_QUEST_ID is defined
+  const { localPlayerPrompts, setLocalPlayerPrompts } =
+      useLocalPlayerPrompts();
+  const { localPlayers } = useLocalPlayers();
+
+  // not used when HASH_QUEST_ID is defined
+  const [remoteMyPrompts, setRemoteMyPrompts] = originalUsePlayerState(
     myPlayer(),
     "prompts",
     {},
   );
-  const otherPrompts = usePlayersState("prompts");
+  const myPrompts = HASH_QUEST_ID ? localPlayerPrompts : remoteMyPrompts;
+  const setMyPrompts = HASH_QUEST_ID ? setLocalPlayerPrompts : setRemoteMyPrompts;
+
+  // won't work in HASH_QUEST_ID mode, but doesn't matter as there won't be any other players
+  const otherPrompts = originalUsePlayersState("prompts");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -57,7 +70,7 @@ const StoryButtons: React.FC = () => {
   }, [characters]);
 
   const handleActOk = async () => {
-    let response = await gameApi.postTyped(
+    await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompts`,
       { prompts: myPrompts },
       SubmitPromptsResponseSchema,

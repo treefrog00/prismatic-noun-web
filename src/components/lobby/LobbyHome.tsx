@@ -30,6 +30,17 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
     setShowInvitePopup(true);
   };
 
+  const maxPlayersText = `(max ${questSummary?.maxPlayers} players)`;
+
+  const renderQuestDescription = () => (
+    <p className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}>
+      {questSummary.description}
+      <br />
+      <br />
+      {maxPlayersText}
+    </p>
+  );
+
   return (
     <>
       <div className="flex items-start justify-between mb-8">
@@ -61,11 +72,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                     </option>
                   ))}
                 </select>
-                <p
-                  className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}
-                >
-                  {questSummary.description}
-                </p>
+                {renderQuestDescription()}
               </>
             ) : (
               <>
@@ -74,11 +81,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 >
                   {questSummary.title}
                 </div>
-                <p
-                  className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}
-                >
-                  {questSummary.description}
-                </p>
+                {renderQuestDescription()}
               </>
             )}
           </div>
@@ -87,14 +90,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
           <img
             src={artUrl(questSummary.imageUrl)}
             className={`${responsiveStyles.sizes.adventureImage} object-contain ${responsiveStyles.margins.adventureImage}`}
-            style={{
-              maskImage:
-                "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
-              WebkitMaskImage:
-                "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
-              maskComposite: "intersect",
-              WebkitMaskComposite: "destination-in",
-            }}
+            style={responsiveStyles.mask}
           />
         ) : (
           <div

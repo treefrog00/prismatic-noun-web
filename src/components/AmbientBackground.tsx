@@ -16,8 +16,8 @@ const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
       {children}
       <style>{`
         .ambient-bg {
-          background: linear-gradient(270deg, #0f1729, #1f2937, #111827);
-          background-size: 600% 600%;
+          background: linear-gradient(230deg,#0f1729, #1f2937, #111827);
+          background-size: 200% 200%;
         }
       `}</style>
     </div>

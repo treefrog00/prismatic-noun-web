@@ -78,8 +78,9 @@ const LaunchScreen = () => {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200 text-lg`}>
                 <p className="mb-4">
-                  A collection of spooky and weird tales that can be played
-                  either with friends online or on your own.
+                  A collection of spooky and weird interactive tales that can be
+                  played with friends online. Single-player mode is also
+                  supported, but it doesn't work so well.
                 </p>
                 <p className="mb-4">
                   You can play in a web browser on Windows/Mac/Linux, but mobile

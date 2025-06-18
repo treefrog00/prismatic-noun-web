@@ -1,3 +1,4 @@
+import { responsiveStyles } from "@/styles/responsiveStyles";
 import React from "react";
 
 const StoryImage: React.FC = () => {
@@ -6,7 +7,8 @@ const StoryImage: React.FC = () => {
       <img
         src="/ai_art/placehold.png"
         alt="Story Placeholder"
-        className="w-96 h-96 object-cover rounded"
+        className="w-96 h-96 object-cover"
+        style={responsiveStyles.mask}
       />
     </div>
   );

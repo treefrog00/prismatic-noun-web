@@ -25,6 +25,15 @@ export const responsiveStyles = {
     adventureImage: "ml-4 md:ml-8",
   },
 
+  // Mask styles
+  mask: {
+    maskImage:
+      "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
+    WebkitMaskImage:
+      "linear-gradient(to right, transparent 2%, black 8%, black 92%, transparent 98%), linear-gradient(to bottom, transparent 2%, black 8%, black 92%, transparent 98%)",
+    maskComposite: "intersect",
+  },
+
   // Common button styles
   button: {
     base: "font-['Cinzel'] text-gray-200 border-2 rounded cursor-pointer transition-all duration-300 backdrop-blur-sm",

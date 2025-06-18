@@ -12,6 +12,7 @@ const QuestSummarySchema = z.object({
   title: z.string(),
   description: z.string(),
   imageUrl: z.string(),
+  maxPlayers: z.number(),
 });
 
 export const QuestSummariesSchema = z.object({

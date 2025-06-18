@@ -130,6 +130,7 @@ const Story = forwardRef<StoryRef>((_, ref) => {
       let charIndex = 0;
       let longestAnimationTime = 0;
       let finishedFirstLine = false;
+      let isYellow = false;
 
       // Animation constants
       const CHAR_DELAY = 5; // Base delay per character
@@ -137,7 +138,13 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
       // Process each word
       words.forEach((word) => {
-        word = word.replace("<npc>", "").replace("</npc>", "");
+        if (word.startsWith("<npc>")) {
+          word = word.replace("<npc>", "").replace("</npc>", "");
+          isYellow = true;
+        } else {
+          isYellow = false;
+        }
+
         if (finishedFirstLine) {
           return;
         }
@@ -168,6 +175,9 @@ const Story = forwardRef<StoryRef>((_, ref) => {
 
           const charElement = document.createElement("span");
           charElement.className = "character";
+          if (isYellow) {
+            charElement.classList.add("text-yellow-400");
+          }
 
           // Handle spaces properly
           if (char === " ") {

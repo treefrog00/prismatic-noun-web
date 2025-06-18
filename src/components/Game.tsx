@@ -104,18 +104,12 @@ const GameContent = () => {
         <TopBar />
         <div className="flex flex-row gap-8 flex-1">
           <Story ref={storyRef} />
-          <div style={{ flex: 1, position: "relative" }}>
-            <div
-              style={{
-                position: "absolute",
-                top: "33.33%",
-                left: 0,
-                right: 0,
-                transform: "translateY(-50%)",
-              }}
-            >
+          <div className="w-128 min-w-0 flex flex-col h-full">
+            <div className="flex-1" />
+            <div className="flex justify-end">
               <StoryImage />
             </div>
+            <div className="flex-[2]" />
           </div>
         </div>
         <StoryButtons />

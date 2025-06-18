@@ -6,7 +6,7 @@ import {
   useEffect,
 } from "react";
 import { GameEvent } from "@/types";
-import { useCharacters } from "./GameContext";
+import { useCharacters, useShowPrompts } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useTimeRemaining } from "./GameContext";
@@ -44,6 +44,7 @@ export const EventProvider = ({
   const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
+  const { setShowPromptsInput } = useShowPrompts();
 
   const processEvent = async (event: GameEvent) => {
     console.log("Processing", event.type, "event", event);
@@ -86,6 +87,7 @@ export const EventProvider = ({
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerActionsStart") {
       setTimeRemaining(gameConfig.turnTimeLimit);
+      setShowPromptsInput(true);
     } else if (event.type === "PlayerActionsEnd") {
       // TODO
     } else if (event.type === "GameEnd") {

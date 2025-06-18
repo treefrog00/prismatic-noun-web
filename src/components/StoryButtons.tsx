@@ -29,29 +29,29 @@ const StoryButtons: React.FC = () => {
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
 
+  const localPlayerPromptsHook = useLocalPlayerPrompts();
+  const localPlayersHook = useLocalPlayers();
+
+  // unfortunately these lines will result in calls to PlayroomKit code even in local mode, but
+  // rules of hooks dictate that we can't use them in a conditional
+  const [playerPrompts, setPlayerPrompts] = originalUsePlayerState(myPlayer(), "prompts", {});
+  const otherPlayersPrompts = originalUsePlayersState("prompts");
+
   let myPrompts: Record<string, string>;
   let setMyPrompts: (value: Record<string, string>) => void;
   let otherPrompts: { player: PlayerState; state: Record<string, string> }[];
 
   if (HASH_QUEST_ID) {
-    console.log("HASH_QUEST_ID");
-    const { localPlayerPrompts, setLocalPlayerPrompts } =
-      useLocalPlayerPrompts();
-    myPrompts = localPlayerPrompts;
-    setMyPrompts = setLocalPlayerPrompts;
-    const { localPlayers } = useLocalPlayers();
-    otherPrompts = localPlayers.map((player) => ({
+    myPrompts = localPlayerPromptsHook.localPlayerPrompts;
+    setMyPrompts = localPlayerPromptsHook.setLocalPlayerPrompts;
+    otherPrompts = localPlayersHook.localPlayers.map((player) => ({
       player: player,
       state: player.getState("prompts"),
     }));
   } else {
-    console.log("NOT HASH_QUEST_ID");
-    [myPrompts, setMyPrompts] = originalUsePlayerState(
-      myPlayer(),
-      "prompts",
-      {},
-    );
-    otherPrompts = originalUsePlayersState("prompts");
+    myPrompts = playerPrompts;
+    setMyPrompts = setPlayerPrompts;
+    otherPrompts = otherPlayersPrompts;
   }
 
   useEffect(() => {

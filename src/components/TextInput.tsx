@@ -65,7 +65,7 @@ const TextInput: React.FC<TextInputProps> = ({
         ref={textInputRef}
       />
       {showCharCount && (
-        <div className="text-right text-base text-gray-300 mb-2">
+        <div className="text-right text-base text-gray-300">
           {text.length} / {PROMPT_LIMIT}
         </div>
       )}

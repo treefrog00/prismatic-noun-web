@@ -4,7 +4,6 @@ import {
   useTimeRemaining,
   useShowPrompts,
   useCharacters,
-  useLocalPlayers,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
@@ -16,7 +15,6 @@ import {
   usePlayersState,
   usePlayerStatePrompts,
 } from "@/core/multiplayerState";
-import { HASH_QUEST_ID } from "@/config";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -36,7 +34,6 @@ const StoryButtons: React.FC = () => {
   );
   const otherPrompts = usePlayersState("prompts");
 
-  console.log("myPlayer", myPlayer());
   const myPlayerId = myPlayer().id;
 
   useEffect(() => {
@@ -77,7 +74,7 @@ const StoryButtons: React.FC = () => {
   };
 
   const renderTextInput = () => (
-    <div className="flex flex-col gap-4 justify-center self-center mt-2">
+    <div className="flex flex-col gap-4 justify-center self-center">
       <div className="w-full">
         {otherPrompts
           .filter((prompt) => prompt.player.id !== myPlayerId)
@@ -86,24 +83,24 @@ const StoryButtons: React.FC = () => {
               <div>{prompt.player.id}</div>
             </div>
           ))}
-        {Object.entries(myPrompts).map(([key, _]) => (
-          <div key={key} className="mb-4">
-            <TextInput
-              text={myPrompts[key]}
-              setText={(value: string) => {
-                setMyPrompts({ ...myPrompts, [key]: value }, true);
-              }}
-              textInputRef={textInputRef}
-              onClose={() => {}}
-              onOk={handleActEnterButton}
-              placeHolder={`Describe ${key}'s plan for the next 30 seconds...`}
-              showCharCount={true}
-            />
-          </div>
-        ))}
-        <div className="flex gap-2">
+        <div className="flex gap-4 mb-4 items-end">
+          {Object.entries(myPrompts).map(([key, _]) => (
+            <div key={key} className="flex-1">
+              <TextInput
+                text={myPrompts[key]}
+                setText={(value: string) => {
+                  setMyPrompts({ ...myPrompts, [key]: value }, true);
+                }}
+                textInputRef={textInputRef}
+                onClose={() => {}}
+                onOk={handleActEnterButton}
+                placeHolder={`Describe ${key}'s plan for the next 30 seconds...`}
+                showCharCount={true}
+              />
+            </div>
+          ))}
           <button
-            className={`game-button ${getColorClasses("teal")} ml-4`}
+            className={`game-button ${getColorClasses("teal")} mb-12`}
             onPointerDown={() => handlePlayerAction(handleActOk)}
           >
             Confirm
@@ -120,28 +117,27 @@ const StoryButtons: React.FC = () => {
   }, [showPromptsInput]);
 
   const handlePlayerAction = async (action: () => Promise<void>) => {
-    // setShowPromptsInput(false);
+    setShowPromptsInput(false);
     await action();
   };
 
   return (
     <>
-      <div className="border-2 border-gray-700 rounded-lg px-4 py-2 h-24 mt-2">
-        <div className="flex justify-between items-center self-center">
-          <div className="text-gray-300 flex items-center gap-4">
-            {showPromptsInput && (
+      {showPromptsInput && (
+        <div className="border-2 border-gray-700 rounded-lg h-48 p-4 mt-2">
+          <div className="flex justify-between items-center self-center">
+            <div className="text-gray-300 flex items-center gap-12">
               <div className="w-full mt-2">{renderTextInput()}</div>
-            )}
-          </div>
-          <div className="flex gap-4 items-center">
-            <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
-              <div>
-                <div className="text-4xl font-bold">{timeRemaining}s</div>
+              <div className="text-gray-300 text-lg">
+                <div>
+                  Time Remaining:{" "}
+                  <div className="text-4xl font-bold">{timeRemaining}s</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       {isSettingsOpen && (
         <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
       )}

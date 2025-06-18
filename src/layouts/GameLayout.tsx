@@ -37,7 +37,8 @@ const GameLayout = ({ children }: GameLayoutProps) => {
         margin: "0",
         border: "none",
         borderRadius: "0",
-        overflow: isDevToolsOpen ? "auto" : "hidden",
+        //overflow: isDevToolsOpen ? "auto" : "hidden",
+        overflow: "auto",
       }}
     >
       <ErrorProvider>

@@ -136,8 +136,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
-  // we need a local version of game stage to handle launch screen, probably because it
-  // is before playroomkit is initialized
   const [characters, setCharacters] = useState<Record<string, CharacterState>>(
     {},
   );
@@ -149,6 +147,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     locationRoll: null,
   });
 
+  // we need a local version of game stage to handle launch screen, probably because it
+  // is before playroomkit is initialized
   const [localGameStage, setLocalGameStage] =
     useState<LocalGameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);

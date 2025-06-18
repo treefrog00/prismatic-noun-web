@@ -4,19 +4,17 @@ import {
   useTimeRemaining,
   useShowPrompts,
   useCharacters,
-  useLocalPlayerPrompts,
-  useLocalPlayers,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
-import {
-  myPlayer,
-} from "@/core/multiplayerState";
+import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
-import { usePlayersState as originalUsePlayersState, usePlayerState as originalUsePlayerState, PlayerState } from "playroomkit";
-import { HASH_QUEST_ID } from "@/config";
+import {
+  usePlayersState,
+  usePlayerStatePrompts,
+} from "@/core/multiplayerState";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -29,30 +27,12 @@ const StoryButtons: React.FC = () => {
 
   const { showPromptsInput, setShowPromptsInput } = useShowPrompts();
 
-  const localPlayerPromptsHook = useLocalPlayerPrompts();
-  const localPlayersHook = useLocalPlayers();
-
-  // unfortunately these lines will result in calls to PlayroomKit code even in local mode, but
-  // rules of hooks dictate that we can't use them in a conditional
-  const [playerPrompts, setPlayerPrompts] = originalUsePlayerState(myPlayer(), "prompts", {});
-  const otherPlayersPrompts = originalUsePlayersState("prompts");
-
-  let myPrompts: Record<string, string>;
-  let setMyPrompts: (value: Record<string, string>) => void;
-  let otherPrompts: { player: PlayerState; state: Record<string, string> }[];
-
-  if (HASH_QUEST_ID) {
-    myPrompts = localPlayerPromptsHook.localPlayerPrompts;
-    setMyPrompts = localPlayerPromptsHook.setLocalPlayerPrompts;
-    otherPrompts = localPlayersHook.localPlayers.map((player) => ({
-      player: player,
-      state: player.getState("prompts"),
-    }));
-  } else {
-    myPrompts = playerPrompts;
-    setMyPrompts = setPlayerPrompts;
-    otherPrompts = otherPlayersPrompts;
-  }
+  const [myPrompts, setMyPrompts] = usePlayerStatePrompts(
+    myPlayer(),
+    "prompts",
+    {},
+  );
+  const otherPrompts = usePlayersState("prompts");
 
   useEffect(() => {
     const timer = setInterval(() => {

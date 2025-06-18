@@ -203,3 +203,31 @@ export const getRoomCode = () => {
   if (HASH_QUEST_ID) return "room123";
   return originalGetRoomCode();
 };
+
+export const usePlayersState = (key: string): any[] => {
+  if (HASH_QUEST_ID) {
+    const { localPlayers } = useLocalPlayers();
+    // this won't work as a hook with updates, but doesn't matter for now
+    // because it's only used for prompts from other players, and in local mode
+    // there are no other players
+    return localPlayers.map((player) => ({
+      player: player,
+      state: player.getState(key),
+    }));
+  }
+  return originalUsePlayersState(key);
+};
+
+export const usePlayerStatePrompts = (
+  player: PlayerState,
+  key: string,
+  defaultValue: Record<string, string>,
+): MultiplayerStateHookResult<Record<string, string>> => {
+  if (HASH_QUEST_ID) {
+    // this assumes the only thing this ever gets used for is the player prompts
+    const { localPlayerPrompts, setLocalPlayerPrompts } =
+      useLocalPlayerPrompts();
+    return [localPlayerPrompts, setLocalPlayerPrompts];
+  }
+  return originalUsePlayerState(player, key, defaultValue);
+};

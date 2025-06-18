@@ -4,6 +4,7 @@ import {
   useTimeRemaining,
   useShowPrompts,
   useCharacters,
+  useLocalPlayers,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
@@ -15,6 +16,7 @@ import {
   usePlayersState,
   usePlayerStatePrompts,
 } from "@/core/multiplayerState";
+import { HASH_QUEST_ID } from "@/config";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -34,6 +36,9 @@ const StoryButtons: React.FC = () => {
   );
   const otherPrompts = usePlayersState("prompts");
 
+  console.log("myPlayer", myPlayer());
+  const myPlayerId = myPlayer().id;
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -49,9 +54,7 @@ const StoryButtons: React.FC = () => {
     setMyPrompts(
       Object.fromEntries(
         Object.entries(characters)
-          .filter(
-            ([_, characterState]) => characterState.player === myPlayer().id,
-          )
+          .filter(([_, characterState]) => characterState.player === myPlayerId)
           .map(([characterId, _]) => [characterId, ""]),
       ),
     );
@@ -77,7 +80,7 @@ const StoryButtons: React.FC = () => {
     <div className="flex flex-col gap-4 justify-center self-center mt-2">
       <div className="w-full">
         {otherPrompts
-          .filter((prompt) => prompt.player.id !== myPlayer().id)
+          .filter((prompt) => prompt.player.id !== myPlayerId)
           .map((prompt) => (
             <div key={prompt.player.id}>
               <div>{prompt.player.id}</div>
@@ -117,7 +120,7 @@ const StoryButtons: React.FC = () => {
   }, [showPromptsInput]);
 
   const handlePlayerAction = async (action: () => Promise<void>) => {
-    setShowPromptsInput(false);
+    // setShowPromptsInput(false);
     await action();
   };
 

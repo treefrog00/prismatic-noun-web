@@ -3,6 +3,7 @@ import {
   useMultiplayerState,
   PlayerState,
   SetStateFunction,
+  LocalPlayerState,
 } from "../core/multiplayerState";
 import {
   CharacterState,
@@ -151,7 +152,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   // is before playroomkit is initialized
   const [localGameStage, setLocalGameStage] =
     useState<LocalGameStage>("launch-screen");
-  const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([]);
+  const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([
+    new LocalPlayerState("Player 1"),
+  ]);
   const [localPlayerPrompts, _setLocalPlayerPrompts] = useState<
     Record<string, string>
   >({});

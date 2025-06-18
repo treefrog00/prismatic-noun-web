@@ -28,7 +28,9 @@ export async function startIfNotStarted(
 
   if (HASH_QUEST_ID) {
     const numPlayers = parseInt(HASH_NUM_PLAYERS || "1", 10);
-    for (let i = 0; i < numPlayers; i++) {
+    // we start at 1 because we add the first when initializing the game context,
+    // in case components need to access it on first render in HASH_QUEST_ID mode
+    for (let i = 1; i < numPlayers; i++) {
       const playerName = `Player ${i + 1}`;
       const player = new LocalPlayerState(playerName);
       addLocalPlayer(player, localPlayers);

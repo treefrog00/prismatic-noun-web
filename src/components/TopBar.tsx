@@ -228,7 +228,7 @@ const TopBar = () => {
                 Settings
               </div>
               <img
-                src={artUrl("settings.webp")}
+                src={artUrl("cog.webp")}
                 alt="Settings"
                 className="hover:scale-105 transition-transform"
               />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useStereo } from "@/contexts/StereoContext";
 
 interface MusicToggleProps {
@@ -6,13 +6,13 @@ interface MusicToggleProps {
 }
 
 const MusicToggle: React.FC<MusicToggleProps> = ({ className = "" }) => {
-  const { currentMode, turnOffMusic, turnOnMusic } = useStereo();
+  const { turnOffMusic, turnOnMusic, isMusicEnabled } = useStereo();
 
   function handleToggleMusic() {
-    if (currentMode === "off") {
-      turnOnMusic();
-    } else {
+    if (isMusicEnabled) {
       turnOffMusic();
+    } else {
+      turnOnMusic();
     }
   }
 
@@ -20,12 +20,12 @@ const MusicToggle: React.FC<MusicToggleProps> = ({ className = "" }) => {
     <button
       onClick={handleToggleMusic}
       className={`px-4 py-2 rounded ${
-        currentMode !== "off"
+        isMusicEnabled
           ? "bg-blue-600 hover:bg-blue-700"
           : "bg-gray-600 hover:bg-gray-700"
       } text-white transition-colors ${className}`}
     >
-      {currentMode !== "off" ? "Enabled" : "Disabled"}
+      {isMusicEnabled ? "Enabled" : "Disabled"}
     </button>
   );
 };

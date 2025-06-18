@@ -6,11 +6,11 @@ const FADE_DURATION = 2000;
 const LOBBY_PLAYLIST: string[] = ["dream"];
 
 interface StereoContextType {
-  currentMode: string;
   turnOffMusic: () => void;
   turnOnMusic: () => void;
   setPlaylist: (playlist: string[]) => void;
   initialPlay: () => void;
+  isMusicEnabled: boolean;
 }
 
 const StereoContext = createContext<StereoContextType | null>(null);
@@ -26,9 +26,11 @@ export const useStereo = () => {
 export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
-  const [currentMode, setCurrentMode] = useState<string>(LOBBY_PLAYLIST[0]);
-  const [playlistIndex, setPlaylistIndex] = useState<number>(0);
   const [playlist, setPlaylist] = useState<string[]>(LOBBY_PLAYLIST);
+  const [isMusicEnabled, setMusicEnabled] = useState<boolean>(false);
+
+  // this is just to prevent auto playing when the playlist is set before the user has interacted with the page
+  const [hasRunInitialPlay, setHasRunInitialPlay] = useState<boolean>(false);
 
   const fadeOut = async (
     audio: HTMLAudioElement,
@@ -77,20 +79,18 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const initialPlay = () => {
-    if (audioElementRef.current && currentMode !== "off") {
+    if (
+      audioElementRef.current &&
+      localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true"
+    ) {
       turnOnMusic();
+      setHasRunInitialPlay(true);
     }
   };
 
   useEffect(() => {
-    const musicEnabled =
-      localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true";
-    const startMode = musicEnabled ? playlist[0] : "off";
-
     const audioElement = new Audio();
     audioElementRef.current = audioElement;
-
-    setCurrentMode(startMode);
 
     return () => {
       if (audioElementRef.current) {
@@ -101,7 +101,13 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    // When the playlist changes, reset index and play if music is enabled
+    // When the playlist changes, reset index and play if music is enabled, and if
+    // we've already had the first user interaction
+
+    if (!hasRunInitialPlay) {
+      return;
+    }
+
     const musicEnabled =
       localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true";
     const audio = audioElementRef.current;
@@ -109,7 +115,6 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
     const handlePlaylistChange = async () => {
       if (!audio) return;
-      setPlaylistIndex(0);
       if (musicEnabled && playlist.length > 0 && !cancelled) {
         playNext(0);
       } else {
@@ -126,16 +131,14 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }, [playlist]);
 
   const turnOffMusic = async () => {
-    setCurrentMode("off");
-    setPlaylistIndex(null);
     localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "false");
+    setMusicEnabled(false);
     await fadeOut(audioElementRef.current, 1000);
   };
 
   const turnOnMusic = () => {
     localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
-    setCurrentMode(playlist[0]);
-    setPlaylistIndex(0);
+    setMusicEnabled(true);
     audioElementRef.current.src = `/ai_sound/${playlist[0]}.mp3`;
     audioElementRef.current.volume = 1;
     audioElementRef.current.play().catch((error) => {
@@ -145,9 +148,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const playNext = async (index: number) => {
-    const mode = playlist[index];
-    setCurrentMode(mode);
-    setPlaylistIndex(index);
+    const track = playlist[index];
 
     if (!audioElementRef.current) return;
 
@@ -166,10 +167,10 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       if (!audioElementRef.current.paused && audioElementRef.current.src) {
         await fadeOut(audioElementRef.current);
       }
-      audioElementRef.current.src = `/ai_sound/${mode}.mp3`;
+      audioElementRef.current.src = `/ai_sound/${track}.mp3`;
       audioElementRef.current.volume = 1;
       await audioElementRef.current.play();
-      // not using currentModeIndex here because it's not updated yet
+      // not using playlistIndex hook because it won't be updated in time
       addEndedListener(index);
     } catch (error) {
       // Ignore errors when audio is blocked or turned off
@@ -203,11 +204,11 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <StereoContext.Provider
       value={{
-        currentMode,
         turnOffMusic,
         turnOnMusic,
         setPlaylist,
         initialPlay,
+        isMusicEnabled,
       }}
     >
       {children}

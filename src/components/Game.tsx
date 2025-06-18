@@ -86,6 +86,11 @@ const GameContent = () => {
           localPlayers,
         );
         setGameData(startGame.gameData);
+        RPC.call(
+          "rpc-append-events",
+          { events: startGame.events },
+          RPC.Mode.ALL,
+        );
       };
       startGameAsync();
     }

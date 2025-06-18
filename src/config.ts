@@ -19,15 +19,11 @@ if (envConfig.backendUrl) {
 
 export const BACKEND_URL = url;
 
-export const HASH_HOST_KEY = hashParams.get("hostkey");
-
 export const HASH_QUEST_ID = hashParams.get("questid");
 
 export const HASH_LOCATION_ID = hashParams.get("locationid");
 
 export const HASH_NUM_PLAYERS = hashParams.get("numplayers");
-
-export const HASH_SKIP_VOTE = hashParams.get("skipvote");
 
 export const USE_SENTRY = import.meta.env.PROD || envConfig.backendUrl;
 

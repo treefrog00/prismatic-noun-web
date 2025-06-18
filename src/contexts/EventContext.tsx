@@ -12,7 +12,6 @@ import { useLocationData } from "./GameContext";
 import { useTimeRemaining } from "./GameContext";
 import { useGameConfig } from "./GameContext";
 import { appendToStory } from "@/core/storyEvents";
-import { useIsHost } from "@/core/multiplayerState";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
@@ -37,8 +36,6 @@ export const EventProvider = ({
 }): JSX.Element => {
   const [eventQueue, setEventQueue] = useState<GameEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const isHost = useIsHost();
 
   const { setDiceRollState } = useDiceRoll();
   const { setCharacters } = useCharacters();
@@ -105,16 +102,13 @@ export const EventProvider = ({
 
       await processEvent(event);
 
-      if (isHost) {
-        setEventQueue(eventQueue.slice(1));
-      }
+      setEventQueue(eventQueue.slice(1));
     } finally {
       setIsProcessing(false);
     }
   };
 
   useEffect(() => {
-    if (!isHost) return;
     if (!isProcessing && eventQueue.length > 0) {
       processNextEvent();
     }

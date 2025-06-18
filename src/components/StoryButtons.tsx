@@ -14,6 +14,7 @@ import {
   usePlayersState,
   usePlayerStatePrompts,
 } from "@/core/multiplayerState";
+import "@/styles/gameButton.css";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -114,10 +115,6 @@ const StoryButtons: React.FC = () => {
     }
   }, [showPromptsInput]);
 
-  if (showPromptsInput) {
-    return <div className="w-full mt-2">{renderTextInput()}</div>;
-  }
-
   const handlePlayerAction = async (action: () => Promise<void>) => {
     setShowPromptsInput(false);
     await action();
@@ -125,44 +122,13 @@ const StoryButtons: React.FC = () => {
 
   return (
     <>
-      <style>{`
-        .game-button {
-          font-family: 'Cinzel';
-          color: rgb(229 231 235);
-          border-width: 2px;
-          padding: 0.625rem 1.25rem;
-          border-radius: 0.375rem;
-          cursor: pointer;
-          font-size: 1rem;
-          transition-property: all;
-          transition-duration: 300ms;
-          box-shadow: 0 0 #0000;
-        }
-
-        /* Only apply left margin in horizontal layouts */
-        .flex:not(.flex-col) > .game-button:not(:first-child) {
-          margin-left: 1rem;
-        }
-
-        .game-button:hover {
-          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-
-        .game-button:focus {
-          outline: 2px solid transparent;
-          outline-offset: 2px;
-        }
-
-        @media (max-width: 767px) {
-          .game-button:not(:first-child) {
-            margin-left: 0;
-            border-top: 1px solid rgba(75, 85, 99, 0.5);
-          }
-        }
-      `}</style>
       <div className="border-2 border-gray-700 rounded-lg px-4 py-2 h-24 mt-2">
         <div className="flex justify-between items-center self-center">
-          <div className="text-gray-300 flex items-center gap-4"></div>
+          <div className="text-gray-300 flex items-center gap-4">
+            {showPromptsInput && (
+              <div className="w-full mt-2">{renderTextInput()}</div>
+            )}
+          </div>
           <div className="flex gap-4 items-center">
             <div className="text-gray-300 text-lg text-center mr-2 flex items-center gap-4 cursor-help">
               <div>

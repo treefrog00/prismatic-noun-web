@@ -1,4 +1,5 @@
 import { z } from "zod/v4";
+import { ThemeColorKey, themeColors } from "@/styles/shared";
 
 export const ExchangeCodeResponseSchema = z.object({
   prismaticNounToken: z.string(),
@@ -7,16 +8,20 @@ export const ExchangeCodeResponseSchema = z.object({
   expiry: z.iso.datetime(),
 });
 
+// Create enum schema from theme color keys
+const themeColorKeys = Object.keys(themeColors) as [
+  ThemeColorKey,
+  ...ThemeColorKey[],
+];
+const ThemeColorSchema = z.enum(themeColorKeys);
+
 const QuestSummarySchema = z.object({
   questId: z.string(),
   title: z.string(),
   description: z.string(),
   imageUrl: z.string(),
   maxPlayers: z.number(),
-  gradientColors: z.array(z.string()),
-  containerColor: z.string(),
-  textColor: z.string(),
-  highlightColor: z.string(),
+  theme: ThemeColorSchema,
 });
 
 export const QuestSummariesSchema = z.object({

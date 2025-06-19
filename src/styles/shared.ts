@@ -21,15 +21,59 @@ export const pageStyles = {
   tableCell: "px-6 py-4 whitespace-nowrap",
 };
 
-export const getStyles = (
-  containerColor: string,
-  textColor: string,
-  highlightColor: string,
-) => {
+export const themeColors = {
+  desert: {
+    container: "bg-[#F5F5DC]",
+    text: "text-gray-800",
+    highlight: "text-red-800",
+    gradient: ["#2d1b0e", "#d4b483", "#1a1208"],
+  },
+  darkSlateGray: {
+    container: "bg-gray-800",
+    text: "text-gray-200",
+    highlight: "text-amber-400",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  midnightBlue: {
+    container: "bg-blue-900",
+    text: "text-blue-100",
+    highlight: "text-blue-300",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  darkOliveGreen: {
+    container: "bg-green-900",
+    text: "text-green-100",
+    highlight: "text-green-300",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  maroon: {
+    container: "bg-red-900",
+    text: "text-red-100",
+    highlight: "text-red-300",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  indigo: {
+    container: "bg-indigo-900",
+    text: "text-indigo-100",
+    highlight: "text-indigo-300",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  darkBlue: {
+    container: "bg-gray-800",
+    text: "text-gray-300",
+    highlight: "text-yellow-400",
+    gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+} as const;
+
+export type ThemeColorKey = keyof typeof themeColors;
+
+export const getStyles = (themeKey: ThemeColorKey) => {
+  const theme = themeColors[themeKey];
+
   return {
-    //container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-700 backdrop-blur-sm  bg-[#FFFFFF]`,
-    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-500 backdrop-blur-sm ${containerColor} opacity-90`,
-    text: `${textColor} text-xl leading-relaxed`,
-    highlight: `${highlightColor}`,
+    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-500 backdrop-blur-sm ${theme.container} opacity-90`,
+    text: `${theme.text} text-xl leading-relaxed`,
+    highlight: `${theme.highlight}`,
   };
 };

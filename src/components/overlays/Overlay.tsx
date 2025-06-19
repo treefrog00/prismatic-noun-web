@@ -19,14 +19,11 @@ const Overlay = ({
   onMouseLeave,
   questSummary,
 }: OverlayProps) => {
-  const sharedStyles = getStyles(
-    questSummary.containerColor,
-    questSummary.textColor,
-    questSummary.highlightColor,
-  );
+  const sharedStyles = getStyles(questSummary.theme);
+
   return (
     <div
-      className={`${questSummary.containerColor} opacity-90 ${className} pointer-events-auto`}
+      className={`${sharedStyles.container} ${className} pointer-events-auto`}
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

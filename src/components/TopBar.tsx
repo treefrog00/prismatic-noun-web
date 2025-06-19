@@ -12,6 +12,7 @@ import NpcOverlay from "./overlays/NpcOverlay";
 import LocationOverlay from "./overlays/LocationOverlay";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
+import { getStyles } from "@/styles/shared";
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;
@@ -144,6 +145,8 @@ const TopBar = () => {
   const sharedBoxStyles =
     "w-16 h-16 rounded-lg border border-gray-500 flex items-center justify-center cursor-pointer transition-colors overflow-hidden";
 
+  const containerStyles = questSummary ? getStyles(questSummary.theme) : null;
+
   const getLeftAlignedPosition = () => ({
     x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
@@ -174,7 +177,7 @@ const TopBar = () => {
   return (
     <>
       <div
-        className={`w-full backdrop-blur-sm border border-gray-500 py-2 px-4 mb-2 ${questSummary?.containerColor} opacity-90`}
+        className={`w-full backdrop-blur-sm border border-gray-500 py-2 px-4 mb-2 ${containerStyles?.container || "opacity-90"}`}
       >
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">

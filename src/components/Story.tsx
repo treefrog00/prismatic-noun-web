@@ -17,11 +17,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   let paragraphCount = 0;
   const lineHeight = 16;
   const { gameConfig } = useGameConfig();
-  const sharedStyles = getStyles(
-    questSummary.containerColor,
-    questSummary.textColor,
-    questSummary.highlightColor,
-  );
+  const sharedStyles = getStyles(questSummary.theme);
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({

@@ -1,4 +1,5 @@
 import { useLobbyContext } from "@/contexts/LobbyContext";
+import { themeColors } from "@/styles/shared";
 import React from "react";
 
 interface AmbientBackgroundProps {
@@ -11,6 +12,7 @@ const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
   className = "",
 }) => {
   const { questSummary } = useLobbyContext();
+  const theme = themeColors[questSummary.theme];
 
   return (
     <div
@@ -19,7 +21,7 @@ const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
       {children}
       <style>{`
         .ambient-bg {
-          background: linear-gradient(230deg, ${questSummary.gradientColors.join(", ")});
+          background: linear-gradient(230deg, ${theme.gradient.join(", ")});
           background-size: 200% 200%;
         }
       `}</style>

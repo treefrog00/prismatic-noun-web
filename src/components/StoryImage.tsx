@@ -24,6 +24,8 @@ const StoryImage: React.FC = () => {
   const PIXEL_SIZE = 16; // Size of each square in pixels (larger = fewer pixels = better performance)
   const CANVAS_WIDTH = 512; // Adjust based on your image size
   const CANVAS_HEIGHT = 512;
+  const MAX_DELAY_MS = 600; // Maximum random delay before pixel starts animating
+  const PIXEL_ANIMATION_DURATION_MS = 600; // Duration for each pixel's fade-in animation
 
   // Initialize pixel grid
   useEffect(() => {
@@ -35,7 +37,7 @@ const StoryImage: React.FC = () => {
           y,
           phase: "stable",
           progress: 0,
-          delay: Math.random() * 1000 + Math.random() * 500, // Random delay 0-1500ms
+          delay: Math.random() * MAX_DELAY_MS,
         });
       }
     }
@@ -109,7 +111,7 @@ const StoryImage: React.FC = () => {
           let newProgress = 0;
 
           if (pixel.phase === "from-transparent") {
-            newProgress = elapsed / 800; // 800ms to fade from transparent
+            newProgress = elapsed / PIXEL_ANIMATION_DURATION_MS;
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {

@@ -73,7 +73,7 @@ export const getStyles = (themeKey: ThemeColorKey) => {
   const theme = themeColors[themeKey];
 
   return {
-    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-500 backdrop-blur-sm ${theme.container} opacity-90`,
+    container: `relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-500 backdrop-blur-sm ${theme.container}`,
     text: `${theme.text} text-xl leading-relaxed`,
     highlight: `${theme.highlight}`,
   };

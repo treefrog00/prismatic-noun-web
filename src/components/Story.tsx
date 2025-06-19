@@ -380,7 +380,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   return (
     <>
       <div
-        className={`${sharedStyles.container} ${sharedStyles.text} h-full overflow-auto flex-1 min-w-0`}
+        className={`${sharedStyles.container} ${sharedStyles.text} opacity-90 h-full overflow-auto flex-1 min-w-0`}
         id="textDisplay"
         ref={textDisplayRef}
       />

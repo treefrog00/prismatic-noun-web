@@ -62,9 +62,10 @@ const LaunchScreen = () => {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200 text-lg`}>
                 <p className="mb-4">
-                  A collection of spooky and weird interactive tales that can be
-                  played on your own, or with friends taking the part of
-                  different characters.
+                  A collection of spooky and weird interactive visual tales. You
+                  can play on your on, or in multiplayer mode where you and your
+                  friends can collaborate as a team. Some story events are
+                  determined by AI.
                 </p>
                 <p className="mb-4">
                   You can play in a web browser on Windows/Mac/Linux. Mobile
@@ -75,15 +76,14 @@ const LaunchScreen = () => {
                   issues.
                 </p>
                 <p>
-                  AI disclaimer: the development process made heavy use of AI
-                  for generating images, music, code, and stories. This involved
-                  experimenting, iterating, curating, merging, and refining a
-                  large number of ideas over the course of 6 months full-time
-                  work. This was followed by several more months testing and
-                  refinement. As such, despite the many issues around copyright
-                  regarding the use of AI generated content, I would hope that
-                  the game is at least somewhat interesting, and not just
-                  randomly generated noise.
+                  AI disclaimer: the development process involved experimenting,
+                  iterating, curating, merging, and refining a large number of
+                  game ideas/images/tunes/story ideas over the course of 6
+                  months full-time work, with extensive help from AI. This was
+                  followed by several more months testing and refinement. As
+                  such, despite the many issues around copyright regarding the
+                  use of AI generated content, I would hope that the game is at
+                  least somewhat interesting, and not just lazy generated noise.
                 </p>
               </div>
             </div>

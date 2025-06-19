@@ -23,7 +23,7 @@ const Overlay = ({
 
   return (
     <div
-      className={`${sharedStyles.container} opacity-100 ${className} pointer-events-auto`}
+      className={`${sharedStyles.container} ${className} pointer-events-auto`}
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

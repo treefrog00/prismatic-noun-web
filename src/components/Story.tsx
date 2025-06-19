@@ -63,7 +63,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
         if (label) {
           const labelSpan = document.createElement("span");
-          labelSpan.className = "text-yellow-400";
+          labelSpan.className = sharedStyles.highlight;
           labelSpan.style.lineHeight = `${lineHeight}px`;
           labelSpan.textContent = `${label}:\u00A0`;
           paragraph.appendChild(labelSpan);
@@ -123,7 +123,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       let currentX = 0;
       if (label) {
         const labelSpan = document.createElement("span");
-        labelSpan.className = "text-yellow-400";
+        labelSpan.className = sharedStyles.highlight;
         labelSpan.style.lineHeight = `${lineHeight}px`; // Add line height to label
         labelSpan.textContent = `${label}:\u00A0`;
         textContainer.appendChild(labelSpan);
@@ -182,7 +182,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           const charElement = document.createElement("span");
           charElement.className = "character";
           if (isYellow) {
-            charElement.classList.add("text-yellow-400");
+            charElement.classList.add(sharedStyles.highlight);
           }
 
           // Handle spaces properly
@@ -306,7 +306,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
         if (label) {
           const labelSpan = document.createElement("span");
-          labelSpan.className = "text-yellow-400";
+          labelSpan.className = sharedStyles.highlight;
           labelSpan.style.lineHeight = `${lineHeight}px`; // Add line height to label
           labelSpan.textContent = `${label}:\u00A0`;
           paragraph.appendChild(labelSpan);
@@ -351,7 +351,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Create and append the paragraph with formatted text
       const paragraph = document.createElement("p");
       const nameSpan = document.createElement("span");
-      nameSpan.className = "text-yellow-400";
+      nameSpan.className = sharedStyles.highlight;
       nameSpan.textContent = `${label}:\u00A0`;
 
       const textSpan = document.createElement("span");
@@ -402,7 +402,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         }
 
         /* Ensure consistent spacing for yellow labels */
-        .text-yellow-400 {
+        .${sharedStyles.highlight} {
           line-height: ${lineHeight}px;
           display: inline-block;
           vertical-align: top;

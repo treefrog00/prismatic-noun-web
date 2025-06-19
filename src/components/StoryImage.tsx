@@ -162,11 +162,10 @@ const StoryImage: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas to transparent
-    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
     const drawImage = (imageSrc: string | null, callback: () => void) => {
       if (!imageSrc) {
+        // Clear canvas if no image to draw
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         callback();
         return;
       }
@@ -189,6 +188,8 @@ const StoryImage: React.FC = () => {
           CANVAS_HEIGHT,
         );
 
+        // Clear canvas only after we have the image data ready
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         callback();
 
         // Draw pixels based on their transition state
@@ -247,14 +248,18 @@ const StoryImage: React.FC = () => {
     const allPixelsStable =
       pixels.length > 0 && pixels.every((p) => p.phase === "stable");
 
-    if (allPixelsStable && currentImage) {
+    if (allPixelsStable && (currentImage || newImage)) {
       // Draw the image normally (smooth) when transition is complete
+      // Use newImage if currentImage hasn't been updated yet (prevents flicker)
+      const imageToDisplay = currentImage || newImage;
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
+        // Clear and draw in one operation to prevent flicker
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       };
-      img.src = artUrl(currentImage);
+      img.src = artUrl(imageToDisplay);
     } else {
       // Always draw the new image during transition (since we cleared current image)
       const imageToDraw = isTransitioning ? newImage : currentImage;

@@ -90,8 +90,9 @@ const LaunchScreen = () => {
                   <AuthButtons />
                 </div>
                 <div className="m-4">
-                  We will never send you any emails or use your details for
-                  anything other than account management.
+                  Your email will be used only for account management, you will
+                  never receive any marketing emails or be signed up to any
+                  mailing lists.
                 </div>
               </div>
             </div>

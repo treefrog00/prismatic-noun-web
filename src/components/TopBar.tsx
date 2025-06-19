@@ -142,7 +142,7 @@ const TopBar = () => {
   const locationOverlay = useOverlayState("location");
 
   const sharedBoxStyles =
-    "w-16 h-16 bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-600 transition-colors";
+    "w-16 h-16 rounded-lg border border-gray-500 flex items-center justify-center cursor-pointer transition-colors overflow-hidden";
 
   const getLeftAlignedPosition = () => ({
     x: listRef.current?.firstElementChild?.getBoundingClientRect().left ?? 0,
@@ -174,14 +174,14 @@ const TopBar = () => {
   return (
     <>
       <div
-        className={`w-full backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2 ${questSummary?.containerColor} opacity-90`}
+        className={`w-full backdrop-blur-sm border border-gray-500 py-2 px-4 mb-2 ${questSummary?.containerColor} opacity-90`}
       >
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
             {/* Location */}
             {locationData && (
               <div
-                className={`${sharedBoxStyles} overflow-hidden`}
+                className={`${sharedBoxStyles}`}
                 onMouseEnter={(e) =>
                   locationOverlay.handleMouseEvent("location", e, () =>
                     getLeftAlignedPosition(),
@@ -192,12 +192,12 @@ const TopBar = () => {
                 <img
                   src={artUrl(locationData.imageUrl)}
                   alt={locationData.name}
-                  className="w-full h-full object-cover"
+                  className="hover:scale-110 transition-transform"
                 />
               </div>
             )}
 
-            <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
+            <div className="w-px h-10 bg-gray-500 mx-2 self-center" />
 
             {/* Characters list */}
             {characterList.map((character) => (
@@ -216,7 +216,7 @@ const TopBar = () => {
                 <img
                   src={artUrl(character.imageUrl)}
                   alt={character.name}
-                  className="w-full h-full object-cover"
+                  className="hover:scale-110 transition-transform"
                 />
               </div>
             ))}
@@ -237,7 +237,10 @@ const TopBar = () => {
                 }
                 onMouseLeave={() => npcOverlay.handleMouseEvent(null)}
               >
-                <span className="text-gray-400 text-xs">{npc.name}</span>
+                <img
+                  src={artUrl(npc.imageUrl)}
+                  className="hover:scale-110 transition-transform"
+                />
               </div>
             ))}
           </div>

@@ -115,7 +115,7 @@ const StoryButtons: React.FC = () => {
           {showPromptInput && (
             <div className="w-full">
               <div className="flex flex-row items-center gap-4 mb-2">
-                <div className="w-1/3">
+                <div className="w-1/2">
                   <TextInput
                     text={myPrompt}
                     setText={(value: string) => {

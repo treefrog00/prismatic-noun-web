@@ -28,7 +28,7 @@ export const getStyles = (
 ) => {
   return {
     //container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-700 backdrop-blur-sm  bg-[#FFFFFF]`,
-    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-700 backdrop-blur-sm ${containerColor} opacity-90`,
+    container: `font-['Crimson_Text'] relative p-5 rounded-lg shadow-xl shadow-black/30 border border-gray-500 backdrop-blur-sm ${containerColor} opacity-90`,
     text: `${textColor} text-xl leading-relaxed`,
     highlight: `${highlightColor}`,
   };

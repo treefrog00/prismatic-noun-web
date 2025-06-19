@@ -20,6 +20,11 @@ import {
 } from "react";
 import { useLobbyContext } from "./LobbyContext";
 
+// Animation config local storage keys
+export const ANIMATE_DICE_KEY = "shouldAnimateDice";
+export const ANIMATE_TEXT_KEY = "shouldAnimateText";
+export const ANIMATE_IMAGES_KEY = "shouldAnimateImages";
+
 export interface DiceRollState {
   show: boolean;
   characterRolls: Record<string, DiceRoll>;
@@ -126,9 +131,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
     {
-      shouldAnimateDice: true,
-      shouldAnimateText: true,
-      shouldAnimateImages: true,
+      shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) === "true",
+      shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) === "true",
+      shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) === "true",
     },
     singlePlayerMode,
   );
@@ -162,7 +167,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
-    const savedValue = localStorage.getItem("shouldAnimateDice");
+    const savedValue = localStorage.getItem(ANIMATE_DICE_KEY);
     if (savedValue !== null) {
       setGameConfig({
         ...gameConfig,
@@ -176,7 +181,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       ...gameConfig,
       shouldAnimateDice: show,
     });
-    localStorage.setItem("shouldAnimateDice", show.toString());
+    localStorage.setItem(ANIMATE_DICE_KEY, show.toString());
   };
 
   const handleSetShouldAnimateText = (show: boolean) => {
@@ -184,7 +189,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       ...gameConfig,
       shouldAnimateText: show,
     });
-    localStorage.setItem("shouldAnimateText", show.toString());
+    localStorage.setItem(ANIMATE_TEXT_KEY, show.toString());
   };
 
   const handleSetShouldAnimateImages = (show: boolean) => {
@@ -192,7 +197,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       ...gameConfig,
       shouldAnimateImages: show,
     });
-    localStorage.setItem("shouldAnimateImages", show.toString());
+    localStorage.setItem(ANIMATE_IMAGES_KEY, show.toString());
   };
 
   const gameApi = new GameApi();

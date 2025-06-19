@@ -1,6 +1,8 @@
 import React from "react";
 import Popup from "@/components/popups/Popup";
 import MusicToggle from "@/components/settings/MusicToggle";
+import ToggleSwitch from "../ToggleSwitch";
+import { useGameConfig } from "@/contexts/GameContext";
 
 interface SettingsPopupProps {
   isOpen: boolean;
@@ -10,6 +12,8 @@ interface SettingsPopupProps {
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
+  const { gameConfig, handleSetShouldAnimateText } = useGameConfig();
+
   return (
     <Popup
       onClose={onClose}
@@ -17,10 +21,19 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
       maxWidth="max-w-4xl"
       className="max-h-[80vh] overflow-auto"
     >
-      <div className="grid grid-cols-4 gap-4">
-        <div className="col-span-1">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
           <h3 className="text-lg text-gray-300">Music:</h3>
           <MusicToggle />
+        </div>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg text-gray-300">Animated text:</h3>
+          <ToggleSwitch
+            isEnabled={gameConfig.shouldAnimateText}
+            onToggle={() =>
+              handleSetShouldAnimateText(!gameConfig.shouldAnimateText)
+            }
+          />
         </div>
       </div>
     </Popup>

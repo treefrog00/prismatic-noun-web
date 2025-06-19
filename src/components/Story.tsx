@@ -328,7 +328,10 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const paragraph = document.createElement("p");
 
       const textSpan = document.createElement("span");
-      textSpan.textContent = text;
+      const finalText = text
+        .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
+        .replace(/<\/hl>/g, "</span>");
+      textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
 
       paragraph.appendChild(textSpan);
       textContainer.appendChild(paragraph);

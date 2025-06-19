@@ -18,6 +18,7 @@ import {
   useLocalPlayers,
   useGameData,
   GameProvider,
+  useGameConfig,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -43,7 +44,7 @@ const GameContent = () => {
   const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
   const { questSummary, setQuestSummary } = useLobbyContext();
-
+  const { gameConfig } = useGameConfig();
   const gameApi = useGameApi();
 
   const handlePlayerLeft = async (playerId: string) => {
@@ -70,7 +71,11 @@ const GameContent = () => {
 
     const unsubscribe = storyEvents.subscribe((text) => {
       if (storyRef.current) {
-        storyRef.current.updateText(text);
+        if (gameConfig.shouldAnimateText) {
+          storyRef.current.updateText(text);
+        } else {
+          storyRef.current.appendNoAnimation(text);
+        }
       }
     });
 

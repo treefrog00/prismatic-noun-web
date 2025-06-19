@@ -130,7 +130,7 @@ const StoryImage: React.FC = () => {
             }
           } else if (pixel.phase === "black") {
             if (elapsed >= 200) {
-              // 200ms black pause complete, move to from-black
+              // black pause complete, move to from-black
               newPhase = "from-black";
               newProgress = 0;
               newStartTime = timestamp; // Reset for from-black phase

@@ -62,7 +62,7 @@ export const EventProvider = ({
 
   const processEvent = async (event: GameEvent) => {
     if (import.meta.env.DEV) {
-      console.log("Processing", event.type, "event", event);
+      //console.log("Processing", event.type, "event", event);
     }
 
     if (event.type === "Story") {

@@ -44,6 +44,7 @@ const StoryImage: React.FC = () => {
 
   // Handle image changes
   useEffect(() => {
+    console.log("mainImage in storyImage", mainImage);
     if (mainImage !== currentImage && !isTransitioning) {
       setNewImage(mainImage);
       setIsTransitioning(true);
@@ -51,6 +52,7 @@ const StoryImage: React.FC = () => {
       // If there's no current image, skip directly to from-black phase
       const startPhase = currentImage ? "to-black" : "from-black";
 
+      console.log("starting transition with startPhase", startPhase);
       // Start transition for all pixels
       setPixels((prev) =>
         prev.map((pixel) => ({
@@ -61,7 +63,7 @@ const StoryImage: React.FC = () => {
         })),
       );
     }
-  }, [mainImage, currentImage, isTransitioning]);
+  }, [mainImage]);
 
   // Animation loop
   useEffect(() => {
@@ -84,26 +86,37 @@ const StoryImage: React.FC = () => {
             return pixel;
           }
 
-          let newProgress = elapsed / 800; // 800ms per phase
-          newProgress = Math.min(1, Math.max(0, newProgress));
-
           let newPhase: "stable" | "to-black" | "black" | "from-black" =
             pixel.phase;
           let newStartTime = pixel.startTime;
+          let newProgress = 0;
 
-          if (pixel.phase === "to-black" && newProgress >= 1) {
-            newPhase = "black";
-            newProgress = 0;
-            newStartTime = timestamp; // Reset start time for black phase
+          if (pixel.phase === "to-black") {
+            newProgress = elapsed / 800; // 800ms to fade to black
+            newProgress = Math.min(1, Math.max(0, newProgress));
+
+            if (newProgress >= 1) {
+              newPhase = "black";
+              newProgress = 0;
+              newStartTime = timestamp; // Reset for black phase
+            }
           } else if (pixel.phase === "black") {
             if (elapsed >= 200) {
-              // 200ms black pause
+              // 200ms black pause complete, move to from-black
               newPhase = "from-black";
-              newProgress = (elapsed - 200) / 800;
+              newProgress = 0;
+              newStartTime = timestamp; // Reset for from-black phase
+            } else {
+              newProgress = 0; // Stay black during pause
             }
-          } else if (pixel.phase === "from-black" && newProgress >= 1) {
-            newPhase = "stable";
-            newProgress = 1;
+          } else if (pixel.phase === "from-black") {
+            newProgress = elapsed / 800; // 800ms to fade from black
+            newProgress = Math.min(1, Math.max(0, newProgress));
+
+            if (newProgress >= 1) {
+              newPhase = "stable";
+              newProgress = 1;
+            }
           }
 
           if (newPhase !== "stable") {
@@ -139,7 +152,7 @@ const StoryImage: React.FC = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isTransitioning, newImage]);
+  }, [isTransitioning]);
 
   // Draw to canvas
   useEffect(() => {

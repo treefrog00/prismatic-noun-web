@@ -96,6 +96,9 @@ const StoryImage: React.FC = () => {
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {
+              console.log(
+                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: to-black → black`,
+              );
               newPhase = "black";
               newProgress = 0;
               newStartTime = timestamp; // Reset for black phase
@@ -103,6 +106,9 @@ const StoryImage: React.FC = () => {
           } else if (pixel.phase === "black") {
             if (elapsed >= 200) {
               // 200ms black pause complete, move to from-black
+              console.log(
+                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: black → from-black`,
+              );
               newPhase = "from-black";
               newProgress = 0;
               newStartTime = timestamp; // Reset for from-black phase
@@ -114,6 +120,9 @@ const StoryImage: React.FC = () => {
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {
+              console.log(
+                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: from-black → stable`,
+              );
               newPhase = "stable";
               newProgress = 1;
             }

@@ -1,11 +1,12 @@
-import { useRef, useImperativeHandle, forwardRef } from "react";
+import { useRef, useImperativeHandle, forwardRef, useEffect } from "react";
 import { getStyles } from "../styles/shared";
-import { useGameConfig } from "@/contexts/GameContext";
+import { useGameConfig, useLocationData } from "@/contexts/GameContext";
 import { QuestSummary } from "@/types";
 
 export interface StoryRef {
   updateText: (text: string, label?: string) => void;
   appendNoAnimation: (text: string, label: string) => void;
+  clearStory: () => void;
 }
 
 interface StoryProps {
@@ -15,9 +16,10 @@ interface StoryProps {
 const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
-  const lineHeight = 16;
+  const lineHeight = 20;
   const { gameConfig } = useGameConfig();
   const sharedStyles = getStyles(questSummary.theme);
+  const locationData = useLocationData();
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
@@ -366,6 +368,12 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         top: textDisplay.scrollHeight,
         behavior: "smooth",
       });
+    },
+    clearStory: () => {
+      if (!textDisplayRef.current) return;
+
+      const textDisplay = textDisplayRef.current;
+      textDisplay.innerHTML = "";
     },
   }));
 

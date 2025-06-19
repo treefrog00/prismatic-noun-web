@@ -15,7 +15,7 @@ import {
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useGameConfig } from "./GameContext";
-import { appendToStory } from "@/core/storyEvents";
+import { appendToStory, clearStory } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
@@ -101,7 +101,9 @@ export const EventProvider = ({
     } else if (event.type === "LocationStateUpdate") {
       setLocationState(event.locationState);
     } else if (event.type === "ChangeLocation") {
-      setLocationState(event.locationState);
+      // TODO: clearing story doesn't work, though then again
+      // maybe we shouldn't be clearing it anyway
+      //clearStory();
       setLocationState(event.locationState);
       setLocationData(event.locationData);
     } else if (event.type === "ChangePlaylist") {

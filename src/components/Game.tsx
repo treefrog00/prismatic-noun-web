@@ -69,6 +69,12 @@ const GameContent = () => {
       }
     });
 
+    const unsubscribeClear = storyEvents.subscribeToClear(() => {
+      if (storyRef.current) {
+        storyRef.current.clearStory();
+      }
+    });
+
     onPlayerJoin((player: PlayerState) => {
       const unsubscribe = player.onQuit(async (player: PlayerState) => {
         await handlePlayerLeft(player.id);
@@ -79,6 +85,7 @@ const GameContent = () => {
 
     return () => {
       unsubscribe();
+      unsubscribeClear();
     };
   }, []);
 

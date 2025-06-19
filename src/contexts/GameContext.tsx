@@ -37,6 +37,7 @@ type VoteState = {
 type GameConfig = {
   shouldAnimateDice: boolean;
   shouldAnimateText: boolean;
+  shouldAnimateImages: boolean;
 };
 
 type GameContextType = {
@@ -125,6 +126,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     {
       shouldAnimateDice: true,
       shouldAnimateText: true,
+      shouldAnimateImages: true,
     },
     singlePlayerMode,
   );

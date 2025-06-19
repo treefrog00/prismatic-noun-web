@@ -1,4 +1,4 @@
-type StoryEventListener = (text: string, label?: string) => void;
+type StoryEventListener = (text: string) => void;
 type StoryClearListener = () => void;
 
 class StoryEventEmitter {
@@ -19,8 +19,8 @@ class StoryEventEmitter {
     };
   }
 
-  emit(text: string, label?: string) {
-    this.listeners.forEach((listener) => listener(text, label));
+  emit(text: string) {
+    this.listeners.forEach((listener) => listener(text));
   }
 
   emitClear() {
@@ -30,8 +30,8 @@ class StoryEventEmitter {
 
 export const storyEvents = new StoryEventEmitter();
 
-export function appendToStory(text: string, label?: string) {
-  storyEvents.emit(text, label);
+export function appendToStory(text: string) {
+  storyEvents.emit(text);
 }
 
 export function clearStory() {

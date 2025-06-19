@@ -60,13 +60,17 @@ const GameContent = () => {
   };
 
   useEffect(() => {
-    RPC.register("rpc-append-events", async (data) => {
-      addEvents(data.events);
-    }, singlePlayerMode);
+    RPC.register(
+      "rpc-append-events",
+      async (data) => {
+        addEvents(data.events);
+      },
+      singlePlayerMode,
+    );
 
-    const unsubscribe = storyEvents.subscribe((text, label) => {
+    const unsubscribe = storyEvents.subscribe((text) => {
       if (storyRef.current) {
-        storyRef.current.updateText(text, label);
+        storyRef.current.updateText(text);
       }
     });
 

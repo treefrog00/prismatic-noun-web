@@ -1,11 +1,11 @@
-import { useRef, useImperativeHandle, forwardRef, useEffect } from "react";
+import { useRef, useImperativeHandle, forwardRef } from "react";
 import { getStyles } from "../styles/shared";
-import { useGameConfig, useLocationData } from "@/contexts/GameContext";
+import { useGameConfig } from "@/contexts/GameContext";
 import { QuestSummary } from "@/types";
 
 export interface StoryRef {
-  updateText: (text: string, label?: string) => void;
-  appendNoAnimation: (text: string, label: string) => void;
+  updateText: (text: string) => void;
+  appendNoAnimation: (text: string) => void;
   clearStory: () => void;
 }
 
@@ -19,11 +19,10 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const lineHeight = 20;
   const { gameConfig } = useGameConfig();
   const sharedStyles = getStyles(questSummary.theme);
-  const locationData = useLocationData();
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
-    updateText: (text: string, label?: string) => {
+    updateText: (text: string) => {
       if (!textDisplayRef.current) return;
 
       const textDisplay = textDisplayRef.current;
@@ -62,14 +61,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";
-
-        if (label) {
-          const labelSpan = document.createElement("span");
-          labelSpan.className = sharedStyles.highlight;
-          labelSpan.style.lineHeight = `${lineHeight}px`;
-          labelSpan.textContent = `${label}:\u00A0`;
-          paragraph.appendChild(labelSpan);
-        }
 
         const textSpan = document.createElement("span");
         textSpan.innerHTML = text.replace(/\n/g, "<br>");
@@ -121,16 +112,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       const spaceWidth = calculateSpaceWidth();
 
-      // Create the label span if label is provided
       let currentX = 0;
-      if (label) {
-        const labelSpan = document.createElement("span");
-        labelSpan.className = sharedStyles.highlight;
-        labelSpan.style.lineHeight = `${lineHeight}px`; // Add line height to label
-        labelSpan.textContent = `${label}:\u00A0`;
-        textContainer.appendChild(labelSpan);
-        currentX = labelSpan.getBoundingClientRect().width;
-      }
 
       // Split the text into words
       const words = text.split(/(\s+)/); // Split by spaces but keep the spaces
@@ -306,14 +288,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";
 
-        if (label) {
-          const labelSpan = document.createElement("span");
-          labelSpan.className = sharedStyles.highlight;
-          labelSpan.style.lineHeight = `${lineHeight}px`; // Add line height to label
-          labelSpan.textContent = `${label}:\u00A0`;
-          paragraph.appendChild(labelSpan);
-        }
-
         const textSpan = document.createElement("span");
         textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
 
@@ -323,7 +297,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         scrollToBottom();
       }, longestAnimationTime);
     },
-    appendNoAnimation: (text: string, label: string) => {
+    appendNoAnimation: (text: string) => {
       if (!text || !textDisplayRef.current) return;
 
       const textDisplay = textDisplayRef.current;
@@ -352,14 +326,10 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Create and append the paragraph with formatted text
       const paragraph = document.createElement("p");
-      const nameSpan = document.createElement("span");
-      nameSpan.className = sharedStyles.highlight;
-      nameSpan.textContent = `${label}:\u00A0`;
 
       const textSpan = document.createElement("span");
       textSpan.textContent = text;
 
-      paragraph.appendChild(nameSpan);
       paragraph.appendChild(textSpan);
       textContainer.appendChild(paragraph);
 

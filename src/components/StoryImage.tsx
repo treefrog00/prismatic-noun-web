@@ -262,8 +262,7 @@ const StoryImage: React.FC = () => {
     } else {
       // Draw current or new image based on transition state using pixel squares
       const imageToDraw =
-        isTransitioning &&
-        pixels.some((p) => p.phase === "from-black" || p.phase === "stable")
+        isTransitioning && pixels.some((p) => p.phase === "from-black")
           ? newImage
           : currentImage;
 

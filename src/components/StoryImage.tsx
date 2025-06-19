@@ -48,11 +48,6 @@ const StoryImage: React.FC = () => {
       setNewImage(mainImage);
       setIsTransitioning(true);
 
-      console.log(
-        "🚀 Starting transition - clearing current image and fading in new image:",
-        mainImage,
-      );
-
       // Clear current image immediately and start fade-in from transparent
       setCurrentImage(null);
 
@@ -136,18 +131,10 @@ const StoryImage: React.FC = () => {
         });
 
         if (allComplete) {
-          console.log("🎯 Transition complete - all pixels stable");
           setCurrentImage(newImage);
           setNewImage(null);
           setIsTransitioning(false);
         }
-
-        // Log phase distribution every 30 frames (once per second at 30fps)
-        if (Math.random() < 0.033) {
-          // ~1/30 chance
-          console.log("📊 Phase distribution:", phaseCounts);
-        }
-
         return updated;
       });
 
@@ -269,15 +256,6 @@ const StoryImage: React.FC = () => {
     } else {
       // Always draw the new image during transition (since we cleared current image)
       const imageToDraw = isTransitioning ? newImage : currentImage;
-
-      // Log when we switch which image we're sampling from
-      const imageType = imageToDraw === newImage ? "NEW" : "CURRENT";
-      if (Math.random() < 0.05) {
-        // Log occasionally
-        console.log(
-          `🖼️  Drawing ${imageType} image | isTransitioning: ${isTransitioning}`,
-        );
-      }
 
       drawImage(imageToDraw, () => {});
     }

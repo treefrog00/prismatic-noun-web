@@ -19,6 +19,7 @@ export const pageStyles = {
     "px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider",
   tableRow: "divide-y divide-gray-200",
   tableCell: "px-6 py-4 whitespace-nowrap",
+  overlayImage: "w-48 h-48 bg-gray-700 rounded-lg border border-gray-600",
 };
 
 export const themeColors = {

@@ -12,7 +12,7 @@ import {
   ContinueResponseSchema,
   SubmitPromptsResponseSchema,
 } from "@/types/validatedTypes";
-import { myPlayer } from "@/core/multiplayerState";
+import { myPlayer, useIsHost } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
@@ -39,6 +39,8 @@ const StoryButtons: React.FC = () => {
   const otherPrompts = usePlayersState("prompt");
 
   const myPlayerId = myPlayer().id;
+
+  const isHost = useIsHost();
 
   useEffect(() => {
     // Create a record mapping player ID to a list of character name strings
@@ -84,7 +86,7 @@ const StoryButtons: React.FC = () => {
 
   const placeHolder =
     myCharacters.length > 0
-      ? `Describe the plan for ${formatCharacterList(myCharacters)} for the next 60 seconds...`
+      ? `${formatCharacterList(myCharacters)}: What's your plan for the next 60 seconds?`
       : "error";
 
   useEffect(() => {
@@ -154,7 +156,7 @@ const StoryButtons: React.FC = () => {
               </div>
             </div>
           )}
-          {showContinueButton && (
+          {showContinueButton && isHost && (
             <div className="text-gray-300 flex items-center gap-12">
               <button
                 className={`game-button ${getColorClasses("teal")} mb-12`}

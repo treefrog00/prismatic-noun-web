@@ -1,11 +1,8 @@
-import {
-  useCharacters,
-  useGameData,
-  useLocationData,
-} from "@/contexts/GameContext";
+import { useCharacters, useGameData } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
 import { QuestSummary } from "@/types";
+import { pageStyles } from "@/styles/shared";
 
 interface CharacterOverlayProps {
   position: { x: number; y: number };
@@ -50,7 +47,7 @@ const CharacterOverlay = ({
           <img
             src={artUrl(characterData.imageUrl)}
             alt={characterData.name}
-            className="w-48 h-48 bg-gray-700 rounded-lg border border-gray-600"
+            className={pageStyles.overlayImage}
           />
           <div className="mt-2">
             <div>{characterData.name}</div>

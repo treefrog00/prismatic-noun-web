@@ -2,6 +2,8 @@ import { useLocationData, useLocationState } from "@/contexts/GameContext";
 import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
 import { QuestSummary } from "@/types/validatedTypes";
+import artUrl from "@/util/artUrls";
+import { pageStyles } from "@/styles/shared";
 
 interface NpcOverlayProps {
   position: { x: number; y: number };
@@ -54,9 +56,11 @@ const NpcOverlay = ({
     >
       <div className="space-y-2">
         <div className="flex items-center gap-2 p-2 mb-4">
-          <div className="w-8 h-8 bg-gray-700 rounded border border-gray-600 flex items-center justify-center">
-            <span className="text-gray-400 text-xs">{npcName}</span>
-          </div>
+          <img
+            src={artUrl(npcData.imageUrl)}
+            alt={npcData.name}
+            className={pageStyles.overlayImage}
+          />
           <span className="text-gray-300">{npcState.effects.join(", ")}</span>
         </div>
       </div>

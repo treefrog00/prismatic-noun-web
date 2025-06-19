@@ -2,6 +2,7 @@ import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
 import { QuestSummary } from "@/types/validatedTypes";
+import { pageStyles } from "@/styles/shared";
 
 interface LocationOverlayProps {
   position: { x: number; y: number };
@@ -38,7 +39,7 @@ const LocationOverlay = ({
           <img
             src={artUrl(locationData.imageUrl)}
             alt={locationData.name}
-            className="w-16 h-16 object-cover rounded"
+            className={pageStyles.overlayImage}
           />
           <div className="flex flex-col">
             <span className="font-medium">{locationData.name}</span>

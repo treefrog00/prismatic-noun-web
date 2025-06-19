@@ -78,6 +78,9 @@ type GameContextType = {
   setGameConfig: (value: GameConfig) => void;
   handleSetShouldAnimateDice: (show: boolean) => void;
 
+  tempSkipTextAnimation: boolean;
+  setTempSkipTextAnimation: (value: boolean) => void;
+
   showPromptInput: boolean;
   setShowPromptInput: (value: boolean) => void;
 
@@ -128,6 +131,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       shouldAnimateText: true,
     },
   );
+
+  const [tempSkipTextAnimation, setTempSkipTextAnimation] =
+    useMultiplayerState<boolean>("tempSkipAnimation", false);
 
   //////////////////////////// end of multiplayer state ////////////////////////////
 
@@ -209,6 +215,10 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         gameConfig,
         setGameConfig,
+
+        tempSkipTextAnimation,
+        setTempSkipTextAnimation,
+
         handleSetShouldAnimateDice,
 
         // Action handler state
@@ -374,5 +384,13 @@ export const useMainImage = () => {
   return {
     mainImage: context.mainImage,
     setMainImage: context.setMainImage,
+  };
+};
+
+export const useTempSkipTextAnimation = () => {
+  const context = useContext(GameContext);
+  return {
+    tempSkipTextAnimation: context.tempSkipTextAnimation,
+    setTempSkipTextAnimation: context.setTempSkipTextAnimation,
   };
 };

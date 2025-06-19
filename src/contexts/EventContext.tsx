@@ -10,9 +10,7 @@ import {
   useCharacters,
   useIsPaused,
   useMainImage,
-  useShowContinueButton,
   useShowPromptInput,
-  useTempSkipTextAnimation,
 } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
@@ -53,12 +51,9 @@ export const EventProvider = ({
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
   const { setShowPromptInput } = useShowPromptInput();
-  const { setShowContinueButton } = useShowContinueButton();
   const { singlePlayerMode } = useLobbyContext();
   const isHost = useIsHost(singlePlayerMode);
   const { setIsPaused } = useIsPaused();
-  const { tempSkipTextAnimation, setTempSkipTextAnimation } =
-    useTempSkipTextAnimation();
 
   const processEvent = async (event: GameEvent) => {
     if (import.meta.env.DEV) {
@@ -66,13 +61,8 @@ export const EventProvider = ({
     }
 
     if (event.type === "Story") {
-      if (isHost) {
-        setShowContinueButton(true);
-      }
       appendToStory(event.text);
-      if (!tempSkipTextAnimation) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-      }
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "Image") {
       // the flushSync microtask is only needed for React 18+
       queueMicrotask(() => {
@@ -114,7 +104,6 @@ export const EventProvider = ({
       // TODO: clearing story doesn't work, though then again
       // maybe we shouldn't be clearing it anyway
       //clearStory();
-      setTempSkipTextAnimation(false);
       setLocationState(event.locationState);
       setLocationData(event.locationData);
     } else if (event.type === "ChangePlaylist") {

@@ -70,14 +70,8 @@ type GameContextType = {
   setGameConfig: (value: GameConfig) => void;
   handleSetShouldAnimateDice: (show: boolean) => void;
 
-  tempSkipTextAnimation: boolean;
-  setTempSkipTextAnimation: (value: boolean) => void;
-
   showPromptInput: boolean;
   setShowPromptInput: (value: boolean) => void;
-
-  showContinueButton: boolean;
-  setShowContinueButton: (value: boolean) => void;
 
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
@@ -135,9 +129,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     singlePlayerMode,
   );
 
-  const [tempSkipTextAnimation, setTempSkipTextAnimation] =
-    useMultiplayerState<boolean>("tempSkipAnimation", false, singlePlayerMode);
-
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
@@ -163,7 +154,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     // 'reliable' is ignored
   };
   const [showPromptInput, setShowPromptInput] = useState(false);
-  const [showContinueButton, setShowContinueButton] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   //////////////////////////// end of React only state ////////////////////////////
 
@@ -213,17 +203,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         gameConfig,
         setGameConfig,
 
-        tempSkipTextAnimation,
-        setTempSkipTextAnimation,
-
         handleSetShouldAnimateDice,
 
         // Action handler state
         showPromptInput,
         setShowPromptInput,
-
-        showContinueButton,
-        setShowContinueButton,
 
         diceRollState,
         setDiceRollState,
@@ -333,14 +317,6 @@ export const useShowPromptInput = () => {
   };
 };
 
-export const useShowContinueButton = () => {
-  const context = useContext(GameContext);
-  return {
-    showContinueButton: context.showContinueButton,
-    setShowContinueButton: context.setShowContinueButton,
-  };
-};
-
 export const useGameConfig = () => {
   const context = useContext(GameContext);
   if (!context) {
@@ -376,14 +352,6 @@ export const useMainImage = () => {
   return {
     mainImage: context.mainImage,
     setMainImage: context.setMainImage,
-  };
-};
-
-export const useTempSkipTextAnimation = () => {
-  const context = useContext(GameContext);
-  return {
-    tempSkipTextAnimation: context.tempSkipTextAnimation,
-    setTempSkipTextAnimation: context.setTempSkipTextAnimation,
   };
 };
 

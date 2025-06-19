@@ -6,7 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 interface PixelData {
   x: number;
   y: number;
-  phase: "stable" | "to-black" | "black" | "from-black";
+  phase: "stable" | "from-transparent";
   progress: number;
   delay: number;
   startTime?: number;
@@ -48,22 +48,19 @@ const StoryImage: React.FC = () => {
       setNewImage(mainImage);
       setIsTransitioning(true);
 
-      // If there's no current image, skip directly to from-black phase
-      const startPhase = currentImage ? "to-black" : "from-black";
-
       console.log(
-        "🚀 Starting transition with startPhase:",
-        startPhase,
-        "currentImage:",
-        currentImage,
-        "newImage:",
+        "🚀 Starting transition - clearing current image and fading in new image:",
         mainImage,
       );
-      // Start transition for all pixels
+
+      // Clear current image immediately and start fade-in from transparent
+      setCurrentImage(null);
+
+      // Start transition for all pixels - always fade from transparent
       setPixels((prev) =>
         prev.map((pixel) => ({
           ...pixel,
-          phase: startPhase,
+          phase: "from-transparent",
           progress: 0,
           startTime: undefined, // Reset start time
         })),
@@ -94,9 +91,7 @@ const StoryImage: React.FC = () => {
         // Count pixels in each phase for debugging
         const phaseCounts = {
           stable: 0,
-          "to-black": 0,
-          black: 0,
-          "from-black": 0,
+          "from-transparent": 0,
         };
         prev.forEach((p) => phaseCounts[p.phase]++);
 
@@ -114,31 +109,12 @@ const StoryImage: React.FC = () => {
             return pixel;
           }
 
-          let newPhase: "stable" | "to-black" | "black" | "from-black" =
-            pixel.phase;
+          let newPhase: "stable" | "from-transparent" = pixel.phase;
           let newStartTime = pixel.startTime;
           let newProgress = 0;
 
-          if (pixel.phase === "to-black") {
-            newProgress = elapsed / 800; // 800ms to fade to black
-            newProgress = Math.min(1, Math.max(0, newProgress));
-
-            if (newProgress >= 1) {
-              newPhase = "black";
-              newProgress = 0;
-              newStartTime = timestamp; // Reset for black phase
-            }
-          } else if (pixel.phase === "black") {
-            if (elapsed >= 200) {
-              // black pause complete, move to from-black
-              newPhase = "from-black";
-              newProgress = 0;
-              newStartTime = timestamp; // Reset for from-black phase
-            } else {
-              newProgress = 0; // Stay black during pause
-            }
-          } else if (pixel.phase === "from-black") {
-            newProgress = elapsed / 800; // 800ms to fade from black
+          if (pixel.phase === "from-transparent") {
+            newProgress = elapsed / 800; // 800ms to fade from transparent
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {
@@ -232,15 +208,12 @@ const StoryImage: React.FC = () => {
           let alpha = 1;
           let brightness = 1;
 
-          if (pixel.phase === "to-black") {
-            brightness = 1 - pixel.progress;
-            alpha = 1 - pixel.progress;
-          } else if (pixel.phase === "black") {
-            brightness = 0;
-            alpha = 0;
-          } else if (pixel.phase === "from-black") {
+          if (pixel.phase === "from-transparent") {
             brightness = pixel.progress;
             alpha = pixel.progress;
+          } else if (pixel.phase === "stable") {
+            brightness = 1;
+            alpha = 1;
           }
 
           if (alpha > 0) {
@@ -295,17 +268,15 @@ const StoryImage: React.FC = () => {
       };
       img.src = artUrl(currentImage);
     } else {
-      // Draw current or new image based on transition state using pixel squares
-      const hasFromBlackPixels = pixels.some((p) => p.phase === "from-black");
-      const imageToDraw =
-        isTransitioning && hasFromBlackPixels ? newImage : currentImage;
+      // Always draw the new image during transition (since we cleared current image)
+      const imageToDraw = isTransitioning ? newImage : currentImage;
 
       // Log when we switch which image we're sampling from
       const imageType = imageToDraw === newImage ? "NEW" : "CURRENT";
       if (Math.random() < 0.05) {
         // Log occasionally
         console.log(
-          `🖼️  Drawing ${imageType} image | hasFromBlack: ${hasFromBlackPixels} | isTransitioning: ${isTransitioning}`,
+          `🖼️  Drawing ${imageType} image | isTransitioning: ${isTransitioning}`,
         );
       }
 

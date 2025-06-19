@@ -70,6 +70,8 @@ type GameContextType = {
   gameConfig: GameConfig;
   setGameConfig: (value: GameConfig) => void;
   handleSetShouldAnimateDice: (show: boolean) => void;
+  handleSetShouldAnimateText: (show: boolean) => void;
+  handleSetShouldAnimateImages: (show: boolean) => void;
 
   showPromptInput: boolean;
   setShowPromptInput: (value: boolean) => void;
@@ -177,6 +179,22 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     localStorage.setItem("shouldAnimateDice", show.toString());
   };
 
+  const handleSetShouldAnimateText = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateText: show,
+    });
+    localStorage.setItem("shouldAnimateText", show.toString());
+  };
+
+  const handleSetShouldAnimateImages = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateImages: show,
+    });
+    localStorage.setItem("shouldAnimateImages", show.toString());
+  };
+
   const gameApi = new GameApi();
 
   return (
@@ -206,6 +224,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         setGameConfig,
 
         handleSetShouldAnimateDice,
+        handleSetShouldAnimateText,
+        handleSetShouldAnimateImages,
 
         // Action handler state
         showPromptInput,
@@ -328,6 +348,8 @@ export const useGameConfig = () => {
     gameConfig: context.gameConfig,
     setGameConfig: context.setGameConfig,
     handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
+    handleSetShouldAnimateText: context.handleSetShouldAnimateText,
+    handleSetShouldAnimateImages: context.handleSetShouldAnimateImages,
   };
 };
 

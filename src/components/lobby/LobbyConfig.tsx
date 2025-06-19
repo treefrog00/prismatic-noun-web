@@ -5,18 +5,25 @@ import MusicToggle from "@/components/settings/MusicToggle";
 
 const LobbyConfig: React.FC = () => {
   const { shouldAnimateStars, setShouldAnimateStars } = useLobbyContext();
-  const { gameConfig, handleSetShouldAnimateDice } = useGameConfig();
+  const {
+    gameConfig,
+    handleSetShouldAnimateDice,
+    handleSetShouldAnimateText,
+    handleSetShouldAnimateImages,
+  } = useGameConfig();
 
   function handleToggleAnimateDice() {
     handleSetShouldAnimateDice(!gameConfig.shouldAnimateDice);
   }
 
   function setShouldAnimateText() {
-    // setGameConfig({
-    //   ...gameConfig,
-    //   shouldAnimateText: !gameConfig.shouldAnimateText,
-    // });
+    handleSetShouldAnimateText(!gameConfig.shouldAnimateText);
   }
+
+  function setShouldAnimateImages() {
+    handleSetShouldAnimateImages(!gameConfig.shouldAnimateImages);
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">

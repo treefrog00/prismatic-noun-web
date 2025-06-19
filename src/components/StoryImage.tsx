@@ -21,7 +21,7 @@ const StoryImage: React.FC = () => {
   const [pixels, setPixels] = useState<PixelData[]>([]);
   const animationRef = useRef<number>();
 
-  const PIXEL_SIZE = 8; // Size of each square in pixels
+  const PIXEL_SIZE = 16; // Size of each square in pixels (larger = fewer pixels = better performance)
   const CANVAS_WIDTH = 512; // Adjust based on your image size
   const CANVAS_HEIGHT = 512;
 
@@ -44,7 +44,6 @@ const StoryImage: React.FC = () => {
 
   // Handle image changes
   useEffect(() => {
-    console.log("mainImage in storyImage", mainImage);
     if (mainImage !== currentImage && !isTransitioning) {
       setNewImage(mainImage);
       setIsTransitioning(true);
@@ -52,7 +51,14 @@ const StoryImage: React.FC = () => {
       // If there's no current image, skip directly to from-black phase
       const startPhase = currentImage ? "to-black" : "from-black";
 
-      console.log("starting transition with startPhase", startPhase);
+      console.log(
+        "🚀 Starting transition with startPhase:",
+        startPhase,
+        "currentImage:",
+        currentImage,
+        "newImage:",
+        mainImage,
+      );
       // Start transition for all pixels
       setPixels((prev) =>
         prev.map((pixel) => ({
@@ -69,9 +75,31 @@ const StoryImage: React.FC = () => {
   useEffect(() => {
     if (!isTransitioning) return;
 
+    let lastFrameTime = 0;
+    const targetFPS = 30;
+    const frameInterval = 1000 / targetFPS; // ~33.33ms between frames
+
     const animate = (timestamp: number) => {
+      // Throttle to 30 FPS
+      if (timestamp - lastFrameTime < frameInterval) {
+        if (isTransitioning) {
+          animationRef.current = requestAnimationFrame(animate);
+        }
+        return;
+      }
+      lastFrameTime = timestamp;
       setPixels((prev) => {
         let allComplete = true;
+
+        // Count pixels in each phase for debugging
+        const phaseCounts = {
+          stable: 0,
+          "to-black": 0,
+          black: 0,
+          "from-black": 0,
+        };
+        prev.forEach((p) => phaseCounts[p.phase]++);
+
         const updated = prev.map((pixel) => {
           if (pixel.phase === "stable") return pixel;
 
@@ -96,9 +124,6 @@ const StoryImage: React.FC = () => {
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {
-              console.log(
-                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: to-black → black`,
-              );
               newPhase = "black";
               newProgress = 0;
               newStartTime = timestamp; // Reset for black phase
@@ -106,9 +131,6 @@ const StoryImage: React.FC = () => {
           } else if (pixel.phase === "black") {
             if (elapsed >= 200) {
               // 200ms black pause complete, move to from-black
-              console.log(
-                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: black → from-black`,
-              );
               newPhase = "from-black";
               newProgress = 0;
               newStartTime = timestamp; // Reset for from-black phase
@@ -120,9 +142,6 @@ const StoryImage: React.FC = () => {
             newProgress = Math.min(1, Math.max(0, newProgress));
 
             if (newProgress >= 1) {
-              console.log(
-                `Pixel at (${pixel.x}, ${pixel.y}) transitioning: from-black → stable`,
-              );
               newPhase = "stable";
               newProgress = 1;
             }
@@ -141,9 +160,16 @@ const StoryImage: React.FC = () => {
         });
 
         if (allComplete) {
+          console.log("🎯 Transition complete - all pixels stable");
           setCurrentImage(newImage);
           setNewImage(null);
           setIsTransitioning(false);
+        }
+
+        // Log phase distribution every 30 frames (once per second at 30fps)
+        if (Math.random() < 0.033) {
+          // ~1/30 chance
+          console.log("📊 Phase distribution:", phaseCounts);
         }
 
         return updated;
@@ -270,10 +296,18 @@ const StoryImage: React.FC = () => {
       img.src = artUrl(currentImage);
     } else {
       // Draw current or new image based on transition state using pixel squares
+      const hasFromBlackPixels = pixels.some((p) => p.phase === "from-black");
       const imageToDraw =
-        isTransitioning && pixels.some((p) => p.phase === "from-black")
-          ? newImage
-          : currentImage;
+        isTransitioning && hasFromBlackPixels ? newImage : currentImage;
+
+      // Log when we switch which image we're sampling from
+      const imageType = imageToDraw === newImage ? "NEW" : "CURRENT";
+      if (Math.random() < 0.05) {
+        // Log occasionally
+        console.log(
+          `🖼️  Drawing ${imageType} image | hasFromBlack: ${hasFromBlackPixels} | isTransitioning: ${isTransitioning}`,
+        );
+      }
 
       drawImage(imageToDraw, () => {});
     }

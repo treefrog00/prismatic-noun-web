@@ -128,7 +128,7 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
-        <div className="flex flex-row gap-8 flex-1">
+        <div className="flex flex-row gap-8 flex-1 min-h-0">
           <Story ref={storyRef} questSummary={questSummary} />
           <div className="w-128 min-w-0 flex flex-col h-full">
             <div className="flex-1" />

@@ -92,6 +92,9 @@ type GameContextType = {
 
   mainImage: string;
   setMainImage: (value: string) => void;
+
+  isPaused: boolean;
+  setIsPaused: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -165,6 +168,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   };
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [showContinueButton, setShowContinueButton] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
@@ -239,6 +243,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         mainImage,
         setMainImage,
+
+        isPaused,
+        setIsPaused,
       }}
     >
       {children}
@@ -392,5 +399,13 @@ export const useTempSkipTextAnimation = () => {
   return {
     tempSkipTextAnimation: context.tempSkipTextAnimation,
     setTempSkipTextAnimation: context.setTempSkipTextAnimation,
+  };
+};
+
+export const useIsPaused = () => {
+  const context = useContext(GameContext);
+  return {
+    isPaused: context.isPaused,
+    setIsPaused: context.setIsPaused,
   };
 };

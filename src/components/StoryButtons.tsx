@@ -4,6 +4,8 @@ import {
   useShowPromptInput as useShowPromptInput,
   useCharacters,
   useShowContinueButton,
+  useIsPaused,
+  useTempSkipTextAnimation,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
@@ -41,6 +43,8 @@ const StoryButtons: React.FC = () => {
   const myPlayerId = myPlayer().id;
 
   const isHost = useIsHost();
+  const { isPaused, setIsPaused } = useIsPaused();
+  const { setTempSkipTextAnimation } = useTempSkipTextAnimation();
 
   useEffect(() => {
     // Create a record mapping player ID to a list of character name strings
@@ -101,13 +105,18 @@ const StoryButtons: React.FC = () => {
   };
 
   const handleContinue = async () => {
-    setShowContinueButton(false);
-    const response = await gameApi.postTyped(
-      `/game/${gameData.gameId}/next_scene`,
-      { prompt: myPrompt },
-      ContinueResponseSchema,
-    );
-    rpcAppendEvents(response.events);
+    if (isPaused) {
+      setShowContinueButton(false);
+      const response = await gameApi.postTyped(
+        `/game/${gameData.gameId}/next_scene`,
+        { prompt: myPrompt },
+        ContinueResponseSchema,
+      );
+      rpcAppendEvents(response.events);
+      setIsPaused(false);
+    } else {
+      setTempSkipTextAnimation(true);
+    }
   };
 
   return (

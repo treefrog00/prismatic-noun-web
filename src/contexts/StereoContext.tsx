@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const MUSIC_ENABLED_STORAGE_KEY = "music_enabled";
-const FADE_DURATION = 2000;
+const FADE_DURATION = 1000;
 
 const LOBBY_PLAYLIST: string[] = ["dream"];
 

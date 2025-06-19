@@ -23,7 +23,6 @@ const Play = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (event.key === "t") {
-        console.log("localGameStage", localGameStage);
         if (localGameStage === "launch-screen") {
           return;
         }

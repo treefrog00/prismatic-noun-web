@@ -22,6 +22,7 @@ import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
+import { useIsHost } from "@/core/multiplayerState";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -52,11 +53,17 @@ export const EventProvider = ({
   const { setPlaylist } = useStereo();
   const { setShowPromptInput } = useShowPromptInput();
   const { setShowContinueButton } = useShowContinueButton();
+  const isHost = useIsHost();
 
   const processEvent = async (event: GameEvent) => {
-    console.log("Processing", event.type, "event", event);
+    if (import.meta.env.DEV) {
+      console.log("Processing", event.type, "event", event);
+    }
 
     if (event.type === "Story") {
+      if (isHost) {
+        setShowContinueButton(true);
+      }
       appendToStory(event.text);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "Image") {
@@ -68,7 +75,6 @@ export const EventProvider = ({
       });
       await new Promise((resolve) => setTimeout(resolve, 1000));
     } else if (event.type === "Pause") {
-      setShowContinueButton(true);
     } else if (event.type === "DiceRollScreen") {
       if (!gameConfig.shouldAnimateDice) return;
 

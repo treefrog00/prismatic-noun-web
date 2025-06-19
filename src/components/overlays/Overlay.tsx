@@ -26,7 +26,7 @@ const Overlay = ({
   );
   return (
     <div
-      className={`${questSummary.containerColor}/80 ${className} pointer-events-auto`}
+      className={`${questSummary.containerColor} opacity-90 ${className} pointer-events-auto`}
       style={style}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

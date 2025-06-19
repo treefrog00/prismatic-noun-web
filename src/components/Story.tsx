@@ -373,8 +373,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
     },
   }));
 
-  console.log("sharedStyles", sharedStyles);
-
   return (
     <>
       <div

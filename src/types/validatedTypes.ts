@@ -92,7 +92,6 @@ const GameEventSchema = z.discriminatedUnion("type", [
 
   z.object({
     type: z.literal("Pause"),
-    prompt: z.string(),
   }),
 
   z.object({
@@ -136,6 +135,10 @@ export const StartGameSchema = z.object({
 });
 
 export const PlayerLeftResponseSchema = z.object({
+  events: z.array(GameEventSchema),
+});
+
+export const ContinueResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
 

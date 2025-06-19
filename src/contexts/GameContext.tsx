@@ -97,7 +97,7 @@ type GameContextType = {
 
 export const GameContext = createContext<GameContextType | null>(null);
 
-const DEFAULT_TURN_TIME_LIMIT = 60;
+const DEFAULT_TURN_TIME_LIMIT = 90;
 
 interface GameProviderProps {
   children: ReactNode;

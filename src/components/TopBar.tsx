@@ -174,7 +174,7 @@ const TopBar = () => {
   return (
     <>
       <div
-        className={`w-full backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2 ${questSummary?.containerColor}/80`}
+        className={`w-full backdrop-blur-sm border-b border-gray-700 py-2 px-4 mb-2 ${questSummary?.containerColor} opacity-90`}
       >
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">

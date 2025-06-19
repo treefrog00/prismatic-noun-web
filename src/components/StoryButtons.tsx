@@ -4,14 +4,19 @@ import {
   useTimeRemaining,
   useShowPromptInput as useShowPromptInput,
   useCharacters,
+  useShowContinueButton,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
-import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
+import {
+  ContinueResponseSchema,
+  SubmitPromptsResponseSchema,
+} from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
+import { rpcAppendEvents } from "@/util/rpcEvents";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -26,6 +31,7 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptInput, setShowPromptInput } = useShowPromptInput();
+  const { showContinueButton, setShowContinueButton } = useShowContinueButton();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
@@ -91,43 +97,8 @@ const StoryButtons: React.FC = () => {
 
   const placeHolder =
     myCharacters.length > 0
-      ? `Describe the plan for ${formatCharacterList(myCharacters)} for the next 30 seconds...`
+      ? `Describe the plan for ${formatCharacterList(myCharacters)} for the next 60 seconds...`
       : "error";
-
-  const renderTextInput = () => (
-    <div className="flex flex-col gap-4 justify-center self-center">
-      <div className="w-full">
-        {otherPrompts
-          .filter((prompt) => prompt.player.id !== myPlayerId)
-          .map((prompt) => (
-            <div key={prompt.player.id}>
-              <div>{prompt.player.id}</div>
-            </div>
-          ))}
-        <div className="flex gap-4 mb-4 items-end">
-          <div className="flex-1">
-            <TextInput
-              text={myPrompt}
-              setText={(value: string) => {
-                setMyPrompt(value, true);
-              }}
-              textInputRef={textInputRef}
-              onClose={() => {}}
-              onOk={handleActEnterButton}
-              placeHolder={placeHolder}
-              showCharCount={true}
-            />
-          </div>
-          <button
-            className={`game-button ${getColorClasses("teal")} mb-12`}
-            onPointerDown={() => handlePlayerAction(handleActOk)}
-          >
-            Confirm
-          </button>
-        </div>
-      </div>
-    </div>
-  );
 
   useEffect(() => {
     if (showPromptInput && textInputRef.current) {
@@ -140,23 +111,79 @@ const StoryButtons: React.FC = () => {
     await action();
   };
 
+  const handleContinue = async () => {
+    setShowContinueButton(false);
+    const response = await gameApi.postTyped(
+      `/game/${gameData.gameId}/next_scene`,
+      { prompt: myPrompt },
+      ContinueResponseSchema,
+    );
+    rpcAppendEvents(response.events);
+  };
+
   return (
     <>
-      {showPromptInput && (
-        <div className="border-2 border-gray-700 rounded-lg h-48 p-4 mt-2">
-          <div className="flex justify-between items-center self-center">
-            <div className="text-gray-300 flex items-center gap-12">
-              <div className="w-full mt-2">{renderTextInput()}</div>
-              <div className="text-gray-300 text-lg">
-                <div>
-                  Time Remaining:{" "}
-                  <div className="text-4xl font-bold">{timeRemaining}s</div>
+      <div className="h-48 p-4 mt-2">
+        <div className="flex justify-between items-center self-center">
+          {showPromptInput && (
+            <div className="w-full">
+              <div className="flex flex-row items-center gap-4 mb-2">
+                <div className="w-1/3">
+                  <TextInput
+                    text={myPrompt}
+                    setText={(value: string) => {
+                      setMyPrompt(value, true);
+                    }}
+                    textInputRef={textInputRef}
+                    onClose={() => {}}
+                    onOk={handleActEnterButton}
+                    placeHolder={placeHolder}
+                    showCharCount={true}
+                  />
+                </div>
+                <div className="w-1/3 overflow-y-auto max-h-32">
+                  {otherPrompts
+                    .filter((prompt) => prompt.player.id !== myPlayerId)
+                    .map((prompt) => (
+                      <div
+                        key={prompt.player.id}
+                        className="text-gray-300 mb-2"
+                      >
+                        <div className="font-bold">
+                          {prompt.player.name || prompt.player.id}:
+                        </div>
+                        <div>{prompt.value}</div>
+                      </div>
+                    ))}
+                </div>
+                <div className="w-1/3 flex flex-col items-end justify-between">
+                  <button
+                    className={`game-button ${getColorClasses("teal")} whitespace-nowrap`}
+                    onPointerDown={() => handlePlayerAction(handleActOk)}
+                  >
+                    Confirm
+                  </button>
+                  <div className="text-gray-300 text-lg whitespace-nowrap mt-4">
+                    Time Remaining:{" "}
+                    <span className="text-2xl font-bold">{timeRemaining}s</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
+          {showContinueButton && (
+            <div className="text-gray-300 flex items-center gap-12">
+              <button
+                className={`game-button ${getColorClasses("teal")} mb-12`}
+                onPointerDown={() => handleContinue()}
+              >
+                Continue
+              </button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
+
       {isSettingsOpen && (
         <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
       )}

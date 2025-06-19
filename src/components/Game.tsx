@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   useIsHost,
   onPlayerJoin,
@@ -27,6 +27,7 @@ import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
 import { HASH_QUEST_ID } from "@/config";
+import { rpcAppendEvents } from "@/util/rpcEvents";
 
 const GameContent = () => {
   // UI variables
@@ -54,7 +55,7 @@ const GameContent = () => {
       {},
       PlayerLeftResponseSchema,
     );
-    RPC.call("rpc-append-events", { events: response.events }, RPC.Mode.ALL);
+    rpcAppendEvents(response.events);
   };
 
   useEffect(() => {
@@ -105,11 +106,7 @@ const GameContent = () => {
           localPlayers,
         );
         setGameData(startGame.gameData);
-        RPC.call(
-          "rpc-append-events",
-          { events: startGame.events },
-          RPC.Mode.ALL,
-        );
+        rpcAppendEvents(startGame.events);
       };
       startGameAsync();
     }

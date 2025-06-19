@@ -50,16 +50,54 @@ const LaunchScreen = () => {
             alt="Game Logo"
             className="w-40 xl:w-[320px] mb-8"
           />
-          {!pnAccessToken ? (
-            <div className="flex flex-col gap-4 mb-8">
-              <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-                Sign in with Google or Discord to continue
+          {
+            <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
+              <div className={`text-center text-gray-200 text-lg`}>
+                <p className="mb-4">
+                  A collection of spooky and weird interactive tales that can be
+                  played on your own, or with friends taking the part of
+                  different characters.
+                </p>
+                <p className="mb-4">
+                  You can play in a web browser on Windows/Mac/Linux. Mobile
+                  devices are not supported.
+                </p>
+                <p className="mb-4">
+                  The game is currently in alpha and may have many bugs and
+                  issues.
+                </p>
+                <p>
+                  AI disclaimer: the development process made heavy use of AI
+                  for generating images, music, code, and stories. This involved
+                  experimenting, iterating, curating, merging, and refining a
+                  large number of ideas over the course of 6 months full-time
+                  work. This was followed by several more months testing and
+                  refinement. As such, despite the many issues around copyright
+                  regarding the use of AI generated content, I would hope that
+                  the game is at least somewhat interesting, and not just
+                  randomly generated noise.
+                </p>
               </div>
-              <AuthButtons />
+            </div>
+          }
+          {!pnAccessToken ? (
+            <div className="flex flex-col gap-4 m-8">
+              <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-4 border border-gray-700 text-center">
+                Sign in to continue
+                <br />
+                <br />
+                <div className="flex justify-center">
+                  <AuthButtons />
+                </div>
+                <div className="m-4">
+                  We will never send you any emails or use your details for
+                  anything other than account management.
+                </div>
+              </div>
             </div>
           ) : null}
           {pnAccessToken ? (
-            <div className="flex flex-row gap-4 mb-8">
+            <div className="flex flex-row gap-4 m-8">
               <button
                 onClick={handleHostGame}
                 className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
@@ -74,35 +112,6 @@ const LaunchScreen = () => {
               </button>
             </div>
           ) : null}
-          {
-            <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-              <div className={`text-center text-gray-200 text-lg`}>
-                <p className="mb-4">
-                  A collection of spooky and weird interactive tales that can be
-                  played on your own or with friends online.
-                </p>
-                <p className="mb-4">
-                  You can play in a web browser on Windows/Mac/Linux, but mobile
-                  devices are not supported.
-                </p>
-                <p className="mb-4">
-                  The game is currently in alpha and may have many bugs and
-                  issues.
-                </p>
-                <p className="mb-4">
-                  AI disclaimer: the development process made heavy use of AI
-                  for generating images, music, code, and stories. This involved
-                  experimenting, iterating, curating, merging, and refining a
-                  large number of ideas over the course of 6 months full-time
-                  work. This was followed by several more months testing and
-                  refinement. As such, despite the many issues around copyright
-                  regarding the use of AI generated content, I would hope that
-                  the game is at least somewhat interesting, and not just
-                  randomly generated noise.
-                </p>
-              </div>
-            </div>
-          }
         </div>
       </div>
       <RoomCodePopup

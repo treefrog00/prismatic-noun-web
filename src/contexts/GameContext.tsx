@@ -18,6 +18,7 @@ import {
   useState,
   useEffect,
 } from "react";
+import { useLobbyContext } from "./LobbyContext";
 
 export interface DiceRollState {
   show: boolean;
@@ -104,19 +105,25 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
+  const lobbyContext = useLobbyContext();
+  const singlePlayerMode = lobbyContext.singlePlayerMode;
+
   //// Multiplayer state ////
   const [gameData, setGameData] = useMultiplayerState<GameData>(
     "gameData",
     null,
+    singlePlayerMode,
   );
   const [locationData, setLocationData] = useMultiplayerState<LocationData>(
     "locationData",
     null,
+    singlePlayerMode,
   );
 
   const [gameStage, setGameStage] = useMultiplayerState<MultiplayerGameStage>(
     "gameStage",
     "no-game",
+    singlePlayerMode,
   );
   const [voteState, setVoteState] = useMultiplayerState<VoteState>(
     "voteState",
@@ -125,6 +132,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       voteOptions: [],
       voteTitle: "",
     },
+    singlePlayerMode,
   );
 
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
@@ -133,10 +141,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       shouldAnimateDice: true,
       shouldAnimateText: true,
     },
+    singlePlayerMode,
   );
 
   const [tempSkipTextAnimation, setTempSkipTextAnimation] =
-    useMultiplayerState<boolean>("tempSkipAnimation", false);
+    useMultiplayerState<boolean>("tempSkipAnimation", false, singlePlayerMode);
 
   //////////////////////////// end of multiplayer state ////////////////////////////
 

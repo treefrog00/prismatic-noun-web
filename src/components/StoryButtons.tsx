@@ -18,6 +18,7 @@ import { myPlayer, useIsHost } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -32,17 +33,19 @@ const StoryButtons: React.FC = () => {
 
   const { showPromptInput, setShowPromptInput } = useShowPromptInput();
   const { showContinueButton, setShowContinueButton } = useShowContinueButton();
+  const { singlePlayerMode } = useLobbyContext();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
-    myPlayer(),
+    myPlayer(singlePlayerMode),
     "prompt",
     "",
+    singlePlayerMode,
   );
-  const otherPrompts = usePlayersState("prompt");
+  const otherPrompts = usePlayersState("prompt", singlePlayerMode);
 
-  const myPlayerId = myPlayer().id;
+  const myPlayerId = myPlayer(singlePlayerMode).id;
 
-  const isHost = useIsHost();
+  const isHost = useIsHost(singlePlayerMode);
   const { isPaused, setIsPaused } = useIsPaused();
   const { setTempSkipTextAnimation } = useTempSkipTextAnimation();
 
@@ -112,7 +115,7 @@ const StoryButtons: React.FC = () => {
         { prompt: myPrompt },
         ContinueResponseSchema,
       );
-      rpcAppendEvents(response.events);
+      rpcAppendEvents(response.events, singlePlayerMode);
       setIsPaused(false);
     } else {
       setTempSkipTextAnimation(true);

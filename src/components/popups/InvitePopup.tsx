@@ -4,6 +4,7 @@ import MusicToggle from "@/components/settings/MusicToggle";
 import { getRoomCode } from "@/core/multiplayerState";
 import { useToast } from "@/contexts/ToastContext";
 import { starryTheme } from "@/styles/starryTheme";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 
 interface InvitePopupProps {
   isOpen: boolean;
@@ -12,7 +13,8 @@ interface InvitePopupProps {
 
 const InvitePopup: React.FC<InvitePopupProps> = ({ isOpen, onClose }) => {
   const { showToast } = useToast();
-
+  const { singlePlayerMode } = useLobbyContext();
+  
   if (!isOpen) return null;
 
   const handleCopyLink = async () => {
@@ -36,7 +38,7 @@ const InvitePopup: React.FC<InvitePopupProps> = ({ isOpen, onClose }) => {
         <div className="col-span-1">
           <h3 className="text-lg text-gray-300">Room code:</h3>
           <p className="mb-4" style={starryTheme.heading}>
-            {getRoomCode()}
+            {getRoomCode(singlePlayerMode)}
           </p>
           <button
             onClick={handleCopyLink}

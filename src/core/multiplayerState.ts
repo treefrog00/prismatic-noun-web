@@ -121,10 +121,7 @@ export const getDiscordAccessToken = (singlePlayerMode: boolean) => {
   return originalGetDiscordAccessToken();
 };
 
-export const insertCoin = (options: InitOptions, singlePlayerMode: boolean) => {
-  if (singlePlayerMode) {
-    throw new Error("insertCoin is not supported in hash mode");
-  }
+export const insertCoin = (options: InitOptions) => {
   return originalInsertCoin(options);
 };
 
@@ -191,28 +188,28 @@ export const useMultiplayerState = <T>(
 
 // TODO this won't trigger anything, though currently it's only for settings names and the
 // game phase, neither of which need updates in hash mode
-export const setState = (key: string, value: any) => {
-  if (HASH_QUEST_ID) {
+export const setState = (key: string, value: any, singlePlayerMode: boolean) => {
+  if (singlePlayerMode) {
     localStateStore[key] = value;
     return;
   }
   return originalSetState(key, value);
 };
 
-export const getState = (key: string) => {
-  if (HASH_QUEST_ID) {
+export const getState = (key: string, singlePlayerMode: boolean) => {
+  if (singlePlayerMode) {
     return localStateStore[key];
   }
   return originalGetState(key);
 };
 
-export const getRoomCode = () => {
-  if (HASH_QUEST_ID) return "room123";
+export const getRoomCode = (singlePlayerMode: boolean) => {
+  if (singlePlayerMode) return "room123";
   return originalGetRoomCode();
 };
 
-export const usePlayersState = (key: string): any[] => {
-  if (HASH_QUEST_ID) {
+export const usePlayersState = (key: string, singlePlayerMode: boolean): any[] => {
+  if (singlePlayerMode) {
     const { localPlayers } = useLocalPlayers();
     // this won't work as a hook with updates, but doesn't matter for now
     // because it's only used for prompts from other players, and in local mode
@@ -229,8 +226,9 @@ export const usePlayerStatePrompt = (
   player: PlayerState,
   key: string,
   defaultValue: string,
+  singlePlayerMode: boolean,
 ): MultiplayerStateHookResult<string> => {
-  if (HASH_QUEST_ID) {
+  if (singlePlayerMode) {
     // this assumes the only thing this ever gets used for is the player prompts
     const { localPlayerPrompt, setLocalPlayerPrompt } = useLocalPlayerPrompt();
     return [localPlayerPrompt, setLocalPlayerPrompt];

@@ -56,13 +56,13 @@ const GameContent = () => {
       {},
       PlayerLeftResponseSchema,
     );
-    rpcAppendEvents(response.events);
+    rpcAppendEvents(response.events, singlePlayerMode);
   };
 
   useEffect(() => {
     RPC.register("rpc-append-events", async (data) => {
       addEvents(data.events);
-    });
+    }, singlePlayerMode);
 
     const unsubscribe = storyEvents.subscribe((text, label) => {
       if (storyRef.current) {
@@ -82,7 +82,7 @@ const GameContent = () => {
       });
 
       return unsubscribe;
-    });
+    }, singlePlayerMode);
 
     return () => {
       unsubscribe();
@@ -112,9 +112,10 @@ const GameContent = () => {
           players,
           summary,
           localPlayers,
+          singlePlayerMode,
         );
         setGameData(startGame.gameData);
-        rpcAppendEvents(startGame.events);
+        rpcAppendEvents(startGame.events, singlePlayerMode);
       };
       startGameAsync();
     }

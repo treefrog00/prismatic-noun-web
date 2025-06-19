@@ -13,11 +13,12 @@ interface LobbyHomeProps {
 }
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
-  const players = usePlayersList();
+  const { singlePlayerMode } = useLobbyContext();
+  const players = usePlayersList(false, singlePlayerMode);
   const { questSummary, setQuestSummary } = useLobbyContext();
   const [showInvitePopup, setShowInvitePopup] = useState(false);
 
-  const isHost = useIsHost();
+  const isHost = useIsHost(singlePlayerMode);
   const { setGameStage } = useGameStage();
   const { setLocalGameStage } = useLocalGameStage();
 

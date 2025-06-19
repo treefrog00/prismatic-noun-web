@@ -111,7 +111,7 @@ const LaunchScreen = () => {
                 onClick={handlePlaySolo}
                 className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
               >
-                Single-player mode
+                Single-player
               </button>
               <button
                 onClick={handleHostGame}

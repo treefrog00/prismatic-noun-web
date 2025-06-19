@@ -2,6 +2,7 @@ import { useRef } from "react";
 import TextInput from "@/components/TextInput";
 import { RPC, myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 
 interface ChatInputProps {
   chatText: string;
@@ -12,11 +13,13 @@ interface ChatInputProps {
 
 const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
-
+  const { singlePlayerMode } = useLobbyContext();
   const hasSufficientChatText = (text: string) => {
     if (!text || text.length < 1) return false;
     return true;
   };
+
+  const thisPlayer = myPlayer(singlePlayerMode);
 
   const handleSendChat = () => {
     if (!hasSufficientChatText(chatText)) return;
@@ -24,8 +27,9 @@ const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps)
     if (chatType === "chat") {
       RPC.call(
         "rpc-chat",
-        { player: myPlayer().getProfile().name, text: chatText },
+        { player: thisPlayer.getProfile().name, text: chatText },
         RPC.Mode.ALL,
+        singlePlayerMode,
       );
     } else if (chatType === "rating") {
       // Rating logic can be added here

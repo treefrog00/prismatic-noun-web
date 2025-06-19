@@ -6,6 +6,8 @@ import {
   myPlayer,
 } from "../../core/multiplayerState";
 import { useVoteState } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
+
 interface VoteProps {
   onVoteComplete: (result: boolean) => void;
 }
@@ -14,12 +16,14 @@ const voteKey = (voteType: string) => `vote-${voteType}`;
 
 const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const [myVote, setMyVote] = useState<boolean | null>(null);
-  const players = usePlayersList(true);
-  const isHost = useIsHost();
+  const { singlePlayerMode } = useLobbyContext();
+  const players = usePlayersList(true, singlePlayerMode);
+  const isHost = useIsHost(singlePlayerMode);
   const { voteState, setShowVote } = useVoteState();
+  const thisPlayer = myPlayer(singlePlayerMode);
 
   useEffect(() => {
-    myPlayer().setState(voteKey(voteState.voteTitle), null);
+    thisPlayer.setState(voteKey(voteState.voteTitle), null);
     if (voteState.showVote) {
       setMyVote(null);
     }
@@ -51,7 +55,7 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const handleVote = (choice: boolean) => {
     setMyVote(choice);
     const key = voteKey(voteState.voteTitle);
-    myPlayer().setState(key, choice);
+    thisPlayer.setState(key, choice);
   };
 
   if (!voteState.showVote) return null;

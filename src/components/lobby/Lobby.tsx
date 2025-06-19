@@ -10,8 +10,6 @@ import { envConfig } from "@/envConfig";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
-import { AuthMode } from "@/types/auth";
-import { DiscordOptions } from "playroomkit";
 
 const DISCORD_SCOPES = ["identify", "applications.entitlements"];
 
@@ -22,19 +20,17 @@ const LobbyContent = () => {
   const { questSummary, setQuestSummary } = useLobbyContext();
   const { shouldAnimateStars } = useLobbyContext();
   const gameApi = new GameApi();
+  const { singlePlayerMode } = useLobbyContext();
 
   useEffect(() => {
     const initializeGame = async () => {
-      const discordOptions: DiscordOptions = {
-        //prompt: "some prompt",
-        //state: "some state",
-        scope: DISCORD_SCOPES,
-      };
       // skip lobby means skip their UI and use custom lobby instead
-      await insertCoin({
-        skipLobby: true,
-        gameId: envConfig.gameId,
-      });
+      if (!singlePlayerMode) {
+        await insertCoin({
+          skipLobby: true,
+          gameId: envConfig.gameId,
+        });
+      }
 
       // Fetch available quests
       const quests = await gameApi.getTyped(

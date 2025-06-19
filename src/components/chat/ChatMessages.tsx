@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { RPC } from "@/core/multiplayerState";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 import { useLocalGameStage } from "@/contexts/GameContext";
+import { useLobbyContext } from "@/contexts/LobbyContext";
 
 const ChatMessages = () => {
   const [chatMessages, setChatMessages] = useState<
@@ -9,6 +10,7 @@ const ChatMessages = () => {
   >([]);
   const MESSAGE_LIFETIME = 15000;
   const { localGameStage } = useLocalGameStage();
+  const { singlePlayerMode } = useLobbyContext();
 
   useEffect(() => {
     RPC.register("rpc-chat", (data: any, caller: any) => {
@@ -22,7 +24,7 @@ const ChatMessages = () => {
         return updated;
       });
       return Promise.resolve();
-    });
+    }, singlePlayerMode);
   }, []);
 
   useEffect(() => {

@@ -17,7 +17,6 @@ import {
   useIsHost as originalUseIsHost,
   usePlayerState as originalUsePlayerState,
 } from "playroomkit";
-import { HASH_QUEST_ID } from "../config";
 import { useState } from "react";
 import { useLocalPlayerPrompt, useLocalPlayers } from "../contexts/GameContext";
 
@@ -80,44 +79,50 @@ export class LocalPlayerState implements PlayerState {
 
 const localStateStore: Record<string, any> = {};
 
-export const myPlayer = () => {
-  if (HASH_QUEST_ID) {
+export const myPlayer = (singlePlayerMode: boolean) => {
+  if (singlePlayerMode) {
     const { localPlayers } = useLocalPlayers();
     return localPlayers[0];
   }
   return originalMyPlayer();
 };
 
-export const useIsHost = () => {
-  if (HASH_QUEST_ID) return true;
+export const useIsHost = (singlePlayerMode: boolean) => {
+  if (singlePlayerMode) return true;
   return originalUseIsHost();
 };
 
-export const onPlayerJoin = (callback: (player: PlayerState) => void) => {
-  if (HASH_QUEST_ID) return null;
+export const onPlayerJoin = (
+  callback: (player: PlayerState) => void,
+  singlePlayerMode: boolean,
+) => {
+  if (singlePlayerMode) return null;
   return originalOnPlayerJoin(callback);
 };
 
-export const usePlayersList = (triggerOnPlayerStateChange?: boolean) => {
-  if (HASH_QUEST_ID) {
+export const usePlayersList = (
+  triggerOnPlayerStateChange: boolean,
+  singlePlayerMode: boolean,
+) => {
+  if (singlePlayerMode) {
     const { localPlayers } = useLocalPlayers();
     return localPlayers;
   }
   return originalUsePlayersList(triggerOnPlayerStateChange);
 };
 
-export const openDiscordInviteDialog = () => {
-  if (HASH_QUEST_ID) return null;
+export const openDiscordInviteDialog = (singlePlayerMode: boolean) => {
+  if (singlePlayerMode) return null;
   return originalOpenDiscordInviteDialog();
 };
 
-export const getDiscordAccessToken = () => {
-  if (HASH_QUEST_ID) return null;
+export const getDiscordAccessToken = (singlePlayerMode: boolean) => {
+  if (singlePlayerMode) return null;
   return originalGetDiscordAccessToken();
 };
 
-export const insertCoin = (options?: InitOptions) => {
-  if (HASH_QUEST_ID) {
+export const insertCoin = (options: InitOptions, singlePlayerMode: boolean) => {
+  if (singlePlayerMode) {
     throw new Error("insertCoin is not supported in hash mode");
   }
   return originalInsertCoin(options);
@@ -142,8 +147,8 @@ const localRPCHandlers: Record<
 
 export const RPC = {
   ...originalRPC,
-  call: (name: string, data: any, mode: number) => {
-    if (HASH_QUEST_ID) {
+  call: (name: string, data: any, mode: number, singlePlayerMode: boolean) => {
+    if (singlePlayerMode) {
       const handler = localRPCHandlers[name];
 
       if (handler) {
@@ -164,8 +169,9 @@ export const RPC = {
   register: (
     name: string,
     handler: (data: any, caller: any) => Promise<void>,
+    singlePlayerMode: boolean,
   ) => {
-    if (HASH_QUEST_ID) {
+    if (singlePlayerMode) {
       // Store the handler locally
       localRPCHandlers[name] = handler;
       return null;
@@ -174,8 +180,12 @@ export const RPC = {
   },
 };
 
-export const useMultiplayerState = <T>(key: string, initialState: T) => {
-  if (HASH_QUEST_ID) return useState<T>(initialState);
+export const useMultiplayerState = <T>(
+  key: string,
+  initialState: T,
+  singlePlayerMode: boolean,
+) => {
+  if (singlePlayerMode) return useState<T>(initialState);
   return originalUseMultiplayerState<T>(key, initialState);
 };
 

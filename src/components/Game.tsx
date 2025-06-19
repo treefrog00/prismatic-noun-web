@@ -17,6 +17,7 @@ import {
   useGameApi,
   useLocalPlayers,
   useGameData,
+  GameProvider,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -32,10 +33,10 @@ import { rpcAppendEvents } from "@/util/rpcEvents";
 const GameContent = () => {
   // UI variables
   const storyRef = useRef<StoryRef>(null);
-
+  const { singlePlayerMode } = useLobbyContext();
   // built-in state from PlayroomKit
-  const isHost = useIsHost();
-  const players = usePlayersList();
+  const isHost = useIsHost(singlePlayerMode);
+  const players = usePlayersList(false, singlePlayerMode);
 
   // multiplayer state
   const { gameData, setGameData } = useGameData();

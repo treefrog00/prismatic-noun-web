@@ -1,3 +1,4 @@
+import { HASH_QUEST_ID } from "@/config";
 import { QuestSummary } from "@/types";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
@@ -6,6 +7,8 @@ interface LobbyContextType {
   setShouldAnimateStars: (show: boolean) => void;
   questSummary: QuestSummary | null;
   setQuestSummary: (value: QuestSummary | null) => void;
+  singlePlayerMode: boolean;
+  setSinglePlayerMode: (value: boolean) => void;
 }
 const LobbyContext = createContext<LobbyContextType | undefined>(undefined);
 
@@ -14,6 +17,9 @@ export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [shouldAnimateStars, setShouldAnimateStars] = useState(true);
   const [questSummary, setQuestSummary] = useState<QuestSummary | null>(null);
+  const [singlePlayerMode, setSinglePlayerMode] = useState(
+    HASH_QUEST_ID === null,
+  );
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateStars");
@@ -34,6 +40,8 @@ export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setShouldAnimateStars: handleSetShouldAnimateStars,
         questSummary,
         setQuestSummary,
+        singlePlayerMode,
+        setSinglePlayerMode,
       }}
     >
       {children}

@@ -12,9 +12,16 @@ import { useAuth } from "@/contexts/AuthContext";
 const LaunchScreen = () => {
   const { setLocalGameStage } = useLocalGameStage();
   const { initialPlay } = useStereo();
-  const { shouldAnimateStars } = useLobbyContext();
+  const { shouldAnimateStars, singlePlayerMode, setSinglePlayerMode } =
+    useLobbyContext();
   const { pnAccessToken } = useAuth();
   const [showRoomCodePopup, setShowRoomCodePopup] = useState(false);
+
+  const handlePlaySolo = () => {
+    initialPlay();
+    setSinglePlayerMode(true);
+    setLocalGameStage("lobby");
+  };
 
   const handleHostGame = () => {
     initialPlay();
@@ -99,6 +106,12 @@ const LaunchScreen = () => {
           ) : null}
           {pnAccessToken ? (
             <div className="flex flex-row gap-4 m-8">
+              <button
+                onClick={handlePlaySolo}
+                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+              >
+                Single-player mode
+              </button>
               <button
                 onClick={handleHostGame}
                 className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}

@@ -3,22 +3,14 @@ import Game from "../components/Game";
 import { HASH_QUEST_ID } from "../config";
 import ChatMessages from "../components/chat/ChatMessages";
 import { useEffect, useState } from "react";
-import { envConfig } from "../envConfig";
-import { useLocalGameStage } from "@/contexts/GameContext";
 import ChatInput from "@/components/chat/ChatInput";
+import { useGameStage } from "@/contexts/GameContext";
 
 const Play = () => {
-  const { localGameStage, setLocalGameStage } = useLocalGameStage();
+  const { gameStage } = useGameStage();
   const [showChatInput, setShowChatInput] = useState(false);
   const [chatType, setChatType] = useState<"chat" | "rating">("chat");
   const [chatText, setChatText] = useState("");
-
-  useEffect(() => {
-    // Start from lobby stage since launch screen is on a separate route
-    if (localGameStage === "launch-screen") {
-      setLocalGameStage("lobby");
-    }
-  }, [localGameStage, setLocalGameStage]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
@@ -60,8 +52,8 @@ const Play = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 px-0">
-      {localGameStage === "lobby" && !HASH_QUEST_ID && <Lobby />}
-      {(localGameStage === "game" || HASH_QUEST_ID) && <Game />}
+      {gameStage === "lobby" && !HASH_QUEST_ID && <Lobby />}
+      {(gameStage === "play" || HASH_QUEST_ID) && <Game />}
       <ChatMessages />
       {showChatInput && (
         <ChatInput

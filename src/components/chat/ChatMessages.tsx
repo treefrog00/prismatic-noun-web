@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { RPC } from "@/core/multiplayerState";
-import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
-import { useLocalGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 
 const ChatMessages = () => {
@@ -9,35 +7,37 @@ const ChatMessages = () => {
     { player: string; text: string; id: number }[]
   >([]);
   const MESSAGE_LIFETIME = 15000;
-  const { localGameStage } = useLocalGameStage();
   const { singlePlayerMode } = useLobbyContext();
 
   useEffect(() => {
-    RPC.register("rpc-chat", (data: any, caller: any) => {
-      const newMessage = {
-        player: data.player,
-        text: data.text,
-        id: Date.now(),
-      };
-      setChatMessages((prev) => {
-        const updated = [...prev, newMessage].slice(-8);
-        return updated;
-      });
-      return Promise.resolve();
-    }, singlePlayerMode);
-  }, []);
-
-  useEffect(() => {
-    if (localGameStage === "lobby" && !isAndroidOrIOS()) {
-      // Show initial "press t to chat" message
-      const initialMessage = {
-        player: null,
-        text: "press t to chat",
-        id: Date.now(),
-      };
-      setChatMessages([initialMessage]);
+    if (singlePlayerMode) {
+      return;
     }
-  }, [localGameStage]);
+
+    RPC.register(
+      "rpc-chat",
+      (data: any, caller: any) => {
+        const newMessage = {
+          player: data.player,
+          text: data.text,
+          id: Date.now(),
+        };
+        setChatMessages((prev) => {
+          const updated = [...prev, newMessage].slice(-8);
+          return updated;
+        });
+        return Promise.resolve();
+      },
+      singlePlayerMode,
+    );
+
+    const initialMessage = {
+      player: null,
+      text: "press t to chat",
+      id: Date.now(),
+    };
+    setChatMessages([initialMessage]);
+  }, []);
 
   // Clean up messages after MESSAGE_LIFETIME milliseconds
   useEffect(() => {

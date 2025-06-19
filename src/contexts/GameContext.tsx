@@ -26,13 +26,7 @@ export interface DiceRollState {
   locationRoll: DiceRoll;
 }
 
-export type LocalGameStage = "launch-screen" | "lobby" | "game";
-
-export type MultiplayerGameStage =
-  | "no-game"
-  | "scripted-scene"
-  | "player-action"
-  | "scene-end";
+export type GameStage = "lobby" | "play";
 
 type VoteState = {
   showVote: boolean;
@@ -64,14 +58,11 @@ type GameContextType = {
   localPlayerPrompt: string;
   setLocalPlayerPrompt: (value: string, reliable?: boolean) => void;
 
-  gameStage: MultiplayerGameStage;
-  setGameStage: (value: MultiplayerGameStage) => void;
+  gameStage: GameStage;
+  setGameStage: (value: GameStage) => void;
 
   voteState: VoteState;
   setVoteState: (value: VoteState) => void;
-
-  localGameStage: LocalGameStage;
-  setLocalGameStage: (value: LocalGameStage) => void;
 
   gameApi: GameApi;
 
@@ -120,9 +111,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     singlePlayerMode,
   );
 
-  const [gameStage, setGameStage] = useMultiplayerState<MultiplayerGameStage>(
+  const [gameStage, setGameStage] = useMultiplayerState<GameStage>(
     "gameStage",
-    "no-game",
+    "lobby",
     singlePlayerMode,
   );
   const [voteState, setVoteState] = useMultiplayerState<VoteState>(
@@ -163,10 +154,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   const [mainImage, setMainImage] = useState<string | null>(null);
 
-  // we need a local version of game stage to handle launch screen, probably because it
-  // is before playroomkit is initialized
-  const [localGameStage, setLocalGameStage] =
-    useState<LocalGameStage>("launch-screen");
   const [localPlayers, setLocalPlayers] = useState<PlayerState[]>([
     new LocalPlayerState("Player 1"),
   ]);
@@ -216,9 +203,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         characters,
         setCharacters,
-
-        localGameStage,
-        setLocalGameStage,
 
         localPlayers,
         setLocalPlayers,
@@ -283,14 +267,6 @@ export const useGameStage = () => {
   return {
     gameStage: context.gameStage,
     setGameStage: context.setGameStage,
-  };
-};
-
-export const useLocalGameStage = () => {
-  const context = useContext(GameContext);
-  return {
-    localGameStage: context.localGameStage,
-    setLocalGameStage: context.setLocalGameStage,
   };
 };
 

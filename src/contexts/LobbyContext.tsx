@@ -18,7 +18,7 @@ export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [shouldAnimateStars, setShouldAnimateStars] = useState(true);
   const [questSummary, setQuestSummary] = useState<QuestSummary | null>(null);
   const [singlePlayerMode, setSinglePlayerMode] = useState(
-    HASH_QUEST_ID === null,
+    HASH_QUEST_ID !== null,
   );
 
   useEffect(() => {

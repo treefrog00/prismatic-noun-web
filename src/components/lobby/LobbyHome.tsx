@@ -2,7 +2,7 @@ import { useIsHost, usePlayersList } from "@/core/multiplayerState";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
-import { useGameStage, useLocalGameStage } from "@/contexts/GameContext";
+import { useGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 import { useState } from "react";
@@ -20,11 +20,9 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
 
   const isHost = useIsHost(singlePlayerMode);
   const { setGameStage } = useGameStage();
-  const { setLocalGameStage } = useLocalGameStage();
 
   const handleStartAdventure = () => {
-    setLocalGameStage("game");
-    setGameStage("scripted-scene");
+    setGameStage("play");
   };
 
   const handleInvite = () => {

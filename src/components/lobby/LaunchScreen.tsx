@@ -3,14 +3,14 @@ import { useStereo } from "@/contexts/StereoContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
 import { useLobbyContext } from "@/contexts/LobbyContext";
-import { useLocalGameStage } from "@/contexts/GameContext";
 import AuthButtons from "../auth/AuthButtons";
 import RoomCodePopup from "../popups/RoomCodePopup";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const LaunchScreen = () => {
-  const { setLocalGameStage } = useLocalGameStage();
+  const navigate = useNavigate();
   const { initialPlay } = useStereo();
   const { shouldAnimateStars, singlePlayerMode, setSinglePlayerMode } =
     useLobbyContext();
@@ -20,12 +20,12 @@ const LaunchScreen = () => {
   const handlePlaySolo = () => {
     initialPlay();
     setSinglePlayerMode(true);
-    setLocalGameStage("lobby");
+    navigate("/play");
   };
 
   const handleHostGame = () => {
     initialPlay();
-    setLocalGameStage("lobby");
+    navigate("/play");
   };
   const handleJoinGame = () => {
     setShowRoomCodePopup(true);
@@ -33,6 +33,7 @@ const LaunchScreen = () => {
 
   const handleJoinRoom = (roomCode: string) => {
     setShowRoomCodePopup(false);
+    navigate("/play");
   };
 
   const handleCloseRoomCodePopup = () => {

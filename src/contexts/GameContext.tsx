@@ -40,7 +40,6 @@ type VoteState = {
 };
 
 type GameConfig = {
-  turnTimeLimit: number;
   shouldAnimateDice: boolean;
   shouldAnimateText: boolean;
 };
@@ -85,9 +84,6 @@ type GameContextType = {
   showContinueButton: boolean;
   setShowContinueButton: (value: boolean) => void;
 
-  timeRemaining: number;
-  setTimeRemaining: (value: number | ((prev: number) => number)) => void;
-
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
 
@@ -96,8 +92,6 @@ type GameContextType = {
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
-
-const DEFAULT_TURN_TIME_LIMIT = 90;
 
 interface GameProviderProps {
   children: ReactNode;
@@ -130,7 +124,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
     {
-      turnTimeLimit: DEFAULT_TURN_TIME_LIMIT,
       shouldAnimateDice: true,
       shouldAnimateText: true,
     },
@@ -165,7 +158,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     // 'reliable' is ignored
   };
   const [showPromptInput, setShowPromptInput] = useState(false);
-  const [timeRemaining, setTimeRemaining] = useState(0);
   const [showContinueButton, setShowContinueButton] = useState(false);
   //////////////////////////// end of React only state ////////////////////////////
 
@@ -222,9 +214,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         // Action handler state
         showPromptInput,
         setShowPromptInput,
-
-        timeRemaining,
-        setTimeRemaining,
 
         showContinueButton,
         setShowContinueButton,
@@ -359,14 +348,6 @@ export const useGameConfig = () => {
     gameConfig: context.gameConfig,
     setGameConfig: context.setGameConfig,
     handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
-  };
-};
-
-export const useTimeRemaining = () => {
-  const context = useContext(GameContext);
-  return {
-    timeRemaining: context.timeRemaining,
-    setTimeRemaining: context.setTimeRemaining,
   };
 };
 

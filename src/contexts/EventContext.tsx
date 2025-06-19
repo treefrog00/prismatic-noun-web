@@ -14,7 +14,6 @@ import {
 } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
-import { useTimeRemaining } from "./GameContext";
 import { useGameConfig } from "./GameContext";
 import { appendToStory } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
@@ -48,7 +47,6 @@ export const EventProvider = ({
   const { setCharacters } = useCharacters();
   const { setLocationState } = useLocationState();
   const { setLocationData } = useLocationData();
-  const { setTimeRemaining } = useTimeRemaining();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
   const { setShowPromptInput } = useShowPromptInput();
@@ -109,7 +107,6 @@ export const EventProvider = ({
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerActionsStart") {
-      setTimeRemaining(gameConfig.turnTimeLimit);
       setShowPromptInput(true);
     } else if (event.type === "PlayerActionsEnd") {
       // TODO

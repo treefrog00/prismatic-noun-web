@@ -1,7 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
 import {
-  useTimeRemaining,
   useShowPromptInput as useShowPromptInput,
   useCharacters,
   useShowContinueButton,
@@ -25,7 +24,6 @@ const StoryButtons: React.FC = () => {
   const [playerToCharacters, setPlayerToCharacters] = useState<
     Record<string, string[]>
   >({});
-  const { timeRemaining, setTimeRemaining } = useTimeRemaining();
   const { gameData } = useGameData();
   const { characters } = useCharacters();
   const gameApi = useGameApi();
@@ -41,17 +39,6 @@ const StoryButtons: React.FC = () => {
   const otherPrompts = usePlayersState("prompt");
 
   const myPlayerId = myPlayer().id;
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 0) return 0;
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     // Create a record mapping player ID to a list of character name strings
@@ -163,10 +150,6 @@ const StoryButtons: React.FC = () => {
                   >
                     Confirm
                   </button>
-                  <div className="text-gray-300 text-lg whitespace-nowrap mt-4">
-                    Time Remaining:{" "}
-                    <span className="text-2xl font-bold">{timeRemaining}s</span>
-                  </div>
                 </div>
               </div>
             </div>

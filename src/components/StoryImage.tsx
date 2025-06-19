@@ -173,9 +173,8 @@ const StoryImage: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear canvas
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    // Clear canvas to transparent
+    ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     const drawImage = (imageSrc: string | null, callback: () => void) => {
       if (!imageSrc) {

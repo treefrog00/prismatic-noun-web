@@ -114,7 +114,7 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={`mt-6 transition-all duration-300 ${showPromptInput ? "h-[28rem]" : "h-48"}`}
+        className={`mt-6 transition-all duration-300 ${showPromptInput ? "h-80" : "h-48"}`}
       >
         {showPromptInput && (
           <div className="flex flex-row gap-8 h-full">
@@ -122,7 +122,7 @@ const StoryButtons: React.FC = () => {
               style={{ width: "calc(100% - 32rem)" }}
               className="flex flex-col"
             >
-              <div className="flex-grow mb-4">
+              <div className="flex-grow mb-4 max-h-64">
                 <TextInput
                   text={myPrompt}
                   setText={(value: string) => {

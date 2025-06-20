@@ -13,6 +13,7 @@ import LocationOverlay from "./overlays/LocationOverlay";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 import { getStyles } from "@/styles/shared";
+import LogbookPopup from "./popups/LogbookPopup";
 
 // Track which overlay is currently open and provide a way to close others
 let activeOverlayId: string | null = null;
@@ -133,6 +134,7 @@ const TopBar = () => {
   const { locationData } = useLocationData();
   const { locationState } = useLocationState();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
   const { questSummary } = useLobbyContext();
@@ -250,6 +252,19 @@ const TopBar = () => {
           <div className="flex gap-4">
             <div
               className="w-16 h-16 cursor-pointer relative group"
+              onPointerDown={() => setIsLogbookOpen(true)}
+            >
+              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
+                Logbook
+              </div>
+              <img
+                src={artUrl("logbook.webp")}
+                alt="Logbook"
+                className="hover:scale-105 transition-transform"
+              />
+            </div>
+            <div
+              className="w-16 h-16 cursor-pointer relative group"
               onPointerDown={() => setIsSettingsOpen(true)}
             >
               <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
@@ -266,6 +281,9 @@ const TopBar = () => {
       </div>
       {isSettingsOpen && (
         <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
+      )}
+      {isLogbookOpen && (
+        <LogbookPopup isOpen={true} onClose={() => setIsLogbookOpen(false)} />
       )}
       {characterOverlay.state.isOpen && (
         <CharacterOverlay

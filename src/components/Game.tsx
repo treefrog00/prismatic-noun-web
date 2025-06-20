@@ -72,16 +72,12 @@ const GameContent = () => {
     );
 
     const unsubscribe = storyEvents.subscribe((text, isFirstParagraph) => {
-      if (storyRef.current) {
-        if (gameConfig.shouldAnimateText) {
-          if (isFirstParagraph) {
-            storyRef.current.updateText(text, true);
-          } else {
-            storyRef.current.appendFadeIn(text);
-          }
-        } else {
-          storyRef.current.appendNoAnimation(text);
-        }
+      if (!storyRef.current) return;
+
+      if (gameConfig.shouldAnimateText && isFirstParagraph) {
+        storyRef.current.updateText(text, true);
+      } else {
+        storyRef.current.appendFadeIn(text);
       }
     });
 

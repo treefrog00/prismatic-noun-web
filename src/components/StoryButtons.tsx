@@ -21,7 +21,6 @@ import { useLobbyContext } from "@/contexts/LobbyContext";
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [playerToCharacters, setPlayerToCharacters] = useState<
     Record<string, string[]>
   >({});
@@ -170,10 +169,6 @@ const StoryButtons: React.FC = () => {
           )}
         </div>
       </div>
-
-      {isSettingsOpen && (
-        <SettingsPopup isOpen={true} onClose={() => setIsSettingsOpen(false)} />
-      )}
     </>
   );
 };

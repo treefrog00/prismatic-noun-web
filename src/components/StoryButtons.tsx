@@ -17,6 +17,7 @@ import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
 import { useLobbyContext } from "@/contexts/LobbyContext";
+import OtherPrompts from "./OtherPrompts";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -113,13 +114,13 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={`p-4 mt-2 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
+        className={` mt-6 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
       >
         <div className="flex justify-between items-center self-center h-full">
           {showPromptInput && (
             <div className="w-full h-full">
               <div className="flex flex-row items-center gap-4 mb-2 h-full">
-                <div className="w-1/2 h-full">
+                <div className="w-full h-full">
                   <TextInput
                     text={myPrompt}
                     setText={(value: string) => {
@@ -130,29 +131,6 @@ const StoryButtons: React.FC = () => {
                     placeHolder={placeHolder}
                     showCharCount={true}
                   />
-                </div>
-                <div className="w-1/3 overflow-y-auto max-h-80">
-                  {otherPrompts
-                    .filter((prompt) => prompt.player.id !== myPlayerId)
-                    .map((prompt) => (
-                      <div
-                        key={prompt.player.id}
-                        className="text-gray-300 mb-2"
-                      >
-                        <div className="font-bold">
-                          {prompt.player.name || prompt.player.id}:
-                        </div>
-                        <div>{prompt.value}</div>
-                      </div>
-                    ))}
-                </div>
-                <div className="w-1/3 flex flex-col items-end justify-between">
-                  <button
-                    className={`game-button ${getColorClasses("teal")} whitespace-nowrap`}
-                    onPointerDown={() => handlePlayerAction(handleActOk)}
-                  >
-                    Confirm
-                  </button>
                 </div>
               </div>
             </div>
@@ -169,6 +147,7 @@ const StoryButtons: React.FC = () => {
           )}
         </div>
       </div>
+      <OtherPrompts otherPrompts={otherPrompts} myPlayerId={myPlayerId} />
     </>
   );
 };

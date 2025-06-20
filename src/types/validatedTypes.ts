@@ -135,20 +135,21 @@ export const PlayerLeftResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
-export const SubmitPromptsResponseSchema = z.object({
-  rejectionMessage: z.string().nullable(),
-});
-
-export const ActPartOneResponseSchema = z.object({
-  events: z.array(GameEventSchema),
-});
+export const SubmitPromptsResponseSchema = z.union([
+  z.object({
+    events: z.array(GameEventSchema),
+  }),
+  z.object({
+    rejectionMessage: z.string(),
+  }),
+]);
 
 export const ActPartTwoResponseSchema = z.union([
   z.object({
     events: z.array(GameEventSchema),
   }),
   z.object({
-    rejectionMessage: z.string(),
+    error: z.string(),
   }),
 ]);
 
@@ -165,7 +166,6 @@ export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
 export type SubmitPromptsResponse = z.infer<typeof SubmitPromptsResponseSchema>;
-export type ActPartOneResponse = z.infer<typeof ActPartOneResponseSchema>;
 export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;

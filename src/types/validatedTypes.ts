@@ -33,11 +33,6 @@ const AbilityDataSchema = z.object({
   description: z.string(),
 });
 
-const FeatureDataSchema = z.object({
-  name: z.string(),
-  description: z.string(),
-});
-
 const BaseCharacterSchema = z.object({
   name: z.string(),
   description: z.string(),
@@ -63,7 +58,6 @@ const NpcStateSchema = z.object({
 
 const LocationStateSchema = z.object({
   npcs: z.record(z.string(), NpcStateSchema),
-  features: z.array(FeatureDataSchema),
 });
 
 const GameDataSchema = z.object({

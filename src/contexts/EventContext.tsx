@@ -65,7 +65,7 @@ export const EventProvider = ({
     if (event.type === "Story") {
       appendToStory(event.text, isFirstParagraph);
       if (isFirstParagraph) {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 3200));
         isFirstParagraph = false;
       } else {
         await new Promise((resolve) => setTimeout(resolve, 500));

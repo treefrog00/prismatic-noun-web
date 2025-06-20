@@ -3,9 +3,13 @@ import { getStyles } from "../styles/shared";
 import { useGameConfig } from "@/contexts/GameContext";
 import { QuestSummary } from "@/types";
 
+// Constants
+const FADE_IN_DURATION = 1000; // Duration in milliseconds
+
 export interface StoryRef {
   updateText: (text: string, animateAll?: boolean) => void;
   appendNoAnimation: (text: string) => void;
+  appendFadeIn: (text: string) => void;
   clearStory: () => void;
 }
 
@@ -340,6 +344,60 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         top: textDisplay.scrollHeight,
         behavior: "smooth",
       });
+    },
+    appendFadeIn: (text: string) => {
+      if (!text || !textDisplayRef.current) return;
+
+      const textDisplay = textDisplayRef.current;
+      paragraphCount++;
+      const paragraphId = `paragraph-${paragraphCount}`;
+
+      // Create a new container for this paragraph
+      const textContainer = document.createElement("div");
+      textContainer.className = "text-container relative mb-2";
+      textContainer.id = paragraphId;
+      textDisplay.appendChild(textContainer);
+
+      // Add blank space at the bottom
+      const blankSpace = document.createElement("div");
+      blankSpace.style.height = "50px";
+      blankSpace.className = "blank-space";
+      textDisplay.appendChild(blankSpace);
+
+      // Remove any previous blank spaces
+      const blankSpaces = textDisplay.querySelectorAll(".blank-space");
+      if (blankSpaces.length > 1) {
+        for (let i = 0; i < blankSpaces.length - 1; i++) {
+          blankSpaces[i].remove();
+        }
+      }
+
+      // Create and append the paragraph with formatted text
+      const paragraph = document.createElement("p");
+
+      const textSpan = document.createElement("span");
+      const finalText = text
+        .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
+        .replace(/<\/hl>/g, "</span>");
+      textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
+
+      paragraph.appendChild(textSpan);
+      textContainer.appendChild(paragraph);
+
+      // Set initial opacity to 0 for fade-in effect
+      textContainer.style.opacity = "0";
+      textContainer.style.transition = `opacity ${FADE_IN_DURATION}ms ease-in`;
+
+      // Scroll to bottom
+      textDisplay.scrollTo({
+        top: textDisplay.scrollHeight,
+        behavior: "smooth",
+      });
+
+      // Trigger fade-in effect
+      setTimeout(() => {
+        textContainer.style.opacity = "1";
+      }, 10); // Small delay to ensure the transition is applied
     },
     clearStory: () => {
       if (!textDisplayRef.current) return;

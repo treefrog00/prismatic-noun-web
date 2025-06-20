@@ -1,4 +1,4 @@
-type StoryEventListener = (text: string) => void;
+type StoryEventListener = (text: string, isFirstParagraph: boolean) => void;
 type StoryClearListener = () => void;
 
 class StoryEventEmitter {
@@ -19,8 +19,8 @@ class StoryEventEmitter {
     };
   }
 
-  emit(text: string) {
-    this.listeners.forEach((listener) => listener(text));
+  emit(text: string, isFirstParagraph: boolean) {
+    this.listeners.forEach((listener) => listener(text, isFirstParagraph));
   }
 
   emitClear() {
@@ -30,8 +30,8 @@ class StoryEventEmitter {
 
 export const storyEvents = new StoryEventEmitter();
 
-export function appendToStory(text: string) {
-  storyEvents.emit(text);
+export function appendToStory(text: string, isFirstParagraph: boolean) {
+  storyEvents.emit(text, isFirstParagraph);
 }
 
 export function clearStory() {

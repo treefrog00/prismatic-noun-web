@@ -35,6 +35,8 @@ type EventContextType = {
 
 const EventContext = createContext<EventContextType | null>(null);
 
+let isFirstParagraph = true;
+
 export const EventProvider = ({
   children,
 }: {
@@ -61,8 +63,13 @@ export const EventProvider = ({
     }
 
     if (event.type === "Story") {
-      appendToStory(event.text);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      appendToStory(event.text, isFirstParagraph);
+      if (isFirstParagraph) {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        isFirstParagraph = false;
+      } else {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+      }
     } else if (event.type === "Image") {
       // the flushSync microtask is only needed for React 18+
       queueMicrotask(() => {
@@ -102,6 +109,7 @@ export const EventProvider = ({
       setLocationState(event.locationState);
     } else if (event.type === "ChangeLocation") {
       clearStory();
+      isFirstParagraph = true;
       setLocationState(event.locationState);
       setLocationData(event.locationData);
     } else if (event.type === "ChangePlaylist") {

@@ -69,10 +69,14 @@ const GameContent = () => {
       singlePlayerMode,
     );
 
-    const unsubscribe = storyEvents.subscribe((text) => {
+    const unsubscribe = storyEvents.subscribe((text, isFirstParagraph) => {
       if (storyRef.current) {
         if (gameConfig.shouldAnimateText) {
-          storyRef.current.updateText(text, true);
+          if (isFirstParagraph) {
+            storyRef.current.updateText(text, true);
+          } else {
+            storyRef.current.appendFadeIn(text);
+          }
         } else {
           storyRef.current.appendNoAnimation(text);
         }

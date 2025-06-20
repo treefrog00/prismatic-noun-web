@@ -114,38 +114,37 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={` mt-6 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
+        className={`mt-6 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
       >
-        <div className="flex justify-between items-center self-center h-full">
-          {showPromptInput && (
-            <div className="w-full h-full">
-              <div className="flex flex-row items-center gap-4 mb-2 h-full">
-                <div className="w-full h-full">
-                  <TextInput
-                    text={myPrompt}
-                    setText={(value: string) => {
-                      setMyPrompt(value, true);
-                    }}
-                    textInputRef={textInputRef}
-                    onClose={() => {}}
-                    placeHolder={placeHolder}
-                    showCharCount={true}
-                  />
-                </div>
-              </div>
+        {showPromptInput && (
+          <div className="flex flex-row gap-8 h-full">
+            <div className="flex-1 min-w-0">
+              <TextInput
+                text={myPrompt}
+                setText={(value: string) => {
+                  setMyPrompt(value, true);
+                }}
+                textInputRef={textInputRef}
+                onClose={() => {}}
+                placeHolder={placeHolder}
+                showCharCount={true}
+              />
             </div>
-          )}
-          {isPaused && isHost && (
-            <div className="text-gray-300 flex items-center gap-12">
-              <button
-                className={`game-button ${getColorClasses("teal")} mb-12`}
-                onPointerDown={() => handleContinue()}
-              >
-                Continue
-              </button>
+            <div className="w-128 min-w-0">
+              {/* This empty div matches the width of the StoryImage container */}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+        {isPaused && isHost && (
+          <div className="text-gray-300 flex items-center gap-12">
+            <button
+              className={`game-button ${getColorClasses("teal")} mb-12`}
+              onPointerDown={() => handleContinue()}
+            >
+              Continue
+            </button>
+          </div>
+        )}
       </div>
       <OtherPrompts otherPrompts={otherPrompts} myPlayerId={myPlayerId} />
     </>

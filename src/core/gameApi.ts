@@ -24,8 +24,10 @@ export class GameApi {
       const errorData = await response.json();
       if (errorData.expired) {
         console.log("Token expired");
-        throw new Error("Token expired");
       }
+      localStorage.removeItem("pn_access_token");
+      localStorage.removeItem("backend_url");
+      window.location.href = "/";
     }
     const responseBody = await response.json();
     throw new Error(

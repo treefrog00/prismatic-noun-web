@@ -85,12 +85,15 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const initialPlay = () => {
+    // set this even if the music is turned off, such that if
+    // it is later enabled it starts playing
+    setHasRunInitialPlay(true);
+
     if (
       audioElementRef.current &&
       localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true"
     ) {
       playNext(0);
-      setHasRunInitialPlay(true);
     }
   };
 

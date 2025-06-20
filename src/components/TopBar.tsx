@@ -254,7 +254,7 @@ const TopBar = () => {
               className="w-16 h-16 cursor-pointer relative group"
               onPointerDown={() => setIsLogbookOpen(true)}
             >
-              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
+              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
                 Logbook
               </div>
               <img
@@ -267,7 +267,7 @@ const TopBar = () => {
               className="w-16 h-16 cursor-pointer relative group"
               onPointerDown={() => setIsSettingsOpen(true)}
             >
-              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
+              <div className="absolute left-1/2 top-full transform -translate-x-1/2 text-gray-100 opacity-0 group-hover:opacity-100 transition-opacity text-lg">
                 Settings
               </div>
               <img

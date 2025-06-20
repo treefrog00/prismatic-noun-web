@@ -89,6 +89,9 @@ type GameContextType = {
 
   isPaused: boolean;
   setIsPaused: (value: boolean) => void;
+
+  logbook: string[];
+  addToLogbook: (text: string) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -164,6 +167,12 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   };
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+
+  // Logbook state
+  const [logbook, setLogbook] = useState<string[]>([]);
+  const addToLogbook = (text: string) => {
+    setLogbook((prevLogbook) => [...prevLogbook, text]);
+  };
   //////////////////////////// end of React only state ////////////////////////////
 
   useEffect(() => {
@@ -250,6 +259,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         isPaused,
         setIsPaused,
+
+        logbook,
+        addToLogbook,
       }}
     >
       {children}
@@ -386,8 +398,12 @@ export const useMainImage = () => {
 
 export const useIsPaused = () => {
   const context = useContext(GameContext);
-  return {
-    isPaused: context.isPaused,
-    setIsPaused: context.setIsPaused,
-  };
+  if (!context) throw new Error("useIsPaused must be used within GameProvider");
+  return { isPaused: context.isPaused, setIsPaused: context.setIsPaused };
+};
+
+export const useLogbook = () => {
+  const context = useContext(GameContext);
+  if (!context) throw new Error("useLogbook must be used within GameProvider");
+  return { logbook: context.logbook, addToLogbook: context.addToLogbook };
 };

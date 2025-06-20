@@ -9,6 +9,7 @@ import { GameEvent } from "@/types";
 import {
   useCharacters,
   useIsPaused,
+  useLogbook,
   useMainImage,
   useShowPromptInput,
 } from "./GameContext";
@@ -56,6 +57,7 @@ export const EventProvider = ({
   const { singlePlayerMode } = useLobbyContext();
   const isHost = useIsHost(singlePlayerMode);
   const { setIsPaused } = useIsPaused();
+  const { addToLogbook } = useLogbook();
 
   const processEvent = async (event: GameEvent) => {
     if (import.meta.env.DEV) {
@@ -64,6 +66,7 @@ export const EventProvider = ({
 
     if (event.type === "Story") {
       appendToStory(event.text, isFirstParagraph);
+      addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
       if (isFirstParagraph) {
         await new Promise((resolve) => setTimeout(resolve, 3200));
         isFirstParagraph = false;
@@ -112,6 +115,7 @@ export const EventProvider = ({
       isFirstParagraph = true;
       setLocationState(event.locationState);
       setLocationData(event.locationData);
+      addToLogbook(`### ${event.locationData.name}`);
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerActionsStart") {

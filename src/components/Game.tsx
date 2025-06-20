@@ -17,9 +17,9 @@ import {
   useGameApi,
   useLocalPlayers,
   useGameData,
-  GameProvider,
   useGameConfig,
   useShowPromptInput,
+  useLogbook,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";

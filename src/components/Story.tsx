@@ -17,6 +17,51 @@ interface StoryProps {
   questSummary: QuestSummary;
 }
 
+const addPerWordHighlights = (text: string) => {
+  // Split by spaces but keep the spaces, and also handle punctuation
+  // This regex splits by spaces and punctuation, keeping both in the result
+  const words = text.split(/(\s+|[.,!?;:])/);
+  let isYellow = false;
+  const processedWords: string[] = [];
+
+  for (const word of words) {
+    // Skip empty words that might result from the split
+    if (!word) continue;
+
+    let processedWord = word;
+
+    // Check for opening tag
+    if (word.includes("<hl>")) {
+      isYellow = true;
+
+      // Check for closing tag in the same word
+      if (word.includes("</hl>")) {
+        // This word has both opening and closing tags
+        isYellow = false;
+        processedWord = word;
+      } else {
+        // Word has opening tag but no closing tag
+        processedWord = word + "</hl>";
+      }
+    }
+    // Check for closing tag
+    else if (word.includes("</hl>")) {
+      // This word ends the highlight section
+      processedWord = "<hl>" + word;
+      isYellow = false;
+    }
+    // Not a tag but we're in highlight mode
+    else if (isYellow) {
+      // Continue the highlight section
+      processedWord = "<hl>" + word + "</hl>";
+    }
+
+    processedWords.push(processedWord);
+  }
+
+  return processedWords;
+};
+
 const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
@@ -119,7 +164,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       let currentX = 0;
 
       // Split the text into words
-      const words = text.split(/(\s+)/); // Split by spaces but keep the spaces
+      const words = addPerWordHighlights(text); // Split by spaces but keep the spaces
       let currentY = 0;
       let charIndex = 0;
       let longestAnimationTime = 0;

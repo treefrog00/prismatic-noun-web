@@ -64,11 +64,6 @@ export const myPlayer = () => {
   return localPlayers[0];
 };
 
-export const usePlayersList = (triggerOnPlayerStateChange: boolean) => {
-  const { localPlayers } = useLocalPlayers();
-  return localPlayers;
-};
-
 // Local RPC handler storage
 const localRPCHandlers: Record<
   string,

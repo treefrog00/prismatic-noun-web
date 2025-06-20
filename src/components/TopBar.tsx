@@ -1,4 +1,3 @@
-import { myPlayer, usePlayersList } from "../core/multiplayerState";
 import { useState, useRef, useCallback } from "react";
 import CharacterOverlay from "./overlays/CharacterOverlay";
 import {

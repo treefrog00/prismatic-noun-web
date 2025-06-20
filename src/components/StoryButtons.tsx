@@ -13,17 +13,13 @@ import {
 } from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
-import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
+import { usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const [playerToCharacters, setPlayerToCharacters] = useState<
-    Record<string, string[]>
-  >({});
   const { gameData } = useGameData();
-  const { characters } = useCharacters();
   const gameApi = useGameApi();
 
   const { showPromptInput, setShowPromptInput } = useShowPromptInput();
@@ -34,24 +30,7 @@ const StoryButtons: React.FC = () => {
     "",
   );
 
-  const myPlayerId = myPlayer().id;
-
   const { isPaused, setIsPaused } = useIsPaused();
-
-  useEffect(() => {
-    // Create a record mapping player ID to a list of character name strings
-    const playerToCharactersMap = Object.entries(characters).reduce<
-      Record<string, string[]>
-    >((acc, [characterId, characterState]) => {
-      const playerId = characterState.player;
-      if (!acc[playerId]) {
-        acc[playerId] = [];
-      }
-      acc[playerId].push(characterId);
-      return acc;
-    }, {});
-    setPlayerToCharacters(playerToCharactersMap);
-  }, [characters]);
 
   const handleActOk = async () => {
     await gameApi.postTyped(
@@ -60,9 +39,6 @@ const StoryButtons: React.FC = () => {
       SubmitPromptsResponseSchema,
     );
   };
-
-  // Get the characters controlled by the current player
-  const myCharacters = playerToCharacters[myPlayerId] || [];
 
   const formatCharacterList = (characters: string[]): string => {
     if (characters.length === 0) return "";
@@ -77,8 +53,8 @@ const StoryButtons: React.FC = () => {
   };
 
   const placeHolder =
-    myCharacters.length > 0
-      ? `${formatCharacterList(myCharacters)}: What's your plan for the next 60 seconds?`
+    Object.keys(gameData?.characters || {}).length > 0
+      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: What's your plan for the next 60 seconds?`
       : "error";
 
   useEffect(() => {

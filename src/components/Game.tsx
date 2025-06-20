@@ -1,11 +1,8 @@
 import { useEffect, useRef } from "react";
-import { usePlayersList, RPC } from "../core/multiplayerState";
+import { RPC } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
-import {
-  PlayerLeftResponseSchema,
-  QuestSummariesSchema,
-} from "../types/validatedTypes";
+import { QuestSummariesSchema } from "../types/validatedTypes";
 
 import {
   useGameApi,
@@ -13,7 +10,6 @@ import {
   useGameData,
   useGameConfig,
   useShowPromptInput,
-  useLogbook,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -29,8 +25,6 @@ import { rpcAppendEvents } from "@/util/rpcEvents";
 const GameContent = () => {
   // UI variables
   const storyRef = useRef<StoryRef>(null);
-  // built-in state from PlayroomKit
-  const players = usePlayersList(false);
 
   // multiplayer state
   const { gameData, setGameData } = useGameData();
@@ -85,12 +79,7 @@ const GameContent = () => {
           setQuestSummary(matchingSummary);
         }
 
-        let startGame = await startIfNotStarted(
-          gameApi,
-          players,
-          summary,
-          localPlayers,
-        );
+        let startGame = await startIfNotStarted(gameApi, summary);
         setGameData(startGame.gameData);
         rpcAppendEvents(startGame.events);
       };

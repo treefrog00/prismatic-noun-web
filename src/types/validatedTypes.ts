@@ -20,7 +20,6 @@ const QuestSummarySchema = z.object({
   title: z.string(),
   description: z.string(),
   imageUrl: z.string(),
-  maxPlayers: z.number(),
   theme: ThemeColorSchema,
 });
 
@@ -49,7 +48,6 @@ const NpcSchema = BaseCharacterSchema.extend({});
 export const CharacterStateSchema = z.object({
   inventory: z.array(z.string()),
   effects: z.array(z.string()),
-  player: z.string(),
 });
 
 const NpcStateSchema = z.object({
@@ -149,9 +147,14 @@ export const ActPartOneResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
-export const ActPartTwoResponseSchema = z.object({
-  events: z.array(GameEventSchema),
-});
+export const ActPartTwoResponseSchema = z.union([
+  z.object({
+    events: z.array(GameEventSchema),
+  }),
+  z.object({
+    rejectionMessage: z.string(),
+  }),
+]);
 
 export { GameEventSchema };
 

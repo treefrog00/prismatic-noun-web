@@ -1,41 +1,22 @@
-import { usePlayersList } from "@/core/multiplayerState";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
 import { useGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
-import { useState } from "react";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
 }
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
-  const players = usePlayersList(false);
   const { questSummary, setQuestSummary } = useLobbyContext();
-  const [showInvitePopup, setShowInvitePopup] = useState(false);
 
   const { setGameStage } = useGameStage();
 
   const handleStartAdventure = () => {
     setGameStage("play");
   };
-
-  const handleInvite = () => {
-    setShowInvitePopup(true);
-  };
-
-  const maxPlayersText = `(max ${questSummary?.maxPlayers} players)`;
-
-  const renderQuestDescription = () => (
-    <p className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}>
-      {questSummary.description}
-      <br />
-      <br />
-      {maxPlayersText}
-    </p>
-  );
 
   return (
     <>
@@ -66,7 +47,9 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 </option>
               ))}
             </select>
-            {renderQuestDescription()}
+            <p className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}>
+              {questSummary.description}
+            </p>
           </div>
         </div>
         {questSummary ? (
@@ -81,20 +64,6 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
           />
         )}
       </div>
-      <div className="w-full space-y-4">
-        <div className="flex gap-4">
-          {players.map((player) => (
-            <div
-              key={player.id}
-              className={`${responsiveStyles.sizes.playerAvatar} bg-gray-700 rounded-lg border border-gray-600 flex items-center justify-center`}
-            >
-              <span className={`text-gray-400 ${responsiveStyles.text.small}`}>
-                {player.getProfile().name}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
       <div className="flex gap-4">
         {questSummary && (
           <button
@@ -104,12 +73,6 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
             Start adventure!
           </button>
         )}
-        <button
-          className={`${responsiveStyles.button.base} ${responsiveStyles.button.secondary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-          onClick={handleInvite}
-        >
-          Invite
-        </button>
       </div>
     </>
   );

@@ -1,32 +1,15 @@
-import {
-  myPlayer as originalMyPlayer,
-  onPlayerJoin as originalOnPlayerJoin,
-  PlayerState,
-  usePlayersList as originalUsePlayersList,
-  usePlayersState as originalUsePlayersState,
-  RPC as originalRPC,
-  useMultiplayerState as originalUseMultiplayerState,
-  openDiscordInviteDialog as originalOpenDiscordInviteDialog,
-  getDiscordAccessToken as originalGetDiscordAccessToken,
-  insertCoin as originalInsertCoin,
-  Color,
-  setState as originalSetState,
-  getState as originalGetState,
-  getRoomCode as originalGetRoomCode,
-  InitOptions,
-  useIsHost as originalUseIsHost,
-  usePlayerState as originalUsePlayerState,
-} from "playroomkit";
 import { useState } from "react";
 import { useLocalPlayerPrompt, useLocalPlayers } from "../contexts/GameContext";
 
-export type { PlayerState };
-
-interface PlayerProfile {
+export interface PlayerProfile {
   name: string;
-  color: Color;
-  photo: string;
-  avatarIndex: number;
+}
+
+export interface PlayerState {
+  id: string;
+  getProfile(): PlayerProfile;
+  getState(key: string): any;
+  setState(key: string, value: any, reliable?: boolean): void;
 }
 
 export type SetStateFunction<T> = (value: T, reliable?: boolean) => void;
@@ -42,9 +25,6 @@ export class LocalPlayerState implements PlayerState {
     this.id = name;
     this.profile = {
       name,
-      color: { r: 255, g: 255, b: 255, hexString: "#ffffff", hex: 0xffffff },
-      photo: "",
-      avatarIndex: 0,
     };
     this.state = { name };
   }
@@ -79,50 +59,14 @@ export class LocalPlayerState implements PlayerState {
 
 const localStateStore: Record<string, any> = {};
 
-export const myPlayer = (singlePlayerMode: boolean) => {
-  if (singlePlayerMode) {
-    const { localPlayers } = useLocalPlayers();
-    return localPlayers[0];
-  }
-  return originalMyPlayer();
+export const myPlayer = () => {
+  const { localPlayers } = useLocalPlayers();
+  return localPlayers[0];
 };
 
-export const useIsHost = (singlePlayerMode: boolean) => {
-  if (singlePlayerMode) return true;
-  return originalUseIsHost();
-};
-
-export const onPlayerJoin = (
-  callback: (player: PlayerState) => void,
-  singlePlayerMode: boolean,
-) => {
-  if (singlePlayerMode) return null;
-  return originalOnPlayerJoin(callback);
-};
-
-export const usePlayersList = (
-  triggerOnPlayerStateChange: boolean,
-  singlePlayerMode: boolean,
-) => {
-  if (singlePlayerMode) {
-    const { localPlayers } = useLocalPlayers();
-    return localPlayers;
-  }
-  return originalUsePlayersList(triggerOnPlayerStateChange);
-};
-
-export const openDiscordInviteDialog = (singlePlayerMode: boolean) => {
-  if (singlePlayerMode) return null;
-  return originalOpenDiscordInviteDialog();
-};
-
-export const getDiscordAccessToken = (singlePlayerMode: boolean) => {
-  if (singlePlayerMode) return null;
-  return originalGetDiscordAccessToken();
-};
-
-export const insertCoin = (options: InitOptions) => {
-  return originalInsertCoin(options);
+export const usePlayersList = (triggerOnPlayerStateChange: boolean) => {
+  const { localPlayers } = useLocalPlayers();
+  return localPlayers;
 };
 
 // Local RPC handler storage
@@ -143,95 +87,62 @@ const localRPCHandlers: Record<
 // };
 
 export const RPC = {
-  ...originalRPC,
-  call: (name: string, data: any, mode: number, singlePlayerMode: boolean) => {
-    if (singlePlayerMode) {
-      const handler = localRPCHandlers[name];
+  call: (name: string, data: any) => {
+    const handler = localRPCHandlers[name];
 
-      if (handler) {
-        // const mockCaller = {
-        //   state: { name: rpcLocalPlayer.getState("name") },
-        //   id: rpcLocalPlayer.id,
-        // };
-        const mockCaller = {
-          state: { name: "local" },
-          id: "local",
-        };
-        handler(data, mockCaller);
-      }
-      return null;
+    if (handler) {
+      // const mockCaller = {
+      //   state: { name: rpcLocalPlayer.getState("name") },
+      //   id: rpcLocalPlayer.id,
+      // };
+      const mockCaller = {
+        state: { name: "local" },
+        id: "local",
+      };
+      handler(data, mockCaller);
     }
-    return originalRPC.call(name, data, mode);
+    return null;
   },
   register: (
     name: string,
     handler: (data: any, caller: any) => Promise<void>,
-    singlePlayerMode: boolean,
   ) => {
-    if (singlePlayerMode) {
-      // Store the handler locally
-      localRPCHandlers[name] = handler;
-      return null;
-    }
-    return originalRPC.register(name, handler);
+    localRPCHandlers[name] = handler;
+    return null;
   },
 };
 
-export const useMultiplayerState = <T>(
-  key: string,
-  initialState: T,
-  singlePlayerMode: boolean,
-) => {
-  if (singlePlayerMode) return useState<T>(initialState);
-  return originalUseMultiplayerState<T>(key, initialState);
+export const useMultiplayerState = <T>(key: string, initialState: T) => {
+  return useState<T>(initialState);
 };
 
 // TODO this won't trigger anything, though currently it's only for settings names and the
 // game phase, neither of which need updates in hash mode
-export const setState = (key: string, value: any, singlePlayerMode: boolean) => {
-  if (singlePlayerMode) {
-    localStateStore[key] = value;
-    return;
-  }
-  return originalSetState(key, value);
+export const setState = (key: string, value: any) => {
+  localStateStore[key] = value;
+  return;
 };
 
-export const getState = (key: string, singlePlayerMode: boolean) => {
-  if (singlePlayerMode) {
-    return localStateStore[key];
-  }
-  return originalGetState(key);
+export const getState = (key: string) => {
+  return localStateStore[key];
 };
 
-export const getRoomCode = (singlePlayerMode: boolean) => {
-  if (singlePlayerMode) return "room123";
-  return originalGetRoomCode();
-};
-
-export const usePlayersState = (key: string, singlePlayerMode: boolean): any[] => {
-  if (singlePlayerMode) {
-    const { localPlayers } = useLocalPlayers();
-    // this won't work as a hook with updates, but doesn't matter for now
-    // because it's only used for prompts from other players, and in local mode
-    // there are no other players
-    return localPlayers.map((player) => ({
-      player: player,
-      state: player.getState(key),
-    }));
-  }
-  return originalUsePlayersState(key);
+export const usePlayersState = (key: string): any[] => {
+  const { localPlayers } = useLocalPlayers();
+  // this won't work as a hook with updates, but doesn't matter for now
+  // because it's only used for prompts from other players, and in local mode
+  // there are no other players
+  return localPlayers.map((player) => ({
+    player: player,
+    state: player.getState(key),
+  }));
 };
 
 export const usePlayerStatePrompt = (
   player: PlayerState,
   key: string,
   defaultValue: string,
-  singlePlayerMode: boolean,
 ): MultiplayerStateHookResult<string> => {
-  if (singlePlayerMode) {
-    // this assumes the only thing this ever gets used for is the player prompts
-    const { localPlayerPrompt, setLocalPlayerPrompt } = useLocalPlayerPrompt();
-    return [localPlayerPrompt, setLocalPlayerPrompt];
-  }
-  return originalUsePlayerState(player, key, defaultValue);
+  const { localPlayerPrompt, setLocalPlayerPrompt } = useLocalPlayerPrompt();
+  return [localPlayerPrompt, setLocalPlayerPrompt];
 };

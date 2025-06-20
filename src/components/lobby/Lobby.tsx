@@ -2,16 +2,12 @@ import { useState, useEffect } from "react";
 import LobbyHome from "./LobbyHome";
 import LobbyNavBar from "./LobbyNavBar";
 import LobbyConfig from "./LobbyConfig";
-import { insertCoin } from "@/core/multiplayerState";
 import { QuestSummary } from "@/types";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import { starryTheme } from "@/styles/starryTheme";
-import { envConfig } from "@/envConfig";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
-
-const DISCORD_SCOPES = ["identify", "applications.entitlements"];
 
 const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
@@ -20,18 +16,9 @@ const LobbyContent = () => {
   const { questSummary, setQuestSummary } = useLobbyContext();
   const { shouldAnimateStars } = useLobbyContext();
   const gameApi = new GameApi();
-  const { singlePlayerMode } = useLobbyContext();
 
   useEffect(() => {
     const initializeGame = async () => {
-      // skip lobby means skip their UI and use custom lobby instead
-      if (!singlePlayerMode) {
-        await insertCoin({
-          skipLobby: true,
-          gameId: envConfig.gameId,
-        });
-      }
-
       // Fetch available quests
       const quests = await gameApi.getTyped(
         "/quest/summaries",

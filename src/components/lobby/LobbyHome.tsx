@@ -1,4 +1,4 @@
-import { useIsHost, usePlayersList } from "@/core/multiplayerState";
+import { usePlayersList } from "@/core/multiplayerState";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
@@ -6,19 +6,16 @@ import { useGameStage } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import artUrl from "@/util/artUrls";
 import { useState } from "react";
-import InvitePopup from "@/components/popups/InvitePopup";
 
 interface LobbyHomeProps {
   availableQuests: QuestSummary[];
 }
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
-  const { singlePlayerMode } = useLobbyContext();
-  const players = usePlayersList(false, singlePlayerMode);
+  const players = usePlayersList(false);
   const { questSummary, setQuestSummary } = useLobbyContext();
   const [showInvitePopup, setShowInvitePopup] = useState(false);
 
-  const isHost = useIsHost(singlePlayerMode);
   const { setGameStage } = useGameStage();
 
   const handleStartAdventure = () => {
@@ -53,36 +50,23 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
             Welcome, adventurers!
           </h2>
           <div className="mt-4">
-            {isHost ? (
-              <>
-                <select
-                  className={`w-full font-['Cinzel'] bg-gray-700 text-gray-200 border-2 border-indigo-500/50 ${responsiveStyles.padding.input} rounded cursor-pointer ${responsiveStyles.text.small} transition-all duration-300 hover:bg-gray-600 focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-sm`}
-                  value={questSummary.questId}
-                  onChange={(e) => {
-                    const quest = availableQuests.find(
-                      (q) => q.questId === e.target.value,
-                    );
-                    if (quest) setQuestSummary(quest);
-                  }}
-                >
-                  {availableQuests.map((quest) => (
-                    <option key={quest.questId} value={quest.questId}>
-                      {quest.title}
-                    </option>
-                  ))}
-                </select>
-                {renderQuestDescription()}
-              </>
-            ) : (
-              <>
-                <div
-                  className={`font-['Cinzel'] ${responsiveStyles.text.base} text-gray-200`}
-                >
-                  {questSummary.title}
-                </div>
-                {renderQuestDescription()}
-              </>
-            )}
+            <select
+              className={`w-full font-['Cinzel'] bg-gray-700 text-gray-200 border-2 border-indigo-500/50 ${responsiveStyles.padding.input} rounded cursor-pointer ${responsiveStyles.text.small} transition-all duration-300 hover:bg-gray-600 focus:ring-2 focus:ring-indigo-400/50 backdrop-blur-sm`}
+              value={questSummary.questId}
+              onChange={(e) => {
+                const quest = availableQuests.find(
+                  (q) => q.questId === e.target.value,
+                );
+                if (quest) setQuestSummary(quest);
+              }}
+            >
+              {availableQuests.map((quest) => (
+                <option key={quest.questId} value={quest.questId}>
+                  {quest.title}
+                </option>
+              ))}
+            </select>
+            {renderQuestDescription()}
           </div>
         </div>
         {questSummary ? (
@@ -112,7 +96,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         </div>
       </div>
       <div className="flex gap-4">
-        {questSummary && isHost && (
+        {questSummary && (
           <button
             className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
             onClick={handleStartAdventure}
@@ -127,10 +111,6 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
           Invite
         </button>
       </div>
-      <InvitePopup
-        isOpen={showInvitePopup}
-        onClose={() => setShowInvitePopup(false)}
-      />
     </>
   );
 };

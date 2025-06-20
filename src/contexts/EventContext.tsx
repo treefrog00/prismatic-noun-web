@@ -22,8 +22,6 @@ import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
-import { useIsHost } from "@/core/multiplayerState";
-import { useLobbyContext } from "./LobbyContext";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -54,8 +52,6 @@ export const EventProvider = ({
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
   const { setShowPromptInput } = useShowPromptInput();
-  const { singlePlayerMode } = useLobbyContext();
-  const isHost = useIsHost(singlePlayerMode);
   const { setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
 

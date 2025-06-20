@@ -101,25 +101,19 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
-  const lobbyContext = useLobbyContext();
-  const singlePlayerMode = lobbyContext.singlePlayerMode;
-
   //// Multiplayer state ////
   const [gameData, setGameData] = useMultiplayerState<GameData>(
     "gameData",
     null,
-    singlePlayerMode,
   );
   const [locationData, setLocationData] = useMultiplayerState<LocationData>(
     "locationData",
     null,
-    singlePlayerMode,
   );
 
   const [gameStage, setGameStage] = useMultiplayerState<GameStage>(
     "gameStage",
     "lobby",
-    singlePlayerMode,
   );
   const [voteState, setVoteState] = useMultiplayerState<VoteState>(
     "voteState",
@@ -128,7 +122,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       voteOptions: [],
       voteTitle: "",
     },
-    singlePlayerMode,
   );
 
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
@@ -138,7 +131,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) === "true",
       shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) === "true",
     },
-    singlePlayerMode,
   );
 
   //////////////////////////// end of multiplayer state ////////////////////////////

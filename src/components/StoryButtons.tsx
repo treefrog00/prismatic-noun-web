@@ -6,17 +6,15 @@ import {
   useIsPaused,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
-import SettingsPopup from "./popups/SettingsPopup";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import {
   ContinueResponseSchema,
   SubmitPromptsResponseSchema,
 } from "@/types/validatedTypes";
-import { myPlayer, useIsHost } from "@/core/multiplayerState";
+import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
-import { useLobbyContext } from "@/contexts/LobbyContext";
 import OtherPrompts from "./OtherPrompts";
 
 const StoryButtons: React.FC = () => {
@@ -30,19 +28,16 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptInput, setShowPromptInput } = useShowPromptInput();
-  const { singlePlayerMode } = useLobbyContext();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
-    myPlayer(singlePlayerMode),
+    myPlayer(),
     "prompt",
     "",
-    singlePlayerMode,
   );
-  const otherPrompts = usePlayersState("prompt", singlePlayerMode);
+  const otherPrompts = usePlayersState("prompt");
 
-  const myPlayerId = myPlayer(singlePlayerMode).id;
+  const myPlayerId = myPlayer().id;
 
-  const isHost = useIsHost(singlePlayerMode);
   const { isPaused, setIsPaused } = useIsPaused();
 
   useEffect(() => {
@@ -106,7 +101,7 @@ const StoryButtons: React.FC = () => {
         { prompt: myPrompt },
         ContinueResponseSchema,
       );
-      rpcAppendEvents(response.events, singlePlayerMode);
+      rpcAppendEvents(response.events);
       setIsPaused(false);
     }
   };
@@ -148,7 +143,7 @@ const StoryButtons: React.FC = () => {
             </div>
           </div>
         )}
-        {isPaused && isHost && (
+        {isPaused && (
           <div className="text-gray-300 flex items-center gap-12">
             <button
               className={`game-button ${getColorClasses("teal")} mb-12`}

@@ -1,11 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  useIsHost,
-  onPlayerJoin,
-  PlayerState,
-  usePlayersList,
-  RPC,
-} from "../core/multiplayerState";
+import { usePlayersList, RPC } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
 import {
@@ -35,10 +29,8 @@ import { rpcAppendEvents } from "@/util/rpcEvents";
 const GameContent = () => {
   // UI variables
   const storyRef = useRef<StoryRef>(null);
-  const { singlePlayerMode } = useLobbyContext();
   // built-in state from PlayroomKit
-  const isHost = useIsHost(singlePlayerMode);
-  const players = usePlayersList(false, singlePlayerMode);
+  const players = usePlayersList(false);
 
   // multiplayer state
   const { gameData, setGameData } = useGameData();
@@ -49,27 +41,10 @@ const GameContent = () => {
   const gameApi = useGameApi();
   const { showPromptInput } = useShowPromptInput();
 
-  const handlePlayerLeft = async (playerId: string) => {
-    if (!isHost) {
-      return;
-    }
-
-    let response = await gameApi.postTyped(
-      `/game/${gameData.gameId}/player_left/${playerId}`,
-      {},
-      PlayerLeftResponseSchema,
-    );
-    rpcAppendEvents(response.events, singlePlayerMode);
-  };
-
   useEffect(() => {
-    RPC.register(
-      "rpc-append-events",
-      async (data) => {
-        addEvents(data.events);
-      },
-      singlePlayerMode,
-    );
+    RPC.register("rpc-append-events", async (data) => {
+      addEvents(data.events);
+    });
 
     const unsubscribe = storyEvents.subscribe((text, isFirstParagraph) => {
       if (!storyRef.current) return;
@@ -87,22 +62,14 @@ const GameContent = () => {
       }
     });
 
-    onPlayerJoin((player: PlayerState) => {
-      const unsubscribe = player.onQuit(async (player: PlayerState) => {
-        await handlePlayerLeft(player.id);
-      });
-
-      return unsubscribe;
-    }, singlePlayerMode);
-
     return () => {
       unsubscribe();
       unsubscribeClear();
     };
   }, []);
 
-  useEffect(() => {
-    if (isHost) {
+  useEffect(
+    () => {
       const startGameAsync = async () => {
         let summary = questSummary;
 
@@ -123,15 +90,15 @@ const GameContent = () => {
           players,
           summary,
           localPlayers,
-          singlePlayerMode,
         );
         setGameData(startGame.gameData);
-        rpcAppendEvents(startGame.events, singlePlayerMode);
+        rpcAppendEvents(startGame.events);
       };
       startGameAsync();
-    }
+    },
     // technically this should be a dependency of questSummary, localPlayers, and setLocalPlayers, but don't want awkward issues in HASH_QUEST_ID mode
-  }, [isHost]);
+    [],
+  );
 
   if (!questSummary) {
     return <div>Loading...</div>;

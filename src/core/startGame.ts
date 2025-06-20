@@ -2,16 +2,11 @@ import {
   setState,
   getState,
   PlayerState,
-  getRoomCode,
   LocalPlayerState,
 } from "./multiplayerState";
 import { addLocalPlayer } from "../contexts/GameContext";
 import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
-import {
-  StartGameSchema,
-  QuestSummary,
-  QuestSummariesSchema,
-} from "../types/validatedTypes";
+import { StartGameSchema, QuestSummary } from "../types/validatedTypes";
 import { GameApi } from "./gameApi";
 
 const GAME_PHASE_KEY = "gamePhase";
@@ -21,12 +16,11 @@ export async function startIfNotStarted(
   startingPlayers: PlayerState[],
   questSummary: QuestSummary,
   localPlayers: PlayerState[],
-  singlePlayerMode: boolean,
 ) {
-  let phase = getState(GAME_PHASE_KEY, singlePlayerMode) as string;
+  let phase = getState(GAME_PHASE_KEY) as string;
   if (!phase) {
     phase = "playing";
-    setState(GAME_PHASE_KEY, phase, singlePlayerMode);
+    setState(GAME_PHASE_KEY, phase);
   }
 
   let questId = HASH_QUEST_ID || questSummary.questId;
@@ -52,7 +46,6 @@ export async function startIfNotStarted(
   let startGame = await gameApi.postTyped(
     `/game/start/${questId}`,
     {
-      roomCode: getRoomCode(singlePlayerMode),
       players: playerDetails,
       locationId: HASH_LOCATION_ID,
     },

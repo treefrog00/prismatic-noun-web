@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Popup from "./Popup";
-import {
-  usePlayersList,
-  useIsHost,
-  myPlayer,
-} from "../../core/multiplayerState";
+import { usePlayersList, myPlayer } from "../../core/multiplayerState";
 import { useVoteState } from "@/contexts/GameContext";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 
@@ -16,22 +12,18 @@ const voteKey = (voteType: string) => `vote-${voteType}`;
 
 const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
   const [myVote, setMyVote] = useState<boolean | null>(null);
-  const { singlePlayerMode } = useLobbyContext();
-  const players = usePlayersList(true, singlePlayerMode);
-  const isHost = useIsHost(singlePlayerMode);
+  const players = usePlayersList(true);
   const { voteState, setShowVote } = useVoteState();
-  const thisPlayer = myPlayer(singlePlayerMode);
+  const thisPlayer = myPlayer();
 
   useEffect(() => {
     thisPlayer.setState(voteKey(voteState.voteTitle), null);
     if (voteState.showVote) {
       setMyVote(null);
     }
-  }, [voteState.showVote, isHost]);
+  }, [voteState.showVote]);
 
   useEffect(() => {
-    if (!isHost) return;
-
     const playerCount = players.length;
     const votesArr = players.map((player) =>
       player.getState(voteKey(voteState.voteTitle)),
@@ -50,7 +42,7 @@ const VotePopup: React.FC<VoteProps> = ({ onVoteComplete }) => {
         player.setState(voteKey(voteState.voteTitle), null);
       }
     }
-  }, [isHost, players, onVoteComplete]);
+  }, [players, onVoteComplete]);
 
   const handleVote = (choice: boolean) => {
     setMyVote(choice);

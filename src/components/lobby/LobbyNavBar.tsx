@@ -1,8 +1,6 @@
 import type { FC } from "react";
-import { useIsHost } from "@/core/multiplayerState";
 import artUrl from "@/util/artUrls";
 import { responsiveStyles } from "@/styles/responsiveStyles";
-import { useLobbyContext } from "@/contexts/LobbyContext";
 
 interface NavBarProps {
   activeTab: string;
@@ -10,8 +8,6 @@ interface NavBarProps {
 }
 
 const LobbyNavBar: FC<NavBarProps> = (props) => {
-  const { singlePlayerMode } = useLobbyContext();
-  const isHost = useIsHost(singlePlayerMode);
   const tabs = ["lobby", "config"];
 
   return (

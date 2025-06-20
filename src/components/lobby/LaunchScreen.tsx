@@ -4,40 +4,18 @@ import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
 import { useLobbyContext } from "@/contexts/LobbyContext";
 import AuthButtons from "../auth/AuthButtons";
-import RoomCodePopup from "../popups/RoomCodePopup";
-import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 const LaunchScreen = () => {
   const navigate = useNavigate();
   const { initialPlay } = useStereo();
-  const { shouldAnimateStars, singlePlayerMode, setSinglePlayerMode } =
-    useLobbyContext();
+  const { shouldAnimateStars } = useLobbyContext();
   const { pnAccessToken } = useAuth();
-  const [showRoomCodePopup, setShowRoomCodePopup] = useState(false);
 
-  const handlePlaySolo = () => {
-    initialPlay();
-    setSinglePlayerMode(true);
-    navigate("/play");
-  };
-
-  const handleHostGame = () => {
+  const handleLaunch = () => {
     initialPlay();
     navigate("/play");
-  };
-  const handleJoinGame = () => {
-    setShowRoomCodePopup(true);
-  };
-
-  const handleJoinRoom = (roomCode: string) => {
-    setShowRoomCodePopup(false);
-    navigate("/play");
-  };
-
-  const handleCloseRoomCodePopup = () => {
-    setShowRoomCodePopup(false);
   };
 
   return (
@@ -108,32 +86,15 @@ const LaunchScreen = () => {
           {pnAccessToken ? (
             <div className="flex flex-row gap-4 m-8">
               <button
-                onClick={handlePlaySolo}
+                onClick={handleLaunch}
                 className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
               >
-                Single-player
-              </button>
-              <button
-                onClick={handleHostGame}
-                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-              >
-                Host game
-              </button>
-              <button
-                onClick={handleJoinGame}
-                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-              >
-                Join game
+                Launch
               </button>
             </div>
           ) : null}
         </div>
       </div>
-      <RoomCodePopup
-        isOpen={showRoomCodePopup}
-        onJoin={handleJoinRoom}
-        onClose={handleCloseRoomCodePopup}
-      />
     </div>
   );
 };

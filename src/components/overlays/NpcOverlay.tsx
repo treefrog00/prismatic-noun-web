@@ -55,13 +55,22 @@ const NpcOverlay = ({
       }}
     >
       <div className="space-y-2">
-        <div className="flex items-center gap-2 p-2 mb-4">
+        <div className="flex gap-2 p-2">
           <img
             src={artUrl(npcData.imageUrl)}
             alt={npcData.name}
             className={pageStyles.overlayImage}
           />
-          <span className="text-gray-300">{npcState.effects.join(", ")}</span>
+          <div className="mt-2">
+            <div className="font-bold">{npcData.name}</div>
+            <div>{npcData.description}</div>
+            <div>
+              <span className="italic font-bold">Effects:</span>{" "}
+              {npcState.effects.length > 0
+                ? npcState.effects.join(", ")
+                : "none"}
+            </div>
+          </div>
         </div>
       </div>
     </Overlay>

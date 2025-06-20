@@ -35,15 +35,15 @@ const LocationOverlay = ({
       onMouseLeave={onMouseLeave}
     >
       <div className="space-y-2">
-        <div className="flex items-center gap-2 p-2">
+        <div className="flex gap-2 p-2">
           <img
             src={artUrl(locationData.imageUrl)}
             alt={locationData.name}
             className={pageStyles.overlayImage}
           />
-          <div className="flex flex-col">
-            <span className="font-medium">{locationData.name}</span>
-            <span className="text-sm">{locationData.description}</span>
+          <div className="mt-2">
+            <div className="font-bold">{locationData.name}</div>
+            <div>{locationData.description}</div>
           </div>
         </div>
       </div>

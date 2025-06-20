@@ -77,7 +77,7 @@ export const EventProvider = ({
           setMainImage(event.imageUrl);
         });
       });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     } else if (event.type === "Pause") {
       setIsPaused(true);
     } else if (event.type === "DiceRollScreen") {

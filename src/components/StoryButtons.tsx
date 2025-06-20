@@ -113,12 +113,14 @@ const StoryButtons: React.FC = () => {
 
   return (
     <>
-      <div className="h-48 p-4 mt-2">
-        <div className="flex justify-between items-center self-center">
+      <div
+        className={`p-4 mt-2 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
+      >
+        <div className="flex justify-between items-center self-center h-full">
           {showPromptInput && (
-            <div className="w-full">
-              <div className="flex flex-row items-center gap-4 mb-2">
-                <div className="w-1/2">
+            <div className="w-full h-full">
+              <div className="flex flex-row items-center gap-4 mb-2 h-full">
+                <div className="w-1/2 h-full">
                   <TextInput
                     text={myPrompt}
                     setText={(value: string) => {
@@ -130,7 +132,7 @@ const StoryButtons: React.FC = () => {
                     showCharCount={true}
                   />
                 </div>
-                <div className="w-1/3 overflow-y-auto max-h-32">
+                <div className="w-1/3 overflow-y-auto max-h-80">
                   {otherPrompts
                     .filter((prompt) => prompt.player.id !== myPlayerId)
                     .map((prompt) => (

@@ -40,11 +40,10 @@ const TextInput: React.FC<TextInputProps> = ({
   }, [textInputRef]);
 
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <textarea
-        className="font-['Crimson_Text'] w-full p-2 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
+        className="font-['Crimson_Text'] w-full flex-grow p-2 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-amber-500 bg-gray-800 text-gray-300 placeholder-gray-500 shadow-lg shadow-black/50"
         id="textInput"
-        rows={4}
         placeholder={placeHolder}
         value={text}
         maxLength={PROMPT_LIMIT}

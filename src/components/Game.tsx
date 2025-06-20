@@ -19,6 +19,7 @@ import {
   useGameData,
   GameProvider,
   useGameConfig,
+  useShowPromptInput,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -46,6 +47,7 @@ const GameContent = () => {
   const { questSummary, setQuestSummary } = useLobbyContext();
   const { gameConfig } = useGameConfig();
   const gameApi = useGameApi();
+  const { showPromptInput } = useShowPromptInput();
 
   const handlePlayerLeft = async (playerId: string) => {
     if (!isHost) {
@@ -143,7 +145,9 @@ const GameContent = () => {
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
-        <div className="flex flex-row gap-8 flex-1 min-h-0">
+        <div
+          className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 ${showPromptInput ? "max-h-[calc(100%-24rem)]" : ""}`}
+        >
           <Story ref={storyRef} questSummary={questSummary} />
           <div className="w-128 min-w-0 flex flex-col h-full">
             <div className="flex-1" />

@@ -11,7 +11,12 @@ interface ChatInputProps {
   chatType: "chat" | "rating";
 }
 
-const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps) => {
+const ChatInput = ({
+  chatText,
+  setChatText,
+  onClose,
+  chatType,
+}: ChatInputProps) => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const { singlePlayerMode } = useLobbyContext();
   const hasSufficientChatText = (text: string) => {
@@ -50,21 +55,21 @@ const ChatInput = ({ chatText, setChatText, onClose, chatType }: ChatInputProps)
           setText={setChatText}
           textInputRef={textInputRef}
         />
-      </div>
-      <div className="flex gap-2">
-        <button
-          className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasSufficientChatText(chatText) ? "opacity-50" : ""}`}
-          onClick={handleSendChat}
-          disabled={!hasSufficientChatText(chatText)}
-        >
-          Send
-        </button>
-        <button
-          className="game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1"
-          onClick={onClose}
-        >
-          Close
-        </button>
+        <div className="flex gap-2 mt-2">
+          <button
+            className={`game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1 ${!hasSufficientChatText(chatText) ? "opacity-50" : ""}`}
+            onClick={handleSendChat}
+            disabled={!hasSufficientChatText(chatText)}
+          >
+            Send
+          </button>
+          <button
+            className="game-button bg-amber-700 border-amber-600 hover:bg-amber-600 hover:shadow-amber-900/50 focus:ring-amber-500 flex-1"
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -114,21 +114,34 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={`mt-6 transition-all duration-300 ${showPromptInput ? "h-96" : "h-48"}`}
+        className={`mt-6 transition-all duration-300 ${showPromptInput ? "h-[28rem]" : "h-48"}`}
       >
         {showPromptInput && (
           <div className="flex flex-row gap-8 h-full">
-            <div style={{ width: "calc(100% - 32rem)" }}>
-              <TextInput
-                text={myPrompt}
-                setText={(value: string) => {
-                  setMyPrompt(value, true);
-                }}
-                textInputRef={textInputRef}
-                onClose={() => {}}
-                placeHolder={placeHolder}
-                showCharCount={true}
-              />
+            <div
+              style={{ width: "calc(100% - 32rem)" }}
+              className="flex flex-col"
+            >
+              <div className="flex-grow mb-4">
+                <TextInput
+                  text={myPrompt}
+                  setText={(value: string) => {
+                    setMyPrompt(value, true);
+                  }}
+                  textInputRef={textInputRef}
+                  onClose={() => {}}
+                  placeHolder={placeHolder}
+                  showCharCount={true}
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3`}
+                  onPointerDown={() => handlePlayerAction(handleActOk)}
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
             <div style={{ width: "32rem", flexShrink: 0 }}>
               {/* Empty space that matches StoryImage width */}

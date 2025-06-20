@@ -1,20 +1,30 @@
-import { HASH_QUEST_ID } from "@/config";
+import { envConfig } from "@/envConfig";
 import { QuestSummary } from "@/types";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface LobbyContextType {
+interface AppContextType {
   shouldAnimateStars: boolean;
   setShouldAnimateStars: (show: boolean) => void;
   questSummary: QuestSummary | null;
   setQuestSummary: (value: QuestSummary | null) => void;
+  backendUrl: string | null;
+  setBackendUrl: (value: string | null) => void;
 }
-const LobbyContext = createContext<LobbyContextType | undefined>(undefined);
+const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
+const getBackendUrlFromStorage = (): string => {
+  const backendUrl = localStorage.getItem("backend_url");
+  return backendUrl || envConfig.backendUrl;
+};
+
+export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [shouldAnimateStars, setShouldAnimateStars] = useState(true);
   const [questSummary, setQuestSummary] = useState<QuestSummary | null>(null);
+  const [backendUrl, setBackendUrl] = useState<string>(
+    getBackendUrlFromStorage(),
+  );
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateStars");
@@ -29,20 +39,22 @@ export const LobbyContextProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <LobbyContext.Provider
+    <AppContext.Provider
       value={{
         shouldAnimateStars,
         setShouldAnimateStars: handleSetShouldAnimateStars,
         questSummary,
         setQuestSummary,
+        backendUrl,
+        setBackendUrl,
       }}
     >
       {children}
-    </LobbyContext.Provider>
+    </AppContext.Provider>
   );
 };
 
-export const useLobbyContext = () => {
-  const context = useContext(LobbyContext);
+export const useAppContext = () => {
+  const context = useContext(AppContext);
   return context;
 };

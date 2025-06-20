@@ -18,7 +18,7 @@ import {
   useState,
   useEffect,
 } from "react";
-import { useLobbyContext } from "./LobbyContext";
+import { useAppContext } from "./AppContext";
 
 // Animation config local storage keys
 export const ANIMATE_DICE_KEY = "shouldAnimateDice";
@@ -101,6 +101,7 @@ interface GameProviderProps {
 }
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
+  const { backendUrl } = useAppContext();
   //// Multiplayer state ////
   const [gameData, setGameData] = useMultiplayerState<GameData>(
     "gameData",
@@ -201,7 +202,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     localStorage.setItem(ANIMATE_IMAGES_KEY, show.toString());
   };
 
-  const gameApi = new GameApi();
+  const gameApi = new GameApi(backendUrl);
 
   return (
     <GameContext.Provider

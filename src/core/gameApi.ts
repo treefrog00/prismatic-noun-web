@@ -1,8 +1,13 @@
-import { BACKEND_URL } from "../config";
 import { z } from "zod/v4";
 import { getCurrentPnAccessToken } from "@/contexts/AuthContext";
 
 export class GameApi {
+  private backendUrl: string;
+
+  constructor(backendUrl: string) {
+    this.backendUrl = backendUrl;
+  }
+
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
     const response = await this._makeRequestWithTokenNoException(
       path,
@@ -56,7 +61,7 @@ export class GameApi {
     token: string,
     method: "GET" | "POST" = "POST",
   ) {
-    const response = await fetch(`${BACKEND_URL}${path}`, {
+    const response = await fetch(`${this.backendUrl}${path}`, {
       method,
       headers: {
         Authorization: token,

@@ -15,7 +15,7 @@ import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
 import StoryButtons from "./StoryButtons";
 import { storyEvents } from "@/core/storyEvents";
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
@@ -30,7 +30,7 @@ const GameContent = () => {
   const { gameData, setGameData } = useGameData();
   const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
-  const { questSummary, setQuestSummary } = useLobbyContext();
+  const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig } = useGameConfig();
   const gameApi = useGameApi();
   const { showPromptInput } = useShowPromptInput();

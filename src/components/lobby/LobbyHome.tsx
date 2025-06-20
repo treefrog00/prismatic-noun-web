@@ -2,7 +2,7 @@ import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
 import { useGameStage } from "@/contexts/GameContext";
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import artUrl from "@/util/artUrls";
 
 interface LobbyHomeProps {
@@ -10,7 +10,7 @@ interface LobbyHomeProps {
 }
 
 const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
-  const { questSummary, setQuestSummary } = useLobbyContext();
+  const { questSummary, setQuestSummary } = useAppContext();
 
   const { setGameStage } = useGameStage();
 

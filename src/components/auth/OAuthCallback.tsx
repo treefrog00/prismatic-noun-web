@@ -3,7 +3,6 @@ import {
   handleSuccessfulAuthProvider,
 } from "./OAuthButtonsAuth";
 import { useCallback, useEffect } from "react";
-import { setAccessTokenInStorage } from "@/contexts/AuthContext";
 
 interface OAuthCallbackProps {
   provider: "discord" | "google";
@@ -29,11 +28,7 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
     }
 
     if (code) {
-      await handleSuccessfulAuthProvider(
-        code,
-        provider,
-        setAccessTokenInStorage,
-      );
+      await handleSuccessfulAuthProvider(code, provider);
     }
   }, [provider]);
 

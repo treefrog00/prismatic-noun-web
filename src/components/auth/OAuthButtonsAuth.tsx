@@ -1,5 +1,8 @@
+import {
+  setAccessTokenInStorage,
+  setBackendUrlInStorage,
+} from "@/contexts/AuthContext";
 import { envConfig } from "@/envConfig";
-import { BACKEND_URL } from "@/config";
 import { ExchangeCodeResponseSchema } from "@/types/validatedTypes";
 
 const DISCORD_CLIENT_ID = envConfig.discordClientId;
@@ -27,17 +30,17 @@ const doAuthRedirect = (baseAuthUrl: string, isSilent: boolean) => {
   window.location.href = authUrl;
 };
 
-// Shared token exchange function
 export const exchangeCodeForToken = async (
   code: string,
   provider: "google" | "discord",
+  backendUrl: string,
 ) => {
   const endpoint =
     provider === "discord"
       ? "/auth/exchange_discord_code"
       : "/auth/exchange_google_code";
 
-  const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+  const response = await fetch(`${backendUrl}${endpoint}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -61,14 +64,18 @@ export const exchangeCodeForToken = async (
 export const handleSuccessfulAuthProvider = async (
   code: string,
   provider: "google" | "discord",
-  setPnAccessToken: (token: string | null) => void,
 ) => {
-  const result = await exchangeCodeForToken(code, provider);
+  const result = await exchangeCodeForToken(
+    code,
+    provider,
+    envConfig.backendUrl,
+  );
   const storedUrl = localStorage.getItem("auth_redirect_url");
   const redirectUrl = storedUrl || "/";
   localStorage.removeItem("auth_redirect_url");
 
-  setPnAccessToken(result.prismaticNounToken);
+  setAccessTokenInStorage(result.prismaticNounToken);
+  setBackendUrlInStorage(result.backendUrl);
   window.location.href = redirectUrl;
 };
 

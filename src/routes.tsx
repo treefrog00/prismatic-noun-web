@@ -7,7 +7,7 @@ import HomeLayout from "./layouts/HomeLayout";
 import OAuthCallback from "./components/auth/OAuthCallback";
 import { Suspense, type ReactNode } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { LobbyContextProvider } from "@/contexts/LobbyContext";
+import { AppContextProvider } from "@/contexts/AppContext";
 import { StereoProvider } from "@/contexts/StereoContext";
 import { ErrorProvider } from "@/contexts/ErrorContext";
 import { ToastProvider } from "@/contexts/ToastContext";
@@ -29,13 +29,13 @@ const RootProvider = ({ children }: { children: ReactNode }) => {
     >
       <ErrorProvider>
         <AuthProvider>
-          <LobbyContextProvider>
+          <AppContextProvider>
             <StereoProvider>
               <ToastProvider>
                 <Suspense fallback={""}>{children}</Suspense>
               </ToastProvider>
             </StereoProvider>
-          </LobbyContextProvider>
+          </AppContextProvider>
         </AuthProvider>
       </ErrorProvider>
     </main>
@@ -46,9 +46,7 @@ const RootProvider = ({ children }: { children: ReactNode }) => {
 const GameProvider_Wrapper = ({ children }: { children: ReactNode }) => {
   return (
     <GameProvider>
-      <EventProvider>
-        {children}
-      </EventProvider>
+      <EventProvider>{children}</EventProvider>
     </GameProvider>
   );
 };

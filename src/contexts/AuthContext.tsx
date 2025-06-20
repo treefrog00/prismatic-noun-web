@@ -30,6 +30,14 @@ export const setAccessTokenInStorage = (token: string | null) => {
   }
 };
 
+export const setBackendUrlInStorage = (url: string | null) => {
+  if (url) {
+    localStorage.setItem("backend_url", url);
+  } else {
+    localStorage.removeItem("backend_url");
+  }
+};
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
@@ -50,12 +58,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     currentPnAccessToken = token; // Initialize global accessor
     return token;
   });
-
-  // Update localStorage and global accessor whenever pnAccessToken changes
-  // this is currently never used, as only the oauth callback ever sets the token
-  useEffect(() => {
-    setAccessTokenInStorage(pnAccessToken);
-  }, [pnAccessToken]);
 
   const setPnAccessToken = (token: string | null) => {
     setPnAccessTokenState(token);

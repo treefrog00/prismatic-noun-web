@@ -1,10 +1,10 @@
 import React from "react";
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { useGameConfig } from "@/contexts/GameContext";
 import MusicToggle from "@/components/settings/MusicToggle";
 
 const LobbyConfig: React.FC = () => {
-  const { shouldAnimateStars, setShouldAnimateStars } = useLobbyContext();
+  const { shouldAnimateStars, setShouldAnimateStars } = useAppContext();
   const {
     gameConfig,
     handleSetShouldAnimateDice,

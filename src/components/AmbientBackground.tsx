@@ -1,4 +1,4 @@
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { themeColors } from "@/styles/shared";
 import React from "react";
 
@@ -11,7 +11,7 @@ const AmbientBackground: React.FC<AmbientBackgroundProps> = ({
   children,
   className = "",
 }) => {
-  const { questSummary } = useLobbyContext();
+  const { questSummary } = useAppContext();
   const theme = themeColors[questSummary.theme];
 
   return (

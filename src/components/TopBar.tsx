@@ -9,7 +9,7 @@ import {
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
 import LocationOverlay from "./overlays/LocationOverlay";
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import artUrl from "@/util/artUrls";
 import { getStyles } from "@/styles/shared";
 import LogbookPopup from "./popups/LogbookPopup";
@@ -136,7 +136,7 @@ const TopBar = () => {
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const { characters } = useCharacters();
-  const { questSummary } = useLobbyContext();
+  const { questSummary } = useAppContext();
   const { gameData } = useGameData();
 
   const characterOverlay = useOverlayState("character");

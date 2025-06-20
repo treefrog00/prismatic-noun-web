@@ -3,7 +3,7 @@ import LobbyHome from "./LobbyHome";
 import LobbyNavBar from "./LobbyNavBar";
 import LobbyConfig from "./LobbyConfig";
 import { QuestSummary } from "@/types";
-import { useLobbyContext } from "@/contexts/LobbyContext";
+import { useAppContext } from "@/contexts/AppContext";
 import { starryTheme } from "@/styles/starryTheme";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
@@ -13,9 +13,9 @@ const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
-  const { questSummary, setQuestSummary } = useLobbyContext();
-  const { shouldAnimateStars } = useLobbyContext();
-  const gameApi = new GameApi();
+  const { questSummary, setQuestSummary, shouldAnimateStars, backendUrl } =
+    useAppContext();
+  const gameApi = new GameApi(backendUrl);
 
   useEffect(() => {
     const initializeGame = async () => {

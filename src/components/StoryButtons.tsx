@@ -118,7 +118,7 @@ const StoryButtons: React.FC = () => {
       >
         {showPromptInput && (
           <div className="flex flex-row gap-8 h-full">
-            <div className="flex-1 min-w-0">
+            <div style={{ width: "calc(100% - 32rem)" }}>
               <TextInput
                 text={myPrompt}
                 setText={(value: string) => {
@@ -130,8 +130,8 @@ const StoryButtons: React.FC = () => {
                 showCharCount={true}
               />
             </div>
-            <div className="w-128 min-w-0">
-              {/* This empty div matches the width of the StoryImage container */}
+            <div style={{ width: "32rem", flexShrink: 0 }}>
+              {/* Empty space that matches StoryImage width */}
             </div>
           </div>
         )}

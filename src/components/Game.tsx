@@ -145,7 +145,7 @@ const GameContent = () => {
           className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 ${showPromptInput ? "max-h-[calc(100%-24rem)]" : ""}`}
         >
           <Story ref={storyRef} questSummary={questSummary} />
-          <div className="w-128 min-w-0 flex flex-col h-full">
+          <div className="w-128 flex flex-col h-full">
             <div className="flex-1" />
             <div className="flex justify-end">
               <StoryImage />

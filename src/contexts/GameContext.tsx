@@ -128,9 +128,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
     {
-      shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) === "true",
-      shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) === "true",
-      shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) === "true",
+      shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) !== "false",
+      shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) !== "false",
+      shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) !== "false",
     },
   );
 

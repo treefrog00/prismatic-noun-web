@@ -135,10 +135,6 @@ export const PlayerLeftResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
-export const ContinueResponseSchema = z.object({
-  events: z.array(GameEventSchema),
-});
-
 export const SubmitPromptsResponseSchema = z.object({
   rejectionMessage: z.string().nullable(),
 });

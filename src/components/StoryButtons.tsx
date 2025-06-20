@@ -2,15 +2,11 @@ import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
 import {
   useShowPromptInput as useShowPromptInput,
-  useCharacters,
   useIsPaused,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
-import {
-  ContinueResponseSchema,
-  SubmitPromptsResponseSchema,
-} from "@/types/validatedTypes";
+import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
@@ -69,15 +65,7 @@ const StoryButtons: React.FC = () => {
   };
 
   const handleContinue = async () => {
-    if (isPaused) {
-      const response = await gameApi.postTyped(
-        `/game/${gameData.gameId}/next_scene`,
-        { prompt: myPrompt },
-        ContinueResponseSchema,
-      );
-      rpcAppendEvents(response.events);
-      setIsPaused(false);
-    }
+    setIsPaused(false);
   };
 
   return (

@@ -24,10 +24,16 @@ export const useStereo = () => {
 };
 
 export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
+  if (!localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY)) {
+    localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
+  }
+
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [playlist, setPlaylist] = useState<string[]>(LOBBY_PLAYLIST);
-  const [isMusicEnabled, setMusicEnabled] = useState<boolean>(false);
+  const [isMusicEnabled, setMusicEnabled] = useState<boolean>(
+    localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true",
+  );
 
   // this is just to prevent auto playing when the playlist is set before the user has interacted with the page
   const [hasRunInitialPlay, setHasRunInitialPlay] = useState<boolean>(false);
@@ -83,7 +89,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       audioElementRef.current &&
       localStorage.getItem(MUSIC_ENABLED_STORAGE_KEY) === "true"
     ) {
-      turnOnMusic();
+      playNext(0);
       setHasRunInitialPlay(true);
     }
   };

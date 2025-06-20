@@ -52,7 +52,7 @@ export const EventProvider = ({
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
   const { setShowPromptInput } = useShowPromptInput();
-  const { setIsPaused } = useIsPaused();
+  const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
 
   const processEvent = async (event: GameEvent) => {
@@ -139,10 +139,10 @@ export const EventProvider = ({
   };
 
   useEffect(() => {
-    if (!isProcessing && eventQueue.length > 0) {
+    if (!isProcessing && eventQueue.length > 0 && !isPaused) {
       processNextEvent();
     }
-  }, [isProcessing, eventQueue.length]);
+  }, [isProcessing, eventQueue.length, isPaused]);
 
   const addEvents = (events: GameEvent[]) => {
     const newQueue = [...eventQueue, ...events];

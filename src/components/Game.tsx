@@ -72,7 +72,7 @@ const GameContent = () => {
     const unsubscribe = storyEvents.subscribe((text) => {
       if (storyRef.current) {
         if (gameConfig.shouldAnimateText) {
-          storyRef.current.updateText(text);
+          storyRef.current.updateText(text, true);
         } else {
           storyRef.current.appendNoAnimation(text);
         }

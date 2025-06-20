@@ -4,7 +4,7 @@ import { useGameConfig } from "@/contexts/GameContext";
 import { QuestSummary } from "@/types";
 
 export interface StoryRef {
-  updateText: (text: string) => void;
+  updateText: (text: string, animateAll?: boolean) => void;
   appendNoAnimation: (text: string) => void;
   clearStory: () => void;
 }
@@ -22,7 +22,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
-    updateText: (text: string) => {
+    updateText: (text: string, animateAll: boolean = false) => {
       if (!textDisplayRef.current) return;
 
       const textDisplay = textDisplayRef.current;
@@ -135,7 +135,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           isYellow = false;
         }
 
-        if (finishedFirstLine) {
+        if (finishedFirstLine && !animateAll) {
           return;
         }
         // Measure the word width
@@ -216,7 +216,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           // Update position for next character
           currentX += charWidth;
 
-          if (!finishedFirstLine) {
+          if (!finishedFirstLine || animateAll) {
             // Set initial position (from bottom of screen)
             charElement.style.left = finalX + "px";
             charElement.style.top =
@@ -253,10 +253,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
               }, 50);
             }, delay);
           } else {
-            // TODO maybe add this back? not sure how much it actually works though
-            // For text after newline, just set the final position immediately
-            // charElement.style.left = finalX + 'px';
-            // charElement.style.top = finalY + 'px';
+            // For text after newline when not animating all, just set the final position immediately
+            charElement.style.left = finalX + "px";
+            charElement.style.top = finalY + "px";
           }
 
           charIndex++;

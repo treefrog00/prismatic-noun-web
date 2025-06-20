@@ -7,7 +7,7 @@ interface TextInputProps {
   textInputRef: React.RefObject<HTMLTextAreaElement>;
   showCharCount: boolean;
   onClose: () => void;
-  onOk: () => void;
+  onOk?: () => void;
   placeHolder: string;
 }
 
@@ -51,12 +51,10 @@ const TextInput: React.FC<TextInputProps> = ({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            if (e.shiftKey) {
-              // Allow default behavior (newline) for Shift+Enter
-              return;
+            if (onOk) {
+              e.preventDefault();
+              onOk();
             }
-            e.preventDefault();
-            onOk();
           } else if (e.key === "Escape") {
             e.preventDefault();
             onClose();

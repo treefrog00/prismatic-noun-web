@@ -68,10 +68,6 @@ const StoryButtons: React.FC = () => {
     );
   };
 
-  const handleActEnterButton = () => {
-    handlePlayerAction(handleActOk);
-  };
-
   // Get the characters controlled by the current player
   const myCharacters = playerToCharacters[myPlayerId] || [];
 
@@ -130,7 +126,6 @@ const StoryButtons: React.FC = () => {
                     }}
                     textInputRef={textInputRef}
                     onClose={() => {}}
-                    onOk={handleActEnterButton}
                     placeHolder={placeHolder}
                     showCharCount={true}
                   />

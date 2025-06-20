@@ -15,7 +15,6 @@ import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayersState, usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
-import OtherPrompts from "./OtherPrompts";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -34,7 +33,6 @@ const StoryButtons: React.FC = () => {
     "prompt",
     "",
   );
-  const otherPrompts = usePlayersState("prompt");
 
   const myPlayerId = myPlayer().id;
 
@@ -154,7 +152,6 @@ const StoryButtons: React.FC = () => {
           </div>
         )}
       </div>
-      <OtherPrompts otherPrompts={otherPrompts} myPlayerId={myPlayerId} />
     </>
   );
 };

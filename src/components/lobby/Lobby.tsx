@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import LobbyHome from "./LobbyHome";
 import LobbyNavBar from "./LobbyNavBar";
-import LobbyConfig from "./LobbyConfig";
+import Settings from "../Settings";
 import { QuestSummary } from "@/types";
 import { useAppContext } from "@/contexts/AppContext";
 import { starryTheme } from "@/styles/starryTheme";
@@ -60,8 +60,8 @@ const LobbyContent = () => {
                 <div className="text-gray-400">Loading...</div>
               )}
               {
-                <div className={activeTab === "config" ? "block" : "hidden"}>
-                  <LobbyConfig />
+                <div className={activeTab === "settings" ? "block" : "hidden"}>
+                  <Settings />
                 </div>
               }
             </div>

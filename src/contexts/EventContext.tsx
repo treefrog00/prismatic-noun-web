@@ -67,7 +67,7 @@ export const EventProvider = ({
         await new Promise((resolve) => setTimeout(resolve, 3200));
         isFirstParagraph = false;
       } else if (gameConfig.shouldAnimateText) {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 300));
       }
     } else if (event.type === "Image") {
       // the flushSync microtask is only needed for React 18+

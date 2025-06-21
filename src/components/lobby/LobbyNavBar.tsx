@@ -8,7 +8,7 @@ interface NavBarProps {
 }
 
 const LobbyNavBar: FC<NavBarProps> = (props) => {
-  const tabs = ["lobby", "config"];
+  const tabs = ["lobby", "settings"];
 
   return (
     <nav className="w-full bg-gray-800/80 border-b border-gray-700 px-2 md:px-0">

@@ -172,7 +172,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       let isYellow = false;
 
       // Animation constants
-      const CHAR_DELAY = 8; // Base delay per character
+      const CHAR_DELAY = 4; // Base delay per character
       const SCROLL_DELAY = 300; // Fixed delay for scrolling after new lines
 
       // Process each word

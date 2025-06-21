@@ -28,7 +28,9 @@ const Overlay = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <div className={sharedStyles.text}>{children}</div>
+      <div className={sharedStyles.text} style={{ lineHeight: "20px" }}>
+        {children}
+      </div>
     </div>
   );
 };

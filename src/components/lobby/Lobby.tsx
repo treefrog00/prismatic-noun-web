@@ -64,7 +64,9 @@ const LobbyContent = () => {
                 <div className="text-gray-400">Loading...</div>
               )}
               {
-                <div className={activeTab === "settings" ? "block" : "hidden"}>
+                <div
+                  className={activeTab === "settings" ? "block p-10" : "hidden"}
+                >
                   <h2
                     style={{
                       ...starryTheme.lobbyHeading,

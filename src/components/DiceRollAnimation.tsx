@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 interface DiceRollProps {
   numDice: number;
@@ -11,7 +11,6 @@ export default function DiceRollAnimation({
   numDice,
   targetValues,
 }: DiceRollProps) {
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);
 
@@ -218,46 +217,12 @@ export default function DiceRollAnimation({
     }, 1100);
   };
 
-  // Function to play a random dice roll sound
-  const playDiceRollSound = (numDice = 2) => {
-    // Choose the sound based on number of dice
-    let soundFile;
-
-    if (numDice === 1) {
-      // Use the second audio file for a single die
-      // dice roll 1 sounds a bit too puny...
-      soundFile = "/ai_sound/dice_roll2.mp3";
-    } else {
-      // For 2 or more dice, use one of files 3 or 4
-      const soundNumber = Math.floor(Math.random() * 2) + 3;
-      soundFile = `/ai_sound/dice_roll${soundNumber}.mp3`;
-    }
-
-    // Create new audio element
-    const newAudio = new Audio(soundFile);
-
-    // Stop any currently playing sound
-    if (audio) {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-
-    // Set the new audio and play it
-    setAudio(newAudio);
-    newAudio.play().catch((error) => {
-      console.log("Error playing dice roll sound:", error);
-    });
-  };
-
   // Main function to roll multiple dice
   const rollDice = (
     numDiceToRoll = numDice,
     targetValues: number[] | null = null,
   ) => {
     if (!diceContainerRef.current) return;
-
-    // Play dice roll sound based on number of dice
-    playDiceRollSound(numDiceToRoll);
 
     const diceContainer = diceContainerRef.current;
 
@@ -346,14 +311,6 @@ export default function DiceRollAnimation({
   useEffect(() => {
     // Initialize the dice with the specified count
     rollDice(numDice, targetValues);
-
-    // Clean up audio on component unmount
-    return () => {
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-    };
   }, []);
 
   return (

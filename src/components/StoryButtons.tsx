@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
 import { useUiState, useIsPaused } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
@@ -33,6 +33,8 @@ const StoryButtons: React.FC = () => {
     );
 
     rpcAppendEvents(response.events);
+    setShowPromptInput(false);
+    setMyPrompt("");
   };
 
   const formatCharacterList = (characters: string[]): string => {
@@ -57,11 +59,6 @@ const StoryButtons: React.FC = () => {
       textInputRef.current.focus();
     }
   }, [showPromptInput]);
-
-  const handlePlayerAction = async (action: () => Promise<void>) => {
-    setShowPromptInput(false);
-    await action();
-  };
 
   const handleContinue = async () => {
     setIsPaused(false);
@@ -93,7 +90,7 @@ const StoryButtons: React.FC = () => {
               <div className="flex justify-end">
                 <button
                   className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3`}
-                  onPointerDown={() => handlePlayerAction(handleActOk)}
+                  onPointerDown={() => handleActOk()}
                 >
                   Confirm
                 </button>

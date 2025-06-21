@@ -61,7 +61,7 @@ const NpcOverlay = ({
             alt={npcData.name}
             className={pageStyles.overlayImage}
           />
-          <div className="mt-2">
+          <div className="mt-4">
             <div className="font-bold">{npcData.name}</div>
             <div>{npcData.description}</div>
             <div>

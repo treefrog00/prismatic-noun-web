@@ -25,6 +25,19 @@ const CharacterOverlay = ({
   const characterState = characters?.[characterName];
   const characterData = gameData?.characters?.[characterName];
 
+  const handleSpeechClick = () => {
+    const audioFileName = characterData.name.toLowerCase() + ".mp3";
+    const audioPath = `/ai_sound/${audioFileName}`;
+
+    const audio = new Audio(audioPath);
+    audio.play().catch((error) => {
+      console.warn(
+        `Could not play audio for character ${characterData.name}:`,
+        error,
+      );
+    });
+  };
+
   if (!characterState || !characterData) {
     return null;
   }
@@ -50,9 +63,21 @@ const CharacterOverlay = ({
             className={pageStyles.overlayImage}
           />
           <div className="mt-2">
-            <div className="font-bold">{characterData.name}</div>
+            <div className="font-bold flex items-end gap-4 mb-6">
+              {characterData.name}
+              <button
+                onClick={handleSpeechClick}
+                className="relative w-12 h-12 bg-gradient-to-b from-gray-600 to-gray-800 hover:from-gray-400 hover:to-gray-600 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-150 active:scale-95 active:shadow-md cursor-pointer"
+              >
+                <img
+                  src={artUrl("speech.webp")}
+                  alt="Speech icon"
+                  className="w-8 h-8 mx-auto filter brightness-110"
+                />
+              </button>
+            </div>
             <div>{characterData.description}</div>
-            <div>
+            <div className="mt-4">
               <span className="italic font-bold">Abilities:</span>
               {characterData.abilities.length > 0 ? (
                 <ul className="ml-4 mt-1 space-y-1">

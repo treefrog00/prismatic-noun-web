@@ -203,7 +203,7 @@ const TopBar = () => {
               <div className={`${sharedBoxStyles}`} />
             )}
 
-            <div className="w-px h-10 bg-gray-500 mx-2 self-center" />
+            <div className="w-2 mx-2" />
 
             {/* Characters list */}
             {characterList.map((character) => (
@@ -227,7 +227,7 @@ const TopBar = () => {
               </div>
             ))}
 
-            <div className="w-px h-10 bg-gray-600 mx-2 self-center" />
+            <div className="w-2 mx-2" />
 
             {/* NPCs list */}
             {npcList.map((npc) => (

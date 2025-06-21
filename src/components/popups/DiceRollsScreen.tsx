@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Popup from "@/components/popups/Popup";
 import { useDiceRoll, useGameData } from "@/contexts/GameContext";
 import DiceRollWithText from "@/components/DiceRollWithText";
@@ -12,6 +12,51 @@ const DiceRollsScreen: React.FC = () => {
   const { diceRollState, setDiceRollState } = useDiceRoll();
   const gameApi = useGameApi();
   const { gameData } = useGameData();
+
+  const [audio1, setAudio1] = useState<HTMLAudioElement | null>(null);
+  const [audio2, setAudio2] = useState<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    playDiceRollSounds(2);
+    return () => {
+      if (audio1) {
+        audio1.pause();
+        audio1.currentTime = 0;
+      }
+      if (audio2) {
+        audio2.pause();
+        audio2.currentTime = 0;
+      }
+    };
+  }, []);
+
+  const playDiceRollSounds = (numDice = 2) => {
+    const newAudio1 = new Audio(`/ai_sound/dice_roll3.mp3`);
+    const newAudio2 = new Audio(`/ai_sound/dice_roll4.mp3`);
+
+    // Stop any currently playing sound
+    if (audio1) {
+      audio1.pause();
+      audio1.currentTime = 0;
+    }
+
+    if (audio2) {
+      audio2.pause();
+      audio2.currentTime = 0;
+    }
+
+    // Set the new audio and play it
+    setAudio1(newAudio1);
+    newAudio1.play().catch((error) => {
+      console.log("Error playing dice roll sound:", error);
+    });
+
+    setAudio2(newAudio2);
+    newAudio2.play().catch((error) => {
+      console.log("Error playing dice roll sound:", error);
+    });
+  };
+
   const handleContinue = async () => {
     setDiceRollState({
       show: false,

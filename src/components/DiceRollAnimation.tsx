@@ -359,7 +359,7 @@ export default function DiceRollAnimation({
   return (
     <div className="mt-8 flex flex-col items-center">
       <div
-        className="font-['Cinzel'] dice-container relative w-[400px] h-[400px] flex justify-around items-center mb-8 rounded-lg overflow-hidden"
+        className="font-['Cinzel'] dice-container relative w-[400px] h-[400px] rounded-lg"
         ref={diceContainerRef}
       >
         {/* Dice will be created dynamically */}

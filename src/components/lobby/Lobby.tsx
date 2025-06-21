@@ -9,6 +9,7 @@ import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
 import { useUiState } from "@/contexts/GameContext";
+import { responsiveStyles } from "@/styles/responsiveStyles";
 
 const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
@@ -64,6 +65,15 @@ const LobbyContent = () => {
               )}
               {
                 <div className={activeTab === "settings" ? "block" : "hidden"}>
+                  <h2
+                    style={{
+                      ...starryTheme.lobbyHeading,
+                      marginBottom: "3rem",
+                      fontSize: responsiveStyles.text.heading,
+                    }}
+                  >
+                    Settings
+                  </h2>
                   <Settings />
                 </div>
               }

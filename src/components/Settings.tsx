@@ -28,7 +28,6 @@ const Settings: React.FC = () => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <h3 className="text-lg text-gray-300">Settings:</h3>
         <div className="flex flex-col space-y-3">
           <div className="flex items-center">
             <label className="text-gray-300 w-32">Music</label>

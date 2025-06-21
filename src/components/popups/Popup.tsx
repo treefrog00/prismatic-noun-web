@@ -8,7 +8,6 @@ interface PopupProps {
   children: React.ReactNode;
   maxWidth?: string;
   className?: string;
-  margin?: string;
 }
 
 const Popup: React.FC<PopupProps> = ({
@@ -17,12 +16,11 @@ const Popup: React.FC<PopupProps> = ({
   children,
   maxWidth = "max-w-md",
   className = "",
-  margin = "m-4",
 }) => {
   return createPortal(
     <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-30">
       <div
-        className={`bg-gray-800/90 rounded-lg shadow-xl p-8 ${maxWidth} w-full border border-gray-700 ${margin} ${className}`}
+        className={`bg-gray-800/90 rounded-lg shadow-xl p-8 ${maxWidth} w-full border border-gray-700 ${className}`}
       >
         <div className="flex justify-between items-center mb-6">
           {title && (

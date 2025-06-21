@@ -45,12 +45,12 @@ const DiceRollsScreen: React.FC = () => {
   };
 
   return (
-    <Popup onClose={null} maxWidth="max-w-8xl">
-      <div className="flex flex-col h-[600px]">
+    <Popup onClose={null} maxWidth="max-w-8xl" className="m-20">
+      <div className="flex flex-col">
         <div className="flex flex-1">
-          <div className="w-2/3 grid grid-cols-2 grid-rows-2 gap-4 p-4">
+          <div className="w-2/3 grid grid-cols-2 grid-rows-2 gap-6">
             {diceRollState.characterRolls.map((roll, index) => (
-              <div key={roll.label} className="relative">
+              <div key={roll.label} className="relative w-[400px] h-[400px]">
                 <DiceRollWithText diceRoll={roll} />
               </div>
             ))}
@@ -58,7 +58,7 @@ const DiceRollsScreen: React.FC = () => {
 
           <div className="w-1/2 flex items-center justify-center p-4">
             {diceRollState.locationRoll && (
-              <div className="relative w-full h-full">
+              <div className="relative w-[400px] h-[400px]">
                 <DiceRollWithText diceRoll={diceRollState.locationRoll} />
               </div>
             )}

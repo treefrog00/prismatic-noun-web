@@ -22,7 +22,9 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
       maxWidth="max-w-4xl"
       className="max-h-[80vh] overflow-auto"
     >
-      <Settings />
+      <div className="flex justify-center">
+        <Settings />
+      </div>
     </Popup>
   );
 };

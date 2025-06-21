@@ -40,6 +40,12 @@ export const starryTheme = {
     fontSize: "2.5rem",
     fontWeight: "bold",
   },
+  subHeading: {
+    color: "#ffffff",
+    textShadow: "0 0 15px rgba(255, 255, 255, 0.7)",
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+  },
   lobbyHeading: {
     color: "#ffffff",
     fontFamily: "Cinzel",

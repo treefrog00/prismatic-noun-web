@@ -1,4 +1,10 @@
-type StoryEventListener = (text: string, isFirstParagraph: boolean) => void;
+export enum StoryEventType {
+  FIRST_PARAGRAPH = "firstParagraph",
+  NORMAL = "normal",
+  ITALIC = "italic",
+}
+
+type StoryEventListener = (text: string, eventType: StoryEventType) => void;
 type StoryClearListener = () => void;
 
 class StoryEventEmitter {
@@ -19,8 +25,8 @@ class StoryEventEmitter {
     };
   }
 
-  emit(text: string, isFirstParagraph: boolean) {
-    this.listeners.forEach((listener) => listener(text, isFirstParagraph));
+  emit(text: string, eventType: StoryEventType) {
+    this.listeners.forEach((listener) => listener(text, eventType));
   }
 
   emitClear() {
@@ -30,8 +36,8 @@ class StoryEventEmitter {
 
 export const storyEvents = new StoryEventEmitter();
 
-export function appendToStory(text: string, isFirstParagraph: boolean) {
-  storyEvents.emit(text, isFirstParagraph);
+export function appendToStory(text: string, eventType: StoryEventType) {
+  storyEvents.emit(text, eventType);
 }
 
 export function clearStory() {

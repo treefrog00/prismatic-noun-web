@@ -104,10 +104,6 @@ const GameEventSchema = z.discriminatedUnion("type", [
   }),
 
   z.object({
-    type: z.literal("FetchLLMResponse"),
-  }),
-
-  z.object({
     type: z.literal("CharacterStateUpdate"),
     characterState: z.record(z.string(), CharacterStateSchema),
   }),

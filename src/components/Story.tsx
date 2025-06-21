@@ -9,7 +9,7 @@ const FADE_IN_DURATION = 1000; // Duration in milliseconds
 export interface StoryRef {
   updateText: (text: string, animateAll?: boolean) => void;
   appendNoAnimation: (text: string) => void;
-  appendFadeIn: (text: string) => void;
+  appendFadeIn: (text: string, italic?: boolean) => void;
   clearStory: () => void;
 }
 
@@ -390,7 +390,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         behavior: "smooth",
       });
     },
-    appendFadeIn: (text: string) => {
+    appendFadeIn: (text: string, italic: boolean = false) => {
       if (!text || !textDisplayRef.current) return;
 
       const textDisplay = textDisplayRef.current;
@@ -421,9 +421,15 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const paragraph = document.createElement("p");
 
       const textSpan = document.createElement("span");
-      const finalText = text
+      let finalText = text
         .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
         .replace(/<\/hl>/g, "</span>");
+
+      // If italic is true, wrap the entire text in highlight styling and make it italic
+      if (italic) {
+        finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
+      }
+
       textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
 
       paragraph.appendChild(textSpan);

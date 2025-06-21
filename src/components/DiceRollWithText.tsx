@@ -3,15 +3,17 @@ import DiceRollAnimation, {
   DICE_ANIMATION_DURATION,
 } from "./DiceRollAnimation";
 import { DiceRoll } from "@/types";
+import { starryTheme } from "@/styles/starryTheme";
 
-export const DICE_WRAPPER_ANIMATION_DURATION = DICE_ANIMATION_DURATION + 2000;
+export const DICE_WRAPPER_ANIMATION_DURATION = DICE_ANIMATION_DURATION - 300;
 
 const DiceRollWithText: React.FC<{ diceRoll: DiceRoll }> = ({ diceRoll }) => {
   return (
-    <div className="absolute top-0 left-0 w-full h-full z-10 flex items-center justify-center bg-gray-800/60 backdrop-blur-sm rounded-lg">
-      <div className="flex">
-        <DiceRollAnimation numDice={2} targetValues={diceRoll.targetValues} />
-      </div>
+    <div className="absolute top-0 left-0 w-full h-full border border-white/10 rounded-lg">
+      <h2 className="absolute top-4 left-4 z-20" style={starryTheme.subHeading}>
+        {diceRoll.label}
+      </h2>
+      <DiceRollAnimation numDice={2} targetValues={diceRoll.targetValues} />
     </div>
   );
 };

@@ -29,6 +29,7 @@ export interface DiceRollState {
   show: boolean;
   characterRolls: DiceRoll[];
   locationRoll: DiceRoll;
+  continueButton: boolean;
 }
 
 export type GameStage = "lobby" | "play";
@@ -132,6 +133,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     show: false,
     characterRolls: [],
     locationRoll: null,
+    continueButton: false,
   });
 
   const [mainImage, setMainImage] = useState<string | null>(null);

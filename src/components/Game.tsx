@@ -15,7 +15,7 @@ import {
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
 import StoryButtons from "./StoryButtons";
-import { storyEvents } from "@/core/storyEvents";
+import { storyEvents, StoryEventType } from "@/core/storyEvents";
 import { useAppContext } from "@/contexts/AppContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
@@ -44,11 +44,16 @@ const GameContent = () => {
       addEvents(data.events);
     });
 
-    const unsubscribe = storyEvents.subscribe((text, isFirstParagraph) => {
+    const unsubscribe = storyEvents.subscribe((text, eventType) => {
       if (!storyRef.current) return;
 
-      if (gameConfig.shouldAnimateText && isFirstParagraph) {
+      if (
+        gameConfig.shouldAnimateText &&
+        eventType === StoryEventType.FIRST_PARAGRAPH
+      ) {
         storyRef.current.updateText(text, true);
+      } else if (eventType === StoryEventType.ITALIC) {
+        storyRef.current.appendFadeIn(text, true);
       } else {
         storyRef.current.appendFadeIn(text);
       }

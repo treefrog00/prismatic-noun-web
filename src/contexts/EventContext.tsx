@@ -16,7 +16,7 @@ import {
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useGameConfig } from "./GameContext";
-import { appendToStory, clearStory } from "@/core/storyEvents";
+import { appendToStory, clearStory, StoryEventType } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
@@ -60,8 +60,15 @@ export const EventProvider = ({
       //console.log("Processing", event.type, "event", event);
     }
     if (event.type === "Story") {
-      appendToStory(event.text, isFirstParagraph);
+      appendToStory(
+        event.text,
+        isFirstParagraph
+          ? StoryEventType.FIRST_PARAGRAPH
+          : StoryEventType.NORMAL,
+      );
+
       addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
+
       if (isFirstParagraph && gameConfig.shouldAnimateText) {
         await new Promise((resolve) => setTimeout(resolve, 1800));
         isFirstParagraph = false;
@@ -90,6 +97,7 @@ export const EventProvider = ({
             show: true,
             characterRolls: event.characterRolls,
             locationRoll: event.locationRoll,
+            continueButton: false,
           });
         });
       });
@@ -99,13 +107,12 @@ export const EventProvider = ({
       );
 
       setDiceRollState({
-        show: false,
-        characterRolls: {},
-        locationRoll: null,
+        show: true,
+        characterRolls: event.characterRolls,
+        locationRoll: event.locationRoll,
+        continueButton: true,
       });
     } else if (event.type === "RejectPromptResponse") {
-      // TODO
-    } else if (event.type === "FetchLLMResponse") {
       // TODO
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);

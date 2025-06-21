@@ -38,18 +38,18 @@ const LaunchScreen = () => {
           />
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
-              <div className={`text-center text-gray-200 text-lg`}>
-                <p className="mb-4">
-                  A collection of spooky stories, reminiscent of retro computer
-                  game cut-scenes. Every now and then an AI intervenes and asks
-                  how you think things should play out next. It's kind of a
-                  game, and kind of a technology experiment.
+              <div className={`text-center text-gray-200 text-lg space-y-4`}>
+                <p>
+                  A collection of weird and spooky stories. Every now and then
+                  an AI intervenes and asks how you think things should play out
+                  next. It's kind of a game, kind of a visual novel, kind of a
+                  technology experiment.
                 </p>
-                <p className="mb-4">
+                <p>
                   You can play in a web browser on Windows/Mac/Linux. Mobile
                   devices are not supported.
                 </p>
-                <p className="mb-4">
+                <p>
                   The game is currently in alpha and may have many bugs and
                   issues.
                 </p>
@@ -58,10 +58,15 @@ const LaunchScreen = () => {
                   iterating, curating, merging, and refining a large number of
                   game ideas/images/tunes/story ideas over the course of 6
                   months full-time work, with extensive help from AI. This was
-                  followed by several more months testing and refinement. As
-                  such, despite the many issues around copyright regarding the
-                  use of AI generated content, I would hope that the game is at
-                  least somewhat interesting, and not just lazy generated noise.
+                  followed by several more months testing and refinement.
+                </p>
+                <p>
+                  As such, despite the many issues around AI - copyrighted
+                  training content, the tendency to output a mediocre average of
+                  its training data, the tendency to conform to extreme
+                  stereotyping - I would hope that the story is at least
+                  somewhat interesting, and not just lazily generated
+                  stereotypical noise.
                 </p>
               </div>
             </div>

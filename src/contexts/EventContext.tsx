@@ -11,7 +11,7 @@ import {
   useIsPaused,
   useLogbook,
   useMainImage,
-  useShowPromptInput,
+  useUiState,
 } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
@@ -51,7 +51,7 @@ export const EventProvider = ({
   const { setLocationData } = useLocationData();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
-  const { setShowPromptInput } = useShowPromptInput();
+  const { setShowPromptInput } = useUiState();
   const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
 

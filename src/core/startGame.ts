@@ -1,5 +1,5 @@
 import { setState, getState } from "./multiplayerState";
-import { HASH_LOCATION_ID, HASH_NUM_PLAYERS, HASH_QUEST_ID } from "../config";
+import { HASH_LOCATION_ID, HASH_SCENE_ID, HASH_QUEST_ID } from "../config";
 import { StartGameSchema, QuestSummary } from "../types/validatedTypes";
 import { GameApi } from "./gameApi";
 
@@ -21,6 +21,7 @@ export async function startIfNotStarted(
     `/game/start/${questId}`,
     {
       locationId: HASH_LOCATION_ID,
+      sceneId: HASH_SCENE_ID,
     },
     StartGameSchema,
   );

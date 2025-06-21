@@ -92,6 +92,9 @@ type GameContextType = {
 
   logbook: string[];
   addToLogbook: (text: string) => void;
+
+  showTopBar: boolean;
+  setShowTopBar: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -160,6 +163,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   };
   const [showPromptInput, setShowPromptInput] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [showTopBar, setShowTopBar] = useState(false);
 
   // Logbook state
   const [logbook, setLogbook] = useState<string[]>([]);
@@ -255,6 +259,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         logbook,
         addToLogbook,
+
+        showTopBar,
+        setShowTopBar,
       }}
     >
       {children}
@@ -341,11 +348,13 @@ export const useGameApi = () => {
   return context.gameApi;
 };
 
-export const useShowPromptInput = () => {
+export const useUiState = () => {
   const context = useContext(GameContext);
   return {
     showPromptInput: context.showPromptInput,
     setShowPromptInput: context.setShowPromptInput,
+    showTopBar: context.showTopBar,
+    setShowTopBar: context.setShowTopBar,
   };
 };
 

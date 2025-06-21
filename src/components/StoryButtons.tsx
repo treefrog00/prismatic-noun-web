@@ -1,9 +1,6 @@
 import { useRef, useState, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import {
-  useShowPromptInput as useShowPromptInput,
-  useIsPaused,
-} from "@/contexts/GameContext";
+import { useUiState, useIsPaused } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
@@ -18,7 +15,7 @@ const StoryButtons: React.FC = () => {
   const { gameData } = useGameData();
   const gameApi = useGameApi();
 
-  const { showPromptInput, setShowPromptInput } = useShowPromptInput();
+  const { showPromptInput, setShowPromptInput } = useUiState();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),

@@ -9,8 +9,8 @@ export const HASH_QUEST_ID = hashParams.get("questid");
 
 export const HASH_LOCATION_ID = hashParams.get("locationid");
 
-export const HASH_NUM_PLAYERS = hashParams.get("numplayers");
+export const HASH_SCENE_ID = hashParams.get("sceneid");
 
 export const USE_SENTRY = import.meta.env.PROD || envConfig.backendUrl;
 
-export const PROMPT_LIMIT = 800;
+export const PROMPT_LIMIT = 400;

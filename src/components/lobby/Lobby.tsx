@@ -8,6 +8,7 @@ import { starryTheme } from "@/styles/starryTheme";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
+import { useUiState } from "@/contexts/GameContext";
 
 const LobbyContent = () => {
   const [activeTab, setActiveTab] = useState("lobby");
@@ -16,6 +17,7 @@ const LobbyContent = () => {
   const { questSummary, setQuestSummary, shouldAnimateStars, backendUrl } =
     useAppContext();
   const gameApi = new GameApi(backendUrl);
+  const { setShowTopBar } = useUiState();
 
   useEffect(() => {
     const initializeGame = async () => {
@@ -28,6 +30,7 @@ const LobbyContent = () => {
 
       setIsCoinInserted(true);
       setQuestSummary(quests.quests[0]);
+      setShowTopBar(false);
     };
 
     initializeGame();

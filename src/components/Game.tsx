@@ -9,7 +9,7 @@ import {
   useLocalPlayers,
   useGameData,
   useGameConfig,
-  useShowPromptInput,
+  useUiState,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -33,7 +33,9 @@ const GameContent = () => {
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig } = useGameConfig();
   const gameApi = useGameApi();
-  const { showPromptInput } = useShowPromptInput();
+  const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
+
+  useEffect(() => {}, [showTopBar]);
 
   useEffect(() => {
     RPC.register("rpc-append-events", async (data) => {
@@ -81,6 +83,7 @@ const GameContent = () => {
 
         let startGame = await startIfNotStarted(gameApi, summary);
         setGameData(startGame.gameData);
+        setShowTopBar(true);
         rpcAppendEvents(startGame.events);
       };
       startGameAsync();
@@ -96,11 +99,12 @@ const GameContent = () => {
   return (
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
-        <TopBar />
+        {showTopBar && <TopBar />}
         <div
           className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 mt-2 ${showPromptInput ? "max-h-[calc(100%-24rem)]" : ""}`}
         >
-          <Story ref={storyRef} questSummary={questSummary} />
+          {/* TODO: don't draw any components until initial data is loaded */}
+          {gameData && <Story ref={storyRef} questSummary={questSummary} />}
           <div className="w-128 flex flex-col h-full">
             <div className="flex-1" />
             <div className="flex justify-end">

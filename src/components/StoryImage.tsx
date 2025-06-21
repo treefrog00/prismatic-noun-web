@@ -1,4 +1,4 @@
-import { useMainImage } from "@/contexts/GameContext";
+import { useGameConfig, useMainImage } from "@/contexts/GameContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import artUrl from "@/util/artUrls";
 import React, { useEffect, useRef, useState } from "react";
@@ -14,6 +14,7 @@ interface PixelData {
 
 const StoryImage: React.FC = () => {
   const { mainImage } = useMainImage();
+  const { gameConfig } = useGameConfig();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentImage, setCurrentImage] = useState<string | null>(mainImage);
   const [newImage, setNewImage] = useState<string | null>(null);
@@ -46,7 +47,11 @@ const StoryImage: React.FC = () => {
 
   // Handle image changes
   useEffect(() => {
-    if (mainImage !== currentImage && !isTransitioning) {
+    if (
+      mainImage !== currentImage &&
+      !isTransitioning &&
+      gameConfig.shouldAnimateImages
+    ) {
       setNewImage(mainImage);
       setIsTransitioning(true);
 
@@ -62,8 +67,12 @@ const StoryImage: React.FC = () => {
           startTime: undefined, // Reset start time
         })),
       );
+    } else if (mainImage !== currentImage && !gameConfig.shouldAnimateImages) {
+      // When animation is disabled, just update the image directly
+      setCurrentImage(mainImage);
+      setIsTransitioning(false);
     }
-  }, [mainImage]);
+  }, [mainImage, currentImage, gameConfig.shouldAnimateImages]);
 
   // Animation loop
   useEffect(() => {
@@ -270,15 +279,30 @@ const StoryImage: React.FC = () => {
 
   return (
     <div className="w-128 h-128 flex overflow-hidden">
-      <canvas
-        ref={canvasRef}
-        width={CANVAS_WIDTH}
-        height={CANVAS_HEIGHT}
-        className="object-cover w-full h-full"
-        style={{
-          ...responsiveStyles.mask,
-        }}
-      />
+      {!gameConfig.shouldAnimateImages ? (
+        // Simple image display when animation is disabled
+        currentImage && (
+          <img
+            src={artUrl(currentImage)}
+            alt="Story scene"
+            className="object-cover w-full h-full"
+            style={{
+              ...responsiveStyles.mask,
+            }}
+          />
+        )
+      ) : (
+        // Canvas animation when animation is enabled
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="object-cover w-full h-full"
+          style={{
+            ...responsiveStyles.mask,
+          }}
+        />
+      )}
     </div>
   );
 };

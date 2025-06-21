@@ -2,6 +2,7 @@ import React from "react";
 import { useAppContext } from "@/contexts/AppContext";
 import { useGameConfig } from "@/contexts/GameContext";
 import MusicToggle from "@/components/settings/MusicToggle";
+import ToggleSwitch from "../ToggleSwitch";
 
 const LobbyConfig: React.FC = () => {
   const { shouldAnimateStars, setShouldAnimateStars } = useAppContext();
@@ -24,6 +25,14 @@ const LobbyConfig: React.FC = () => {
     handleSetShouldAnimateImages(!gameConfig.shouldAnimateImages);
   }
 
+  function handleToggleAnimateImages() {
+    handleSetShouldAnimateImages(!gameConfig.shouldAnimateImages);
+  }
+
+  function handleToggleAnimateText() {
+    handleSetShouldAnimateText(!gameConfig.shouldAnimateText);
+  }
+
   return (
     <div className="space-y-6">
       <div className="space-y-4">
@@ -36,29 +45,31 @@ const LobbyConfig: React.FC = () => {
             </div>
             <div className="flex items-center">
               <label className="text-gray-300 w-32">Animated stars</label>
-              <button
-                onClick={() => setShouldAnimateStars(!shouldAnimateStars)}
-                className={`px-4 py-2 rounded ${
-                  shouldAnimateStars
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-600 hover:bg-gray-700"
-                } text-white transition-colors`}
-              >
-                {shouldAnimateStars ? "Enabled" : "Disabled"}
-              </button>
+              <ToggleSwitch
+                isEnabled={shouldAnimateStars}
+                onToggle={() => setShouldAnimateStars(!shouldAnimateStars)}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="text-gray-300 w-32">Animated images</label>
+              <ToggleSwitch
+                isEnabled={gameConfig.shouldAnimateImages}
+                onToggle={handleToggleAnimateImages}
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="text-gray-300 w-32">Animated text</label>
+              <ToggleSwitch
+                isEnabled={gameConfig.shouldAnimateText}
+                onToggle={handleToggleAnimateText}
+              />
             </div>
             <div className="flex items-center">
               <label className="text-gray-300 w-32">Animated dice</label>
-              <button
-                onClick={handleToggleAnimateDice}
-                className={`px-4 py-2 rounded ${
-                  gameConfig.shouldAnimateDice
-                    ? "bg-blue-600 hover:bg-blue-700"
-                    : "bg-gray-600 hover:bg-gray-700"
-                } text-white transition-colors`}
-              >
-                {gameConfig.shouldAnimateDice ? "Enabled" : "Disabled"}
-              </button>
+              <ToggleSwitch
+                isEnabled={gameConfig.shouldAnimateDice}
+                onToggle={handleToggleAnimateDice}
+              />
             </div>
           </div>
         </div>

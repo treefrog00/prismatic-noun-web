@@ -63,10 +63,10 @@ export const EventProvider = ({
     if (event.type === "Story") {
       appendToStory(event.text, isFirstParagraph);
       addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
-      if (isFirstParagraph) {
+      if (isFirstParagraph && gameConfig.shouldAnimateText) {
         await new Promise((resolve) => setTimeout(resolve, 3200));
         isFirstParagraph = false;
-      } else {
+      } else if (gameConfig.shouldAnimateText) {
         await new Promise((resolve) => setTimeout(resolve, 500));
       }
     } else if (event.type === "Image") {
@@ -76,7 +76,9 @@ export const EventProvider = ({
           setMainImage(event.imageUrl);
         });
       });
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (gameConfig.shouldAnimateImages) {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
     } else if (event.type === "Pause") {
       setIsPaused(true);
     } else if (event.type === "DiceRollScreen") {

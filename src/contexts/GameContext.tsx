@@ -27,17 +27,11 @@ export const ANIMATE_IMAGES_KEY = "shouldAnimateImages";
 
 export interface DiceRollState {
   show: boolean;
-  characterRolls: Record<string, DiceRoll>;
+  characterRolls: DiceRoll[];
   locationRoll: DiceRoll;
 }
 
 export type GameStage = "lobby" | "play";
-
-type VoteState = {
-  showVote: boolean;
-  voteOptions: string[];
-  voteTitle: string;
-};
 
 type GameConfig = {
   shouldAnimateDice: boolean;
@@ -66,9 +60,6 @@ type GameContextType = {
 
   gameStage: GameStage;
   setGameStage: (value: GameStage) => void;
-
-  voteState: VoteState;
-  setVoteState: (value: VoteState) => void;
 
   gameApi: GameApi;
 
@@ -119,14 +110,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     "gameStage",
     "lobby",
   );
-  const [voteState, setVoteState] = useMultiplayerState<VoteState>(
-    "voteState",
-    {
-      showVote: false,
-      voteOptions: [],
-      voteTitle: "",
-    },
-  );
 
   const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
     "gameConfig",
@@ -147,7 +130,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   const [diceRollState, setDiceRollState] = useState<DiceRollState>({
     show: false,
-    characterRolls: {},
+    characterRolls: [],
     locationRoll: null,
   });
 
@@ -247,9 +230,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         gameStage,
         setGameStage,
-
-        voteState,
-        setVoteState,
 
         mainImage,
         setMainImage,
@@ -369,24 +349,6 @@ export const useGameConfig = () => {
     handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
     handleSetShouldAnimateText: context.handleSetShouldAnimateText,
     handleSetShouldAnimateImages: context.handleSetShouldAnimateImages,
-  };
-};
-
-export const useVoteState = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useVoteState must be used within a GameProvider");
-  }
-  const setShowVote = (showVote: boolean) => {
-    context.setVoteState({
-      ...context.voteState,
-      showVote,
-    });
-  };
-  return {
-    voteState: context.voteState,
-    setVoteState: context.setVoteState,
-    setShowVote,
   };
 };
 

@@ -1,5 +1,3 @@
-export type VoteType = "PostScene";
-
 // Export types from validatedTypes.ts
 export type {
   QuestSummary,
@@ -12,6 +10,5 @@ export type {
   GameData,
   LocationData,
   LocationState,
-  SubmitPromptsResponse as ActionResponse,
   GameEvent,
 } from "./validatedTypes";

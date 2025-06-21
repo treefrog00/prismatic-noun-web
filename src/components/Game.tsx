@@ -10,6 +10,7 @@ import {
   useGameData,
   useGameConfig,
   useUiState,
+  useDiceRoll,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -34,6 +35,7 @@ const GameContent = () => {
   const { gameConfig } = useGameConfig();
   const gameApi = useGameApi();
   const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
+  const { diceRollState } = useDiceRoll();
 
   useEffect(() => {}, [showTopBar]);
 
@@ -95,7 +97,7 @@ const GameContent = () => {
   if (!questSummary) {
     return <div>Loading...</div>;
   }
-
+  console.log("diceRollState", diceRollState);
   return (
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">
@@ -115,7 +117,7 @@ const GameContent = () => {
         </div>
         <StoryButtons />
       </div>
-      <DiceRollsScreen />
+      {diceRollState.show && <DiceRollsScreen />}
     </AmbientBackground>
   );
 };

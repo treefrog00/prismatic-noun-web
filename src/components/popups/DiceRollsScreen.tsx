@@ -6,23 +6,13 @@ import DiceRollWithText from "@/components/DiceRollWithText";
 const DiceRollsScreen: React.FC = () => {
   const { diceRollState } = useDiceRoll();
 
-  if (!diceRollState.show) return null;
-
-  // Convert character rolls object to array
-  const characterRolls = Object.entries(diceRollState.characterRolls).map(
-    ([characterId, roll]) => ({
-      characterId,
-      ...roll,
-    }),
-  );
-
   return (
     <Popup onClose={null} title="Dice Rolls" maxWidth="max-w-4xl">
       <div className="flex h-[600px]">
         <div className="w-1/2 grid grid-cols-2 grid-rows-2 gap-4 p-4">
-          {characterRolls.map((roll, index) => (
+          {diceRollState.characterRolls.map((roll, index) => (
             <div
-              key={roll.characterId}
+              key={roll.label}
               className="relative bg-gray-800/60 backdrop-blur-sm rounded-lg"
             >
               <DiceRollWithText diceRoll={roll} />

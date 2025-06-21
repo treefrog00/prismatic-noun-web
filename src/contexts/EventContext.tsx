@@ -59,12 +59,11 @@ export const EventProvider = ({
     if (import.meta.env.DEV) {
       //console.log("Processing", event.type, "event", event);
     }
-
     if (event.type === "Story") {
       appendToStory(event.text, isFirstParagraph);
       addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
       if (isFirstParagraph && gameConfig.shouldAnimateText) {
-        await new Promise((resolve) => setTimeout(resolve, 3200));
+        await new Promise((resolve) => setTimeout(resolve, 1800));
         isFirstParagraph = false;
       } else if (gameConfig.shouldAnimateText) {
         await new Promise((resolve) => setTimeout(resolve, 300));
@@ -104,6 +103,10 @@ export const EventProvider = ({
         characterRolls: {},
         locationRoll: null,
       });
+    } else if (event.type === "RejectPromptResponse") {
+      // TODO
+    } else if (event.type === "FetchLLMResponse") {
+      // TODO
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);
     } else if (event.type === "LocationStateUpdate") {

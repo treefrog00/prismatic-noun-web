@@ -3,7 +3,7 @@ import TextInput from "@/components/TextInput";
 import { useUiState, useIsPaused } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
-import { SubmitPromptsResponseSchema } from "@/types/validatedTypes";
+import { EventsResponseSchema } from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
@@ -26,11 +26,13 @@ const StoryButtons: React.FC = () => {
   const { isPaused, setIsPaused } = useIsPaused();
 
   const handleActOk = async () => {
-    await gameApi.postTyped(
+    const response = await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompt`,
       { prompt: myPrompt },
-      SubmitPromptsResponseSchema,
+      EventsResponseSchema,
     );
+
+    rpcAppendEvents(response.events);
   };
 
   const formatCharacterList = (characters: string[]): string => {
@@ -47,7 +49,7 @@ const StoryButtons: React.FC = () => {
 
   const placeHolder =
     Object.keys(gameData?.characters || {}).length > 0
-      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: What's your plan for the next 60 seconds?`
+      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: What's your plan for the next minute?`
       : "error";
 
   useEffect(() => {

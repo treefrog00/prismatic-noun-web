@@ -183,7 +183,7 @@ const TopBar = () => {
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
             {/* Location */}
-            {locationData && (
+            {locationData ? (
               <div
                 className={`${sharedBoxStyles}`}
                 onMouseEnter={(e) =>
@@ -199,6 +199,8 @@ const TopBar = () => {
                   className="hover:scale-110 transition-transform"
                 />
               </div>
+            ) : (
+              <div className={`${sharedBoxStyles}`} />
             )}
 
             <div className="w-px h-10 bg-gray-500 mx-2 self-center" />

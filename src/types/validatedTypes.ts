@@ -94,8 +94,17 @@ const GameEventSchema = z.discriminatedUnion("type", [
 
   z.object({
     type: z.literal("DiceRollScreen"),
-    characterRolls: z.record(z.string(), DiceRollSchema),
+    characterRolls: z.array(DiceRollSchema),
     locationRoll: DiceRollSchema,
+  }),
+
+  z.object({
+    type: z.literal("RejectPromptResponse"),
+    rejectionMessage: z.string(),
+  }),
+
+  z.object({
+    type: z.literal("FetchLLMResponse"),
   }),
 
   z.object({
@@ -132,18 +141,9 @@ export const StartGameSchema = z.object({
   events: z.array(GameEventSchema),
 });
 
-export const PlayerLeftResponseSchema = z.object({
+export const EventsResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
-
-export const SubmitPromptsResponseSchema = z.union([
-  z.object({
-    events: z.array(GameEventSchema),
-  }),
-  z.object({
-    rejectionMessage: z.string(),
-  }),
-]);
 
 export const ActPartTwoResponseSchema = z.union([
   z.object({
@@ -166,7 +166,7 @@ export type StartGame = z.infer<typeof StartGameSchema>;
 export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
-export type SubmitPromptsResponse = z.infer<typeof SubmitPromptsResponseSchema>;
 export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
+export type EventsResponse = z.infer<typeof EventsResponseSchema>;

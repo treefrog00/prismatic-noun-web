@@ -200,7 +200,7 @@ const TopBar = () => {
                 />
               </div>
             ) : (
-              <div className={`${sharedBoxStyles}`} />
+              <div className="w-16 h-16" />
             )}
 
             <div className="w-2 mx-2" />

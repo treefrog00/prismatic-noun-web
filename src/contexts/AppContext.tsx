@@ -9,6 +9,8 @@ interface AppContextType {
   setQuestSummary: (value: QuestSummary | null) => void;
   backendUrl: string | null;
   setBackendUrl: (value: string | null) => void;
+  seenLaunchScreen: boolean;
+  setSeenLaunchScreen: (value: boolean) => void;
 }
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -25,17 +27,28 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
   const [backendUrl, setBackendUrl] = useState<string>(
     getBackendUrlFromStorage(),
   );
+  const [seenLaunchScreen, setSeenLaunchScreen] = useState<boolean>(false);
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateStars");
     if (savedValue !== null) {
       setShouldAnimateStars(savedValue === "true");
     }
+
+    const savedSeenLaunchScreen = localStorage.getItem("seenLaunchScreen");
+    if (savedSeenLaunchScreen !== null) {
+      setSeenLaunchScreen(savedSeenLaunchScreen === "true");
+    }
   }, []);
 
   const handleSetShouldAnimateStars = (show: boolean) => {
     setShouldAnimateStars(show);
     localStorage.setItem("shouldAnimateStars", show.toString());
+  };
+
+  const handleSetSeenLaunchScreen = (value: boolean) => {
+    setSeenLaunchScreen(value);
+    localStorage.setItem("seenLaunchScreen", value.toString());
   };
 
   return (
@@ -47,6 +60,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setQuestSummary,
         backendUrl,
         setBackendUrl,
+        seenLaunchScreen,
+        setSeenLaunchScreen: handleSetSeenLaunchScreen,
       }}
     >
       {children}

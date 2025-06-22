@@ -8,6 +8,7 @@ import * as Sentry from "@sentry/react";
 import { envConfig } from "./envConfig";
 import { USE_SENTRY } from "./config";
 import { AuthMode } from "./types/auth";
+import { permaConsoleLog } from "./util/logger";
 
 // Set font URL based on environment
 const font =
@@ -57,7 +58,7 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 // If backend url is set then probably testing on mobile, so log errors to sentry
 if (USE_SENTRY) {
-  console.log("Logging errors to sentry");
+  permaConsoleLog("Logging errors to sentry");
   Sentry.init({
     dsn: "https://052dd47cd9b62719ea8864353ab3b2d3@o4509174697623552.ingest.de.sentry.io/4509174698868816",
   });

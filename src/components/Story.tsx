@@ -11,6 +11,7 @@ export interface StoryRef {
   appendNoAnimation: (text: string) => void;
   appendFadeIn: (text: string, italic?: boolean) => void;
   clearStory: () => void;
+  scrollToBottom: () => void;
 }
 
 interface StoryProps {
@@ -69,6 +70,15 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const { gameConfig } = useGameConfig();
   const sharedStyles = getStyles(questSummary.theme);
 
+  const scrollToBottom = () => {
+    const textDisplay = textDisplayRef.current;
+
+    textDisplay.scrollTo({
+      top: textDisplay.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
     updateText: (text: string, animateAll: boolean = false) => {
@@ -97,14 +107,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           blankSpaces[i].remove();
         }
       }
-
-      // Function to scroll to bottom
-      const scrollToBottom = () => {
-        textDisplay.scrollTo({
-          top: textDisplay.scrollHeight,
-          behavior: "smooth",
-        });
-      };
 
       if (!gameConfig.shouldAnimateText) {
         const paragraph = document.createElement("p");
@@ -384,11 +386,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       paragraph.appendChild(textSpan);
       textContainer.appendChild(paragraph);
 
-      // Scroll to bottom
-      textDisplay.scrollTo({
-        top: textDisplay.scrollHeight,
-        behavior: "smooth",
-      });
+      scrollToBottom();
     },
     appendFadeIn: (text: string, italic: boolean = false) => {
       if (!text || !textDisplayRef.current) return;
@@ -455,6 +453,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       const textDisplay = textDisplayRef.current;
       textDisplay.innerHTML = "";
+    },
+    scrollToBottom: () => {
+      scrollToBottom();
     },
   }));
 

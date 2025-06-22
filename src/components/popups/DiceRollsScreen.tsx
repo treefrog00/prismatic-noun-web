@@ -5,6 +5,8 @@ import DiceRollWithText from "@/components/DiceRollWithText";
 import { useGameApi } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { continueAfterDiceRoll } from "@/contexts/EventContext";
+import { rpcAppendEvents } from "@/util/rpcEvents";
+import { permaConsoleLog } from "@/util/logger";
 
 const DiceRollsScreen: React.FC = () => {
   const { diceRollState, setDiceRollState } = useDiceRoll();
@@ -46,12 +48,12 @@ const DiceRollsScreen: React.FC = () => {
     // Set the new audio and play it
     setAudio1(newAudio1);
     newAudio1.play().catch((error) => {
-      console.log("Error playing dice roll sound:", error);
+      permaConsoleLog("Error playing dice roll sound:", error);
     });
 
     setAudio2(newAudio2);
     newAudio2.play().catch((error) => {
-      console.log("Error playing dice roll sound:", error);
+      permaConsoleLog("Error playing dice roll sound:", error);
     });
   };
 
@@ -63,7 +65,12 @@ const DiceRollsScreen: React.FC = () => {
       continueButton: false,
     });
 
-    await continueAfterDiceRoll(diceRollState, gameApi, gameData);
+    const events = await continueAfterDiceRoll(
+      diceRollState,
+      gameApi,
+      gameData,
+    );
+    rpcAppendEvents(events);
   };
 
   return (

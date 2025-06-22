@@ -1,3 +1,4 @@
+import { permaConsoleLog } from "@/util/logger";
 import {
   authRedirectForProvider,
   handleSuccessfulAuthProvider,
@@ -21,7 +22,7 @@ const OAuthCallback: React.FC<OAuthCallbackProps> = ({ provider }) => {
       error === "consent_required" ||
       error === "interaction_required"
     ) {
-      console.log("Silent login failed. Retrying with interactive login.");
+      permaConsoleLog("Silent login failed. Retrying with interactive login.");
       // Retry with silent=false for interactive login
       authRedirectForProvider(provider, false);
       return;

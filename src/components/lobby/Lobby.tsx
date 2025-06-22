@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import LobbyHome from "./LobbyHome";
 import LobbyNavBar from "./LobbyNavBar";
 import Settings from "../Settings";
@@ -12,13 +13,26 @@ import { useUiState } from "@/contexts/GameContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 
 const LobbyContent = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("lobby");
   const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
-  const { questSummary, setQuestSummary, shouldAnimateStars, backendUrl } =
-    useAppContext();
+  const {
+    questSummary,
+    setQuestSummary,
+    shouldAnimateStars,
+    backendUrl,
+    seenLaunchScreen,
+  } = useAppContext();
   const gameApi = new GameApi(backendUrl);
   const { setShowTopBar } = useUiState();
+
+  // Redirect to home if user hasn't seen launch screen
+  useEffect(() => {
+    if (!seenLaunchScreen) {
+      navigate("/");
+    }
+  }, [seenLaunchScreen, navigate]);
 
   useEffect(() => {
     const initializeGame = async () => {

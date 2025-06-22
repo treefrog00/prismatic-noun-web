@@ -84,7 +84,6 @@ const localRPCHandlers: Record<
 export const RPC = {
   call: (name: string, data: any) => {
     const handler = localRPCHandlers[name];
-
     if (handler) {
       // const mockCaller = {
       //   state: { name: rpcLocalPlayer.getState("name") },

@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 import { getCurrentPnAccessToken } from "@/contexts/AuthContext";
+import { permaConsoleLog } from "@/util/logger";
 
 export class GameApi {
   private backendUrl: string;
@@ -23,7 +24,7 @@ export class GameApi {
     if (response.status === 401) {
       const errorData = await response.json();
       if (errorData.expired) {
-        console.log("Token expired");
+        permaConsoleLog("Token expired");
       }
       localStorage.removeItem("pn_access_token");
       localStorage.removeItem("backend_url");

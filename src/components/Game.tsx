@@ -37,7 +37,11 @@ const GameContent = () => {
   const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
   const { diceRollState } = useDiceRoll();
 
-  useEffect(() => {}, [showTopBar]);
+  useEffect(() => {
+    if (showPromptInput) {
+      storyRef.current?.scrollToBottom();
+    }
+  }, [showPromptInput]);
 
   useEffect(() => {
     RPC.register("rpc-append-events", async (data) => {

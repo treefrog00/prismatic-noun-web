@@ -29,6 +29,7 @@ import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
 import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
 import { rpcAppendEvents } from "@/util/rpcEvents";
+import { permaConsoleLog } from "@/util/logger";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -44,21 +45,24 @@ const EventContext = createContext<EventContextType | null>(null);
 let isFirstParagraph = true;
 let waitCount = 0;
 
-const fetchActPartTwo = async (gameApi: GameApi, gameData: GameData) => {
+const fetchActPartTwo = async (
+  gameApi: GameApi,
+  gameData: GameData,
+): Promise<GameEvent[]> => {
   const response = await gameApi.postTyped(
     `/game/${gameData.gameId}/act_part_two`,
     {},
     EventsResponseSchema,
   );
 
-  rpcAppendEvents(response.events);
+  return response.events;
 };
 
 export const continueAfterDiceRoll = async (
   diceRollState: DiceRollState,
   gameApi: GameApi,
   gameData: GameData,
-) => {
+): Promise<GameEvent[]> => {
   let characterRollsSums = [];
   for (const roll of diceRollState.characterRolls) {
     const sum = roll.targetValues.reduce((acc, val) => acc + val, 0);
@@ -74,7 +78,7 @@ export const continueAfterDiceRoll = async (
 
   appendToStory(diceEventsText, StoryEventType.ITALIC);
 
-  await fetchActPartTwo(gameApi, gameData);
+  return await fetchActPartTwo(gameApi, gameData);
 };
 
 export const EventProvider = ({
@@ -99,10 +103,17 @@ export const EventProvider = ({
   const gameApi = useGameApi();
   const { gameData } = useGameData();
 
-  const processEvent = async (event: GameEvent) => {
+  const processEvent = async (
+    event: GameEvent,
+  ): Promise<GameEvent[] | null> => {
     if (import.meta.env.DEV) {
-      console.log("Processing", event.type, "event", event);
+      permaConsoleLog("Processing", event.type, "event", event);
     }
+
+    if (event.type !== "StillWaiting") {
+      waitCount = 0;
+    }
+
     if (event.type === "Story") {
       appendToStory(
         event.text,
@@ -140,9 +151,12 @@ export const EventProvider = ({
       };
 
       if (!gameConfig.shouldAnimateDice) {
-        console.log("Continuing after dice roll");
-        await continueAfterDiceRoll(diceRollState, gameApi, gameData);
-        return;
+        const followUpEvents = await continueAfterDiceRoll(
+          diceRollState,
+          gameApi,
+          gameData,
+        );
+        return followUpEvents;
       }
 
       // the flushSync microtask is only needed for React 18+
@@ -163,7 +177,8 @@ export const EventProvider = ({
         continueButton: true,
       });
     } else if (event.type === "RejectPromptResponse") {
-      console.log("RejectPromptResponse", event.rejectionMessage);
+      showToast(event.rejectionMessage, "error");
+      permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);
     } else if (event.type === "LocationStateUpdate") {
@@ -171,7 +186,6 @@ export const EventProvider = ({
     } else if (event.type === "ChangeLocation") {
       clearStory();
       isFirstParagraph = true;
-      waitCount = 0;
       setLocationState(event.locationState);
       setLocationData(event.locationData);
       addToLogbook(`### ${event.locationData.name}`);
@@ -184,9 +198,8 @@ export const EventProvider = ({
       if (waitCount > 10) {
         showToast("Gave up waiting for AI response", "error");
       } else {
-        await new Promise((resolve) =>
-          setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
-        );
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        return await fetchActPartTwo(gameApi, gameData);
       }
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
@@ -202,12 +215,17 @@ export const EventProvider = ({
     try {
       const event = eventQueue[0];
 
-      await processEvent(event);
+      const followUpEvents = await processEvent(event);
 
-      setEventQueue(eventQueue.slice(1));
-    } finally {
+      if (followUpEvents) {
+        setEventQueue([...eventQueue.slice(1), ...followUpEvents]);
+      } else {
+        setEventQueue(eventQueue.slice(1));
+      }
+    } catch (error) {
       // remove the event if it failed, to prevent infinite loop
       setEventQueue(eventQueue.slice(1));
+    } finally {
       setIsProcessing(false);
     }
   };

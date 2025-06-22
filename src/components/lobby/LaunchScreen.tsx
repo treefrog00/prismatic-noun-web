@@ -10,11 +10,12 @@ import { useNavigate } from "react-router-dom";
 const LaunchScreen = () => {
   const navigate = useNavigate();
   const { initialPlay } = useStereo();
-  const { shouldAnimateStars } = useAppContext();
+  const { shouldAnimateStars, setSeenLaunchScreen } = useAppContext();
   const { pnAccessToken } = useAuth();
 
   const handleLaunch = () => {
     initialPlay();
+    setSeenLaunchScreen(true);
     navigate("/play");
   };
 
@@ -64,8 +65,7 @@ const LaunchScreen = () => {
                   As such, despite the many issues around AI - copyrighted
                   training content, the tendency to output a mediocre average of
                   its training data, the tendency to conform to extreme
-                  stereotyping - I would hope that the stories are at least a
-                  bit different, and not just generated noise.
+                  stereotyping - hopefully it is at least a little interesting.
                 </p>
               </div>
             </div>

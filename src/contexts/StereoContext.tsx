@@ -1,3 +1,4 @@
+import { permaConsoleLog } from "@/util/logger";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const MUSIC_ENABLED_STORAGE_KEY = "music_enabled";
@@ -188,9 +189,9 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         (error.name === "NotAllowedError" ||
           error.message.includes("aborted by the user agent"))
       ) {
-        console.log("Audio playback stopped by user");
+        permaConsoleLog("Audio playback stopped by user");
       } else {
-        console.error("Error playing audio:", error);
+        permaConsoleLog("Error playing audio:", error);
       }
     }
   };

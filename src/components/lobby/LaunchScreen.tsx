@@ -6,15 +6,26 @@ import { useAppContext } from "@/contexts/AppContext";
 import AuthButtons from "../auth/AuthButtons";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
 
 const LaunchScreen = () => {
   const navigate = useNavigate();
-  const { initialPlay } = useStereo();
+  const { initialPlay: initialPlayMusic } = useStereo();
   const { shouldAnimateStars, setSeenLaunchScreen } = useAppContext();
   const { pnAccessToken } = useAuth();
 
+  if (isAndroidOrIOS()) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-white text-3xl font-bold text-center">
+          Mobile devices are not supported
+        </div>
+      </div>
+    );
+  }
+
   const handleLaunch = () => {
-    initialPlay();
+    initialPlayMusic();
     setSeenLaunchScreen(true);
     navigate("/play");
   };
@@ -40,33 +51,12 @@ const LaunchScreen = () => {
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200 text-lg space-y-4`}>
+                <p>A collection of weird and spooky stories.</p>
                 <p>
-                  A collection of weird and spooky stories. Every now and then
-                  an AI intervenes and asks how you think things should play out
-                  next. It's kind of a game, kind of a visual novel, kind of a
-                  technology experiment.
-                </p>
-                <p>
-                  You can play in a web browser on Windows/Mac/Linux. Mobile
-                  devices are not supported.
-                </p>
-                <p>
-                  The game is currently in alpha and may have many bugs and
+                  The game is currently in alpha and likely has many bugs and
                   issues.
                 </p>
-                <p>
-                  AI disclaimer: the development process involved experimenting,
-                  iterating, curating, merging, and refining a large number of
-                  game ideas/images/tunes/story ideas over the course of 5
-                  months full-time work, with extensive help from AI. This was
-                  followed by several more months testing and refinement.
-                </p>
-                <p>
-                  As such, despite the many issues around AI - copyrighted
-                  training content, the tendency to output a mediocre average of
-                  its training data, the tendency to conform to extreme
-                  stereotyping - hopefully it is at least a little interesting.
-                </p>
+                <p>Warning: AI generated content lies in wait ahead!</p>
               </div>
             </div>
           }

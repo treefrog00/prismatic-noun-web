@@ -1,3 +1,4 @@
+import { envConfig } from "@/envConfig";
 import React, {
   useState,
   ReactNode,
@@ -7,20 +8,27 @@ import React, {
 } from "react";
 
 interface AuthContextType {
-  showAuthPopup: boolean;
-  setShowAuthPopup: (show: boolean) => void;
   pnAccessToken: string | null;
   setPnAccessToken: (token: string | null) => void;
 }
 
-// Simple global accessor for class-based files that can't use React hooks
+// I think this was just a lazy way to avoid using React hooks in the game API class, as it duplicates
+// the state of the hook
 let currentPnAccessToken: string | null = null;
 
 export const getCurrentPnAccessToken = (): string | null => {
   return currentPnAccessToken;
 };
 
-// Utility function to set access token without needing React context
+export const initializeAccessTokenFromStorage = (): string | null => {
+  if (envConfig.disableAuth) {
+    currentPnAccessToken = "auth_disabled";
+    return currentPnAccessToken;
+  }
+  currentPnAccessToken = localStorage.getItem("pn_access_token");
+  return currentPnAccessToken;
+};
+
 export const setAccessTokenInStorage = (token: string | null) => {
   currentPnAccessToken = token; // Keep global accessor in sync
   if (token) {
@@ -51,12 +59,8 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [showAuthPopup, setShowAuthPopup] = useState<boolean>(false);
   const [pnAccessToken, setPnAccessTokenState] = useState<string | null>(() => {
-    // Initialize from localStorage
-    const token = localStorage.getItem("pn_access_token");
-    currentPnAccessToken = token; // Initialize global accessor
-    return token;
+    return initializeAccessTokenFromStorage();
   });
 
   const setPnAccessToken = (token: string | null) => {
@@ -66,8 +70,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   return (
     <AuthContext.Provider
       value={{
-        showAuthPopup,
-        setShowAuthPopup,
         pnAccessToken,
         setPnAccessToken,
       }}

@@ -56,7 +56,7 @@ const LaunchScreen = () => {
                 <p>
                   AI disclaimer: the development process involved experimenting,
                   iterating, curating, merging, and refining a large number of
-                  game ideas/images/tunes/story ideas over the course of 6
+                  game ideas/images/tunes/story ideas over the course of 5
                   months full-time work, with extensive help from AI. This was
                   followed by several more months testing and refinement.
                 </p>
@@ -64,9 +64,8 @@ const LaunchScreen = () => {
                   As such, despite the many issues around AI - copyrighted
                   training content, the tendency to output a mediocre average of
                   its training data, the tendency to conform to extreme
-                  stereotyping - I would hope that the story is at least
-                  somewhat interesting, and not just lazily generated
-                  stereotypical noise.
+                  stereotyping - I would hope that the stories are at least a
+                  bit different, and not just generated noise.
                 </p>
               </div>
             </div>

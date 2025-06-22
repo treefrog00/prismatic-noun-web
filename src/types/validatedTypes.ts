@@ -122,7 +122,9 @@ const GameEventSchema = z.discriminatedUnion("type", [
     playlist: z.array(z.string()),
   }),
   z.object({
-    type: z.literal("PlayerActions"),
+    type: z.literal("PlayerInput"),
+    playerPrompt: z.string(),
+    turnsRemaining: z.number(),
   }),
   z.object({
     type: z.literal("GameEnd"),

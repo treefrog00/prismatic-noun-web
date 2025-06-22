@@ -191,8 +191,12 @@ export const EventProvider = ({
       addToLogbook(`### ${event.locationData.name}`);
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
-    } else if (event.type === "PlayerActions") {
-      setShowPromptInput(true);
+    } else if (event.type === "PlayerInput") {
+      setShowPromptInput({
+        show: true,
+        playerPrompt: event.playerPrompt,
+        turnsRemaining: event.turnsRemaining,
+      });
     } else if (event.type === "StillWaiting") {
       waitCount++;
       if (waitCount > 15) {

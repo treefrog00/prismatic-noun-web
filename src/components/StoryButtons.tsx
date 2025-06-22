@@ -41,7 +41,10 @@ const StoryButtons: React.FC = () => {
     );
 
     rpcAppendEvents(response.events);
-    setShowPromptInput(false);
+    setShowPromptInput({
+      ...showPromptInput,
+      show: false,
+    });
     setMyPrompt("");
   };
 
@@ -59,14 +62,14 @@ const StoryButtons: React.FC = () => {
 
   const placeHolder =
     Object.keys(gameData?.characters || {}).length > 0
-      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: What's your plan for the next minute?`
+      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: ${showPromptInput.playerPrompt}`
       : "error";
 
   useEffect(() => {
-    if (showPromptInput && textInputRef.current) {
+    if (showPromptInput.show && textInputRef.current) {
       textInputRef.current.focus();
     }
-  }, [showPromptInput]);
+  }, [showPromptInput.show]);
 
   const handleContinue = async () => {
     setIsPaused(false);
@@ -83,9 +86,9 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={`mt-4 transition-all duration-300 ${showPromptInput ? "h-80" : "h-48"}`}
+        className={`mt-4 transition-all duration-300 ${showPromptInput.show ? "h-80" : "h-48"}`}
       >
-        {showPromptInput && (
+        {showPromptInput.show && (
           <div className="flex flex-row gap-8 h-full">
             <div
               style={{ width: "calc(100% - 32rem)" }}

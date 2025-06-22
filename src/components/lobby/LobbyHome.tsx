@@ -28,7 +28,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
               fontSize: responsiveStyles.text.heading,
             }}
           >
-            Welcome, adventurers!
+            Welcome, adventurer!
           </h2>
           <div className="mt-4">
             <select

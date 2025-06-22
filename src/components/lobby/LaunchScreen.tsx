@@ -53,10 +53,17 @@ const LaunchScreen = () => {
               <div className={`text-center text-gray-200 text-lg space-y-4`}>
                 <p>A collection of weird and spooky stories.</p>
                 <p>
-                  The project is currently at an experimental stage and won't be
-                  released for a long time, if ever.
+                  Currently more of an experimental tech demo than a full game.
                 </p>
-                <p>Warning: AI generated content lies in wait ahead!</p>
+                <p>
+                  WARNING: creepy events and AI generated content lie in wait
+                  ahead! Not suitable for those under the age of 13.
+                </p>
+
+                <p>
+                  Feel free to adjust your headphones or volume control, but
+                  please do not attempt to adjust the picture.
+                </p>
               </div>
             </div>
           }

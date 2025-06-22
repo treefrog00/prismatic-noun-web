@@ -30,7 +30,6 @@ const GameContent = () => {
   // multiplayer state
   const { gameData, setGameData } = useGameData();
   const { addEvents } = useEventProcessor();
-  const { localPlayers } = useLocalPlayers();
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig, setGameConfig } = useGameConfig();
   const gameApi = useGameApi();
@@ -38,10 +37,10 @@ const GameContent = () => {
   const { diceRollState } = useDiceRoll();
 
   useEffect(() => {
-    if (showPromptInput) {
+    if (showPromptInput.show) {
       storyRef.current?.scrollToBottom();
     }
-  }, [showPromptInput]);
+  }, [showPromptInput.show]);
 
   useEffect(() => {
     RPC.register("rpc-append-events", async (data) => {

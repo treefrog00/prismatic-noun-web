@@ -71,8 +71,16 @@ type GameContextType = {
   handleSetShouldAnimateText: (show: boolean) => void;
   handleSetShouldAnimateImages: (show: boolean) => void;
 
-  showPromptInput: boolean;
-  setShowPromptInput: (value: boolean) => void;
+  showPromptInput: {
+    show: boolean;
+    playerPrompt: string;
+    turnsRemaining: number;
+  };
+  setShowPromptInput: (value: {
+    show: boolean;
+    playerPrompt: string;
+    turnsRemaining: number;
+  }) => void;
 
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
@@ -148,7 +156,15 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     _setLocalPlayerPrompt(value);
     // 'reliable' is ignored
   };
-  const [showPromptInput, setShowPromptInput] = useState(false);
+  const [showPromptInput, setShowPromptInput] = useState<{
+    show: boolean;
+    playerPrompt: string;
+    turnsRemaining: number;
+  }>({
+    show: false,
+    playerPrompt: "",
+    turnsRemaining: 0,
+  });
   const [isPaused, setIsPaused] = useState(false);
   const [showTopBar, setShowTopBar] = useState(false);
 

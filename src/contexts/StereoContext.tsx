@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 const MUSIC_ENABLED_STORAGE_KEY = "music_enabled";
 const FADE_DURATION = 1000;
 
-const LOBBY_PLAYLIST: string[] = ["dream"];
+export const LOBBY_PLAYLIST: string[] = ["dream"];
 
 interface StereoContextType {
   turnOffMusic: () => void;
@@ -86,6 +86,12 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const initialPlay = () => {
+    if (hasRunInitialPlay) {
+      // if the user has returned to the launch screen during the game, then
+      // don't restart the music on clicking launch.
+      return;
+    }
+
     // set this even if the music is turned off, such that if
     // it is later enabled it starts playing
     setHasRunInitialPlay(true);

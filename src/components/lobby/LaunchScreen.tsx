@@ -53,8 +53,8 @@ const LaunchScreen = () => {
               <div className={`text-center text-gray-200 text-lg space-y-4`}>
                 <p>A collection of weird and spooky stories.</p>
                 <p>
-                  The game is currently in alpha and likely has many bugs and
-                  issues.
+                  The project is currently at an experimental stage and won't be
+                  released for a long time, if ever.
                 </p>
                 <p>Warning: AI generated content lies in wait ahead!</p>
               </div>

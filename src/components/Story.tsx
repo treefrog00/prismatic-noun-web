@@ -71,12 +71,81 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const sharedStyles = getStyles(questSummary.theme);
 
   const scrollToBottom = () => {
-    const textDisplay = textDisplayRef.current;
+    const textDisplay = textDisplayRef?.current;
+
+    // this can happen if navigating to lobby from settings
+    if (!textDisplay) {
+      return;
+    }
 
     textDisplay.scrollTo({
       top: textDisplay.scrollHeight,
       behavior: "smooth",
     });
+  };
+
+  // Helper function to process text formatting
+  const processTextFormatting = (text: string, italic: boolean = false) => {
+    let finalText = text
+      .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
+      .replace(/<\/hl>/g, "</span>")
+      .replace(/<i>/g, `<span style="font-style: italic;">`)
+      .replace(/<\/i>/g, "</span>")
+      .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); // Replace <tab> at line start with 4 spaces
+
+    // If italic is true, wrap the entire text in highlight styling and make it italic
+    if (italic) {
+      finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
+    }
+
+    return finalText.replace(/\n/g, "<br>");
+  };
+
+  // Helper function to create text container and paragraph
+  const createTextContainer = () => {
+    const textDisplay = textDisplayRef.current;
+    if (!textDisplay) return null;
+
+    paragraphCount++;
+    const paragraphId = `paragraph-${paragraphCount}`;
+
+    // Create a new container for this paragraph
+    const textContainer = document.createElement("div");
+    textContainer.className = "text-container relative mb-2";
+    textContainer.id = paragraphId;
+    textDisplay.appendChild(textContainer);
+
+    // Add blank space at the bottom
+    const blankSpace = document.createElement("div");
+    blankSpace.style.height = "50px";
+    blankSpace.className = "blank-space";
+    textDisplay.appendChild(blankSpace);
+
+    // Remove any previous blank spaces
+    const blankSpaces = textDisplay.querySelectorAll(".blank-space");
+    if (blankSpaces.length > 1) {
+      for (let i = 0; i < blankSpaces.length - 1; i++) {
+        blankSpaces[i].remove();
+      }
+    }
+
+    return textContainer;
+  };
+
+  // Helper function to create and append paragraph
+  const createAndAppendParagraph = (
+    textContainer: HTMLElement,
+    processedText: string,
+  ) => {
+    const paragraph = document.createElement("p");
+    paragraph.style.lineHeight = `${lineHeight}px`;
+    paragraph.style.margin = "0";
+
+    const textSpan = document.createElement("span");
+    textSpan.innerHTML = processedText;
+
+    paragraph.appendChild(textSpan);
+    textContainer.appendChild(paragraph);
   };
 
   // Expose the updateText and updateChat methods to parent components
@@ -330,16 +399,14 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        const finalText = text
-          .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
-          .replace(/<\/hl>/g, "</span>");
+        const finalText = processTextFormatting(text);
 
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";
 
         const textSpan = document.createElement("span");
-        textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
+        textSpan.innerHTML = finalText;
 
         paragraph.appendChild(textSpan);
         textContainer.innerHTML = "";
@@ -350,98 +417,29 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
     appendNoAnimation: (text: string) => {
       if (!text || !textDisplayRef.current) return;
 
-      const textDisplay = textDisplayRef.current;
-      paragraphCount++;
-      const paragraphId = `paragraph-${paragraphCount}`;
+      const textContainer = createTextContainer();
+      if (!textContainer) return;
 
-      // Create a new container for this paragraph
-      const textContainer = document.createElement("div");
-      textContainer.className = "text-container relative mb-2";
-      textContainer.id = paragraphId;
-      textDisplay.appendChild(textContainer);
-
-      // Add blank space at the bottom
-      const blankSpace = document.createElement("div");
-      blankSpace.style.height = "50px";
-      blankSpace.className = "blank-space";
-      textDisplay.appendChild(blankSpace);
-
-      // Remove any previous blank spaces
-      const blankSpaces = textDisplay.querySelectorAll(".blank-space");
-      if (blankSpaces.length > 1) {
-        for (let i = 0; i < blankSpaces.length - 1; i++) {
-          blankSpaces[i].remove();
-        }
-      }
-
-      // Create and append the paragraph with formatted text
-      const paragraph = document.createElement("p");
-
-      const textSpan = document.createElement("span");
-      const finalText = text
-        .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
-        .replace(/<\/hl>/g, "</span>");
-      textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
-
-      paragraph.appendChild(textSpan);
-      textContainer.appendChild(paragraph);
+      const processedText = processTextFormatting(text);
+      createAndAppendParagraph(textContainer, processedText);
 
       scrollToBottom();
     },
     appendFadeIn: (text: string, italic: boolean = false) => {
       if (!text || !textDisplayRef.current) return;
 
-      const textDisplay = textDisplayRef.current;
-      paragraphCount++;
-      const paragraphId = `paragraph-${paragraphCount}`;
+      const textContainer = createTextContainer();
+      if (!textContainer) return;
 
-      // Create a new container for this paragraph
-      const textContainer = document.createElement("div");
-      textContainer.className = "text-container relative mb-2";
-      textContainer.id = paragraphId;
-      textDisplay.appendChild(textContainer);
-
-      // Add blank space at the bottom
-      const blankSpace = document.createElement("div");
-      blankSpace.style.height = "50px";
-      blankSpace.className = "blank-space";
-      textDisplay.appendChild(blankSpace);
-
-      // Remove any previous blank spaces
-      const blankSpaces = textDisplay.querySelectorAll(".blank-space");
-      if (blankSpaces.length > 1) {
-        for (let i = 0; i < blankSpaces.length - 1; i++) {
-          blankSpaces[i].remove();
-        }
-      }
-
-      // Create and append the paragraph with formatted text
-      const paragraph = document.createElement("p");
-
-      const textSpan = document.createElement("span");
-      let finalText = text
-        .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
-        .replace(/<\/hl>/g, "</span>");
-
-      // If italic is true, wrap the entire text in highlight styling and make it italic
-      if (italic) {
-        finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
-      }
-
-      textSpan.innerHTML = finalText.replace(/\n/g, "<br>");
-
-      paragraph.appendChild(textSpan);
-      textContainer.appendChild(paragraph);
+      const processedText = processTextFormatting(text, italic);
+      createAndAppendParagraph(textContainer, processedText);
 
       // Set initial opacity to 0 for fade-in effect
       textContainer.style.opacity = "0";
       textContainer.style.transition = `opacity ${FADE_IN_DURATION}ms ease-in`;
 
       // Scroll to bottom
-      textDisplay.scrollTo({
-        top: textDisplay.scrollHeight,
-        behavior: "smooth",
-      });
+      scrollToBottom();
 
       // Trigger fade-in effect
       setTimeout(() => {

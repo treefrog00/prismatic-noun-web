@@ -195,10 +195,10 @@ export const EventProvider = ({
       setShowPromptInput(true);
     } else if (event.type === "StillWaiting") {
       waitCount++;
-      if (waitCount > 10) {
+      if (waitCount > 15) {
         showToast("Gave up waiting for AI response", "error");
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         return await fetchActPartTwo(gameApi, gameData);
       }
     } else if (event.type === "ErrorResponse") {

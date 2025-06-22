@@ -5,15 +5,10 @@ interface Toast {
   id: string;
   message: string;
   type: "success" | "error" | "info";
-  duration?: number;
 }
 
 interface ToastContextType {
-  showToast: (
-    message: string,
-    type: "success" | "error" | "info",
-    duration?: number,
-  ) => void;
+  showToast: (message: string, type: "success" | "error" | "info") => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -31,13 +26,9 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = (
-    message: string,
-    type: "success" | "error" | "info",
-    duration?: number,
-  ) => {
+  const showToast = (message: string, type: "success" | "error" | "info") => {
     const id = Date.now().toString();
-    const newToast: Toast = { id, message, type, duration };
+    const newToast: Toast = { id, message, type };
 
     setToasts((prev) => [...prev, newToast]);
   };
@@ -54,7 +45,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({
           key={toast.id}
           message={toast.message}
           type={toast.type}
-          duration={toast.duration}
+          duration={10000}
           onClose={() => removeToast(toast.id)}
         />
       ))}

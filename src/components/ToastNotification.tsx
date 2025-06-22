@@ -4,14 +4,14 @@ interface ToastNotificationProps {
   message: string;
   type: "success" | "error" | "info";
   onClose: () => void;
-  duration?: number;
+  duration: number;
 }
 
 const ToastNotification: React.FC<ToastNotificationProps> = ({
   message,
   type,
   onClose,
-  duration = 3000,
+  duration,
 }) => {
   useEffect(() => {
     const timer = setTimeout(() => {

@@ -131,6 +131,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
 
 export const StartGameSchema = z.object({
   gameData: GameDataSchema,
+  promptLimit: z.number(),
   events: z.array(GameEventSchema),
 });
 
@@ -146,6 +147,10 @@ export const ActPartTwoResponseSchema = z.union([
     error: z.string(),
   }),
 ]);
+
+export const GeneratePromptResponseSchema = z.object({
+  prompt: z.string(),
+});
 
 export { GameEventSchema };
 
@@ -163,3 +168,6 @@ export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
 export type EventsResponse = z.infer<typeof EventsResponseSchema>;
+export type GeneratePromptResponse = z.infer<
+  typeof GeneratePromptResponseSchema
+>;

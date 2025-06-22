@@ -57,7 +57,7 @@ export const EventProvider = ({
 
   const processEvent = async (event: GameEvent) => {
     if (import.meta.env.DEV) {
-      //console.log("Processing", event.type, "event", event);
+      console.log("Processing", event.type, "event", event);
     }
     if (event.type === "Story") {
       appendToStory(
@@ -113,7 +113,7 @@ export const EventProvider = ({
         continueButton: true,
       });
     } else if (event.type === "RejectPromptResponse") {
-      // TODO
+      console.log("RejectPromptResponse", event.rejectionMessage);
     } else if (event.type === "CharacterStateUpdate") {
       setCharacters(event.characterState);
     } else if (event.type === "LocationStateUpdate") {

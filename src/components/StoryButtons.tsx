@@ -1,13 +1,17 @@
 import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useUiState, useIsPaused } from "@/contexts/GameContext";
+import { useUiState, useIsPaused, useGameConfig } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
-import { EventsResponseSchema } from "@/types/validatedTypes";
+import {
+  EventsResponseSchema,
+  GeneratePromptResponseSchema,
+} from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
+import { env } from "process";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -16,6 +20,7 @@ const StoryButtons: React.FC = () => {
   const gameApi = useGameApi();
 
   const { showPromptInput, setShowPromptInput } = useUiState();
+  const { gameConfig } = useGameConfig();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
@@ -26,6 +31,9 @@ const StoryButtons: React.FC = () => {
   const { isPaused, setIsPaused } = useIsPaused();
 
   const handleActOk = async () => {
+    if (myPrompt.length === 0 || myPrompt.length > gameConfig.promptLimit) {
+      return;
+    }
     const response = await gameApi.postTyped(
       `/game/${gameData.gameId}/submit_prompt`,
       { prompt: myPrompt },
@@ -64,6 +72,14 @@ const StoryButtons: React.FC = () => {
     setIsPaused(false);
   };
 
+  const handleGenerate = async () => {
+    const response = await gameApi.postTyped(
+      `/game/${gameData.gameId}/generate_prompt`,
+      {},
+      GeneratePromptResponseSchema,
+    );
+    setMyPrompt(response.prompt);
+  };
   return (
     <>
       <div
@@ -85,12 +101,30 @@ const StoryButtons: React.FC = () => {
                   onClose={() => {}}
                   placeHolder={placeHolder}
                   showCharCount={true}
+                  maxLength={gameConfig.promptLimit}
                 />
               </div>
               <div className="flex justify-end">
+                {import.meta.env.DEV && (
+                  <button
+                    className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3`}
+                    onPointerDown={() => handleGenerate()}
+                  >
+                    Generate
+                  </button>
+                )}
                 <button
-                  className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3`}
+                  className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3 ${
+                    myPrompt.length === 0 ||
+                    myPrompt.length > gameConfig.promptLimit
+                      ? "opacity-50 cursor-not-allowed"
+                      : ""
+                  }`}
                   onPointerDown={() => handleActOk()}
+                  disabled={
+                    myPrompt.length === 0 ||
+                    myPrompt.length > gameConfig.promptLimit
+                  }
                 >
                   Confirm
                 </button>

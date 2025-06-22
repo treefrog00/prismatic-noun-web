@@ -32,7 +32,7 @@ const GameContent = () => {
   const { addEvents } = useEventProcessor();
   const { localPlayers } = useLocalPlayers();
   const { questSummary, setQuestSummary } = useAppContext();
-  const { gameConfig } = useGameConfig();
+  const { gameConfig, setGameConfig } = useGameConfig();
   const gameApi = useGameApi();
   const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
   const { diceRollState } = useDiceRoll();
@@ -91,6 +91,10 @@ const GameContent = () => {
         let startGame = await startIfNotStarted(gameApi, summary);
         setGameData(startGame.gameData);
         setShowTopBar(true);
+        setGameConfig({
+          ...gameConfig,
+          promptLimit: startGame.promptLimit,
+        });
         rpcAppendEvents(startGame.events);
       };
       startGameAsync();
@@ -102,7 +106,6 @@ const GameContent = () => {
   if (!questSummary) {
     return <div>Loading...</div>;
   }
-  console.log("diceRollState", diceRollState);
   return (
     <AmbientBackground>
       <div className="w-4/5 flex flex-col h-dynamic py-4">

@@ -1,5 +1,5 @@
+import { useGameConfig } from "@/contexts/GameContext";
 import { useEffect } from "react";
-import { PROMPT_LIMIT } from "../config";
 
 interface TextInputProps {
   text: string;
@@ -9,6 +9,7 @@ interface TextInputProps {
   onClose: () => void;
   onOk?: () => void;
   placeHolder: string;
+  maxLength: number;
 }
 
 const TextInput: React.FC<TextInputProps> = ({
@@ -19,6 +20,7 @@ const TextInput: React.FC<TextInputProps> = ({
   onClose,
   onOk,
   placeHolder,
+  maxLength,
 }) => {
   useEffect(() => {
     const focusInput = () => {
@@ -46,7 +48,7 @@ const TextInput: React.FC<TextInputProps> = ({
         id="textInput"
         placeholder={placeHolder}
         value={text}
-        maxLength={PROMPT_LIMIT}
+        maxLength={maxLength}
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
@@ -63,7 +65,7 @@ const TextInput: React.FC<TextInputProps> = ({
       />
       {showCharCount && (
         <div className="text-right text-base text-gray-300">
-          {text.length} / {PROMPT_LIMIT}
+          {text.length} / {maxLength}
         </div>
       )}
     </div>

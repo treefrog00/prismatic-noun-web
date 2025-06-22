@@ -38,6 +38,7 @@ type GameConfig = {
   shouldAnimateDice: boolean;
   shouldAnimateText: boolean;
   shouldAnimateImages: boolean;
+  promptLimit: number;
 };
 
 type GameContextType = {
@@ -118,6 +119,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) !== "false",
       shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) !== "false",
       shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) !== "false",
+      promptLimit: 0,
     },
   );
 

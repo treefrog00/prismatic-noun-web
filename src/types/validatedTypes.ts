@@ -127,6 +127,13 @@ const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("GameEnd"),
   }),
+  z.object({
+    type: z.literal("StillWaiting"),
+  }),
+  z.object({
+    type: z.literal("ErrorResponse"),
+    errorMessage: z.string(),
+  }),
 ]);
 
 export const StartGameSchema = z.object({
@@ -138,15 +145,6 @@ export const StartGameSchema = z.object({
 export const EventsResponseSchema = z.object({
   events: z.array(GameEventSchema),
 });
-
-export const ActPartTwoResponseSchema = z.union([
-  z.object({
-    events: z.array(GameEventSchema),
-  }),
-  z.object({
-    error: z.string(),
-  }),
-]);
 
 export const GeneratePromptResponseSchema = z.object({
   prompt: z.string(),
@@ -164,7 +162,6 @@ export type StartGame = z.infer<typeof StartGameSchema>;
 export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
 export type LocationState = z.infer<typeof LocationStateSchema>;
-export type ActPartTwoResponse = z.infer<typeof ActPartTwoResponseSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
 export type EventsResponse = z.infer<typeof EventsResponseSchema>;

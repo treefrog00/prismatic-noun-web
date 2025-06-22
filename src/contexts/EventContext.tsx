@@ -7,7 +7,10 @@ import {
 } from "react";
 import { GameEvent } from "@/types";
 import {
+  DiceRollState,
   useCharacters,
+  useGameApi,
+  useGameData,
   useIsPaused,
   useLogbook,
   useMainImage,
@@ -22,6 +25,10 @@ import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
 import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
+import { useToast } from "./ToastContext";
+import { GameApi } from "@/core/gameApi";
+import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
+import { rpcAppendEvents } from "@/util/rpcEvents";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -35,6 +42,40 @@ type EventContextType = {
 const EventContext = createContext<EventContextType | null>(null);
 
 let isFirstParagraph = true;
+let waitCount = 0;
+
+const fetchActPartTwo = async (gameApi: GameApi, gameData: GameData) => {
+  const response = await gameApi.postTyped(
+    `/game/${gameData.gameId}/act_part_two`,
+    {},
+    EventsResponseSchema,
+  );
+
+  rpcAppendEvents(response.events);
+};
+
+export const continueAfterDiceRoll = async (
+  diceRollState: DiceRollState,
+  gameApi: GameApi,
+  gameData: GameData,
+) => {
+  let characterRollsSums = [];
+  for (const roll of diceRollState.characterRolls) {
+    const sum = roll.targetValues.reduce((acc, val) => acc + val, 0);
+    characterRollsSums.push(`${roll.label} ${sum}`);
+  }
+  let diceEventsText =
+    "Your party rolled: " + characterRollsSums.join(", ") + "\n";
+  const sum = diceRollState.locationRoll.targetValues.reduce(
+    (acc, val) => acc + val,
+    0,
+  );
+  diceEventsText += `${diceRollState.locationRoll.label} rolled: ${sum}`;
+
+  appendToStory(diceEventsText, StoryEventType.ITALIC);
+
+  await fetchActPartTwo(gameApi, gameData);
+};
 
 export const EventProvider = ({
   children,
@@ -54,6 +95,9 @@ export const EventProvider = ({
   const { setShowPromptInput } = useUiState();
   const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
+  const { showToast } = useToast();
+  const gameApi = useGameApi();
+  const { gameData } = useGameData();
 
   const processEvent = async (event: GameEvent) => {
     if (import.meta.env.DEV) {
@@ -88,17 +132,23 @@ export const EventProvider = ({
     } else if (event.type === "Pause") {
       setIsPaused(true);
     } else if (event.type === "DiceRollScreen") {
-      if (!gameConfig.shouldAnimateDice) return;
+      const diceRollState = {
+        show: true,
+        characterRolls: event.characterRolls,
+        locationRoll: event.locationRoll,
+        continueButton: false,
+      };
+
+      if (!gameConfig.shouldAnimateDice) {
+        console.log("Continuing after dice roll");
+        await continueAfterDiceRoll(diceRollState, gameApi, gameData);
+        return;
+      }
 
       // the flushSync microtask is only needed for React 18+
       queueMicrotask(() => {
         ReactDOM.flushSync(() => {
-          setDiceRollState({
-            show: true,
-            characterRolls: event.characterRolls,
-            locationRoll: event.locationRoll,
-            continueButton: false,
-          });
+          setDiceRollState(diceRollState);
         });
       });
 
@@ -121,6 +171,7 @@ export const EventProvider = ({
     } else if (event.type === "ChangeLocation") {
       clearStory();
       isFirstParagraph = true;
+      waitCount = 0;
       setLocationState(event.locationState);
       setLocationData(event.locationData);
       addToLogbook(`### ${event.locationData.name}`);
@@ -128,6 +179,17 @@ export const EventProvider = ({
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerActions") {
       setShowPromptInput(true);
+    } else if (event.type === "StillWaiting") {
+      waitCount++;
+      if (waitCount > 10) {
+        showToast("Gave up waiting for AI response", "error");
+      } else {
+        await new Promise((resolve) =>
+          setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
+        );
+      }
+    } else if (event.type === "ErrorResponse") {
+      showToast(event.errorMessage, "error");
     } else if (event.type === "GameEnd") {
       // TODO
     }
@@ -144,6 +206,8 @@ export const EventProvider = ({
 
       setEventQueue(eventQueue.slice(1));
     } finally {
+      // remove the event if it failed, to prevent infinite loop
+      setEventQueue(eventQueue.slice(1));
       setIsProcessing(false);
     }
   };

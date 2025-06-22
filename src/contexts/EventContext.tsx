@@ -126,10 +126,8 @@ export const EventProvider = ({
       addToLogbook(`### ${event.locationData.name}`);
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
-    } else if (event.type === "PlayerActionsStart") {
+    } else if (event.type === "PlayerActions") {
       setShowPromptInput(true);
-    } else if (event.type === "PlayerActionsEnd") {
-      // TODO
     } else if (event.type === "GameEnd") {
       // TODO
     }

@@ -64,12 +64,6 @@ const NpcOverlay = ({
           <div className="mt-4">
             <div className="font-bold">{npcData.name}</div>
             <div>{npcData.description}</div>
-            <div>
-              <span className="italic font-bold">Effects:</span>{" "}
-              {npcState.effects.length > 0
-                ? npcState.effects.join(", ")
-                : "none"}
-            </div>
           </div>
         </div>
       </div>

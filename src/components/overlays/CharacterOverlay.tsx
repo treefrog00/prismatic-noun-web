@@ -94,18 +94,6 @@ const CharacterOverlay = ({
                 <span className="ml-4">none</span>
               )}
             </div>
-            <div>
-              <span className="italic font-bold">Inventory:</span>{" "}
-              {characterState.inventory.length > 0
-                ? characterState.inventory.join(", ")
-                : "none"}
-            </div>
-            <div>
-              <span className="italic font-bold">Effects:</span>{" "}
-              {characterState.effects.length > 0
-                ? characterState.effects.join(", ")
-                : "none"}
-            </div>
           </div>
         </div>
       </div>

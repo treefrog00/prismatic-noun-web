@@ -91,7 +91,7 @@ const StoryButtons: React.FC = () => {
               style={{ width: "calc(100% - 32rem)" }}
               className="flex flex-col"
             >
-              <div className="flex-grow mb-4 max-h-64">
+              <div className="flex-grow mb-4">
                 <TextInput
                   text={myPrompt}
                   setText={(value: string) => {

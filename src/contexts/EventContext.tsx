@@ -196,7 +196,6 @@ export const EventProvider = ({
       setShowPromptInput({
         show: true,
         playerPrompt: event.playerPrompt,
-        turnsRemaining: event.turnsRemaining,
       });
     } else if (event.type === "StillWaiting") {
       waitCount++;

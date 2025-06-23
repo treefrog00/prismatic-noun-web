@@ -45,13 +45,8 @@ type GameContextType = {
   showPromptInput: {
     show: boolean;
     playerPrompt: string;
-    turnsRemaining: number;
   };
-  setShowPromptInput: (value: {
-    show: boolean;
-    playerPrompt: string;
-    turnsRemaining: number;
-  }) => void;
+  setShowPromptInput: (value: { show: boolean; playerPrompt: string }) => void;
 
   diceRollState: DiceRollState;
   setDiceRollState: (value: DiceRollState) => void;
@@ -115,11 +110,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [showPromptInput, setShowPromptInput] = useState<{
     show: boolean;
     playerPrompt: string;
-    turnsRemaining: number;
   }>({
     show: false,
     playerPrompt: "",
-    turnsRemaining: 0,
   });
   const [isPaused, setIsPaused] = useState(false);
   const [showTopBar, setShowTopBar] = useState(false);

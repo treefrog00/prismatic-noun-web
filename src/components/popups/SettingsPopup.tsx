@@ -12,12 +12,15 @@ interface SettingsPopupProps {
 const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const { setPlaylist } = useStereo();
+  const { playlist, setPlaylist } = useStereo();
   const { setGameStage } = useGameStage();
 
   const handleReturnToHome = () => {
     setGameStage("lobby");
-    setPlaylist(LOBBY_PLAYLIST);
+    // some scenarios might use the same playlist as the lobby
+    if (JSON.stringify(playlist) !== JSON.stringify(LOBBY_PLAYLIST)) {
+      setPlaylist(LOBBY_PLAYLIST);
+    }
   };
 
   return (

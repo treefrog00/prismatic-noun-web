@@ -9,6 +9,7 @@ export const LOBBY_PLAYLIST: string[] = ["dream"];
 interface StereoContextType {
   turnOffMusic: () => void;
   turnOnMusic: () => void;
+  playlist: string[];
   setPlaylist: (playlist: string[]) => void;
   initialPlay: () => void;
   isMusicEnabled: boolean;
@@ -222,6 +223,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         turnOffMusic,
         turnOnMusic,
+        playlist,
         setPlaylist,
         initialPlay,
         isMusicEnabled,

@@ -252,12 +252,18 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Process each word
       words.forEach((word) => {
-        if (word.startsWith("<hl>")) {
+        // Check if this word has highlight tags (either opening, closing, or both)
+        if (word.includes("<hl>")) {
+          // Remove the highlight tags for processing
           word = word.replace("<hl>", "").replace("</hl>", "");
           isYellow = true;
-        } else {
+        } else if (word.includes("</hl>")) {
+          // This word ends the highlight section
+          word = word.replace("</hl>", "");
           isYellow = false;
         }
+        // If isYellow is true from previous words, continue highlighting
+        // (no need to check here as isYellow state is maintained)
 
         if (finishedFirstLine && !animateAll) {
           return;

@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useUiState, useIsPaused, useGameConfig } from "@/contexts/GameContext";
+import { useUiState, useIsPaused } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import {
@@ -11,7 +11,7 @@ import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
-import { env } from "process";
+import { useGameConfig } from "@/contexts/AppContext";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);

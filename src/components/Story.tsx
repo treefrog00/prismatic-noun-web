@@ -1,6 +1,6 @@
 import { useRef, useImperativeHandle, forwardRef } from "react";
 import { getStyles } from "../styles/shared";
-import { useGameConfig } from "@/contexts/GameContext";
+import { useGameConfig } from "@/contexts/AppContext";
 import { QuestSummary } from "@/types";
 
 // Constants

@@ -18,7 +18,7 @@ import {
 } from "./GameContext";
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
-import { useGameConfig } from "./GameContext";
+import { useGameConfig } from "@/contexts/AppContext";
 import { appendToStory, clearStory, StoryEventType } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
@@ -28,7 +28,6 @@ import { useStereo } from "./StereoContext";
 import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
 import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
-import { rpcAppendEvents } from "@/util/rpcEvents";
 import { permaConsoleLog } from "@/util/logger";
 
 type EventContextType = {

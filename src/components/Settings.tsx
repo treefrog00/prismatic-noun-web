@@ -1,6 +1,5 @@
 import React from "react";
-import { useAppContext } from "@/contexts/AppContext";
-import { useGameConfig } from "@/contexts/GameContext";
+import { useAppContext, useGameConfig } from "@/contexts/AppContext";
 import MusicToggle from "@/components/settings/MusicToggle";
 import ToggleSwitch from "./ToggleSwitch";
 

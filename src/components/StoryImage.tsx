@@ -1,4 +1,5 @@
-import { useGameConfig, useMainImage } from "@/contexts/GameContext";
+import { useMainImage } from "@/contexts/GameContext";
+import { useGameConfig } from "@/contexts/AppContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import artUrl from "@/util/artUrls";
 import React, { useEffect, useRef, useState } from "react";

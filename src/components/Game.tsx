@@ -6,9 +6,7 @@ import { QuestSummariesSchema } from "../types/validatedTypes";
 
 import {
   useGameApi,
-  useLocalPlayers,
   useGameData,
-  useGameConfig,
   useUiState,
   useDiceRoll,
 } from "../contexts/GameContext";
@@ -16,7 +14,7 @@ import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
 import StoryButtons from "./StoryButtons";
 import { storyEvents, StoryEventType } from "@/core/storyEvents";
-import { useAppContext } from "@/contexts/AppContext";
+import { useAppContext, useGameConfig } from "@/contexts/AppContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";

@@ -1,4 +1,3 @@
-import { useGameConfig } from "@/contexts/GameContext";
 import { useEffect } from "react";
 
 interface TextInputProps {

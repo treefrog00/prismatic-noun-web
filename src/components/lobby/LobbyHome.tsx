@@ -1,8 +1,7 @@
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { starryTheme } from "@/styles/starryTheme";
 import { QuestSummary } from "@/types";
-import { useGameStage } from "@/contexts/GameContext";
-import { useAppContext } from "@/contexts/AppContext";
+import { useAppContext, useGameStage } from "@/contexts/AppContext";
 import artUrl from "@/util/artUrls";
 
 interface LobbyHomeProps {

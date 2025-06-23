@@ -9,7 +9,6 @@ import { starryTheme } from "@/styles/starryTheme";
 import { GameApi } from "@/core/gameApi";
 import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
-import { useUiState } from "@/contexts/GameContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 
 const LobbyContent = () => {
@@ -25,7 +24,6 @@ const LobbyContent = () => {
     seenLaunchScreen,
   } = useAppContext();
   const gameApi = new GameApi(backendUrl);
-  const { setShowTopBar } = useUiState();
 
   // Redirect to home if user hasn't seen launch screen
   useEffect(() => {
@@ -45,7 +43,6 @@ const LobbyContent = () => {
 
       setIsCoinInserted(true);
       setQuestSummary(quests.quests[0]);
-      setShowTopBar(false);
     };
 
     initializeGame();

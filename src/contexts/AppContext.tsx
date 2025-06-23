@@ -2,6 +2,20 @@ import { envConfig } from "@/envConfig";
 import { QuestSummary } from "@/types";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
+export type GameStage = "lobby" | "play";
+
+type GameConfig = {
+  shouldAnimateDice: boolean;
+  shouldAnimateText: boolean;
+  shouldAnimateImages: boolean;
+  promptLimit: number;
+};
+
+// Animation config local storage keys
+export const ANIMATE_DICE_KEY = "shouldAnimateDice";
+export const ANIMATE_TEXT_KEY = "shouldAnimateText";
+export const ANIMATE_IMAGES_KEY = "shouldAnimateImages";
+
 interface AppContextType {
   shouldAnimateStars: boolean;
   setShouldAnimateStars: (show: boolean) => void;
@@ -11,6 +25,16 @@ interface AppContextType {
   setBackendUrl: (value: string | null) => void;
   seenLaunchScreen: boolean;
   setSeenLaunchScreen: (value: boolean) => void;
+
+  gameStage: GameStage;
+  setGameStage: (value: GameStage) => void;
+
+  gameConfig: GameConfig;
+  setGameConfig: (value: GameConfig) => void;
+
+  handleSetShouldAnimateDice: (show: boolean) => void;
+  handleSetShouldAnimateText: (show: boolean) => void;
+  handleSetShouldAnimateImages: (show: boolean) => void;
 }
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -51,6 +75,51 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem("seenLaunchScreen", value.toString());
   };
 
+  // this used to be multiplayer state, which required it to be in game provider
+  const [gameStage, setGameStage] = useState<GameStage>("lobby");
+
+  // this used to be multiplayer state, which required it to be in game provider
+  const [gameConfig, setGameConfig] = useState<GameConfig>({
+    shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) !== "false",
+    shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) !== "false",
+    shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) !== "false",
+    promptLimit: 0,
+  });
+
+  useEffect(() => {
+    const savedValue = localStorage.getItem(ANIMATE_DICE_KEY);
+    if (savedValue !== null) {
+      setGameConfig({
+        ...gameConfig,
+        shouldAnimateDice: savedValue === "true",
+      });
+    }
+  }, []);
+
+  const handleSetShouldAnimateDice = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateDice: show,
+    });
+    localStorage.setItem(ANIMATE_DICE_KEY, show.toString());
+  };
+
+  const handleSetShouldAnimateText = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateText: show,
+    });
+    localStorage.setItem(ANIMATE_TEXT_KEY, show.toString());
+  };
+
+  const handleSetShouldAnimateImages = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateImages: show,
+    });
+    localStorage.setItem(ANIMATE_IMAGES_KEY, show.toString());
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -62,6 +131,16 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
         setBackendUrl,
         seenLaunchScreen,
         setSeenLaunchScreen: handleSetSeenLaunchScreen,
+
+        gameConfig,
+        setGameConfig,
+
+        gameStage,
+        setGameStage,
+
+        handleSetShouldAnimateDice,
+        handleSetShouldAnimateText,
+        handleSetShouldAnimateImages,
       }}
     >
       {children}
@@ -72,4 +151,26 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAppContext = () => {
   const context = useContext(AppContext);
   return context;
+};
+
+export const useGameStage = () => {
+  const context = useContext(AppContext);
+  return {
+    gameStage: context.gameStage,
+    setGameStage: context.setGameStage,
+  };
+};
+
+export const useGameConfig = () => {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useGameConfig must be used within a AppContext");
+  }
+  return {
+    gameConfig: context.gameConfig,
+    setGameConfig: context.setGameConfig,
+    handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
+    handleSetShouldAnimateText: context.handleSetShouldAnimateText,
+    handleSetShouldAnimateImages: context.handleSetShouldAnimateImages,
+  };
 };

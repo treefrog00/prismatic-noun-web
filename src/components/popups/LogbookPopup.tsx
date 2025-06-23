@@ -1,8 +1,6 @@
 import React from "react";
 import Popup from "@/components/popups/Popup";
-import MusicToggle from "@/components/settings/MusicToggle";
-import ToggleSwitch from "../ToggleSwitch";
-import { useGameConfig, useLogbook } from "@/contexts/GameContext";
+import { useLogbook } from "@/contexts/GameContext";
 import { processTextFormatting } from "../Story";
 import { getStyles } from "@/styles/shared";
 

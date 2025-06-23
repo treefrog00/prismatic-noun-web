@@ -42,16 +42,6 @@ const RootProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Game-specific provider that adds GameContext and EventContext
-const GameProvider_Wrapper = ({ children }: { children: ReactNode }) => {
-  return (
-    <GameProvider>
-      <EventProvider>{children}</EventProvider>
-    </GameProvider>
-  );
-};
-
-// Launch page component
 const LaunchPage = () => {
   return (
     <div className="min-h-screen bg-gray-900 px-0">
@@ -89,9 +79,7 @@ export const routes: RouteObject[] = [
     path: "/play",
     element: (
       <RootProvider>
-        <GameProvider_Wrapper>
-          <Play />
-        </GameProvider_Wrapper>
+        <Play />
       </RootProvider>
     ),
   },

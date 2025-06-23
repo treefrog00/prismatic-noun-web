@@ -11,19 +11,8 @@ import {
   LocationState,
   DiceRoll,
 } from "../types";
-import {
-  createContext,
-  useContext,
-  ReactNode,
-  useState,
-  useEffect,
-} from "react";
+import { createContext, useContext, ReactNode, useState } from "react";
 import { useAppContext } from "./AppContext";
-
-// Animation config local storage keys
-export const ANIMATE_DICE_KEY = "shouldAnimateDice";
-export const ANIMATE_TEXT_KEY = "shouldAnimateText";
-export const ANIMATE_IMAGES_KEY = "shouldAnimateImages";
 
 export interface DiceRollState {
   show: boolean;
@@ -31,15 +20,6 @@ export interface DiceRollState {
   locationRoll: DiceRoll;
   continueButton: boolean;
 }
-
-export type GameStage = "lobby" | "play";
-
-type GameConfig = {
-  shouldAnimateDice: boolean;
-  shouldAnimateText: boolean;
-  shouldAnimateImages: boolean;
-  promptLimit: number;
-};
 
 type GameContextType = {
   gameData: GameData | null;
@@ -60,16 +40,7 @@ type GameContextType = {
   localPlayerPrompt: string;
   setLocalPlayerPrompt: (value: string, reliable?: boolean) => void;
 
-  gameStage: GameStage;
-  setGameStage: (value: GameStage) => void;
-
   gameApi: GameApi;
-
-  gameConfig: GameConfig;
-  setGameConfig: (value: GameConfig) => void;
-  handleSetShouldAnimateDice: (show: boolean) => void;
-  handleSetShouldAnimateText: (show: boolean) => void;
-  handleSetShouldAnimateImages: (show: boolean) => void;
 
   showPromptInput: {
     show: boolean;
@@ -116,21 +87,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     null,
   );
 
-  const [gameStage, setGameStage] = useMultiplayerState<GameStage>(
-    "gameStage",
-    "lobby",
-  );
-
-  const [gameConfig, setGameConfig] = useMultiplayerState<GameConfig>(
-    "gameConfig",
-    {
-      shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) !== "false",
-      shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) !== "false",
-      shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) !== "false",
-      promptLimit: 0,
-    },
-  );
-
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
@@ -175,40 +131,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   };
   //////////////////////////// end of React only state ////////////////////////////
 
-  useEffect(() => {
-    const savedValue = localStorage.getItem(ANIMATE_DICE_KEY);
-    if (savedValue !== null) {
-      setGameConfig({
-        ...gameConfig,
-        shouldAnimateDice: savedValue === "true",
-      });
-    }
-  }, []);
-
-  const handleSetShouldAnimateDice = (show: boolean) => {
-    setGameConfig({
-      ...gameConfig,
-      shouldAnimateDice: show,
-    });
-    localStorage.setItem(ANIMATE_DICE_KEY, show.toString());
-  };
-
-  const handleSetShouldAnimateText = (show: boolean) => {
-    setGameConfig({
-      ...gameConfig,
-      shouldAnimateText: show,
-    });
-    localStorage.setItem(ANIMATE_TEXT_KEY, show.toString());
-  };
-
-  const handleSetShouldAnimateImages = (show: boolean) => {
-    setGameConfig({
-      ...gameConfig,
-      shouldAnimateImages: show,
-    });
-    localStorage.setItem(ANIMATE_IMAGES_KEY, show.toString());
-  };
-
   const gameApi = new GameApi(backendUrl);
 
   return (
@@ -234,22 +156,12 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         localPlayerPrompt,
         setLocalPlayerPrompt,
 
-        gameConfig,
-        setGameConfig,
-
-        handleSetShouldAnimateDice,
-        handleSetShouldAnimateText,
-        handleSetShouldAnimateImages,
-
         // Action handler state
         showPromptInput,
         setShowPromptInput,
 
         diceRollState,
         setDiceRollState,
-
-        gameStage,
-        setGameStage,
 
         mainImage,
         setMainImage,
@@ -283,14 +195,6 @@ export const useDiceRoll = () => {
 export const useGameData = () => {
   const context = useContext(GameContext);
   return { gameData: context.gameData, setGameData: context.setGameData };
-};
-
-export const useGameStage = () => {
-  const context = useContext(GameContext);
-  return {
-    gameStage: context.gameStage,
-    setGameStage: context.setGameStage,
-  };
 };
 
 export const useLocationData = () => {
@@ -355,20 +259,6 @@ export const useUiState = () => {
     setShowPromptInput: context.setShowPromptInput,
     showTopBar: context.showTopBar,
     setShowTopBar: context.setShowTopBar,
-  };
-};
-
-export const useGameConfig = () => {
-  const context = useContext(GameContext);
-  if (!context) {
-    throw new Error("useGameConfig must be used within a GameProvider");
-  }
-  return {
-    gameConfig: context.gameConfig,
-    setGameConfig: context.setGameConfig,
-    handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
-    handleSetShouldAnimateText: context.handleSetShouldAnimateText,
-    handleSetShouldAnimateImages: context.handleSetShouldAnimateImages,
   };
 };
 

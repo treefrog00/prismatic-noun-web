@@ -250,10 +250,13 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const CHAR_DELAY = 4; // Base delay per character
       const SCROLL_DELAY = 300; // Fixed delay for scrolling after new lines
 
+      let hadClosingTag = false;
+
       // Process each word
       words.forEach((word) => {
         // Check if this word has highlight tags (either opening, closing, or both)
         if (word.includes("<hl>")) {
+          hadClosingTag = word.includes("</hl>");
           // Remove the highlight tags for processing
           word = word.replace("<hl>", "").replace("</hl>", "");
           isYellow = true;
@@ -389,6 +392,11 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           }
 
           charIndex++;
+        }
+
+        if (hadClosingTag) {
+          // This word ends the highlight section
+          isYellow = false;
         }
 
         // Handle explicit newlines

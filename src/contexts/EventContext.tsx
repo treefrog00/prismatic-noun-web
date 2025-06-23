@@ -189,6 +189,8 @@ export const EventProvider = ({
       setLocationState(event.locationState);
       setLocationData(event.locationData);
       addToLogbook(`### ${event.locationData.name}`);
+    } else if (event.type === "ClearStory") {
+      clearStory();
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerInput") {

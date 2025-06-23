@@ -63,6 +63,27 @@ const addPerWordHighlights = (text: string) => {
   return processedWords;
 };
 
+// Helper function to process text formatting
+export const processTextFormatting = (
+  text: string,
+  sharedStyles: any,
+  italic: boolean = false,
+) => {
+  let finalText = text
+    .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
+    .replace(/<\/hl>/g, "</span>")
+    .replace(/<i>/g, `<span style="font-style: italic;">`)
+    .replace(/<\/i>/g, "</span>")
+    .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); // Replace <tab> at line start with 4 spaces
+
+  // If italic is true, wrap the entire text in highlight styling and make it italic
+  if (italic) {
+    finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
+  }
+
+  return finalText.replace(/\n/g, "<br>");
+};
+
 const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
@@ -82,23 +103,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       top: textDisplay.scrollHeight,
       behavior: "smooth",
     });
-  };
-
-  // Helper function to process text formatting
-  const processTextFormatting = (text: string, italic: boolean = false) => {
-    let finalText = text
-      .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
-      .replace(/<\/hl>/g, "</span>")
-      .replace(/<i>/g, `<span style="font-style: italic;">`)
-      .replace(/<\/i>/g, "</span>")
-      .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); // Replace <tab> at line start with 4 spaces
-
-    // If italic is true, wrap the entire text in highlight styling and make it italic
-    if (italic) {
-      finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
-    }
-
-    return finalText.replace(/\n/g, "<br>");
   };
 
   // Helper function to create text container and paragraph
@@ -399,7 +403,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        const finalText = processTextFormatting(text);
+        const finalText = processTextFormatting(text, sharedStyles);
 
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
@@ -420,7 +424,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const textContainer = createTextContainer();
       if (!textContainer) return;
 
-      const processedText = processTextFormatting(text);
+      const processedText = processTextFormatting(text, sharedStyles);
       createAndAppendParagraph(textContainer, processedText);
 
       scrollToBottom();
@@ -431,7 +435,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const textContainer = createTextContainer();
       if (!textContainer) return;
 
-      const processedText = processTextFormatting(text, italic);
+      const processedText = processTextFormatting(text, sharedStyles, italic);
       createAndAppendParagraph(textContainer, processedText);
 
       // Set initial opacity to 0 for fade-in effect

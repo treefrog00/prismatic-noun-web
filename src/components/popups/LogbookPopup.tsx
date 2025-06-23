@@ -3,6 +3,8 @@ import Popup from "@/components/popups/Popup";
 import MusicToggle from "@/components/settings/MusicToggle";
 import ToggleSwitch from "../ToggleSwitch";
 import { useGameConfig, useLogbook } from "@/contexts/GameContext";
+import { processTextFormatting } from "../Story";
+import { getStyles } from "@/styles/shared";
 
 interface LogbookPopupProps {
   isOpen: boolean;
@@ -11,7 +13,7 @@ interface LogbookPopupProps {
 
 const LogbookPopup: React.FC<LogbookPopupProps> = ({ isOpen, onClose }) => {
   const { logbook } = useLogbook();
-
+  const sharedStyles = getStyles("darkBlue");
   if (!isOpen) return null;
 
   return (
@@ -26,11 +28,13 @@ const LogbookPopup: React.FC<LogbookPopupProps> = ({ isOpen, onClose }) => {
           <p className="text-center text-gray-400">No entries yet.</p>
         ) : (
           logbook.map((entry, index) => (
-            <div
-              key={index}
-              className="p-3 bg-gray-800 bg-opacity-50 rounded-lg"
-            >
-              <p className="text-white">{entry}</p>
+            <div key={index} className="p-3">
+              <p
+                className="text-white"
+                dangerouslySetInnerHTML={{
+                  __html: processTextFormatting(entry, sharedStyles),
+                }}
+              />
             </div>
           ))
         )}

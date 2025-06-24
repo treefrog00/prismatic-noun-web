@@ -154,8 +154,11 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
-    updateText: (text: string, animateAll: boolean = false) => {
+    updateText: async (text: string, animateAll: boolean = false) => {
       if (!textDisplayRef.current) return;
+
+      // Ensure fonts are loaded before we start measuring text
+      await document.fonts.ready;
 
       const textDisplay = textDisplayRef.current;
       paragraphCount++;
@@ -223,7 +226,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       tempSpan.style.visibility = "hidden";
       tempSpan.style.position = "absolute";
       tempSpan.style.fontSize = window.getComputedStyle(textDisplay).fontSize;
-      document.body.appendChild(tempSpan);
+      textDisplay.appendChild(tempSpan);
 
       // Function to calculate space width
       function calculateSpaceWidth() {
@@ -413,7 +416,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       });
 
       // Remove the temporary measurement span
-      document.body.removeChild(tempSpan);
+      textDisplay.removeChild(tempSpan);
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {

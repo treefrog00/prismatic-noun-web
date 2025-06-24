@@ -59,11 +59,29 @@ export const themeColors = {
     highlight: "text-indigo-300",
     gradient: ["#0f1729", "#1f2937", "#111827"],
   },
+  green: {
+    container: "bg-zinc-900",
+    text: "text-gray-300",
+    highlight: "text-yellow-400",
+    gradient: ["#1f2937", "#052e16"],
+  },
+  purple: {
+    container: "bg-gray-900",
+    text: "text-gray-100",
+    highlight: "text-red-400",
+    gradient: ["#9333ea", "#9333ea", "#000000", "#000000", "#000000"],
+  },
   darkBlue: {
     container: "bg-gray-800",
     text: "text-gray-300",
     highlight: "text-yellow-400",
     gradient: ["#0f1729", "#1f2937", "#111827"],
+  },
+  space: {
+    container: "bg-gray-800",
+    text: "text-gray-300",
+    highlight: "text-yellow-400",
+    gradient: ["#374151", "#374151", "#71717a"],
   },
 } as const;
 

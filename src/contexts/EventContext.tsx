@@ -190,6 +190,7 @@ export const EventProvider = ({
       addToLogbook(`### ${event.locationData.name}`);
     } else if (event.type === "ClearStory") {
       clearStory();
+      isFirstParagraph = true;
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerInput") {

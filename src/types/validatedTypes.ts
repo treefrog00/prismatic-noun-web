@@ -74,7 +74,7 @@ const LocationDataSchema = z.object({
 });
 
 const DiceRollSchema = z.object({
-  label: z.string(),
+  label: z.string().nullable(),
   targetValues: z.array(z.number()),
 });
 
@@ -97,6 +97,10 @@ const GameEventSchema = z.discriminatedUnion("type", [
     type: z.literal("DiceRollScreen"),
     characterRolls: z.array(DiceRollSchema),
     locationRoll: DiceRollSchema,
+  }),
+
+  z.object({
+    type: z.literal("ActPartTwoNoDiceRoll"),
   }),
 
   z.object({

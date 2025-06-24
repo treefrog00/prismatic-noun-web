@@ -179,6 +179,8 @@ export const EventProvider = ({
         locationRoll: event.locationRoll,
         continueButton: true,
       });
+    } else if (event.type === "ActPartTwoNoDiceRoll") {
+      return await fetchActPartTwo(gameApi, gameData);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
       permaConsoleLog("RejectPromptResponse", event.rejectionMessage);

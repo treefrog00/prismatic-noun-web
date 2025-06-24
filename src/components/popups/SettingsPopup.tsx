@@ -36,8 +36,14 @@ const SettingsPopup: React.FC<SettingsPopupProps> = ({ isOpen, onClose }) => {
         </div>
         <div className="flex justify-center mt-10">
           <button
+            onClick={onClose}
+            className="bg-blue-600 hover:bg-gray-700 px-4 py-2 rounded text-white mr-4"
+          >
+            Close
+          </button>
+          <button
             onClick={handleReturnToHome}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
+            className="bg-gray-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
           >
             Exit to Main Menu
           </button>

@@ -282,7 +282,7 @@ const StoryImage: React.FC = () => {
     <div className="w-128 h-128 flex overflow-hidden">
       {!gameConfig.shouldAnimateImages ? (
         // Simple image display when animation is disabled
-        currentImage && (
+        currentImage ? (
           <img
             src={artUrl(currentImage)}
             alt="Story scene"
@@ -291,6 +291,8 @@ const StoryImage: React.FC = () => {
               ...responsiveStyles.mask,
             }}
           />
+        ) : (
+          <img src={artUrl("blank.webp")} width="512" height="512" />
         )
       ) : (
         // Canvas animation when animation is enabled

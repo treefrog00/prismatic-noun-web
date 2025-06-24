@@ -1,5 +1,6 @@
 import { z } from "zod/v4";
 import { ThemeColorKey, themeColors } from "@/styles/shared";
+import { zodErrorsIntegration } from "@sentry/react";
 
 export const ExchangeCodeResponseSchema = z.object({
   prismaticNounToken: z.string(),
@@ -123,6 +124,16 @@ const GameEventSchema = z.discriminatedUnion("type", [
   }),
   z.object({
     type: z.literal("ClearStory"),
+  }),
+  z.object({
+    type: z.literal("AddCharacter"),
+    name: z.string(),
+    state: CharacterStateSchema,
+  }),
+  z.object({
+    type: z.literal("ChangePortrait"),
+    characterName: z.string(),
+    imageUrl: z.string(),
   }),
   z.object({
     type: z.literal("PlayerInput"),

@@ -27,7 +27,11 @@ import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
 import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
-import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
+import {
+  EventsResponseSchema,
+  GameData,
+  CharacterState,
+} from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
 
 type EventContextType = {
@@ -100,7 +104,7 @@ export const EventProvider = ({
   const { addToLogbook } = useLogbook();
   const { showToast } = useToast();
   const gameApi = useGameApi();
-  const { gameData } = useGameData();
+  const { gameData, setGameData } = useGameData();
 
   const processEvent = async (
     event: GameEvent,
@@ -191,6 +195,27 @@ export const EventProvider = ({
     } else if (event.type === "ClearStory") {
       clearStory();
       isFirstParagraph = true;
+    } else if (event.type === "AddCharacter") {
+      setCharacters((prevCharacters: Record<string, CharacterState>) => {
+        const newCharacters: Record<string, CharacterState> = {
+          ...prevCharacters,
+          [event.name]: event.state,
+        };
+        return newCharacters;
+      });
+    } else if (event.type === "ChangePortrait") {
+      if (gameData) {
+        setGameData({
+          ...gameData,
+          characters: {
+            ...gameData.characters,
+            [event.characterName]: {
+              ...gameData.characters[event.characterName],
+              imageUrl: event.imageUrl,
+            },
+          },
+        });
+      }
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerInput") {

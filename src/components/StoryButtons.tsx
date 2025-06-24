@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useUiState, useIsPaused } from "@/contexts/GameContext";
+import { useUiState, useIsPaused, useCharacters } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import {
@@ -21,6 +21,7 @@ const StoryButtons: React.FC = () => {
 
   const { showPromptInput, setShowPromptInput } = useUiState();
   const { gameConfig } = useGameConfig();
+  const { characters } = useCharacters();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
@@ -61,8 +62,8 @@ const StoryButtons: React.FC = () => {
   };
 
   const placeHolder =
-    Object.keys(gameData?.characters || {}).length > 0
-      ? `${formatCharacterList(Object.values(gameData.characters).map((character) => character.name))}: ${showPromptInput.playerPrompt}`
+    Object.keys(characters || {}).length > 0
+      ? `${formatCharacterList(Object.keys(characters))}: ${showPromptInput.playerPrompt}`
       : "error";
 
   useEffect(() => {

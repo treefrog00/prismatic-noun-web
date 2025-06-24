@@ -51,15 +51,15 @@ const LaunchScreen = () => {
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200 text-lg space-y-4`}>
-                <p>A collection of weird and spooky stories.</p>
+                <p>A collection of semi-interactive weird and spooky stories.</p>
                 <p>
                   WARNING: creepy events and AI generated content lie in wait
                   ahead! Not suitable for those under the age of 13.
                 </p>
 
                 <p>
-                  Feel free to adjust your headphones or volume control, but
-                  please do not attempt to adjust the picture.
+                  Please feel free to adjust your headphones or volume control, but
+                  do not attempt to adjust the picture.
                 </p>
               </div>
             </div>

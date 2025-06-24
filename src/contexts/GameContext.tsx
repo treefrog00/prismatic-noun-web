@@ -32,7 +32,13 @@ type GameContextType = {
   setLocationState: (value: LocationState | null) => void;
 
   characters: Record<string, CharacterState>;
-  setCharacters: (value: Record<string, CharacterState>) => void;
+  setCharacters: (
+    value:
+      | Record<string, CharacterState>
+      | ((
+          prev: Record<string, CharacterState>,
+        ) => Record<string, CharacterState>),
+  ) => void;
 
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;

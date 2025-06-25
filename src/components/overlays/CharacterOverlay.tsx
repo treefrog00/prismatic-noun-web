@@ -77,9 +77,9 @@ const CharacterOverlay = ({
               </button>
             </div>
             <div>{characterData.description}</div>
-            <div className="mt-4">
-              <span className="italic font-bold">Abilities:</span>
-              {characterData.abilities.length > 0 ? (
+            {characterData.abilities.length > 0 && (
+              <div className="mt-4">
+                <span className="italic font-bold">Abilities:</span>
                 <ul className="ml-4 mt-1 space-y-1">
                   {characterData.abilities.map((ability, index) => (
                     <li key={index}>
@@ -90,10 +90,8 @@ const CharacterOverlay = ({
                     </li>
                   ))}
                 </ul>
-              ) : (
-                <span className="ml-4">none</span>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

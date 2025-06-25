@@ -17,8 +17,7 @@ const StoryImage: React.FC = () => {
   const { mainImage } = useMainImage();
   const { gameConfig } = useGameConfig();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [currentImage, setCurrentImage] = useState<string | null>(mainImage);
-  const [newImage, setNewImage] = useState<string | null>(null);
+  const [displayImage, setDisplayImage] = useState<string | null>(mainImage);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pixels, setPixels] = useState<PixelData[]>([]);
   const animationRef = useRef<number>();
@@ -49,17 +48,14 @@ const StoryImage: React.FC = () => {
   // Handle image changes
   useEffect(() => {
     if (
-      mainImage !== currentImage &&
+      mainImage !== displayImage &&
       !isTransitioning &&
       gameConfig.shouldAnimateImages
     ) {
-      setNewImage(mainImage);
       setIsTransitioning(true);
+      setDisplayImage(mainImage);
 
-      // Clear current image immediately and start fade-in from transparent
-      setCurrentImage(null);
-
-      // Start transition for all pixels - always fade from transparent
+      // Start transition for all pixels - fade from transparent
       setPixels((prev) =>
         prev.map((pixel) => ({
           ...pixel,
@@ -68,12 +64,12 @@ const StoryImage: React.FC = () => {
           startTime: undefined, // Reset start time
         })),
       );
-    } else if (mainImage !== currentImage && !gameConfig.shouldAnimateImages) {
+    } else if (mainImage !== displayImage && !gameConfig.shouldAnimateImages) {
       // When animation is disabled, just update the image directly
-      setCurrentImage(mainImage);
+      setDisplayImage(mainImage);
       setIsTransitioning(false);
     }
-  }, [mainImage, currentImage, gameConfig.shouldAnimateImages]);
+  }, [mainImage, displayImage, gameConfig.shouldAnimateImages]);
 
   // Animation loop
   useEffect(() => {
@@ -143,8 +139,6 @@ const StoryImage: React.FC = () => {
         });
 
         if (allComplete) {
-          setCurrentImage(newImage);
-          setNewImage(null);
           setIsTransitioning(false);
         }
         return updated;
@@ -258,10 +252,8 @@ const StoryImage: React.FC = () => {
     const allPixelsStable =
       pixels.length > 0 && pixels.every((p) => p.phase === "stable");
 
-    if (allPixelsStable && (currentImage || newImage)) {
+    if (allPixelsStable && displayImage) {
       // Draw the image normally (smooth) when transition is complete
-      // Use newImage if currentImage hasn't been updated yet (prevents flicker)
-      const imageToDisplay = currentImage || newImage;
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
@@ -269,22 +261,20 @@ const StoryImage: React.FC = () => {
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       };
-      img.src = artUrl(imageToDisplay);
+      img.src = artUrl(displayImage);
     } else {
-      // Always draw the new image during transition (since we cleared current image)
-      const imageToDraw = isTransitioning ? newImage : currentImage;
-
-      drawImage(imageToDraw, () => {});
+      // Draw with pixel animation during transition
+      drawImage(displayImage, () => {});
     }
-  }, [pixels, currentImage, newImage, isTransitioning]);
+  }, [pixels, displayImage, isTransitioning]);
 
   return (
     <div className="w-128 h-128 flex overflow-hidden">
       {!gameConfig.shouldAnimateImages ? (
         // Simple image display when animation is disabled
-        currentImage ? (
+        displayImage ? (
           <img
-            src={artUrl(currentImage)}
+            src={artUrl(displayImage)}
             alt="Story scene"
             className="object-cover w-full h-full"
             style={{

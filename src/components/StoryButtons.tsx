@@ -131,6 +131,7 @@ const StoryButtons: React.FC = () => {
                   }}
                   textInputRef={textInputRef}
                   onClose={() => {}}
+                  onOk={handleActOk}
                   placeHolder={placeHolder}
                   showCharCount={true}
                   maxLength={gameConfig.promptLimit}

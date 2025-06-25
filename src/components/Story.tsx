@@ -266,8 +266,39 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       let hadClosingTag = false;
 
+      // Pre-analyze to identify multi-word highlight sequences in processed words
+      const multiWordHighlightStarts = new Set();
+      let consecutiveHighlightCount = 0;
+      let highlightStartIndex = -1;
+
+      for (let i = 0; i < words.length; i++) {
+        const word = words[i];
+        const hasHighlight = word.includes("<hl>");
+
+        if (hasHighlight) {
+          if (consecutiveHighlightCount === 0) {
+            highlightStartIndex = i;
+          }
+          consecutiveHighlightCount++;
+        } else if (consecutiveHighlightCount > 0) {
+          // End of highlight sequence
+          if (consecutiveHighlightCount > 1) {
+            multiWordHighlightStarts.add(highlightStartIndex);
+          }
+          consecutiveHighlightCount = 0;
+          highlightStartIndex = -1;
+        }
+      }
+
+      // Handle case where highlight sequence goes to the end
+      if (consecutiveHighlightCount > 1) {
+        multiWordHighlightStarts.add(highlightStartIndex);
+      }
+
       // Process each word
-      words.forEach((word) => {
+      for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
+        let word = words[wordIndex];
+
         // Check if this word has highlight tags (either opening, closing, or both)
         if (word.includes("<hl>")) {
           hadClosingTag = word.includes("</hl>");
@@ -287,14 +318,55 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           // it used to be animateAll and controls which lines were animated,
           // but now we just ensure the first paragraph is always short if a scripted one,
           // and don't call this method at all for AI responses
-          return;
+          continue;
         }
+
+        // Check if we're at the start of a multi-word highlight sequence
+        let shouldWrapSequence = false;
+        const isStartOfMultiWordHighlight =
+          multiWordHighlightStarts.has(wordIndex);
+
+        if (isStartOfMultiWordHighlight) {
+          let sequenceWidth = 0;
+
+          // Calculate total width of consecutive highlighted words starting from this index
+          for (let i = wordIndex; i < words.length; i++) {
+            const checkWord = words[i];
+            if (!checkWord.includes("<hl>")) {
+              break; // End of highlight sequence
+            }
+
+            // Remove highlight tags for measurement
+            let measureWord = checkWord
+              .replace(/<hl>/g, "")
+              .replace(/<\/hl>/g, "");
+
+            if (measureWord.trim()) {
+              tempSpan.textContent = measureWord.replace(/ /g, "\u00A0");
+              sequenceWidth += tempSpan.getBoundingClientRect().width;
+            }
+          }
+
+          // Check if the entire sequence would overflow
+          if (word.trim() !== "" && currentX + sequenceWidth > usableWidth) {
+            shouldWrapSequence = true;
+          }
+        }
+
         // Measure the word width
         tempSpan.textContent = word.replace(/ /g, "\u00A0");
         const wordWidth = tempSpan.getBoundingClientRect().width;
 
         // Check if we need to wrap to a new line
-        if (word.trim() !== "" && currentX + wordWidth > usableWidth) {
+        // For multi-word highlighted sequences, use the sequence-based decision
+        // For regular words or single-word highlights, use the individual word decision
+        const shouldWrap =
+          shouldWrapSequence ||
+          (!isStartOfMultiWordHighlight &&
+            word.trim() !== "" &&
+            currentX + wordWidth > usableWidth);
+
+        if (shouldWrap) {
           currentX = 0;
           currentY += lineHeight;
           lineCount++;
@@ -433,7 +505,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
             }
           }
         }
-      });
+      }
 
       // Remove the temporary measurement span
       textDisplay.removeChild(tempSpan);

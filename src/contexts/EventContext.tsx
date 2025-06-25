@@ -118,10 +118,11 @@ export const EventProvider = ({
     }
 
     if (event.type === "Story") {
-      if (event.isAiResponse && pendingDiceText) {
-        appendToStory(pendingDiceText, { italic: true, skipScroll: true });
-        pendingDiceText = "";
-      }
+      // removed the dice roll text, it's not like it does anything anyway
+      // if (event.isAiResponse && pendingDiceText) {
+      //   appendToStory(pendingDiceText, { italic: true, skipScroll: true });
+      //   pendingDiceText = "";
+      // }
 
       let options = {};
       if (event.isAiResponse) {

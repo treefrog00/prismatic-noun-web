@@ -90,15 +90,6 @@ const StoryButtons: React.FC = () => {
     setIsPaused(false);
   };
 
-  const handleGenerate = async () => {
-    const response = await gameApi.postTyped(
-      `/game/${gameData.gameId}/generate_prompt`,
-      {},
-      GeneratePromptResponseSchema,
-    );
-    setMyPrompt(response.prompt);
-  };
-
   const handleReturnToMainMenu = async () => {
     setShowReturnToMainMenu(false);
     setGameStage("lobby");
@@ -138,14 +129,6 @@ const StoryButtons: React.FC = () => {
                 />
               </div>
               <div className="flex justify-end">
-                {import.meta.env.DEV && (
-                  <button
-                    className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3`}
-                    onPointerDown={() => handleGenerate()}
-                  >
-                    Generate
-                  </button>
-                )}
                 <button
                   className={`game-button ${getColorClasses("teal")} whitespace-nowrap w-1/3 ${
                     myPrompt.length === 0 ||

@@ -1,10 +1,6 @@
-export enum StoryEventType {
-  FIRST_PARAGRAPH = "firstParagraph",
-  NORMAL = "normal",
-  ITALIC = "italic",
-}
+import { StoryAppendOptions } from "@/components/Story";
 
-type StoryEventListener = (text: string, eventType: StoryEventType) => void;
+type StoryEventListener = (text: string, options: StoryAppendOptions) => void;
 type StoryClearListener = () => void;
 
 class StoryEventEmitter {
@@ -25,8 +21,8 @@ class StoryEventEmitter {
     };
   }
 
-  emit(text: string, eventType: StoryEventType) {
-    this.listeners.forEach((listener) => listener(text, eventType));
+  emit(text: string, options: StoryAppendOptions) {
+    this.listeners.forEach((listener) => listener(text, options));
   }
 
   emitClear() {
@@ -36,8 +32,8 @@ class StoryEventEmitter {
 
 export const storyEvents = new StoryEventEmitter();
 
-export function appendToStory(text: string, eventType: StoryEventType) {
-  storyEvents.emit(text, eventType);
+export function appendToStory(text: string, options: StoryAppendOptions) {
+  storyEvents.emit(text, options);
 }
 
 export function clearStory() {

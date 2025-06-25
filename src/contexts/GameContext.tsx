@@ -18,7 +18,7 @@ export interface DiceRollState {
   show: boolean;
   characterRolls: DiceRoll[];
   locationRoll: DiceRoll;
-  continueButton: boolean;
+  finishedAnimation: boolean;
 }
 
 type GameContextType = {
@@ -68,6 +68,9 @@ type GameContextType = {
 
   showTopBar: boolean;
   setShowTopBar: (value: boolean) => void;
+
+  showReturnToMainMenu: boolean;
+  setShowReturnToMainMenu: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -100,7 +103,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     show: false,
     characterRolls: [],
     locationRoll: null,
-    continueButton: false,
+    finishedAnimation: false,
   });
 
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -122,6 +125,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   });
   const [isPaused, setIsPaused] = useState(false);
   const [showTopBar, setShowTopBar] = useState(false);
+  const [showReturnToMainMenu, setShowReturnToMainMenu] = useState(false);
 
   // Logbook state
   const [logbook, setLogbook] = useState<string[]>([]);
@@ -173,6 +177,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         showTopBar,
         setShowTopBar,
+
+        showReturnToMainMenu,
+        setShowReturnToMainMenu,
       }}
     >
       {children}
@@ -258,6 +265,8 @@ export const useUiState = () => {
     setShowPromptInput: context.setShowPromptInput,
     showTopBar: context.showTopBar,
     setShowTopBar: context.setShowTopBar,
+    showReturnToMainMenu: context.showReturnToMainMenu,
+    setShowReturnToMainMenu: context.setShowReturnToMainMenu,
   };
 };
 

@@ -19,7 +19,7 @@ import {
 import { useLocationState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useGameConfig } from "@/contexts/AppContext";
-import { appendToStory, clearStory, StoryEventType } from "@/core/storyEvents";
+import { appendToStory, clearStory } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
 import queueMicrotask from "queue-microtask";
@@ -33,6 +33,7 @@ import {
   CharacterState,
 } from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
+import { StoryAppendOptions } from "@/components/Story";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -47,6 +48,7 @@ const EventContext = createContext<EventContextType | null>(null);
 
 let isFirstParagraph = true;
 let waitCount = 0;
+let pendingDiceText = "";
 
 const fetchActPartTwo = async (
   gameApi: GameApi,
@@ -61,11 +63,11 @@ const fetchActPartTwo = async (
   return response.events;
 };
 
-export const continueAfterDiceRoll = async (
+export const setPendingDiceText = async (
   diceRollState: DiceRollState,
   gameApi: GameApi,
   gameData: GameData,
-): Promise<GameEvent[]> => {
+) => {
   let characterRollsSums = [];
   for (const roll of diceRollState.characterRolls) {
     const sum = roll.targetValues.reduce((acc, val) => acc + val, 0);
@@ -79,9 +81,7 @@ export const continueAfterDiceRoll = async (
   );
   diceEventsText += `${diceRollState.locationRoll.label} rolled: ${sum}`;
 
-  appendToStory(diceEventsText, StoryEventType.ITALIC);
-
-  return await fetchActPartTwo(gameApi, gameData);
+  pendingDiceText = diceEventsText;
 };
 
 export const EventProvider = ({
@@ -99,7 +99,7 @@ export const EventProvider = ({
   const { setLocationData } = useLocationData();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
-  const { setShowPromptInput } = useUiState();
+  const { setShowPromptInput, setShowReturnToMainMenu } = useUiState();
   const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
   const { showToast } = useToast();
@@ -118,12 +118,19 @@ export const EventProvider = ({
     }
 
     if (event.type === "Story") {
-      appendToStory(
-        event.text,
-        isFirstParagraph
-          ? StoryEventType.FIRST_PARAGRAPH
-          : StoryEventType.NORMAL,
-      );
+      if (event.isAiResponse && pendingDiceText) {
+        appendToStory(pendingDiceText, { italic: true, skipScroll: true });
+        pendingDiceText = "";
+      }
+
+      let options = {};
+      if (event.isAiResponse) {
+        options = { skipScroll: true, animate: false };
+      } else if (isFirstParagraph && gameConfig.shouldAnimateText) {
+        options = { ...options, animate: true };
+      }
+
+      appendToStory(event.text, options as StoryAppendOptions);
 
       addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
 
@@ -144,22 +151,23 @@ export const EventProvider = ({
         await new Promise((resolve) => setTimeout(resolve, 1500));
       }
     } else if (event.type === "Pause") {
+      console.log("Pause");
       setIsPaused(true);
     } else if (event.type === "DiceRollScreen") {
       const diceRollState = {
         show: true,
         characterRolls: event.characterRolls,
         locationRoll: event.locationRoll,
-        continueButton: false,
+        finishedAnimation: false,
       };
+      setPendingDiceText(diceRollState, gameApi, gameData);
 
       if (!gameConfig.shouldAnimateDice) {
-        const followUpEvents = await continueAfterDiceRoll(
-          diceRollState,
-          gameApi,
-          gameData,
-        );
-        return followUpEvents;
+        return [
+          {
+            type: "StillWaiting",
+          },
+        ];
       }
 
       // the flushSync microtask is only needed for React 18+
@@ -174,12 +182,15 @@ export const EventProvider = ({
       );
 
       setDiceRollState({
-        show: true,
-        characterRolls: event.characterRolls,
-        locationRoll: event.locationRoll,
-        continueButton: true,
+        ...diceRollState,
+        finishedAnimation: true,
       });
-    } else if (event.type === "ActPartTwoNoDiceRoll") {
+      return [
+        {
+          type: "StillWaiting",
+        },
+      ];
+    } else if (event.type === "PollResponseNoDiceRoll") {
       return await fetchActPartTwo(gameApi, gameData);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
@@ -227,7 +238,8 @@ export const EventProvider = ({
       });
     } else if (event.type === "StillWaiting") {
       waitCount++;
-      if (waitCount > 15) {
+      if (waitCount > 30) {
+        waitCount = 0;
         showToast("Gave up waiting for AI response", "error");
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -236,7 +248,10 @@ export const EventProvider = ({
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
     } else if (event.type === "GameEnd") {
-      // TODO
+      appendToStory("The End", { italic: true, highlight: true });
+      setTimeout(() => {
+        setShowReturnToMainMenu(true);
+      }, 1000);
     }
   };
 

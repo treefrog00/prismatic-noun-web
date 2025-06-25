@@ -6,10 +6,17 @@ import { QuestSummary } from "@/types";
 // Constants
 const FADE_IN_DURATION = 1000; // Duration in milliseconds
 
+export interface StoryAppendOptions {
+  skipScroll?: boolean;
+  italic?: boolean;
+  animate?: boolean;
+  highlight?: boolean;
+}
+
 export interface StoryRef {
-  updateText: (text: string, animateAll?: boolean) => void;
-  appendNoAnimation: (text: string) => void;
-  appendFadeIn: (text: string, italic?: boolean) => void;
+  updateText: (text: string, options?: StoryAppendOptions) => void;
+  appendNoAnimation: (text: string, options?: StoryAppendOptions) => void; // unused
+  appendFadeIn: (text: string, options?: StoryAppendOptions) => void;
   clearStory: () => void;
   scrollToBottom: () => void;
 }
@@ -67,7 +74,7 @@ const addPerWordHighlights = (text: string) => {
 export const processTextFormatting = (
   text: string,
   sharedStyles: any,
-  italic: boolean = false,
+  options?: StoryAppendOptions,
 ) => {
   let finalText = text
     .replace(/<hl>/g, `<span class="${sharedStyles.highlight}">`)
@@ -77,8 +84,12 @@ export const processTextFormatting = (
     .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); // Replace <tab> at line start with 4 spaces
 
   // If italic is true, wrap the entire text in highlight styling and make it italic
-  if (italic) {
+  if (options?.italic) {
     finalText = `<span class="${sharedStyles.highlight}" style="font-style: italic;">${finalText}</span>`;
+  }
+
+  if (options?.highlight) {
+    finalText = `<span class="${sharedStyles.highlight}">${finalText}</span>`;
   }
 
   return finalText.replace(/\n/g, "<br>");
@@ -154,7 +165,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
   // Expose the updateText and updateChat methods to parent components
   useImperativeHandle(ref, () => ({
-    updateText: async (text: string, animateAll: boolean = false) => {
+    updateText: async (text: string, options?: StoryAppendOptions) => {
       if (!textDisplayRef.current) return;
 
       // Ensure fonts are loaded before we start measuring text
@@ -271,7 +282,11 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         // If isYellow is true from previous words, continue highlighting
         // (no need to check here as isYellow state is maintained)
 
-        if (finishedFirstLine && !animateAll) {
+        if (finishedFirstLine && !options?.animate) {
+          // note "animate" is currently always true when this method is called,
+          // it used to be animateAll and controls which lines were animated,
+          // but now we just ensure the first paragraph is always short if a scripted one,
+          // and don't call this method at all for AI responses
           return;
         }
         // Measure the word width
@@ -286,7 +301,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
           if (lineCount >= lastScrollLine + 5) {
             lastScrollLine = lineCount;
-            setTimeout(scrollToBottom, SCROLL_DELAY);
+            if (!options?.skipScroll) {
+              setTimeout(scrollToBottom, SCROLL_DELAY);
+            }
           }
           finishedFirstLine = true;
         }
@@ -352,7 +369,8 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           // Update position for next character
           currentX += charWidth;
 
-          if (!finishedFirstLine || animateAll) {
+          // see message above about "animate" parameter
+          if (!finishedFirstLine || options?.animate) {
             // Set initial position (from bottom of screen)
             charElement.style.left = finalX + "px";
             charElement.style.top =
@@ -410,7 +428,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
           if (lineCount >= lastScrollLine + 5) {
             lastScrollLine = lineCount;
-            setTimeout(scrollToBottom, SCROLL_DELAY);
+            if (!options?.skipScroll) {
+              setTimeout(scrollToBottom, SCROLL_DELAY);
+            }
           }
         }
       });
@@ -420,7 +440,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        const finalText = processTextFormatting(text, sharedStyles);
+        const finalText = processTextFormatting(text, sharedStyles, options);
 
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
@@ -435,32 +455,36 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         scrollToBottom();
       }, longestAnimationTime);
     },
-    appendNoAnimation: (text: string) => {
+    // unused
+    appendNoAnimation: (text: string, options?: StoryAppendOptions) => {
       if (!text || !textDisplayRef.current) return;
 
       const textContainer = createTextContainer();
       if (!textContainer) return;
 
-      const processedText = processTextFormatting(text, sharedStyles);
+      const processedText = processTextFormatting(text, sharedStyles, options);
       createAndAppendParagraph(textContainer, processedText);
 
-      scrollToBottom();
+      if (!options?.skipScroll) {
+        scrollToBottom();
+      }
     },
-    appendFadeIn: (text: string, italic: boolean = false) => {
+    appendFadeIn: (text: string, options?: StoryAppendOptions) => {
       if (!text || !textDisplayRef.current) return;
 
       const textContainer = createTextContainer();
       if (!textContainer) return;
 
-      const processedText = processTextFormatting(text, sharedStyles, italic);
+      const processedText = processTextFormatting(text, sharedStyles, options);
       createAndAppendParagraph(textContainer, processedText);
 
       // Set initial opacity to 0 for fade-in effect
       textContainer.style.opacity = "0";
       textContainer.style.transition = `opacity ${FADE_IN_DURATION}ms ease-in`;
 
-      // Scroll to bottom
-      scrollToBottom();
+      if (!options?.skipScroll) {
+        scrollToBottom();
+      }
 
       // Trigger fade-in effect
       setTimeout(() => {

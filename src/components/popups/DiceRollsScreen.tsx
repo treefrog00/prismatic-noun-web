@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Popup from "@/components/popups/Popup";
-import { useDiceRoll, useGameData } from "@/contexts/GameContext";
+import { useDiceRoll, useGameData, useIsPaused } from "@/contexts/GameContext";
 import DiceRollWithText from "@/components/DiceRollWithText";
 import { useGameApi } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
-import { continueAfterDiceRoll } from "@/contexts/EventContext";
-import { rpcAppendEvents } from "@/util/rpcEvents";
 import { permaConsoleLog } from "@/util/logger";
 
 const DiceRollsScreen: React.FC = () => {
   const { diceRollState, setDiceRollState } = useDiceRoll();
   const gameApi = useGameApi();
   const { gameData } = useGameData();
+  const { isPaused, setIsPaused } = useIsPaused();
 
   const [audio1, setAudio1] = useState<HTMLAudioElement | null>(null);
   const [audio2, setAudio2] = useState<HTMLAudioElement | null>(null);
@@ -62,32 +61,105 @@ const DiceRollsScreen: React.FC = () => {
       show: false,
       characterRolls: [],
       locationRoll: null,
-      continueButton: false,
+      finishedAnimation: false,
     });
 
-    const events = await continueAfterDiceRoll(
-      diceRollState,
-      gameApi,
-      gameData,
-    );
-    rpcAppendEvents(events);
+    console.log("Dice rolls set is paused to false");
+    setIsPaused(false);
   };
 
   return (
     <Popup onClose={null} maxWidth="max-w-8xl" className="m-20">
       <div className="flex flex-col">
         <div className="flex flex-1">
-          <div className="w-2/3 grid grid-cols-2 grid-rows-2 gap-6">
-            {diceRollState.characterRolls.map((roll, index) => (
-              <div key={roll.label} className="relative w-[400px] h-[400px]">
-                <DiceRollWithText diceRoll={roll} />
+          <div className="w-2/3 flex flex-col items-center justify-center">
+            {diceRollState.characterRolls.length === 2 && (
+              <div className="flex gap-6">
+                {diceRollState.characterRolls.map((roll, index) => (
+                  <div
+                    key={roll.label}
+                    className="relative w-[300px] h-[300px]"
+                  >
+                    <DiceRollWithText diceRoll={roll} />
+                  </div>
+                ))}
               </div>
-            ))}
+            )}
+
+            {diceRollState.characterRolls.length === 4 && (
+              <div className="grid grid-cols-2 gap-6">
+                {diceRollState.characterRolls.map((roll, index) => (
+                  <div
+                    key={roll.label}
+                    className="relative w-[300px] h-[300px]"
+                  >
+                    <DiceRollWithText diceRoll={roll} />
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {diceRollState.characterRolls.length === 5 && (
+              <div className="flex flex-col gap-6">
+                <div className="flex gap-6 justify-center">
+                  {diceRollState.characterRolls
+                    .slice(0, 3)
+                    .map((roll, index) => (
+                      <div
+                        key={roll.label}
+                        className="relative w-[300px] h-[300px]"
+                      >
+                        <DiceRollWithText diceRoll={roll} />
+                      </div>
+                    ))}
+                </div>
+                <div className="flex gap-6 justify-center">
+                  {diceRollState.characterRolls
+                    .slice(3, 5)
+                    .map((roll, index) => (
+                      <div
+                        key={roll.label}
+                        className="relative w-[300px] h-[300px]"
+                      >
+                        <DiceRollWithText diceRoll={roll} />
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
+            {diceRollState.characterRolls.length === 6 && (
+              <div className="flex flex-col gap-6">
+                <div className="flex gap-6 justify-center">
+                  {diceRollState.characterRolls
+                    .slice(0, 3)
+                    .map((roll, index) => (
+                      <div
+                        key={roll.label}
+                        className="relative w-[300px] h-[300px]"
+                      >
+                        <DiceRollWithText diceRoll={roll} />
+                      </div>
+                    ))}
+                </div>
+                <div className="flex gap-6 justify-center">
+                  {diceRollState.characterRolls
+                    .slice(3, 6)
+                    .map((roll, index) => (
+                      <div
+                        key={roll.label}
+                        className="relative w-[300px] h-[300px]"
+                      >
+                        <DiceRollWithText diceRoll={roll} />
+                      </div>
+                    ))}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="w-1/2 flex items-center justify-center p-4">
             {diceRollState.locationRoll && (
-              <div className="relative w-[400px] h-[400px]">
+              <div className="relative w-[300px] h-[300px]">
                 <DiceRollWithText diceRoll={diceRollState.locationRoll} />
               </div>
             )}
@@ -96,13 +168,15 @@ const DiceRollsScreen: React.FC = () => {
 
         {/* Reserved space for button area */}
         <div className="flex justify-end mr-20 h-16">
-          {diceRollState.continueButton && (
+          {diceRollState.finishedAnimation && isPaused ? (
             <button
               className={`game-button ${getColorClasses("teal")}`}
               onPointerDown={() => handleContinue()}
             >
               Continue
             </button>
+          ) : (
+            <div className="text-gray-300 text-xl">Awaiting result...</div>
           )}
         </div>
       </div>

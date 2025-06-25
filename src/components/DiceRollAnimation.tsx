@@ -7,12 +7,33 @@ interface DiceRollProps {
 
 export const DICE_ANIMATION_DURATION = 3600; // ms
 
+// Scaling factor for the dice animation (300px / 400px = 0.75)
+const SCALE_FACTOR = 0.75;
+
+// Base values that will be scaled
+const BASE_CONTAINER_SIZE = 400;
+const BASE_DICE_SIZE = 100;
+const BASE_MIN_DISTANCE = 100;
+const BASE_PADDING = 20;
+const BASE_DOT_SIZE = 16; // 4 * 4 (w-4 h-4)
+const BASE_DOT_OFFSET = 25;
+const BASE_FACE_OFFSET = 50;
+
 export default function DiceRollAnimation({
   numDice,
   targetValues,
 }: DiceRollProps) {
   const diceContainerRef = useRef<HTMLDivElement>(null);
   const finalPositions = useRef<Array<{ x: number; y: number }>>([]);
+
+  // Scaled values
+  const CONTAINER_SIZE = BASE_CONTAINER_SIZE * SCALE_FACTOR;
+  const DICE_SIZE = BASE_DICE_SIZE * SCALE_FACTOR;
+  const MIN_DISTANCE = BASE_MIN_DISTANCE * SCALE_FACTOR;
+  const PADDING = BASE_PADDING * SCALE_FACTOR;
+  const DOT_SIZE = BASE_DOT_SIZE * SCALE_FACTOR;
+  const DOT_OFFSET = BASE_DOT_OFFSET * SCALE_FACTOR;
+  const FACE_OFFSET = BASE_FACE_OFFSET * SCALE_FACTOR;
 
   // Mapping of face values to rotations
   const faceRotations = {
@@ -33,7 +54,7 @@ export default function DiceRollAnimation({
   const positionsOverlap = (
     pos1: { x: number; y: number },
     pos2: { x: number; y: number },
-    minDistance = 100,
+    minDistance = MIN_DISTANCE,
   ) => {
     const dx = pos1.x - pos2.x;
     const dy = pos1.y - pos2.y;
@@ -48,21 +69,10 @@ export default function DiceRollAnimation({
     const containerRect = diceContainerRef.current.getBoundingClientRect();
     const containerWidth = containerRect.width;
     const containerHeight = containerRect.height;
-    const DICE_SIZE = 100;
-
-    // Add padding to ensure dice stay fully visible
-    const padding = {
-      top: 20,
-      right: 20,
-      bottom: 20,
-      left: 20,
-    };
 
     // Calculate available area
-    const availableWidth =
-      containerWidth - padding.left - padding.right - DICE_SIZE;
-    const availableHeight =
-      containerHeight - padding.top - padding.bottom - DICE_SIZE;
+    const availableWidth = containerWidth - PADDING - DICE_SIZE;
+    const availableHeight = containerHeight - PADDING - DICE_SIZE;
 
     // Try to find a non-overlapping position with a maximum number of attempts
     const MAX_ATTEMPTS = 50;
@@ -72,8 +82,8 @@ export default function DiceRollAnimation({
     do {
       // Generate position within safe area
       position = {
-        x: Math.floor(Math.random() * availableWidth) + padding.left,
-        y: Math.floor(Math.random() * availableHeight) + padding.top,
+        x: Math.floor(Math.random() * availableWidth) + PADDING,
+        y: Math.floor(Math.random() * availableHeight) + PADDING,
       };
 
       // Check if this position overlaps with any existing final positions
@@ -102,8 +112,8 @@ export default function DiceRollAnimation({
 
       for (let i = 0; i < 10; i++) {
         const testPos = {
-          x: Math.floor(Math.random() * availableWidth) + padding.left,
-          y: Math.floor(Math.random() * availableHeight) + padding.top,
+          x: Math.floor(Math.random() * availableWidth) + PADDING,
+          y: Math.floor(Math.random() * availableHeight) + PADDING,
         };
 
         // Calculate minimum distance to any existing dice
@@ -137,7 +147,9 @@ export default function DiceRollAnimation({
     // Apply the correct class for coloring
     // Use modulo to cycle through colors if more than 6 dice
     const colorIndex = (index % 6) + 1;
-    die.className = `dice dice${colorIndex} w-[100px] h-[100px] absolute`;
+    die.className = `dice dice${colorIndex} absolute`;
+    die.style.width = `${DICE_SIZE}px`;
+    die.style.height = `${DICE_SIZE}px`;
 
     // Create faces and dots for the die
     for (let i = 1; i <= 6; i++) {
@@ -147,8 +159,9 @@ export default function DiceRollAnimation({
       // Add appropriate number of dots to each face
       for (let d = 0; d < i; d++) {
         const dot = document.createElement("span");
-        dot.className =
-          "dot absolute w-4 h-4 bg-white rounded-full shadow-inner";
+        dot.className = "dot absolute bg-white rounded-full shadow-inner";
+        dot.style.width = `${DOT_SIZE}px`;
+        dot.style.height = `${DOT_SIZE}px`;
         face.appendChild(dot);
       }
 
@@ -242,8 +255,8 @@ export default function DiceRollAnimation({
       // Position dice initially
       const containerWidth = diceContainer.getBoundingClientRect().width;
       const offset = (i + 1) * (containerWidth / (numDiceToRoll + 1));
-      die.style.left = `${offset - 50}px`; // 50 is half the dice width
-      die.style.top = "150px";
+      die.style.left = `${offset - FACE_OFFSET}px`; // FACE_OFFSET is half the dice width
+      die.style.top = `${CONTAINER_SIZE / 2 - FACE_OFFSET}px`;
     }
 
     // Generate random values and animations for each die
@@ -316,7 +329,11 @@ export default function DiceRollAnimation({
   return (
     <div className="mt-8 flex flex-col items-center">
       <div
-        className="font-['Cinzel'] dice-container relative w-[400px] h-[400px] rounded-lg"
+        className="font-['Cinzel'] dice-container relative rounded-lg"
+        style={{
+          width: `${CONTAINER_SIZE}px`,
+          height: `${CONTAINER_SIZE}px`,
+        }}
         ref={diceContainerRef}
       >
         {/* Dice will be created dynamically */}
@@ -353,46 +370,46 @@ export default function DiceRollAnimation({
         }
 
         /* Position all 6 faces - can't be done with Tailwind */
-        .face-1 { transform: translateZ(50px); }
-        .face-2 { transform: rotateY(180deg) translateZ(50px); }
-        .face-3 { transform: rotateY(90deg) translateZ(50px); }
-        .face-4 { transform: rotateY(-90deg) translateZ(50px); }
-        .face-5 { transform: rotateX(90deg) translateZ(50px); }
-        .face-6 { transform: rotateX(-90deg) translateZ(50px); }
+        .face-1 { transform: translateZ(${FACE_OFFSET}px); }
+        .face-2 { transform: rotateY(180deg) translateZ(${FACE_OFFSET}px); }
+        .face-3 { transform: rotateY(90deg) translateZ(${FACE_OFFSET}px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(${FACE_OFFSET}px); }
+        .face-5 { transform: rotateX(90deg) translateZ(${FACE_OFFSET}px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(${FACE_OFFSET}px); }
 
         /* Dots positioning for each face */
         /* Face 1 (one dot) */
         .face-1 .dot { transform: translate(0, 0); }
 
         /* Face 2 (two dots) */
-        .face-2 .dot:nth-child(1) { transform: translate(-25px, -25px); }
-        .face-2 .dot:nth-child(2) { transform: translate(25px, 25px); }
+        .face-2 .dot:nth-child(1) { transform: translate(-${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-2 .dot:nth-child(2) { transform: translate(${DOT_OFFSET}px, ${DOT_OFFSET}px); }
 
         /* Face 3 (three dots) */
-        .face-3 .dot:nth-child(1) { transform: translate(-25px, -25px); }
+        .face-3 .dot:nth-child(1) { transform: translate(-${DOT_OFFSET}px, -${DOT_OFFSET}px); }
         .face-3 .dot:nth-child(2) { transform: translate(0, 0); }
-        .face-3 .dot:nth-child(3) { transform: translate(25px, 25px); }
+        .face-3 .dot:nth-child(3) { transform: translate(${DOT_OFFSET}px, ${DOT_OFFSET}px); }
 
         /* Face 4 (four dots) */
-        .face-4 .dot:nth-child(1) { transform: translate(-25px, -25px); }
-        .face-4 .dot:nth-child(2) { transform: translate(25px, -25px); }
-        .face-4 .dot:nth-child(3) { transform: translate(-25px, 25px); }
-        .face-4 .dot:nth-child(4) { transform: translate(25px, 25px); }
+        .face-4 .dot:nth-child(1) { transform: translate(-${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-4 .dot:nth-child(2) { transform: translate(${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-4 .dot:nth-child(3) { transform: translate(-${DOT_OFFSET}px, ${DOT_OFFSET}px); }
+        .face-4 .dot:nth-child(4) { transform: translate(${DOT_OFFSET}px, ${DOT_OFFSET}px); }
 
         /* Face 5 (five dots) */
-        .face-5 .dot:nth-child(1) { transform: translate(-25px, -25px); }
-        .face-5 .dot:nth-child(2) { transform: translate(25px, -25px); }
+        .face-5 .dot:nth-child(1) { transform: translate(-${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-5 .dot:nth-child(2) { transform: translate(${DOT_OFFSET}px, -${DOT_OFFSET}px); }
         .face-5 .dot:nth-child(3) { transform: translate(0, 0); }
-        .face-5 .dot:nth-child(4) { transform: translate(-25px, 25px); }
-        .face-5 .dot:nth-child(5) { transform: translate(25px, 25px); }
+        .face-5 .dot:nth-child(4) { transform: translate(-${DOT_OFFSET}px, ${DOT_OFFSET}px); }
+        .face-5 .dot:nth-child(5) { transform: translate(${DOT_OFFSET}px, ${DOT_OFFSET}px); }
 
         /* Face 6 (six dots) */
-        .face-6 .dot:nth-child(1) { transform: translate(-25px, -25px); }
-        .face-6 .dot:nth-child(2) { transform: translate(25px, -25px); }
-        .face-6 .dot:nth-child(3) { transform: translate(-25px, 0); }
-        .face-6 .dot:nth-child(4) { transform: translate(25px, 0); }
-        .face-6 .dot:nth-child(5) { transform: translate(-25px, 25px); }
-        .face-6 .dot:nth-child(6) { transform: translate(25px, 25px); }
+        .face-6 .dot:nth-child(1) { transform: translate(-${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-6 .dot:nth-child(2) { transform: translate(${DOT_OFFSET}px, -${DOT_OFFSET}px); }
+        .face-6 .dot:nth-child(3) { transform: translate(-${DOT_OFFSET}px, 0); }
+        .face-6 .dot:nth-child(4) { transform: translate(${DOT_OFFSET}px, 0); }
+        .face-6 .dot:nth-child(5) { transform: translate(-${DOT_OFFSET}px, ${DOT_OFFSET}px); }
+        .face-6 .dot:nth-child(6) { transform: translate(${DOT_OFFSET}px, ${DOT_OFFSET}px); }
 
         /* Dice color gradients */
         .dice1 .face {

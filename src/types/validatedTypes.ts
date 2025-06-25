@@ -82,6 +82,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("Story"),
     text: z.string(),
+    isAiResponse: z.boolean(),
   }),
 
   z.object({
@@ -100,7 +101,7 @@ const GameEventSchema = z.discriminatedUnion("type", [
   }),
 
   z.object({
-    type: z.literal("ActPartTwoNoDiceRoll"),
+    type: z.literal("PollResponseNoDiceRoll"),
   }),
 
   z.object({

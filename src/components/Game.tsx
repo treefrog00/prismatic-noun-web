@@ -13,7 +13,7 @@ import {
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
 import StoryButtons from "./StoryButtons";
-import { storyEvents, StoryEventType } from "@/core/storyEvents";
+import { storyEvents } from "@/core/storyEvents";
 import { useAppContext, useGameConfig } from "@/contexts/AppContext";
 import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
@@ -45,18 +45,13 @@ const GameContent = () => {
       addEvents(data.events);
     });
 
-    const unsubscribe = storyEvents.subscribe((text, eventType) => {
+    const unsubscribe = storyEvents.subscribe((text, options) => {
       if (!storyRef.current) return;
 
-      if (
-        gameConfig.shouldAnimateText &&
-        eventType === StoryEventType.FIRST_PARAGRAPH
-      ) {
-        storyRef.current.updateText(text, true);
-      } else if (eventType === StoryEventType.ITALIC) {
-        storyRef.current.appendFadeIn(text, true);
+      if (options.animate) {
+        storyRef.current.updateText(text, options);
       } else {
-        storyRef.current.appendFadeIn(text);
+        storyRef.current.appendFadeIn(text, options);
       }
     });
 

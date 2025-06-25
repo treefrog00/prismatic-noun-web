@@ -292,6 +292,7 @@ const StoryImage: React.FC = () => {
             }}
           />
         ) : (
+          // this was a hack to try to deal with the text jumping during animation it did't really work
           <img src={artUrl("blank.webp")} width="512" height="512" />
         )
       ) : (

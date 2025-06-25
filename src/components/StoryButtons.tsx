@@ -1,6 +1,11 @@
 import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import { useUiState, useIsPaused, useCharacters } from "@/contexts/GameContext";
+import {
+  useUiState,
+  useIsPaused,
+  useCharacters,
+  useDiceRoll,
+} from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
 import {
@@ -11,7 +16,8 @@ import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
 import { rpcAppendEvents } from "@/util/rpcEvents";
-import { useGameConfig } from "@/contexts/AppContext";
+import { useGameConfig, useGameStage } from "@/contexts/AppContext";
+import { LOBBY_PLAYLIST, useStereo } from "@/contexts/StereoContext";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -19,9 +25,16 @@ const StoryButtons: React.FC = () => {
   const { gameData } = useGameData();
   const gameApi = useGameApi();
 
-  const { showPromptInput, setShowPromptInput } = useUiState();
+  const {
+    showPromptInput,
+    setShowPromptInput,
+    showReturnToMainMenu,
+    setShowReturnToMainMenu,
+  } = useUiState();
   const { gameConfig } = useGameConfig();
   const { characters } = useCharacters();
+  const { playlist, setPlaylist } = useStereo();
+  const { setGameStage } = useGameStage();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
@@ -30,6 +43,7 @@ const StoryButtons: React.FC = () => {
   );
 
   const { isPaused, setIsPaused } = useIsPaused();
+  const { diceRollState } = useDiceRoll();
 
   const handleActOk = async () => {
     if (myPrompt.length === 0 || myPrompt.length > gameConfig.promptLimit) {
@@ -84,6 +98,20 @@ const StoryButtons: React.FC = () => {
     );
     setMyPrompt(response.prompt);
   };
+
+  const handleReturnToMainMenu = async () => {
+    setShowReturnToMainMenu(false);
+    setGameStage("lobby");
+    // some scenarios might use the same playlist as the lobby so don't restart, also if chip
+    // was playing allow it to keep playing
+    if (
+      JSON.stringify(playlist) !== JSON.stringify(LOBBY_PLAYLIST) &&
+      !playlist.includes("chip")
+    ) {
+      setPlaylist(LOBBY_PLAYLIST);
+    }
+  };
+
   return (
     <>
       <div
@@ -139,13 +167,23 @@ const StoryButtons: React.FC = () => {
             </div>
           </div>
         )}
-        {isPaused && (
+        {isPaused && !diceRollState.show && (
           <div className="text-gray-300 flex items-center gap-12">
             <button
               className={`game-button ${getColorClasses("teal")} mb-12`}
               onPointerDown={() => handleContinue()}
             >
               Continue
+            </button>
+          </div>
+        )}
+        {showReturnToMainMenu && (
+          <div className="text-gray-300 flex items-center gap-12 opacity-0 return-to-main-menu-fade-in">
+            <button
+              className={`game-button ${getColorClasses("teal")} mb-12`}
+              onPointerDown={() => handleReturnToMainMenu()}
+            >
+              Return to Main Menu
             </button>
           </div>
         )}

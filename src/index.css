@@ -34,3 +34,17 @@ html.wf-active {
 .topbar-fade-in {
   animation: fadeIn 6s ease-in-out;
 }
+
+/* Return to main menu fade-in animation */
+@keyframes fadeInReturnToMainMenu {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.return-to-main-menu-fade-in {
+  animation: fadeInReturnToMainMenu 7s ease-in-out forwards;
+}

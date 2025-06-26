@@ -253,17 +253,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       tempSpan.style.fontSize = window.getComputedStyle(textDisplay).fontSize;
       textDisplay.appendChild(tempSpan);
 
-      // Function to calculate space width
-      function calculateSpaceWidth() {
-        tempSpan.textContent = "A A";
-        const withSpace = tempSpan.getBoundingClientRect().width;
-        tempSpan.textContent = "AA";
-        const withoutSpace = tempSpan.getBoundingClientRect().width;
-        return withSpace - withoutSpace;
-      }
-
-      const spaceWidth = calculateSpaceWidth();
-
       // Function to get character positions from reference paragraph
       function getCharacterPositions() {
         const range = document.createRange();
@@ -297,7 +286,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Use measured character positions from reference paragraph
       let charIndex = 0;
       let longestAnimationTime = 0;
-      let finishedFirstLine = false;
       let currentLine = 0;
       let lastScrollLine = 0;
 
@@ -374,59 +362,43 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
               setTimeout(scrollToBottom, SCROLL_DELAY);
             }
           }
-          if (currentLine === 1) {
-            finishedFirstLine = true;
-          }
         }
-
-        // Handle newlines in the original text
-        if (char === "\n") {
-          finishedFirstLine = true;
-        }
-
         // Use the measured position from the reference paragraph
         const finalX = position.x;
         const finalY = position.y;
 
-        // see message above about "animate" parameter
-        if (!finishedFirstLine || options?.animate) {
-          // Set initial position (from bottom of screen)
-          charElement.style.left = finalX + "px";
-          charElement.style.top =
-            textContainer.offsetHeight + 50 + Math.random() * 50 + "px";
-          charElement.style.opacity = "0";
+        // Set initial position (from bottom of screen)
+        charElement.style.left = finalX + "px";
+        charElement.style.top =
+          textContainer.offsetHeight + 50 + Math.random() * 50 + "px";
+        charElement.style.opacity = "0";
 
-          // Calculate individual animation time
-          const delay = charIndex * CHAR_DELAY; // Staggered delay
-          const animationTime = delay + 800; // rough estimate of total animation time
-          longestAnimationTime = Math.max(longestAnimationTime, animationTime);
+        // Calculate individual animation time
+        const delay = charIndex * CHAR_DELAY; // Staggered delay
+        const animationTime = delay + 800; // rough estimate of total animation time
+        longestAnimationTime = Math.max(longestAnimationTime, animationTime);
 
-          // Start animation with a staggered delay
+        // Start animation with a staggered delay
+        setTimeout(() => {
+          charElement.style.opacity = "1";
+
+          // Animate with CSS transition
+          charElement.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
+
+          // Add some randomness to the bobbing
+          const bobAmount = 30 + Math.random() * 10;
+          const bobTime = 400 + Math.random() * 100;
+
+          // First bob - go higher than final position
           setTimeout(() => {
-            charElement.style.opacity = "1";
+            charElement.style.top = finalY - bobAmount + "px";
 
-            // Animate with CSS transition
-            charElement.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
-
-            // Add some randomness to the bobbing
-            const bobAmount = 30 + Math.random() * 10;
-            const bobTime = 400 + Math.random() * 100;
-
-            // First bob - go higher than final position
+            // Second bob - settle at final position
             setTimeout(() => {
-              charElement.style.top = finalY - bobAmount + "px";
-
-              // Second bob - settle at final position
-              setTimeout(() => {
-                charElement.style.top = finalY + "px";
-              }, bobTime);
-            }, 50);
-          }, delay);
-        } else {
-          // For text after newline when not animating all, just set the final position immediately
-          charElement.style.left = finalX + "px";
-          charElement.style.top = finalY + "px";
-        }
+              charElement.style.top = finalY + "px";
+            }, bobTime);
+          }, 50);
+        }, delay);
 
         charIndex++;
       }

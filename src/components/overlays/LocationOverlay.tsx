@@ -39,7 +39,7 @@ const LocationOverlay = ({
           <img
             src={artUrl(locationData.imageUrl)}
             alt={locationData.name}
-            className={pageStyles.overlayImage}
+            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
           />
           <div className="mt-2">
             <div className="font-bold">{locationData.name}</div>

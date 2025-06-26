@@ -55,7 +55,7 @@ const NpcOverlay = ({
           <img
             src={artUrl(npcData.imageUrl)}
             alt={npcData.name}
-            className={pageStyles.overlayImage}
+            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
           />
           <div className="mt-4">
             <div className="font-bold">{npcData.name}</div>

@@ -98,6 +98,7 @@ const GameEventSchema = z
     z.object({
       type: z.literal("LocationStateUpdate"),
       npcState: z.array(z.string()),
+      changedLocationImage: z.string().nullable(),
     }),
     z.object({
       type: z.literal("ChangeLocation"),

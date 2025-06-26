@@ -51,7 +51,7 @@ const CharacterOverlay = ({
           <img
             src={artUrl(characterData.imageUrl)}
             alt={characterData.name}
-            className={pageStyles.overlayImage}
+            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
           />
           <div className="mt-2">
             <div className="font-bold flex items-end gap-4 mb-6">

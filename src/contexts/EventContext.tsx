@@ -107,7 +107,7 @@ export const EventProvider = ({
   const { setMainImage } = useMainImage();
   const { setCharacters } = useCharacters();
   const { setNpcState } = useNpcState();
-  const { setLocationData } = useLocationData();
+  const { setLocationData, locationData } = useLocationData();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
   const { setShowPromptInput, setShowReturnToMainMenu } = useUiState();
@@ -226,6 +226,12 @@ export const EventProvider = ({
       permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
     } else if (event.type === "LocationStateUpdate") {
       setNpcState(event.npcState);
+      if (event.changedLocationImage) {
+        setLocationData({
+          ...locationData,
+          imageUrl: event.changedLocationImage,
+        });
+      }
     } else if (event.type === "ChangeLocation") {
       clearStory();
       isFirstParagraph = true;

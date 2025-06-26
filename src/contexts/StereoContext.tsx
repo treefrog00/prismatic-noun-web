@@ -18,6 +18,8 @@ interface StereoContextType {
 
 const StereoContext = createContext<StereoContextType | null>(null);
 
+const DEFAULT_MUSIC_VOLUME = 0.8;
+
 export const useStereo = () => {
   const context = useContext(StereoContext);
   if (!context) {
@@ -72,7 +74,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
           clearInterval(fadeInterval);
           audio.pause();
           audio.src = "";
-          audio.volume = 1; // Reset volume for next playback
+          audio.volume = DEFAULT_MUSIC_VOLUME; // Reset volume for next playback
           resolve();
         }
       }, 20); // Update every 20ms for smooth fade
@@ -159,7 +161,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem(MUSIC_ENABLED_STORAGE_KEY, "true");
     setMusicEnabled(true);
     audioElementRef.current.src = `/ai_sound/${playlist[0]}.mp3`;
-    audioElementRef.current.volume = 1;
+    audioElementRef.current.volume = DEFAULT_MUSIC_VOLUME;
     audioElementRef.current.play().catch((error) => {
       console.error("Error playing audio:", error);
     });
@@ -187,7 +189,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         await fadeOut(audioElementRef.current);
       }
       audioElementRef.current.src = `/ai_sound/${track}.mp3`;
-      audioElementRef.current.volume = 1;
+      audioElementRef.current.volume = DEFAULT_MUSIC_VOLUME;
       await audioElementRef.current.play();
       // not using playlistIndex hook because it won't be updated in time
       addEndedListener(index);
@@ -215,7 +217,8 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
       characterName
         .toLowerCase()
         .split(" ")
-        .filter((word) => word !== "the")[0] + ".mp3";
+        .filter((word) => word !== "the")
+        .slice(-1)[0] + ".mp3";
     const audioPath = `/ai_sound/tts/${audioFileName}`;
 
     const audio = new Audio(audioPath);

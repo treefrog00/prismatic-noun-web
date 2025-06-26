@@ -209,7 +209,6 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       }
 
       let lineCount = 0;
-      let lastScrollLine = 0;
 
       // Get computed styles for the text display
       const textDisplayStyle = window.getComputedStyle(textDisplay);
@@ -232,7 +231,22 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Scroll to the bottom of the display
       textDisplay.scrollTop = textDisplay.scrollHeight;
 
-      // Create a temporary span to measure character width
+      // Create a hidden reference paragraph with the final text to measure exact positions
+      const finalText = processTextFormatting(text, sharedStyles, options);
+      const referenceParagraph = document.createElement("p");
+      referenceParagraph.style.lineHeight = `${lineHeight}px`;
+      referenceParagraph.style.margin = "0";
+      referenceParagraph.style.visibility = "hidden";
+      referenceParagraph.style.position = "absolute";
+      referenceParagraph.style.width = usableWidth + "px";
+      referenceParagraph.style.whiteSpace = "pre-wrap";
+
+      const referenceSpan = document.createElement("span");
+      referenceSpan.innerHTML = finalText;
+      referenceParagraph.appendChild(referenceSpan);
+      textContainer.appendChild(referenceParagraph);
+
+      // Create a temporary span to measure character width (kept for fallback)
       const tempSpan = document.createElement("span");
       tempSpan.style.visibility = "hidden";
       tempSpan.style.position = "absolute";
@@ -250,261 +264,171 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       const spaceWidth = calculateSpaceWidth();
 
+      // Function to get character positions from reference paragraph
+      function getCharacterPositions() {
+        const range = document.createRange();
+        const textNode = referenceSpan.firstChild;
+        if (!textNode) return [];
+
+        const positions = [];
+        const textContent = textNode.textContent || "";
+
+        for (let i = 0; i < textContent.length; i++) {
+          range.setStart(textNode, i);
+          range.setEnd(textNode, i + 1);
+          const rect = range.getBoundingClientRect();
+          const containerRect = textContainer.getBoundingClientRect();
+
+          positions.push({
+            x: rect.left - containerRect.left,
+            y: rect.top - containerRect.top,
+            width: rect.width,
+            height: rect.height,
+          });
+        }
+
+        return positions;
+      }
+
+      const characterPositions = getCharacterPositions();
+
       let currentX = 0;
 
-      // Split the text into words
-      const words = addPerWordHighlights(text); // Split by spaces but keep the spaces
-      let currentY = 0;
+      // Use measured character positions from reference paragraph
       let charIndex = 0;
       let longestAnimationTime = 0;
       let finishedFirstLine = false;
-      let isYellow = false;
+      let currentLine = 0;
+      let lastScrollLine = 0;
 
       // Animation constants
       const CHAR_DELAY = 4; // Base delay per character
       const SCROLL_DELAY = 300; // Fixed delay for scrolling after new lines
 
-      let hadClosingTag = false;
+      // Get plain text without HTML tags to map to character positions
+      const plainText = text.replace(/<[^>]*>/g, "");
 
-      // Pre-analyze to identify multi-word highlight sequences in processed words
-      const multiWordHighlightStarts = new Set();
-      let consecutiveHighlightCount = 0;
-      let highlightStartIndex = -1;
+      // Process each character using the measured positions
+      for (let i = 0; i < plainText.length; i++) {
+        const char = plainText[i];
+        const position = characterPositions[i];
 
-      for (let i = 0; i < words.length; i++) {
-        const word = words[i];
-        const hasHighlight = word.includes("<hl>");
+        if (!position) continue; // Skip if no position available
 
-        if (hasHighlight) {
-          if (consecutiveHighlightCount === 0) {
-            highlightStartIndex = i;
-          }
-          consecutiveHighlightCount++;
-        } else if (consecutiveHighlightCount > 0) {
-          // End of highlight sequence
-          if (consecutiveHighlightCount > 1) {
-            multiWordHighlightStarts.add(highlightStartIndex);
-          }
-          consecutiveHighlightCount = 0;
-          highlightStartIndex = -1;
-        }
-      }
+        const charElement = document.createElement("span");
+        charElement.className = "character";
 
-      // Handle case where highlight sequence goes to the end
-      if (consecutiveHighlightCount > 1) {
-        multiWordHighlightStarts.add(highlightStartIndex);
-      }
-
-      // Process each word
-      for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
-        let word = words[wordIndex];
-
-        // Check if this word has highlight tags (either opening, closing, or both)
-        if (word.includes("<hl>")) {
-          hadClosingTag = word.includes("</hl>");
-          // Remove the highlight tags for processing
-          word = word.replace("<hl>", "").replace("</hl>", "");
-          isYellow = true;
-        } else if (word.includes("</hl>")) {
-          // This word ends the highlight section
-          word = word.replace("</hl>", "");
-          isYellow = false;
-        }
-        // If isYellow is true from previous words, continue highlighting
-        // (no need to check here as isYellow state is maintained)
-
-        if (finishedFirstLine && !options?.animate) {
-          // note "animate" is currently always true when this method is called,
-          // it used to be animateAll and controls which lines were animated,
-          // but now we just ensure the first paragraph is always short if a scripted one,
-          // and don't call this method at all for AI responses
-          continue;
-        }
-
-        // Check if we're at the start of a multi-word highlight sequence
-        let shouldWrapSequence = false;
-        const isStartOfMultiWordHighlight =
-          multiWordHighlightStarts.has(wordIndex);
-
-        if (isStartOfMultiWordHighlight) {
-          let sequenceWidth = 0;
-
-          // Calculate total width of consecutive highlighted words starting from this index
-          for (let i = wordIndex; i < words.length; i++) {
-            const checkWord = words[i];
-            if (!checkWord.includes("<hl>")) {
-              break; // End of highlight sequence
+        // Check if this character should be highlighted
+        // We need to map back to the original text to check for highlight tags
+        let isHighlighted = false;
+        let originalIndex = 0;
+        let plainIndex = 0;
+        while (plainIndex <= i && originalIndex < text.length) {
+          if (text[originalIndex] === "<") {
+            // Skip HTML tag
+            const tagEnd = text.indexOf(">", originalIndex);
+            if (tagEnd !== -1) {
+              const tag = text.substring(originalIndex, tagEnd + 1);
+              if (tag === "<hl>") {
+                isHighlighted = true;
+              } else if (tag === "</hl>") {
+                isHighlighted = false;
+              }
+              originalIndex = tagEnd + 1;
+            } else {
+              originalIndex++;
             }
-
-            // Remove highlight tags for measurement
-            let measureWord = checkWord
-              .replace(/<hl>/g, "")
-              .replace(/<\/hl>/g, "");
-
-            if (measureWord.trim()) {
-              tempSpan.textContent = measureWord.replace(/ /g, "\u00A0");
-              sequenceWidth += tempSpan.getBoundingClientRect().width;
+          } else {
+            if (plainIndex === i) {
+              break;
             }
-          }
-
-          // Check if the entire sequence would overflow
-          if (word.trim() !== "" && currentX + sequenceWidth > usableWidth) {
-            shouldWrapSequence = true;
+            plainIndex++;
+            originalIndex++;
           }
         }
 
-        // Measure the word width
-        tempSpan.textContent = word.replace(/ /g, "\u00A0");
-        const wordWidth = tempSpan.getBoundingClientRect().width;
+        if (isHighlighted) {
+          charElement.classList.add(sharedStyles.highlight);
+        }
 
-        // Check if we need to wrap to a new line
-        // For multi-word highlighted sequences, use the sequence-based decision
-        // For regular words or single-word highlights, use the individual word decision
-        const shouldWrap =
-          shouldWrapSequence ||
-          (!isStartOfMultiWordHighlight &&
-            word.trim() !== "" &&
-            currentX + wordWidth > usableWidth);
+        // Handle spaces properly
+        if (char === " ") {
+          charElement.textContent = "\u00A0"; // Non-breaking space
+          charElement.classList.add("space");
+        } else {
+          charElement.textContent = char;
+        }
 
-        if (shouldWrap) {
-          currentX = 0;
-          currentY += lineHeight;
-          lineCount++;
+        textContainer.appendChild(charElement);
 
-          if (lineCount >= lastScrollLine + 5) {
-            lastScrollLine = lineCount;
+        // Check if we're on a new line for scrolling
+        if (
+          i > 0 &&
+          characterPositions[i - 1] &&
+          position.y > characterPositions[i - 1].y + 5
+        ) {
+          currentLine++;
+          if (currentLine >= lastScrollLine + 5) {
+            lastScrollLine = currentLine;
             if (!options?.skipScroll) {
               setTimeout(scrollToBottom, SCROLL_DELAY);
             }
           }
+          if (currentLine === 1) {
+            finishedFirstLine = true;
+          }
+        }
+
+        // Handle newlines in the original text
+        if (char === "\n") {
           finishedFirstLine = true;
         }
 
-        if (word.includes("\n")) {
-          finishedFirstLine = true;
-        }
+        // Use the measured position from the reference paragraph
+        const finalX = position.x;
+        const finalY = position.y;
 
-        // Process each character in the word
-        for (let i = 0; i < word.length; i++) {
-          const char = word[i];
+        // see message above about "animate" parameter
+        if (!finishedFirstLine || options?.animate) {
+          // Set initial position (from bottom of screen)
+          charElement.style.left = finalX + "px";
+          charElement.style.top =
+            textContainer.offsetHeight + 50 + Math.random() * 50 + "px";
+          charElement.style.opacity = "0";
 
-          const charElement = document.createElement("span");
-          charElement.className = "character";
-          if (isYellow) {
-            charElement.classList.add(sharedStyles.highlight);
-          }
+          // Calculate individual animation time
+          const delay = charIndex * CHAR_DELAY; // Staggered delay
+          const animationTime = delay + 800; // rough estimate of total animation time
+          longestAnimationTime = Math.max(longestAnimationTime, animationTime);
 
-          // Handle spaces properly
-          if (char === " ") {
-            charElement.textContent = "\u00A0"; // Non-breaking space
-            charElement.style.width = spaceWidth + "px";
-            charElement.classList.add("space");
-          } else {
-            charElement.textContent = char;
-          }
+          // Start animation with a staggered delay
+          setTimeout(() => {
+            charElement.style.opacity = "1";
 
-          textContainer.appendChild(charElement);
+            // Animate with CSS transition
+            charElement.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
 
-          // Measure individual character
-          tempSpan.textContent = char === " " ? "\u00A0" : char;
-          let charWidth =
-            char === " " ? spaceWidth : tempSpan.getBoundingClientRect().width;
+            // Add some randomness to the bobbing
+            const bobAmount = 30 + Math.random() * 10;
+            const bobTime = 400 + Math.random() * 100;
 
-          // Handle special kerning cases by measuring pairs
-          if (i > 0) {
-            // Measure the previous character and current character together
-            const prevChar = word[i - 1];
-            tempSpan.textContent = prevChar + char;
-            const pairWidth = tempSpan.getBoundingClientRect().width;
-
-            // Measure the previous character alone
-            tempSpan.textContent = prevChar;
-            const prevWidth = tempSpan.getBoundingClientRect().width;
-
-            // Measure current character alone
-            tempSpan.textContent = char;
-            const currentWidth = tempSpan.getBoundingClientRect().width;
-
-            // Calculate kerning adjustment
-            const kerningAdjustment = pairWidth - (prevWidth + currentWidth);
-
-            // Apply the kerning adjustment to the previous character's position
-            if (kerningAdjustment !== 0) {
-              currentX += kerningAdjustment;
-            }
-          }
-
-          // Set the final position
-          const finalX = currentX;
-          const finalY = currentY;
-
-          // Update position for next character
-          currentX += charWidth;
-
-          // see message above about "animate" parameter
-          if (!finishedFirstLine || options?.animate) {
-            // Set initial position (from bottom of screen)
-            charElement.style.left = finalX + "px";
-            charElement.style.top =
-              textContainer.offsetHeight + 50 + Math.random() * 50 + "px";
-            charElement.style.opacity = "0";
-
-            // Calculate individual animation time
-            const delay = charIndex * CHAR_DELAY; // Staggered delay
-            const animationTime = delay + 800; // rough estimate of total animation time
-            longestAnimationTime = Math.max(
-              longestAnimationTime,
-              animationTime,
-            );
-
-            // Start animation with a staggered delay
+            // First bob - go higher than final position
             setTimeout(() => {
-              charElement.style.opacity = "1";
+              charElement.style.top = finalY - bobAmount + "px";
 
-              // Animate with CSS transition
-              charElement.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
-
-              // Add some randomness to the bobbing
-              const bobAmount = 30 + Math.random() * 10;
-              const bobTime = 400 + Math.random() * 100;
-
-              // First bob - go higher than final position
+              // Second bob - settle at final position
               setTimeout(() => {
-                charElement.style.top = finalY - bobAmount + "px";
-
-                // Second bob - settle at final position
-                setTimeout(() => {
-                  charElement.style.top = finalY + "px";
-                }, bobTime);
-              }, 50);
-            }, delay);
-          } else {
-            // For text after newline when not animating all, just set the final position immediately
-            charElement.style.left = finalX + "px";
-            charElement.style.top = finalY + "px";
-          }
-
-          charIndex++;
+                charElement.style.top = finalY + "px";
+              }, bobTime);
+            }, 50);
+          }, delay);
+        } else {
+          // For text after newline when not animating all, just set the final position immediately
+          charElement.style.left = finalX + "px";
+          charElement.style.top = finalY + "px";
         }
 
-        if (hadClosingTag) {
-          // This word ends the highlight section
-          isYellow = false;
-        }
-
-        // Handle explicit newlines
-        if (word.includes("\n")) {
-          currentX = 0;
-          currentY += lineHeight;
-          lineCount++;
-
-          if (lineCount >= lastScrollLine + 5) {
-            lastScrollLine = lineCount;
-            if (!options?.skipScroll) {
-              setTimeout(scrollToBottom, SCROLL_DELAY);
-            }
-          }
-        }
+        charIndex++;
       }
 
       // Remove the temporary measurement span
@@ -512,14 +436,17 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        const finalText = processTextFormatting(text, sharedStyles, options);
+        // Remove the reference paragraph
+        if (referenceParagraph && referenceParagraph.parentNode) {
+          referenceParagraph.parentNode.removeChild(referenceParagraph);
+        }
 
         const paragraph = document.createElement("p");
         paragraph.style.lineHeight = `${lineHeight}px`;
         paragraph.style.margin = "0";
 
         const textSpan = document.createElement("span");
-        textSpan.innerHTML = finalText;
+        textSpan.innerHTML = finalText; // Use the already-processed finalText
 
         paragraph.appendChild(textSpan);
         textContainer.innerHTML = "";

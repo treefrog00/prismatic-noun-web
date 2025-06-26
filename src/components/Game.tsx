@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { RPC } from "../core/multiplayerState";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
 import { QuestSummariesSchema } from "../types/validatedTypes";
@@ -20,7 +19,6 @@ import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
 import { HASH_QUEST_ID } from "@/config";
-import { rpcAppendEvents } from "@/util/rpcEvents";
 
 const GameContent = () => {
   // UI variables
@@ -28,7 +26,7 @@ const GameContent = () => {
 
   // multiplayer state
   const { gameData, setGameData } = useGameData();
-  const { addEvents } = useEventProcessor();
+  const { appendEvents } = useEventProcessor();
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig, setGameConfig } = useGameConfig();
   const gameApi = useGameApi();
@@ -43,10 +41,6 @@ const GameContent = () => {
   }, [showPromptInput.show]);
 
   useEffect(() => {
-    RPC.register("rpc-append-events", async (data) => {
-      addEvents(data.events);
-    });
-
     const unsubscribe = storyEvents.subscribe((text, options) => {
       if (!storyRef.current) return;
 
@@ -98,7 +92,7 @@ const GameContent = () => {
           ...gameConfig,
           promptLimit: startGame.promptLimit,
         });
-        rpcAppendEvents(startGame.events);
+        appendEvents(startGame.events);
       };
       startGameAsync();
     },

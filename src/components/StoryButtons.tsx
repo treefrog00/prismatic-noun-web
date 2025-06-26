@@ -8,16 +8,12 @@ import {
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { useGameApi, useGameData } from "@/contexts/GameContext";
-import {
-  EventsResponseSchema,
-  GeneratePromptResponseSchema,
-} from "@/types/validatedTypes";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
-import { rpcAppendEvents } from "@/util/rpcEvents";
 import { useGameConfig, useGameStage } from "@/contexts/AppContext";
 import { LOBBY_PLAYLIST, useStereo } from "@/contexts/StereoContext";
+import { useEventProcessor } from "@/contexts/EventContext";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -35,6 +31,7 @@ const StoryButtons: React.FC = () => {
   const { characters } = useCharacters();
   const { playlist, setPlaylist } = useStereo();
   const { setGameStage } = useGameStage();
+  const { submitPrompt } = useEventProcessor();
 
   const [myPrompt, setMyPrompt] = usePlayerStatePrompt(
     myPlayer(),
@@ -49,13 +46,9 @@ const StoryButtons: React.FC = () => {
     if (myPrompt.length === 0 || myPrompt.length > gameConfig.promptLimit) {
       return;
     }
-    const response = await gameApi.postTyped(
-      `/game/${gameData.gameId}/submit_prompt`,
-      { prompt: myPrompt },
-      EventsResponseSchema,
-    );
 
-    rpcAppendEvents(response.events);
+    await submitPrompt(gameApi, gameData.gameId, myPrompt);
+
     setShowPromptInput({
       ...showPromptInput,
       show: false,
@@ -76,8 +69,8 @@ const StoryButtons: React.FC = () => {
   };
 
   const placeHolder =
-    Object.keys(characters || {}).length > 0
-      ? `${formatCharacterList(Object.keys(characters))}: ${showPromptInput.playerPrompt}`
+    (characters || []).length > 0
+      ? `${formatCharacterList(characters)}: ${showPromptInput.playerPrompt}`
       : "error";
 
   useEffect(() => {

@@ -15,10 +15,12 @@ import {
   useLogbook,
   useMainImage,
   useUiState,
+  useWorldIndices,
+  WorldIndices,
 } from "./GameContext";
 import { useNpcState } from "./GameContext";
 import { useLocationData } from "./GameContext";
-import { useGameConfig } from "@/contexts/AppContext";
+import { useAppContext, useGameConfig } from "@/contexts/AppContext";
 import { appendToStory, clearStory } from "@/core/storyEvents";
 import { useDiceRoll } from "@/contexts/GameContext";
 import ReactDOM from "react-dom";
@@ -27,7 +29,12 @@ import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
 import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
-import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
+import {
+  EventsResponse,
+  EventsResponseSchema,
+  GameData,
+  QuestSummary,
+} from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
 import { StoryAppendOptions } from "@/components/Story";
 
@@ -36,7 +43,12 @@ type EventContextType = {
   setEventQueue: (value: GameEvent[]) => void;
   isProcessing: boolean;
   setIsProcessing: (value: boolean) => void;
-  addEvents: (events: GameEvent[]) => void;
+  submitPrompt: (
+    gameApi: GameApi,
+    gameId: string,
+    prompt: string,
+  ) => Promise<EventsResponse>;
+  appendEvents: (events: GameEvent[]) => void;
   queueLength: number;
 };
 
@@ -45,25 +57,28 @@ const EventContext = createContext<EventContextType | null>(null);
 let isFirstParagraph = true;
 let waitCount = 0;
 let pendingDiceText = "";
+let requestId: string | null = null;
 
 const fetchActPartTwo = async (
   gameApi: GameApi,
-  gameData: GameData,
+  worldIndices: WorldIndices,
+  questSummary: QuestSummary,
 ): Promise<GameEvent[]> => {
   const response = await gameApi.postTyped(
-    `/game/${gameData.gameId}/act_part_two`,
-    {},
+    `/game/act_part_two`,
+    {
+      requestId: requestId,
+      questId: questSummary.questId,
+      locationIndex: worldIndices.locationIndex,
+      sceneIndex: worldIndices.sceneIndex,
+    },
     EventsResponseSchema,
   );
 
   return response.events;
 };
 
-export const setPendingDiceText = async (
-  diceRollState: DiceRollState,
-  gameApi: GameApi,
-  gameData: GameData,
-) => {
+export const setPendingDiceText = (diceRollState: DiceRollState) => {
   let characterRollsSums = [];
   for (const roll of diceRollState.characterRolls) {
     const sum = roll.targetValues.reduce((acc, val) => acc + val, 0);
@@ -101,6 +116,8 @@ export const EventProvider = ({
   const { showToast } = useToast();
   const gameApi = useGameApi();
   const { gameData, setGameData } = useGameData();
+  const { worldIndices, setWorldIndices } = useWorldIndices();
+  const { questSummary } = useAppContext();
 
   const processEvent = async (
     event: GameEvent,
@@ -108,6 +125,11 @@ export const EventProvider = ({
     if (import.meta.env.DEV) {
       permaConsoleLog("Processing", event.type, "event", event);
     }
+
+    setWorldIndices({
+      locationIndex: event.locationIndex,
+      sceneIndex: event.sceneIndex,
+    });
 
     if (event.type !== "StillWaiting") {
       waitCount = 0;
@@ -157,12 +179,14 @@ export const EventProvider = ({
         locationRoll: event.locationRoll,
         finishedAnimation: false,
       };
-      setPendingDiceText(diceRollState, gameApi, gameData);
+      setPendingDiceText(diceRollState);
 
       if (!gameConfig.shouldAnimateDice) {
         return [
           {
             type: "StillWaiting",
+            locationIndex: worldIndices.locationIndex,
+            sceneIndex: worldIndices.sceneIndex,
           },
         ];
       }
@@ -185,10 +209,12 @@ export const EventProvider = ({
       return [
         {
           type: "StillWaiting",
+          locationIndex: worldIndices.locationIndex,
+          sceneIndex: worldIndices.sceneIndex,
         },
       ];
     } else if (event.type === "PollResponseNoDiceRoll") {
-      return await fetchActPartTwo(gameApi, gameData);
+      return await fetchActPartTwo(gameApi, worldIndices, questSummary);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
       permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
@@ -235,7 +261,7 @@ export const EventProvider = ({
         showToast("Gave up waiting for AI response", "error");
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        return await fetchActPartTwo(gameApi, gameData);
+        return await fetchActPartTwo(gameApi, worldIndices, questSummary);
       }
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
@@ -275,9 +301,34 @@ export const EventProvider = ({
     }
   }, [isProcessing, eventQueue.length, isPaused]);
 
-  const addEvents = (events: GameEvent[]) => {
+  const appendEvents = (events: GameEvent[]) => {
     const newQueue = [...eventQueue, ...events];
     setEventQueue(newQueue);
+  };
+
+  const submitPrompt = async (
+    gameApi: GameApi,
+    gameId: string,
+    prompt: string,
+  ) => {
+    const response = await gameApi.postTyped(
+      `/game/submit_prompt`,
+      {
+        questId: questSummary.questId,
+        prompt: prompt,
+        locationIndex: worldIndices.locationIndex,
+        sceneIndex: worldIndices.sceneIndex,
+      },
+      EventsResponseSchema,
+    );
+
+    if (response.requestId) {
+      requestId = response.requestId;
+    }
+
+    appendEvents(response.events);
+
+    return response;
   };
 
   return (
@@ -287,7 +338,8 @@ export const EventProvider = ({
         setEventQueue,
         isProcessing,
         setIsProcessing,
-        addEvents,
+        submitPrompt,
+        appendEvents,
         queueLength: eventQueue.length,
       }}
     >
@@ -300,8 +352,9 @@ export const useEventProcessor = () => {
   const context = useContext(EventContext);
 
   return {
-    addEvents: context.addEvents,
+    submitPrompt: context.submitPrompt,
     isProcessing: context.isProcessing,
     queueLength: context.queueLength,
+    appendEvents: context.appendEvents,
   };
 };

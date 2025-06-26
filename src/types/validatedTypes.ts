@@ -64,76 +64,83 @@ const DiceRollSchema = z.object({
   targetValues: z.array(z.number()),
 });
 
-const GameEventSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("Story"),
-    text: z.string(),
-    isAiResponse: z.boolean(),
-  }),
+const GameEventSchema = z
+  .discriminatedUnion("type", [
+    z.object({
+      type: z.literal("Story"),
+      text: z.string(),
+      isAiResponse: z.boolean(),
+    }),
 
-  z.object({
-    type: z.literal("Image"),
-    imageUrl: z.string(),
-  }),
+    z.object({
+      type: z.literal("Image"),
+      imageUrl: z.string(),
+    }),
 
-  z.object({
-    type: z.literal("Pause"),
-  }),
+    z.object({
+      type: z.literal("Pause"),
+    }),
 
-  z.object({
-    type: z.literal("DiceRollScreen"),
-    characterRolls: z.array(DiceRollSchema),
-    locationRoll: DiceRollSchema,
-  }),
+    z.object({
+      type: z.literal("DiceRollScreen"),
+      characterRolls: z.array(DiceRollSchema),
+      locationRoll: DiceRollSchema,
+    }),
 
-  z.object({
-    type: z.literal("PollResponseNoDiceRoll"),
-  }),
+    z.object({
+      type: z.literal("PollResponseNoDiceRoll"),
+    }),
 
-  z.object({
-    type: z.literal("RejectPromptResponse"),
-    rejectionMessage: z.string(),
-  }),
-  z.object({
-    type: z.literal("LocationStateUpdate"),
-    npcState: z.array(z.string()),
-  }),
-  z.object({
-    type: z.literal("ChangeLocation"),
-    npcState: z.array(z.string()),
-    locationData: LocationDataSchema,
-  }),
-  z.object({
-    type: z.literal("ChangePlaylist"),
-    playlist: z.array(z.string()),
-  }),
-  z.object({
-    type: z.literal("ClearStory"),
-  }),
-  z.object({
-    type: z.literal("AddCharacter"),
-    name: z.string(),
-  }),
-  z.object({
-    type: z.literal("ChangePortrait"),
-    characterName: z.string(),
-    imageUrl: z.string(),
-  }),
-  z.object({
-    type: z.literal("PlayerInput"),
-    playerPrompt: z.string(),
-  }),
-  z.object({
-    type: z.literal("GameEnd"),
-  }),
-  z.object({
-    type: z.literal("StillWaiting"),
-  }),
-  z.object({
-    type: z.literal("ErrorResponse"),
-    errorMessage: z.string(),
-  }),
-]);
+    z.object({
+      type: z.literal("RejectPromptResponse"),
+      rejectionMessage: z.string(),
+    }),
+    z.object({
+      type: z.literal("LocationStateUpdate"),
+      npcState: z.array(z.string()),
+    }),
+    z.object({
+      type: z.literal("ChangeLocation"),
+      npcState: z.array(z.string()),
+      locationData: LocationDataSchema,
+    }),
+    z.object({
+      type: z.literal("ChangePlaylist"),
+      playlist: z.array(z.string()),
+    }),
+    z.object({
+      type: z.literal("ClearStory"),
+    }),
+    z.object({
+      type: z.literal("AddCharacter"),
+      name: z.string(),
+    }),
+    z.object({
+      type: z.literal("ChangePortrait"),
+      characterName: z.string(),
+      imageUrl: z.string(),
+    }),
+    z.object({
+      type: z.literal("PlayerInput"),
+      playerPrompt: z.string(),
+    }),
+    z.object({
+      type: z.literal("GameEnd"),
+    }),
+    z.object({
+      type: z.literal("StillWaiting"),
+    }),
+    z.object({
+      type: z.literal("ErrorResponse"),
+      errorMessage: z.string(),
+    }),
+  ])
+  .and(
+    z.object({
+      locationIndex: z.number(),
+      sceneIndex: z.number(),
+    }),
+  );
 
 export const StartGameSchema = z.object({
   gameData: GameDataSchema,
@@ -143,6 +150,7 @@ export const StartGameSchema = z.object({
 
 export const EventsResponseSchema = z.object({
   events: z.array(GameEventSchema),
+  requestId: z.string().nullable(),
 });
 
 export const GeneratePromptResponseSchema = z.object({

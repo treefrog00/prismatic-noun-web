@@ -15,9 +15,17 @@ export interface DiceRollState {
   finishedAnimation: boolean;
 }
 
+export interface WorldIndices {
+  locationIndex: number;
+  sceneIndex: number;
+}
+
 type GameContextType = {
   gameData: GameData | null;
   setGameData: (value: GameData | null) => void;
+
+  worldIndices: WorldIndices;
+  setWorldIndices: (value: WorldIndices) => void;
 
   locationData: LocationData | null;
   setLocationData: (value: LocationData | null) => void;
@@ -85,6 +93,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [characters, setCharacters] = useState<string[]>([]);
   const [npcState, setNpcState] = useState<string[]>([]);
 
+  const [worldIndices, setWorldIndices] = useState<WorldIndices>({
+    locationIndex: 0,
+    sceneIndex: 0,
+  });
+
   const [diceRollState, setDiceRollState] = useState<DiceRollState>({
     show: false,
     characterRolls: [],
@@ -129,6 +142,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         gameData,
         setGameData,
+
+        worldIndices,
+        setWorldIndices,
 
         locationData,
         setLocationData,
@@ -274,4 +290,12 @@ export const useLogbook = () => {
   const context = useContext(GameContext);
   if (!context) throw new Error("useLogbook must be used within GameProvider");
   return { logbook: context.logbook, addToLogbook: context.addToLogbook };
+};
+
+export const useWorldIndices = () => {
+  const context = useContext(GameContext);
+  return {
+    worldIndices: context.worldIndices,
+    setWorldIndices: context.setWorldIndices,
+  };
 };

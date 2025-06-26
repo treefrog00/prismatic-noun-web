@@ -280,6 +280,18 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       const characterPositions = getCharacterPositions();
 
+      // Calculate the offset between character positions and paragraph position
+      // to ensure perfect alignment when animation completes
+      const refRect = referenceParagraph.getBoundingClientRect();
+      const containerRect = textContainer.getBoundingClientRect();
+      const paragraphBaselineY = refRect.top - containerRect.top;
+
+      // Find the baseline offset by checking the first character position
+      let baselineOffset = 0;
+      if (characterPositions.length > 0) {
+        baselineOffset = characterPositions[0].y - paragraphBaselineY;
+      }
+
       let currentX = 0;
 
       // Use measured character positions from reference paragraph
@@ -360,9 +372,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
             }
           }
         }
-        // Use the measured position from the reference paragraph
+        // Use the measured position from the reference paragraph, adjusted for baseline offset
         const finalX = position.x;
-        const finalY = position.y;
+        const finalY = position.y - baselineOffset;
 
         // Set initial position (from bottom of screen)
         charElement.style.left = finalX + "px";

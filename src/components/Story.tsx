@@ -98,6 +98,7 @@ export const processTextFormatting = (
 const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
   const textDisplayRef = useRef<HTMLDivElement>(null);
   let paragraphCount = 0;
+  let fadeInCounter = 0;
   const lineHeight = 20;
   const { gameConfig } = useGameConfig();
   const sharedStyles = getStyles(questSummary.theme);
@@ -558,16 +559,20 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         scrollToBottom();
       }
 
-      // Trigger fade-in effect
+      // Trigger fade-in effect with incremental delay to ensure proper ordering
+      const delay = 10 + fadeInCounter * 5;
+      fadeInCounter++;
+
       setTimeout(() => {
         textContainer.style.opacity = "1";
-      }, 10); // Small delay to ensure the transition is applied
+      }, delay);
     },
     clearStory: () => {
       if (!textDisplayRef.current) return;
 
       const textDisplay = textDisplayRef.current;
       textDisplay.innerHTML = "";
+      fadeInCounter = 0; // Reset counter when story is cleared
     },
     scrollToBottom: () => {
       scrollToBottom();

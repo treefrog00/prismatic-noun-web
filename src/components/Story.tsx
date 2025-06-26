@@ -234,13 +234,11 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Get plain text without HTML tags to map to character positions
       const plainText = text.replace(/<[^>]*>/g, "");
 
-      // Create a hidden reference paragraph with plain text to measure exact positions
+      // Create a reference paragraph in normal flow but invisible during animation
       const referenceParagraph = document.createElement("p");
       referenceParagraph.style.lineHeight = `${lineHeight}px`;
       referenceParagraph.style.margin = "0";
-      referenceParagraph.style.visibility = "hidden";
-      referenceParagraph.style.position = "absolute";
-      referenceParagraph.style.width = usableWidth + "px";
+      referenceParagraph.style.opacity = "0"; // Use opacity instead of visibility
       referenceParagraph.style.whiteSpace = "pre-wrap";
 
       // Use plain text for position measurement to match our character indices
@@ -407,22 +405,16 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        // Remove the reference paragraph
-        if (referenceParagraph && referenceParagraph.parentNode) {
-          referenceParagraph.parentNode.removeChild(referenceParagraph);
-        }
+        // Simply make the reference paragraph visible and update its content
+        referenceParagraph.style.opacity = "1";
 
-        const paragraph = document.createElement("p");
-        paragraph.style.lineHeight = `${lineHeight}px`;
-        paragraph.style.margin = "0";
-
-        const textSpan = document.createElement("span");
         const finalText = processTextFormatting(text, sharedStyles, options);
-        textSpan.innerHTML = finalText;
+        referenceParagraph.innerHTML = finalText;
 
-        paragraph.appendChild(textSpan);
-        textContainer.innerHTML = "";
-        textContainer.appendChild(paragraph);
+        // Remove all the animated character elements
+        const characterElements = textContainer.querySelectorAll(".character");
+        characterElements.forEach((el) => el.remove());
+
         scrollToBottom();
       }, longestAnimationTime);
     },

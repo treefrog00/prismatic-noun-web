@@ -52,8 +52,8 @@ const LaunchScreen = () => {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div className={`text-center text-gray-200 text-lg space-y-4`}>
                 <p>
-                  A collection of short, partly AI-generated weird and spooky
-                  stories.
+                  A collection of weird and spooky short stories, partly
+                  AI-generated.
                 </p>
                 <p>
                   WARNING: creepy events and AI generated content lie in wait

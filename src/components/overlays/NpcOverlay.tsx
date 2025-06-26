@@ -1,4 +1,4 @@
-import { useLocationData, useLocationState } from "@/contexts/GameContext";
+import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
 import { QuestSummary } from "@/types/validatedTypes";
@@ -20,22 +20,18 @@ const NpcOverlay = ({
   onMouseLeave,
   questSummary,
 }: NpcOverlayProps) => {
-  const { locationState } = useLocationState();
   const { locationData } = useLocationData();
-  const [npcState, setNpcState] = useState(null);
   const [npcData, setNpcData] = useState(null);
 
   useEffect(() => {
-    if (locationState && locationData && npcName) {
-      setNpcState(locationState.npcs[npcName]);
+    if (locationData && npcName) {
       setNpcData(locationData.npcs[npcName]);
     } else {
-      setNpcState(null);
       setNpcData(null);
     }
-  }, [locationState, locationData, npcName]);
+  }, [locationData, npcName]);
 
-  if (!npcState || !npcData) return null;
+  if (!npcData) return null;
 
   return (
     <Overlay

@@ -4,7 +4,7 @@ import {
   useCharacters,
   useGameData,
   useLocationData,
-  useLocationState,
+  useNpcState,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
@@ -131,7 +131,7 @@ const useOverlayState = (overlayId: string) => {
 
 const TopBar = () => {
   const { locationData } = useLocationData();
-  const { locationState } = useLocationState();
+  const { npcState } = useNpcState();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -153,27 +153,21 @@ const TopBar = () => {
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
 
-  const characterList = Object.entries(characters).map(
-    ([name, characterState]) => {
-      const characterData = gameData?.characters?.[name];
-      return {
-        name,
-        ...characterState,
-        ...characterData,
-      };
-    },
-  );
+  const characterList = characters.map((name) => {
+    const characterData = gameData?.characters?.[name];
+    return {
+      name,
+      ...characterData,
+    };
+  });
 
-  const npcList = Object.entries(locationState?.npcs ?? {}).map(
-    ([name, npcState]) => {
-      const npcData = locationData?.npcs?.[name];
-      return {
-        name,
-        ...npcState,
-        ...npcData,
-      };
-    },
-  );
+  const npcList = npcState.map((name) => {
+    const npcData = locationData?.npcs?.[name];
+    return {
+      name: name,
+      ...npcData,
+    };
+  });
 
   return (
     <>

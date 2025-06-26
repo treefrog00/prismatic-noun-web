@@ -16,7 +16,7 @@ import {
   useMainImage,
   useUiState,
 } from "./GameContext";
-import { useLocationState } from "./GameContext";
+import { useNpcState } from "./GameContext";
 import { useLocationData } from "./GameContext";
 import { useGameConfig } from "@/contexts/AppContext";
 import { appendToStory, clearStory } from "@/core/storyEvents";
@@ -27,11 +27,7 @@ import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
 import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
-import {
-  EventsResponseSchema,
-  GameData,
-  CharacterState,
-} from "@/types/validatedTypes";
+import { EventsResponseSchema, GameData } from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
 import { StoryAppendOptions } from "@/components/Story";
 
@@ -95,7 +91,7 @@ export const EventProvider = ({
   const { setDiceRollState } = useDiceRoll();
   const { setMainImage } = useMainImage();
   const { setCharacters } = useCharacters();
-  const { setLocationState } = useLocationState();
+  const { setNpcState } = useNpcState();
   const { setLocationData } = useLocationData();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
@@ -196,27 +192,22 @@ export const EventProvider = ({
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
       permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
-    } else if (event.type === "CharacterStateUpdate") {
-      setCharacters(event.characterState);
     } else if (event.type === "LocationStateUpdate") {
-      setLocationState(event.locationState);
+      setNpcState(event.npcState);
     } else if (event.type === "ChangeLocation") {
       clearStory();
       isFirstParagraph = true;
-      setLocationState(event.locationState);
+      setNpcState(event.npcState);
       setLocationData(event.locationData);
       addToLogbook(`### ${event.locationData.name}`);
     } else if (event.type === "ClearStory") {
       clearStory();
       isFirstParagraph = true;
     } else if (event.type === "AddCharacter") {
-      setCharacters((prevCharacters: Record<string, CharacterState>) => {
-        const newCharacters: Record<string, CharacterState> = {
-          ...prevCharacters,
-          [event.name]: event.state,
-        };
-        return newCharacters;
-      });
+      setCharacters((prevCharacters: string[]) => [
+        ...prevCharacters,
+        event.name,
+      ]);
     } else if (event.type === "ChangePortrait") {
       if (gameData) {
         setGameData({

@@ -1,6 +1,5 @@
 import { z } from "zod/v4";
 import { ThemeColorKey, themeColors } from "@/styles/shared";
-import { zodErrorsIntegration } from "@sentry/react";
 
 export const ExchangeCodeResponseSchema = z.object({
   prismaticNounToken: z.string(),
@@ -42,23 +41,10 @@ const BaseCharacterSchema = z.object({
 
 const CharacterSchema = BaseCharacterSchema.extend({
   abilities: z.array(AbilityDataSchema),
-  inventory: z.array(z.string()),
+  arrivesLater: z.boolean(),
 });
 
 const NpcSchema = BaseCharacterSchema.extend({});
-
-export const CharacterStateSchema = z.object({
-  inventory: z.array(z.string()),
-  effects: z.array(z.string()),
-});
-
-const NpcStateSchema = z.object({
-  effects: z.array(z.string()),
-});
-
-const LocationStateSchema = z.object({
-  npcs: z.record(z.string(), NpcStateSchema),
-});
 
 const GameDataSchema = z.object({
   gameId: z.string(),
@@ -108,19 +94,13 @@ const GameEventSchema = z.discriminatedUnion("type", [
     type: z.literal("RejectPromptResponse"),
     rejectionMessage: z.string(),
   }),
-
-  z.object({
-    type: z.literal("CharacterStateUpdate"),
-    characterState: z.record(z.string(), CharacterStateSchema),
-  }),
   z.object({
     type: z.literal("LocationStateUpdate"),
-
-    locationState: LocationStateSchema,
+    npcState: z.array(z.string()),
   }),
   z.object({
     type: z.literal("ChangeLocation"),
-    locationState: LocationStateSchema,
+    npcState: z.array(z.string()),
     locationData: LocationDataSchema,
   }),
   z.object({
@@ -133,7 +113,6 @@ const GameEventSchema = z.discriminatedUnion("type", [
   z.object({
     type: z.literal("AddCharacter"),
     name: z.string(),
-    state: CharacterStateSchema,
   }),
   z.object({
     type: z.literal("ChangePortrait"),
@@ -176,12 +155,9 @@ export type QuestSummary = z.infer<typeof QuestSummarySchema>;
 export type QuestSummaries = z.infer<typeof QuestSummariesSchema>;
 export type Character = z.infer<typeof CharacterSchema>;
 export type Npc = z.infer<typeof NpcSchema>;
-export type NpcState = z.infer<typeof NpcStateSchema>;
 export type LocationData = z.infer<typeof LocationDataSchema>;
 export type StartGame = z.infer<typeof StartGameSchema>;
-export type CharacterState = z.infer<typeof CharacterStateSchema>;
 export type GameData = z.infer<typeof GameDataSchema>;
-export type LocationState = z.infer<typeof LocationStateSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
 export type EventsResponse = z.infer<typeof EventsResponseSchema>;

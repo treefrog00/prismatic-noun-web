@@ -81,7 +81,7 @@ export const themeColors = {
     container: "bg-gray-800",
     text: "text-gray-300",
     highlight: "text-yellow-400",
-    gradient: ["#374151", "#374151", "#71717a"],
+    gradient: ["#171717", "#171717", "#ca8a04"],
   },
 } as const;
 

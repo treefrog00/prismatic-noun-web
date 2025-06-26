@@ -4,13 +4,7 @@ import {
   PlayerState,
   LocalPlayerState,
 } from "../core/multiplayerState";
-import {
-  CharacterState,
-  GameData,
-  LocationData,
-  LocationState,
-  DiceRoll,
-} from "../types";
+import { GameData, LocationData, DiceRoll } from "../types";
 import { createContext, useContext, ReactNode, useState } from "react";
 import { useAppContext } from "./AppContext";
 
@@ -28,17 +22,11 @@ type GameContextType = {
   locationData: LocationData | null;
   setLocationData: (value: LocationData | null) => void;
 
-  locationState: LocationState | null;
-  setLocationState: (value: LocationState | null) => void;
+  npcState: string[];
+  setNpcState: (value: string[]) => void;
 
-  characters: Record<string, CharacterState>;
-  setCharacters: (
-    value:
-      | Record<string, CharacterState>
-      | ((
-          prev: Record<string, CharacterState>,
-        ) => Record<string, CharacterState>),
-  ) => void;
+  characters: string[];
+  setCharacters: (value: string[] | ((prev: string[]) => string[])) => void;
 
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
@@ -94,10 +82,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   //////////////////////////// end of multiplayer state ////////////////////////////
 
   //// React local-only state ////
-  const [characters, setCharacters] = useState<Record<string, CharacterState>>(
-    {},
-  );
-  const [locationState, setLocationState] = useState<LocationState>(null);
+  const [characters, setCharacters] = useState<string[]>([]);
+  const [npcState, setNpcState] = useState<string[]>([]);
 
   const [diceRollState, setDiceRollState] = useState<DiceRollState>({
     show: false,
@@ -147,8 +133,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         locationData,
         setLocationData,
 
-        locationState,
-        setLocationState,
+        npcState,
+        setNpcState,
 
         characters,
         setCharacters,
@@ -211,11 +197,11 @@ export const useLocationData = () => {
   };
 };
 
-export const useLocationState = () => {
+export const useNpcState = () => {
   const context = useContext(GameContext);
   return {
-    locationState: context.locationState,
-    setLocationState: context.setLocationState,
+    npcState: context.npcState,
+    setNpcState: context.setNpcState,
   };
 };
 

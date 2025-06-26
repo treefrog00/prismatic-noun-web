@@ -9,6 +9,7 @@ import {
   useGameData,
   useUiState,
   useDiceRoll,
+  useCharacters,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -33,6 +34,7 @@ const GameContent = () => {
   const gameApi = useGameApi();
   const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
   const { diceRollState } = useDiceRoll();
+  const { setCharacters } = useCharacters();
 
   useEffect(() => {
     if (showPromptInput.show) {
@@ -86,6 +88,11 @@ const GameContent = () => {
 
         let startGame = await startIfNotStarted(gameApi, summary);
         setGameData(startGame.gameData);
+        setCharacters(
+          Object.entries(startGame.gameData.characters)
+            .filter(([name, c]) => !c.arrivesLater)
+            .map(([name, c]) => name),
+        );
         setShowTopBar(true);
         setGameConfig({
           ...gameConfig,

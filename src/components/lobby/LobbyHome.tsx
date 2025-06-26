@@ -64,16 +64,13 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
         )}
       </div>
       <div className="flex gap-4">
-        {questSummary && questSummary.questId != "meddlesome_sprite" && (
+        {questSummary && (
           <button
             className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
             onClick={handleStartAdventure}
           >
             Start adventure!
           </button>
-        )}
-        {questSummary && questSummary.questId == "meddlesome_sprite" && (
-          <div className="text-xl">Not yet ready for playtesting</div>
         )}
       </div>
     </>

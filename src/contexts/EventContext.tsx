@@ -153,11 +153,18 @@ export const EventProvider = ({
 
       addToLogbook(event.text.replace(/<hl>/g, "").replace(/<\/hl>/g, ""));
 
-      if (isFirstParagraph && gameConfig.shouldAnimateText) {
+      if (
+        isFirstParagraph &&
+        gameConfig.shouldAnimateText &&
+        !event.isAiResponse
+      ) {
         await new Promise((resolve) => setTimeout(resolve, 1800));
-        isFirstParagraph = false;
       } else if (gameConfig.shouldAnimateText) {
         await new Promise((resolve) => setTimeout(resolve, 300));
+      }
+
+      if (isFirstParagraph) {
+        isFirstParagraph = false;
       }
     } else if (event.type === "Image") {
       // the flushSync microtask is only needed for React 18+

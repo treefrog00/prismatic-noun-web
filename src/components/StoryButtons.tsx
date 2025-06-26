@@ -56,23 +56,6 @@ const StoryButtons: React.FC = () => {
     setMyPrompt("");
   };
 
-  const formatCharacterList = (characters: string[]): string => {
-    if (characters.length === 0) return "";
-    if (characters.length === 1) return characters[0];
-    if (characters.length === 2) return characters.join(" and ");
-    // For 3+ characters, use Oxford comma: "A, B, and C"
-    return (
-      characters.slice(0, -1).join(", ") +
-      ", and " +
-      characters[characters.length - 1]
-    );
-  };
-
-  const placeHolder =
-    (characters || []).length > 0
-      ? `${formatCharacterList(characters)}: ${showPromptInput.playerPrompt}`
-      : "error";
-
   useEffect(() => {
     if (showPromptInput.show && textInputRef.current) {
       textInputRef.current.focus();
@@ -116,7 +99,7 @@ const StoryButtons: React.FC = () => {
                   textInputRef={textInputRef}
                   onClose={() => {}}
                   onOk={handleActOk}
-                  placeHolder={placeHolder}
+                  placeHolder={showPromptInput.playerPrompt}
                   showCharCount={true}
                   maxLength={gameConfig.promptLimit}
                 />

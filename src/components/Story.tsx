@@ -559,9 +559,11 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       }
 
       // Trigger fade-in effect
-      setTimeout(() => {
-        textContainer.style.opacity = "1";
-      }, 10); // Small delay to ensure the transition is applied
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          textContainer.style.opacity = "1";
+        });
+      });
     },
     clearStory: () => {
       if (!textDisplayRef.current) return;

@@ -64,7 +64,6 @@ const DiceRollsScreen: React.FC = () => {
       finishedAnimation: false,
     });
 
-    console.log("Dice rolls set is paused to false");
     setIsPaused(false);
   };
 

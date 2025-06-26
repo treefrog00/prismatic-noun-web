@@ -123,7 +123,7 @@ export const EventProvider = ({
     event: GameEvent,
   ): Promise<GameEvent[] | null> => {
     if (import.meta.env.DEV) {
-      permaConsoleLog("Processing", event.type, "event", event);
+      //permaConsoleLog("Processing", event.type, "event", event);
     }
 
     setWorldIndices({
@@ -170,7 +170,6 @@ export const EventProvider = ({
         await new Promise((resolve) => setTimeout(resolve, 1500));
       }
     } else if (event.type === "Pause") {
-      console.log("Pause");
       setIsPaused(true);
     } else if (event.type === "DiceRollScreen") {
       const diceRollState = {

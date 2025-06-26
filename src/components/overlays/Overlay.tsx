@@ -20,7 +20,6 @@ const Overlay = ({
   questSummary,
 }: OverlayProps) => {
   const sharedStyles = getStyles(questSummary.theme);
-
   return (
     <div
       className={`${sharedStyles.container} ${className} pointer-events-auto`}

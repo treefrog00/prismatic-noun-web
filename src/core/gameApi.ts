@@ -88,7 +88,7 @@ export class GameApi {
       if (error instanceof z.ZodError) {
         throw new Error(`Validation error: ${JSON.stringify(error.issues)}`);
       } else {
-        console.log("makeTypedRequest error", error);
+        permaConsoleLog("makeTypedRequest error", error);
       }
       throw error;
     }

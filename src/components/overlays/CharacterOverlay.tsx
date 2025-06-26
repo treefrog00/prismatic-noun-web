@@ -19,15 +19,17 @@ const CharacterOverlay = ({
   onMouseLeave,
   questSummary,
 }: CharacterOverlayProps) => {
-  const { characters } = useCharacters();
   const { gameData } = useGameData();
 
-  const characterState = characters?.[characterName];
   const characterData = gameData?.characters?.[characterName];
 
   const handleSpeechClick = () => {
-    const audioFileName = characterData.name.toLowerCase() + ".mp3";
-    const audioPath = `/ai_sound/${audioFileName}`;
+    const audioFileName =
+      characterData.name
+        .toLowerCase()
+        .split(" ")
+        .filter((word) => word !== "the")[0] + ".mp3";
+    const audioPath = `/ai_sound/tts/${audioFileName}`;
 
     const audio = new Audio(audioPath);
     audio.play().catch((error) => {
@@ -38,7 +40,7 @@ const CharacterOverlay = ({
     });
   };
 
-  if (!characterState || !characterData) {
+  if (!characterData) {
     return null;
   }
 

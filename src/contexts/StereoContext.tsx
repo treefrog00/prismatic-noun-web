@@ -13,6 +13,7 @@ interface StereoContextType {
   setPlaylist: (playlist: string[]) => void;
   initialPlay: () => void;
   isMusicEnabled: boolean;
+  playCharacterSpeech: (characterName: string) => void;
 }
 
 const StereoContext = createContext<StereoContextType | null>(null);
@@ -31,6 +32,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
+  const speechAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [playlist, setPlaylist] = useState<string[]>(LOBBY_PLAYLIST);
   const [isMusicEnabled, setMusicEnabled] = useState<boolean>(
@@ -203,6 +205,36 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const playCharacterSpeech = (characterName: string) => {
+    // Check if speech audio is already playing
+    if (speechAudioRef.current && !speechAudioRef.current.paused) {
+      return; // Ignore if speech is already playing
+    }
+
+    const audioFileName =
+      characterName
+        .toLowerCase()
+        .split(" ")
+        .filter((word) => word !== "the")[0] + ".mp3";
+    const audioPath = `/ai_sound/tts/${audioFileName}`;
+
+    const audio = new Audio(audioPath);
+    speechAudioRef.current = audio;
+
+    // Clear the ref when audio ends
+    audio.addEventListener("ended", () => {
+      speechAudioRef.current = null;
+    });
+
+    audio.play().catch((error) => {
+      console.warn(
+        `Could not play audio for character ${characterName}:`,
+        error,
+      );
+      speechAudioRef.current = null; // Clear ref on error too
+    });
+  };
+
   // Clean up timeout on unmount
   useEffect(() => {
     return () => {
@@ -227,6 +259,7 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         setPlaylist,
         initialPlay,
         isMusicEnabled,
+        playCharacterSpeech,
       }}
     >
       {children}

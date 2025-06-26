@@ -1,4 +1,5 @@
 import { useCharacters, useGameData } from "@/contexts/GameContext";
+import { useStereo } from "@/contexts/StereoContext";
 import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
 import { QuestSummary } from "@/types";
@@ -20,24 +21,12 @@ const CharacterOverlay = ({
   questSummary,
 }: CharacterOverlayProps) => {
   const { gameData } = useGameData();
+  const { playCharacterSpeech } = useStereo();
 
   const characterData = gameData?.characters?.[characterName];
 
   const handleSpeechClick = () => {
-    const audioFileName =
-      characterData.name
-        .toLowerCase()
-        .split(" ")
-        .filter((word) => word !== "the")[0] + ".mp3";
-    const audioPath = `/ai_sound/tts/${audioFileName}`;
-
-    const audio = new Audio(audioPath);
-    audio.play().catch((error) => {
-      console.warn(
-        `Could not play audio for character ${characterData.name}:`,
-        error,
-      );
-    });
+    playCharacterSpeech(characterData.name);
   };
 
   if (!characterData) {

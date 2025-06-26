@@ -231,8 +231,10 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Scroll to the bottom of the display
       textDisplay.scrollTop = textDisplay.scrollHeight;
 
-      // Create a hidden reference paragraph with the final text to measure exact positions
-      const finalText = processTextFormatting(text, sharedStyles, options);
+      // Get plain text without HTML tags to map to character positions
+      const plainText = text.replace(/<[^>]*>/g, "");
+
+      // Create a hidden reference paragraph with plain text to measure exact positions
       const referenceParagraph = document.createElement("p");
       referenceParagraph.style.lineHeight = `${lineHeight}px`;
       referenceParagraph.style.margin = "0";
@@ -241,9 +243,8 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       referenceParagraph.style.width = usableWidth + "px";
       referenceParagraph.style.whiteSpace = "pre-wrap";
 
-      const referenceSpan = document.createElement("span");
-      referenceSpan.innerHTML = finalText;
-      referenceParagraph.appendChild(referenceSpan);
+      // Use plain text for position measurement to match our character indices
+      referenceParagraph.textContent = plainText;
       textContainer.appendChild(referenceParagraph);
 
       // Create a temporary span to measure character width (kept for fallback)
@@ -256,7 +257,7 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Function to get character positions from reference paragraph
       function getCharacterPositions() {
         const range = document.createRange();
-        const textNode = referenceSpan.firstChild;
+        const textNode = referenceParagraph.firstChild;
         if (!textNode) return [];
 
         const positions = [];
@@ -293,8 +294,34 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       const CHAR_DELAY = 4; // Base delay per character
       const SCROLL_DELAY = 300; // Fixed delay for scrolling after new lines
 
-      // Get plain text without HTML tags to map to character positions
-      const plainText = text.replace(/<[^>]*>/g, "");
+      // Pre-calculate highlight mapping for all characters
+      const highlightMap: boolean[] = [];
+      let isHighlighted = false;
+      let originalIndex = 0;
+      let plainIndex = 0;
+
+      while (originalIndex < text.length && plainIndex < plainText.length) {
+        if (text[originalIndex] === "<") {
+          // Skip HTML tag
+          const tagEnd = text.indexOf(">", originalIndex);
+          if (tagEnd !== -1) {
+            const tag = text.substring(originalIndex, tagEnd + 1);
+            if (tag === "<hl>") {
+              isHighlighted = true;
+            } else if (tag === "</hl>") {
+              isHighlighted = false;
+            }
+            originalIndex = tagEnd + 1;
+          } else {
+            originalIndex++;
+          }
+        } else {
+          // This is a regular character
+          highlightMap[plainIndex] = isHighlighted;
+          plainIndex++;
+          originalIndex++;
+        }
+      }
 
       // Process each character using the measured positions
       for (let i = 0; i < plainText.length; i++) {
@@ -306,36 +333,8 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         const charElement = document.createElement("span");
         charElement.className = "character";
 
-        // Check if this character should be highlighted
-        // We need to map back to the original text to check for highlight tags
-        let isHighlighted = false;
-        let originalIndex = 0;
-        let plainIndex = 0;
-        while (plainIndex <= i && originalIndex < text.length) {
-          if (text[originalIndex] === "<") {
-            // Skip HTML tag
-            const tagEnd = text.indexOf(">", originalIndex);
-            if (tagEnd !== -1) {
-              const tag = text.substring(originalIndex, tagEnd + 1);
-              if (tag === "<hl>") {
-                isHighlighted = true;
-              } else if (tag === "</hl>") {
-                isHighlighted = false;
-              }
-              originalIndex = tagEnd + 1;
-            } else {
-              originalIndex++;
-            }
-          } else {
-            if (plainIndex === i) {
-              break;
-            }
-            plainIndex++;
-            originalIndex++;
-          }
-        }
-
-        if (isHighlighted) {
+        // Use pre-calculated highlight mapping
+        if (highlightMap[i]) {
           charElement.classList.add(sharedStyles.highlight);
         }
 
@@ -418,7 +417,8 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         paragraph.style.margin = "0";
 
         const textSpan = document.createElement("span");
-        textSpan.innerHTML = finalText; // Use the already-processed finalText
+        const finalText = processTextFormatting(text, sharedStyles, options);
+        textSpan.innerHTML = finalText;
 
         paragraph.appendChild(textSpan);
         textContainer.innerHTML = "";

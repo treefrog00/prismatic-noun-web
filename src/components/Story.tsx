@@ -231,18 +231,19 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Scroll to the bottom of the display
       textDisplay.scrollTop = textDisplay.scrollHeight;
 
-      // Get plain text without HTML tags to map to character positions
+      // Get plain text without HTML tags to map to character indices
       const plainText = text.replace(/<[^>]*>/g, "");
 
-      // Create a reference paragraph in normal flow but invisible during animation
+      // Create a reference paragraph with the same HTML structure as the final paragraph
       const referenceParagraph = document.createElement("p");
       referenceParagraph.style.lineHeight = `${lineHeight}px`;
       referenceParagraph.style.margin = "0";
       referenceParagraph.style.opacity = "0"; // Use opacity instead of visibility
       referenceParagraph.style.whiteSpace = "pre-wrap";
 
-      // Use plain text for position measurement to match our character indices
-      referenceParagraph.textContent = plainText;
+      // Use the processed HTML for position measurement to match final wrapping behavior
+      const finalText = processTextFormatting(text, sharedStyles, options);
+      referenceParagraph.innerHTML = finalText;
       textContainer.appendChild(referenceParagraph);
 
       // Create a temporary span to measure character width (kept for fallback)
@@ -252,27 +253,35 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       tempSpan.style.fontSize = window.getComputedStyle(textDisplay).fontSize;
       textDisplay.appendChild(tempSpan);
 
-      // Function to get character positions from reference paragraph
+      // Function to get character positions from reference paragraph with HTML structure
       function getCharacterPositions() {
-        const range = document.createRange();
-        const textNode = referenceParagraph.firstChild;
-        if (!textNode) return [];
-
         const positions = [];
-        const textContent = textNode.textContent || "";
+        const range = document.createRange();
+        const containerRect = textContainer.getBoundingClientRect();
 
-        for (let i = 0; i < textContent.length; i++) {
-          range.setStart(textNode, i);
-          range.setEnd(textNode, i + 1);
-          const rect = range.getBoundingClientRect();
-          const containerRect = textContainer.getBoundingClientRect();
+        // Walker to traverse all text nodes in the reference paragraph
+        const walker = document.createTreeWalker(
+          referenceParagraph,
+          NodeFilter.SHOW_TEXT,
+          null,
+        );
 
-          positions.push({
-            x: rect.left - containerRect.left,
-            y: rect.top - containerRect.top,
-            width: rect.width,
-            height: rect.height,
-          });
+        let textNode;
+        while ((textNode = walker.nextNode())) {
+          const textContent = textNode.textContent || "";
+
+          for (let i = 0; i < textContent.length; i++) {
+            range.setStart(textNode, i);
+            range.setEnd(textNode, i + 1);
+            const rect = range.getBoundingClientRect();
+
+            positions.push({
+              x: rect.left - containerRect.left,
+              y: rect.top - containerRect.top,
+              width: rect.width,
+              height: rect.height,
+            });
+          }
         }
 
         return positions;
@@ -417,11 +426,8 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
 
       // Clean up DOM after animation completes and replace with paragraph
       setTimeout(() => {
-        // Simply make the reference paragraph visible and update its content
+        // Simply make the reference paragraph visible (content is already correct)
         referenceParagraph.style.opacity = "1";
-
-        const finalText = processTextFormatting(text, sharedStyles, options);
-        referenceParagraph.innerHTML = finalText;
 
         // Remove all the animated character elements
         const characterElements = textContainer.querySelectorAll(".character");

@@ -20,6 +20,7 @@ const StoryImage: React.FC = () => {
   const [displayImage, setDisplayImage] = useState<string | null>(mainImage);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [pixels, setPixels] = useState<PixelData[]>([]);
+  const [isHovered, setIsHovered] = useState(false);
   const animationRef = useRef<number>();
 
   const PIXEL_SIZE = 16; // Size of each square in pixels (larger = fewer pixels = better performance)
@@ -269,7 +270,14 @@ const StoryImage: React.FC = () => {
   }, [pixels, displayImage, isTransitioning]);
 
   return (
-    <div className="w-128 h-128 flex overflow-hidden">
+    <div
+      className="w-128 h-128 flex relative z-10 transition-transform duration-300 ease-in-out"
+      style={{
+        transform: isHovered ? "scale(1.4)" : "scale(1)",
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {!gameConfig.shouldAnimateImages ? (
         // Simple image display when animation is disabled
         displayImage ? (

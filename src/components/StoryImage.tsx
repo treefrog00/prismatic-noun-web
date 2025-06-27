@@ -271,45 +271,40 @@ const StoryImage: React.FC = () => {
 
   return (
     <div
-      className="w-128 h-128 flex relative z-10"
+      className="w-128 h-128 flex relative z-10 transition-transform duration-300 ease-in-out"
+      style={{
+        transform: isHovered ? "scale(1.4)" : "scale(1)",
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
-        className="w-full h-full transition-transform duration-300 ease-in-out"
-        style={{
-          transform: isHovered ? "scale(1.4)" : "scale(1)",
-          pointerEvents: isHovered ? "none" : "auto",
-        }}
-      >
-        {!gameConfig.shouldAnimateImages ? (
-          // Simple image display when animation is disabled
-          displayImage ? (
-            <img
-              src={artUrl(displayImage)}
-              alt="Story scene"
-              className="object-cover w-full h-full"
-              style={{
-                ...responsiveStyles.mask,
-              }}
-            />
-          ) : (
-            // this was a hack to try to deal with the text jumping during animation it did't really work
-            <img src={artUrl("blank.webp")} width="512" height="512" />
-          )
-        ) : (
-          // Canvas animation when animation is enabled
-          <canvas
-            ref={canvasRef}
-            width={CANVAS_WIDTH}
-            height={CANVAS_HEIGHT}
+      {!gameConfig.shouldAnimateImages ? (
+        // Simple image display when animation is disabled
+        displayImage ? (
+          <img
+            src={artUrl(displayImage)}
+            alt="Story scene"
             className="object-cover w-full h-full"
             style={{
               ...responsiveStyles.mask,
             }}
           />
-        )}
-      </div>
+        ) : (
+          // this was a hack to try to deal with the text jumping during animation it did't really work
+          <img src={artUrl("blank.webp")} width="512" height="512" />
+        )
+      ) : (
+        // Canvas animation when animation is enabled
+        <canvas
+          ref={canvasRef}
+          width={CANVAS_WIDTH}
+          height={CANVAS_HEIGHT}
+          className="object-cover w-full h-full"
+          style={{
+            ...responsiveStyles.mask,
+          }}
+        />
+      )}
     </div>
   );
 };

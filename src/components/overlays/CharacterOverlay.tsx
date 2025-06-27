@@ -4,6 +4,7 @@ import Overlay from "./Overlay";
 import artUrl from "@/util/artUrls";
 import { QuestSummary } from "@/types";
 import { pageStyles } from "@/styles/shared";
+import { useState } from "react";
 
 interface CharacterOverlayProps {
   position: { x: number; y: number };
@@ -22,11 +23,19 @@ const CharacterOverlay = ({
 }: CharacterOverlayProps) => {
   const { gameData } = useGameData();
   const { playCharacterSpeech } = useStereo();
+  const [isHovered, setIsHovered] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const characterData = gameData?.characters?.[characterName];
 
   const handleSpeechClick = () => {
     playCharacterSpeech(characterData.name);
+  };
+
+  const handleImageClick = () => {
+    if (isHovered) {
+      setIsZoomed(!isZoomed);
+    }
   };
 
   if (!characterData) {
@@ -48,11 +57,37 @@ const CharacterOverlay = ({
     >
       <div className="space-y-2">
         <div className="flex gap-2 p-2">
-          <img
-            src={artUrl(characterData.imageUrl)}
-            alt={characterData.name}
-            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
-          />
+          <div className="flex-shrink-0">
+            <div className="relative inline-block">
+              <img
+                src={artUrl(characterData.imageUrl)}
+                alt={characterData.name}
+                className={`${pageStyles.overlayImage} transition-transform duration-300 ease-in-out cursor-pointer`}
+                style={{
+                  transform: isZoomed ? "scale(2.0)" : "scale(1)",
+                  zIndex: isZoomed ? 1000 : "auto",
+                  width: "192px",
+                  height: "192px",
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                onClick={handleImageClick}
+              />
+
+              {/* Magnifying glass icon - only show when hovered and not zoomed */}
+              {isHovered && !isZoomed && (
+                <div className="absolute bottom-2 right-2 z-20">
+                  <div className="bg-white rounded-lg p-2 shadow-md">
+                    <img
+                      src={artUrl("mag.webp")}
+                      alt="Magnify"
+                      className="w-8 h-8 opacity-80 hover:opacity-100 transition-opacity duration-200"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
           <div className="mt-2">
             <div className="font-bold flex items-end gap-4 mb-6">
               {characterData.name}

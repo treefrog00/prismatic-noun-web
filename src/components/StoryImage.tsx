@@ -317,11 +317,13 @@ const StoryImage: React.FC = () => {
       {/* Magnifying glass icon - only show when hovered and not zoomed */}
       {isHovered && !isZoomed && (
         <div className="absolute bottom-2 right-2 z-20">
-          <img
-            src={artUrl("mag.webp")}
-            alt="Magnify"
-            className="w-8 h-8 opacity-80 hover:opacity-100 transition-opacity duration-200"
-          />
+          <div className="bg-white rounded-lg p-2 shadow-md">
+            <img
+              src={artUrl("mag.webp")}
+              alt="Magnify"
+              className="w-8 h-8 opacity-80 hover:opacity-100 transition-opacity duration-200"
+            />
+          </div>
         </div>
       )}
     </div>

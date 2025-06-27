@@ -61,8 +61,8 @@ const LaunchScreen = () => {
                 </p>
 
                 <p>
-                  Please feel free to adjust your headphones or volume control,
-                  but do not attempt to adjust the picture.
+                  Feel free to adjust your headphones or volume control, but do
+                  not attempt to adjust the picture.
                 </p>
               </div>
             </div>

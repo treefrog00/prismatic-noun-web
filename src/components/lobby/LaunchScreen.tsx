@@ -67,33 +67,14 @@ const LaunchScreen = () => {
               </div>
             </div>
           }
-          {!pnAccessToken ? (
-            <div className="flex flex-col gap-4 m-8">
-              <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-4 border border-gray-700 text-center">
-                Sign in to continue
-                <br />
-                <br />
-                <div className="flex justify-center">
-                  <AuthButtons />
-                </div>
-                <div className="m-4">
-                  Login with Google or Discord is necessary to limit usage of
-                  the fairly expensive AI model. You will never receive any
-                  marketing emails or be signed up to any mailing lists.
-                </div>
-              </div>
-            </div>
-          ) : null}
-          {pnAccessToken ? (
-            <div className="flex flex-row gap-4 m-8">
-              <button
-                onClick={handleLaunch}
-                className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
-              >
-                Launch
-              </button>
-            </div>
-          ) : null}
+          <div className="flex flex-row gap-4 m-8">
+            <button
+              onClick={handleLaunch}
+              className={`${responsiveStyles.button.base} ${responsiveStyles.button.primary} ${responsiveStyles.padding.button} ${responsiveStyles.text.base}`}
+            >
+              Launch
+            </button>
+          </div>
         </div>
       </div>
     </div>

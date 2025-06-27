@@ -21,10 +21,6 @@ export const getCurrentPnAccessToken = (): string | null => {
 };
 
 export const initializeAccessTokenFromStorage = (): string | null => {
-  if (envConfig.disableAuth) {
-    currentPnAccessToken = "auth_disabled";
-    return currentPnAccessToken;
-  }
   currentPnAccessToken = localStorage.getItem("pn_access_token");
   return currentPnAccessToken;
 };

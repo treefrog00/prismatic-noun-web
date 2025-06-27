@@ -10,12 +10,7 @@ export class GameApi {
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
-    const response = await this._makeRequestWithTokenNoException(
-      path,
-      body,
-      getCurrentPnAccessToken(),
-      method,
-    );
+    const response = await this._makeRequestNoException(path, body, method);
 
     if (response.ok) {
       return response.json();
@@ -36,40 +31,22 @@ export class GameApi {
     );
   }
 
-  async makeRequestWithToken(
+  async _makeRequestNoException(
     path: string,
     body: any,
-    token: string,
     method: "GET" | "POST" = "POST",
   ) {
-    const response = await this._makeRequestWithTokenNoException(
-      path,
-      body,
-      token,
-      method,
-    );
-
-    if (!response.ok) {
-      const responseBody = await response.json();
-      throw new Error(
-        `HTTP error ${response.status}: ${JSON.stringify(responseBody)}`,
-      );
+    const token = getCurrentPnAccessToken();
+    const headers = {
+      "Content-Type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = token;
     }
-    return response;
-  }
 
-  async _makeRequestWithTokenNoException(
-    path: string,
-    body: any,
-    token: string,
-    method: "GET" | "POST" = "POST",
-  ) {
     const response = await fetch(`${this.backendUrl}${path}`, {
       method,
-      headers: {
-        Authorization: token,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: method === "POST" && body ? JSON.stringify(body) : undefined,
     });
     return response;

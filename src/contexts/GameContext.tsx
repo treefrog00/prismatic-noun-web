@@ -20,6 +20,11 @@ export interface WorldIndices {
   sceneIndex: number;
 }
 
+export interface RateLimitStatus {
+  show: boolean;
+  username: string;
+}
+
 type GameContextType = {
   gameData: GameData | null;
   setGameData: (value: GameData | null) => void;
@@ -70,6 +75,9 @@ type GameContextType = {
 
   showContinue: boolean;
   setShowContinue: (value: boolean) => void;
+
+  rateLimitStatus: RateLimitStatus;
+  setRateLimitStatus: (value: RateLimitStatus) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -129,6 +137,10 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [showTopBar, setShowTopBar] = useState(false);
   const [showReturnToMainMenu, setShowReturnToMainMenu] = useState(false);
   const [showContinue, setShowContinue] = useState(false);
+  const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus>({
+    show: false,
+    username: "",
+  });
 
   // Logbook state
   const [logbook, setLogbook] = useState<string[]>([]);
@@ -137,7 +149,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   };
   //////////////////////////// end of React only state ////////////////////////////
 
-  const gameApi = new GameApi(backendUrl);
+  const gameApi = new GameApi(backendUrl, setRateLimitStatus);
 
   return (
     <GameContext.Provider
@@ -189,6 +201,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         showContinue,
         setShowContinue,
+
+        rateLimitStatus,
+        setRateLimitStatus,
       }}
     >
       {children}
@@ -278,6 +293,14 @@ export const useUiState = () => {
     setShowReturnToMainMenu: context.setShowReturnToMainMenu,
     showContinue: context.showContinue,
     setShowContinue: context.setShowContinue,
+  };
+};
+
+export const useRateLimitStatus = () => {
+  const context = useContext(GameContext);
+  return {
+    rateLimitStatus: context.rateLimitStatus,
+    setRateLimitStatus: context.setRateLimitStatus,
   };
 };
 

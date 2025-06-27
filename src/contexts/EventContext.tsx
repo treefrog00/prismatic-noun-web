@@ -14,6 +14,7 @@ import {
   useIsPaused,
   useLogbook,
   useMainImage,
+  useRateLimitStatus,
   useUiState,
   useWorldIndices,
   WorldIndices,
@@ -118,6 +119,7 @@ export const EventProvider = ({
   const { gameData, setGameData } = useGameData();
   const { worldIndices, setWorldIndices } = useWorldIndices();
   const { questSummary } = useAppContext();
+  const { rateLimitStatus, setRateLimitStatus } = useRateLimitStatus();
 
   const processEvent = async (
     event: GameEvent,
@@ -277,8 +279,6 @@ export const EventProvider = ({
       }
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
-    } else if (event.type === "RateLimit") {
-      showToast("Rate limit exceeded", "error");
     } else if (event.type === "GameEnd") {
       appendToStory("The End", { italic: true, highlight: true });
       setTimeout(() => {

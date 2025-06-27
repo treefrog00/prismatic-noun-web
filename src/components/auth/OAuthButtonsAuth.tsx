@@ -1,6 +1,5 @@
 import {
   setAccessTokenInStorage,
-  setBackendUrlInStorage,
 } from "@/contexts/AuthContext";
 import { envConfig } from "@/envConfig";
 import { ExchangeCodeResponseSchema } from "@/types/validatedTypes";
@@ -75,7 +74,6 @@ export const handleSuccessfulAuthProvider = async (
   localStorage.removeItem("auth_redirect_url");
 
   setAccessTokenInStorage(result.prismaticNounToken);
-  setBackendUrlInStorage(result.backendUrl);
   window.location.href = redirectUrl;
 };
 

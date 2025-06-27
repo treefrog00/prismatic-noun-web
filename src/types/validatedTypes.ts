@@ -135,9 +135,6 @@ const GameEventSchema = z
       type: z.literal("ErrorResponse"),
       errorMessage: z.string(),
     }),
-    z.object({
-      type: z.literal("RateLimit"),
-    }),
   ])
   .and(
     z.object({

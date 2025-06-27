@@ -34,14 +34,6 @@ export const setAccessTokenInStorage = (token: string | null) => {
   }
 };
 
-export const setBackendUrlInStorage = (url: string | null) => {
-  if (url) {
-    localStorage.setItem("backend_url", url);
-  } else {
-    localStorage.removeItem("backend_url");
-  }
-};
-
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {

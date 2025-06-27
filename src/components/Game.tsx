@@ -9,6 +9,7 @@ import {
   useUiState,
   useDiceRoll,
   useCharacters,
+  useRateLimitStatus,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -19,6 +20,7 @@ import { useEventProcessor } from "@/contexts/EventContext";
 import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
 import { HASH_QUEST_ID } from "@/config";
+import RateLimitPopup from "./popups/RateLimitPopup";
 
 const GameContent = () => {
   // UI variables
@@ -29,6 +31,7 @@ const GameContent = () => {
   const { appendEvents } = useEventProcessor();
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig, setGameConfig } = useGameConfig();
+  const { rateLimitStatus } = useRateLimitStatus();
   const gameApi = useGameApi();
   const { showPromptInput, showTopBar, setShowTopBar } = useUiState();
   const { diceRollState } = useDiceRoll();
@@ -123,6 +126,7 @@ const GameContent = () => {
         <StoryButtons />
       </div>
       {diceRollState.show && <DiceRollsScreen />}
+      {rateLimitStatus.show && <RateLimitPopup />}
     </AmbientBackground>
   );
 };

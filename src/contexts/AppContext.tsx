@@ -42,8 +42,7 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 const getBackendUrlFromStorage = (): string => {
-  const backendUrl = localStorage.getItem("backend_url");
-  return backendUrl || envConfig.backendUrl;
+  return envConfig.backendUrl;
 };
 
 export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({

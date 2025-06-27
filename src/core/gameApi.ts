@@ -1,12 +1,15 @@
 import { z } from "zod/v4";
 import { getCurrentPnAccessToken } from "@/contexts/AuthContext";
 import { permaConsoleLog } from "@/util/logger";
+import { RateLimitStatus } from "@/contexts/GameContext";
 
 export class GameApi {
   private backendUrl: string;
+  private setRateLimitStatus: (status: RateLimitStatus) => void;
 
-  constructor(backendUrl: string) {
+  constructor(backendUrl: string, setRateLimitStatus: (status: RateLimitStatus) => void) {
     this.backendUrl = backendUrl;
+    this.setRateLimitStatus = setRateLimitStatus;
   }
 
   async makeRequest(path: string, body: any, method: "GET" | "POST" = "POST") {
@@ -22,9 +25,18 @@ export class GameApi {
         permaConsoleLog("Token expired");
       }
       localStorage.removeItem("pn_access_token");
-      localStorage.removeItem("backend_url");
       window.location.href = "/";
     }
+
+    if (response.status === 429) {
+      const errorData = await response.json();
+      this.setRateLimitStatus({
+        show: true,
+        username: errorData.username,
+      });
+      return;
+    }
+
     const responseBody = await response.json();
     throw new Error(
       `HTTP error ${response.status}: ${JSON.stringify(responseBody)}`,

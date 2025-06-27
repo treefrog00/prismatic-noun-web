@@ -6,10 +6,9 @@ import Settings from "../Settings";
 import { QuestSummary } from "@/types";
 import { useAppContext } from "@/contexts/AppContext";
 import { starryTheme } from "@/styles/starryTheme";
-import { GameApi } from "@/core/gameApi";
-import { QuestSummariesSchema } from "@/types/validatedTypes";
 import StarryBackground from "../StarryBackground";
 import { responsiveStyles } from "@/styles/responsiveStyles";
+import { questSummaries } from "@/questSummaries";
 
 const LobbyContent = () => {
   const navigate = useNavigate();
@@ -20,10 +19,8 @@ const LobbyContent = () => {
     questSummary,
     setQuestSummary,
     shouldAnimateStars,
-    backendUrl,
     seenLaunchScreen,
   } = useAppContext();
-  const gameApi = new GameApi(backendUrl);
 
   // Redirect to home if user hasn't seen launch screen
   useEffect(() => {
@@ -34,15 +31,10 @@ const LobbyContent = () => {
 
   useEffect(() => {
     const initializeGame = async () => {
-      // Fetch available quests
-      const quests = await gameApi.getTyped(
-        "/quest/summaries",
-        QuestSummariesSchema,
-      );
-      setAvailableQuests(quests.quests);
+      setAvailableQuests(questSummaries);
 
       setIsCoinInserted(true);
-      setQuestSummary(quests.quests[0]);
+      setQuestSummary(questSummaries[0]);
     };
 
     initializeGame();

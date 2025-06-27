@@ -2,8 +2,8 @@ import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "@/components/overlays/Overlay";
 import { useEffect, useState } from "react";
 import { QuestSummary } from "@/types/validatedTypes";
-import artUrl from "@/util/artUrls";
 import { pageStyles } from "@/styles/shared";
+import ZoomableImage from "@/components/ZoomableImage";
 
 interface NpcOverlayProps {
   position: { x: number; y: number };
@@ -52,11 +52,13 @@ const NpcOverlay = ({
     >
       <div className="space-y-2">
         <div className="flex gap-2 p-2">
-          <img
-            src={artUrl(npcData.imageUrl)}
-            alt={npcData.name}
-            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
-          />
+          <div className="flex-shrink-0">
+            <ZoomableImage
+              src={npcData.imageUrl}
+              alt={npcData.name}
+              className={pageStyles.overlayImage}
+            />
+          </div>
           <div className="mt-4">
             <div className="font-bold">{npcData.name}</div>
             <div>{npcData.description}</div>

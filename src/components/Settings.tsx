@@ -10,6 +10,7 @@ const Settings: React.FC = () => {
     handleSetShouldAnimateDice,
     handleSetShouldAnimateText,
     handleSetShouldAnimateImages,
+    handleSetShouldAnimateContinueButton,
   } = useGameConfig();
 
   function handleToggleAnimateDice() {
@@ -22,6 +23,12 @@ const Settings: React.FC = () => {
 
   function handleToggleAnimateText() {
     handleSetShouldAnimateText(!gameConfig.shouldAnimateText);
+  }
+
+  function handleToggleAnimateContinueButton() {
+    handleSetShouldAnimateContinueButton(
+      !gameConfig.shouldAnimateContinueButton,
+    );
   }
 
   return (
@@ -58,6 +65,13 @@ const Settings: React.FC = () => {
             <ToggleSwitch
               isEnabled={gameConfig.shouldAnimateDice}
               onToggle={handleToggleAnimateDice}
+            />
+          </div>
+          <div className="flex items-center">
+            <label className="text-gray-300 w-32">Animated continue</label>
+            <ToggleSwitch
+              isEnabled={gameConfig.shouldAnimateContinueButton}
+              onToggle={handleToggleAnimateContinueButton}
             />
           </div>
         </div>

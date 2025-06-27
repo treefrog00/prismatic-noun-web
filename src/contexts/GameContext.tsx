@@ -67,6 +67,9 @@ type GameContextType = {
 
   showReturnToMainMenu: boolean;
   setShowReturnToMainMenu: (value: boolean) => void;
+
+  showContinue: boolean;
+  setShowContinue: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -125,6 +128,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [isPaused, setIsPaused] = useState(false);
   const [showTopBar, setShowTopBar] = useState(false);
   const [showReturnToMainMenu, setShowReturnToMainMenu] = useState(false);
+  const [showContinue, setShowContinue] = useState(false);
 
   // Logbook state
   const [logbook, setLogbook] = useState<string[]>([]);
@@ -182,6 +186,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         showReturnToMainMenu,
         setShowReturnToMainMenu,
+
+        showContinue,
+        setShowContinue,
       }}
     >
       {children}
@@ -269,6 +276,8 @@ export const useUiState = () => {
     setShowTopBar: context.setShowTopBar,
     showReturnToMainMenu: context.showReturnToMainMenu,
     setShowReturnToMainMenu: context.setShowReturnToMainMenu,
+    showContinue: context.showContinue,
+    setShowContinue: context.setShowContinue,
   };
 };
 

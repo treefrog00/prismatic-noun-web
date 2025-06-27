@@ -26,6 +26,8 @@ const StoryButtons: React.FC = () => {
     setShowPromptInput,
     showReturnToMainMenu,
     setShowReturnToMainMenu,
+    showContinue,
+    setShowContinue,
   } = useUiState();
   const { gameConfig } = useGameConfig();
   const { characters } = useCharacters();
@@ -41,6 +43,29 @@ const StoryButtons: React.FC = () => {
 
   const { isPaused, setIsPaused } = useIsPaused();
   const { diceRollState } = useDiceRoll();
+
+  // Timeout effect for showContinue
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isPaused) {
+      if (gameConfig.shouldAnimateContinueButton) {
+        timeoutId = setTimeout(() => {
+          setShowContinue(true);
+        }, 1000);
+      } else {
+        setShowContinue(true);
+      }
+    } else {
+      setShowContinue(false);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isPaused, setShowContinue, gameConfig.shouldAnimateContinueButton]);
 
   const handleActOk = async () => {
     if (myPrompt.length === 0 || myPrompt.length > gameConfig.promptLimit) {
@@ -127,8 +152,14 @@ const StoryButtons: React.FC = () => {
             </div>
           </div>
         )}
-        {isPaused && !diceRollState.show && (
-          <div className="text-gray-300 flex items-center gap-12">
+        {showContinue && !diceRollState.show && (
+          <div
+            className={`text-gray-300 flex items-center gap-12 ${
+              gameConfig.shouldAnimateContinueButton
+                ? "opacity-0 continue-fade-in"
+                : ""
+            }`}
+          >
             <button
               className={`game-button ${getColorClasses("teal")} mb-12`}
               onPointerDown={() => handleContinue()}

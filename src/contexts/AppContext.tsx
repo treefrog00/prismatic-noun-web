@@ -8,6 +8,7 @@ type GameConfig = {
   shouldAnimateDice: boolean;
   shouldAnimateText: boolean;
   shouldAnimateImages: boolean;
+  shouldAnimateContinueButton: boolean;
   promptLimit: number;
 };
 
@@ -15,6 +16,7 @@ type GameConfig = {
 export const ANIMATE_DICE_KEY = "shouldAnimateDice";
 export const ANIMATE_TEXT_KEY = "shouldAnimateText";
 export const ANIMATE_IMAGES_KEY = "shouldAnimateImages";
+export const ANIMATE_CONTINUE_BUTTON_KEY = "shouldAnimateContinueButton";
 
 interface AppContextType {
   shouldAnimateStars: boolean;
@@ -35,6 +37,7 @@ interface AppContextType {
   handleSetShouldAnimateDice: (show: boolean) => void;
   handleSetShouldAnimateText: (show: boolean) => void;
   handleSetShouldAnimateImages: (show: boolean) => void;
+  handleSetShouldAnimateContinueButton: (show: boolean) => void;
 }
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -83,6 +86,8 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     shouldAnimateDice: localStorage.getItem(ANIMATE_DICE_KEY) !== "false",
     shouldAnimateText: localStorage.getItem(ANIMATE_TEXT_KEY) !== "false",
     shouldAnimateImages: localStorage.getItem(ANIMATE_IMAGES_KEY) !== "false",
+    shouldAnimateContinueButton:
+      localStorage.getItem(ANIMATE_CONTINUE_BUTTON_KEY) !== "false",
     promptLimit: 0,
   });
 
@@ -120,6 +125,14 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem(ANIMATE_IMAGES_KEY, show.toString());
   };
 
+  const handleSetShouldAnimateContinueButton = (show: boolean) => {
+    setGameConfig({
+      ...gameConfig,
+      shouldAnimateContinueButton: show,
+    });
+    localStorage.setItem(ANIMATE_CONTINUE_BUTTON_KEY, show.toString());
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -141,6 +154,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleSetShouldAnimateDice,
         handleSetShouldAnimateText,
         handleSetShouldAnimateImages,
+        handleSetShouldAnimateContinueButton,
       }}
     >
       {children}
@@ -172,5 +186,7 @@ export const useGameConfig = () => {
     handleSetShouldAnimateDice: context.handleSetShouldAnimateDice,
     handleSetShouldAnimateText: context.handleSetShouldAnimateText,
     handleSetShouldAnimateImages: context.handleSetShouldAnimateImages,
+    handleSetShouldAnimateContinueButton:
+      context.handleSetShouldAnimateContinueButton,
   };
 };

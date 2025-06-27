@@ -48,3 +48,17 @@ html.wf-active {
 .return-to-main-menu-fade-in {
   animation: fadeInReturnToMainMenu 7s ease-in-out forwards;
 }
+
+/* Continue button fade-in animation */
+@keyframes fadeInContinue {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.continue-fade-in {
+  animation: fadeInContinue 2s ease-in-out forwards;
+}

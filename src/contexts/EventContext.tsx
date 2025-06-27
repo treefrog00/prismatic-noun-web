@@ -277,6 +277,8 @@ export const EventProvider = ({
       }
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
+    } else if (event.type === "RateLimit") {
+      showToast("Rate limit exceeded", "error");
     } else if (event.type === "GameEnd") {
       appendToStory("The End", { italic: true, highlight: true });
       setTimeout(() => {

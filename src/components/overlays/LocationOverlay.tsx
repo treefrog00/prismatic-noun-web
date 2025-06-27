@@ -1,8 +1,8 @@
 import { useLocationData } from "@/contexts/GameContext";
 import Overlay from "./Overlay";
-import artUrl from "@/util/artUrls";
 import { QuestSummary } from "@/types/validatedTypes";
 import { pageStyles } from "@/styles/shared";
+import ZoomableImage from "@/components/ZoomableImage";
 
 interface LocationOverlayProps {
   position: { x: number; y: number };
@@ -36,11 +36,13 @@ const LocationOverlay = ({
     >
       <div className="space-y-2">
         <div className="flex gap-2 p-2">
-          <img
-            src={artUrl(locationData.imageUrl)}
-            alt={locationData.name}
-            className={`${pageStyles.overlayImage} hover:scale-150 transition-transform`}
-          />
+          <div className="flex-shrink-0">
+            <ZoomableImage
+              src={locationData.imageUrl}
+              alt={locationData.name}
+              className={pageStyles.overlayImage}
+            />
+          </div>
           <div className="mt-2">
             <div className="font-bold">{locationData.name}</div>
             <div>{locationData.description}</div>

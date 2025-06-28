@@ -14,7 +14,7 @@ export const responsiveStyles = {
 
   // Sizes
   sizes: {
-    logo: "w-24 h-24",
+    logo: "w-24",
     adventureImage: "w-128 h-128",
     playerAvatar: "w-20 h-20",
     characterAvatar: "w-32 h-32",

@@ -8,9 +8,9 @@ import {
 import { GameEvent } from "@/types";
 import {
   DiceRollState,
-  useCharacters,
+  useCharacterState,
   useGameApi,
-  useGameData,
+  useGameId,
   useIsPaused,
   useLogbook,
   useMainImage,
@@ -33,7 +33,6 @@ import { GameApi } from "@/core/gameApi";
 import {
   EventsResponse,
   EventsResponseSchema,
-  GameData,
   QuestSummary,
 } from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
@@ -61,6 +60,7 @@ let pendingDiceText = "";
 let requestId: string | null = null;
 
 const fetchActPartTwo = async (
+  gameId: string,
   gameApi: GameApi,
   worldIndices: WorldIndices,
   questSummary: QuestSummary,
@@ -68,6 +68,7 @@ const fetchActPartTwo = async (
   const response = await gameApi.postTyped(
     `/game/act_part_two`,
     {
+      gameId: gameId,
       requestId: requestId,
       questId: questSummary.questId,
       locationIndex: worldIndices.locationIndex,
@@ -106,7 +107,7 @@ export const EventProvider = ({
 
   const { setDiceRollState } = useDiceRoll();
   const { setMainImage } = useMainImage();
-  const { setCharacters } = useCharacters();
+  const { setCharacterState } = useCharacterState();
   const { setNpcState } = useNpcState();
   const { setLocationData, locationData } = useLocationData();
   const { gameConfig } = useGameConfig();
@@ -116,10 +117,9 @@ export const EventProvider = ({
   const { addToLogbook } = useLogbook();
   const { showToast } = useToast();
   const gameApi = useGameApi();
-  const { gameData, setGameData } = useGameData();
+  const { gameId, setGameId } = useGameId();
   const { worldIndices, setWorldIndices } = useWorldIndices();
   const { questSummary } = useAppContext();
-  const { rateLimitStatus, setRateLimitStatus } = useRateLimitStatus();
 
   const processEvent = async (
     event: GameEvent,
@@ -222,7 +222,7 @@ export const EventProvider = ({
         },
       ];
     } else if (event.type === "PollResponseNoDiceRoll") {
-      return await fetchActPartTwo(gameApi, worldIndices, questSummary);
+      return await fetchActPartTwo(gameId, gameApi, worldIndices, questSummary);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
       permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
@@ -244,23 +244,18 @@ export const EventProvider = ({
       clearStory();
       isFirstParagraph = true;
     } else if (event.type === "AddCharacter") {
-      setCharacters((prevCharacters: string[]) => [
+      setCharacterState((prevCharacters: string[]) => [
         ...prevCharacters,
         event.name,
       ]);
     } else if (event.type === "ChangePortrait") {
-      if (gameData) {
-        setGameData({
-          ...gameData,
-          characters: {
-            ...gameData.characters,
-            [event.characterName]: {
-              ...gameData.characters[event.characterName],
-              imageUrl: event.imageUrl,
-            },
-          },
-        });
-      }
+      setCharacterState((prevCharacterData) => ({
+        ...prevCharacterData,
+        [event.characterName]: {
+          ...prevCharacterData[event.characterName],
+          imageUrl: event.imageUrl,
+        },
+      }));
     } else if (event.type === "ChangePlaylist") {
       setPlaylist(event.playlist);
     } else if (event.type === "PlayerInput") {
@@ -275,7 +270,12 @@ export const EventProvider = ({
         showToast("Gave up waiting for AI response", "error");
       } else {
         await new Promise((resolve) => setTimeout(resolve, 1000));
-        return await fetchActPartTwo(gameApi, worldIndices, questSummary);
+        return await fetchActPartTwo(
+          gameId,
+          gameApi,
+          worldIndices,
+          questSummary,
+        );
       }
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
@@ -329,6 +329,7 @@ export const EventProvider = ({
       `/game/submit_prompt`,
       {
         questId: questSummary.questId,
+        gameId: gameId,
         prompt: prompt,
         locationIndex: worldIndices.locationIndex,
         sceneIndex: worldIndices.sceneIndex,

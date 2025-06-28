@@ -5,7 +5,6 @@ export type {
   Character,
   Npc,
   StartGame,
-  GameData,
   LocationData,
   GameEvent,
 } from "./validatedTypes";

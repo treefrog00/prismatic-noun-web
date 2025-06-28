@@ -1,10 +1,6 @@
 import { GameApi } from "../core/gameApi";
-import {
-  useMultiplayerState,
-  PlayerState,
-  LocalPlayerState,
-} from "../core/multiplayerState";
-import { GameData, LocationData, DiceRoll } from "../types";
+import { PlayerState, LocalPlayerState } from "../core/multiplayerState";
+import { LocationData, DiceRoll, Character } from "../types";
 import { createContext, useContext, ReactNode, useState } from "react";
 import { useAppContext } from "./AppContext";
 
@@ -26,8 +22,11 @@ export interface RateLimitStatus {
 }
 
 type GameContextType = {
-  gameData: GameData | null;
-  setGameData: (value: GameData | null) => void;
+  gameId: string;
+  setGameId: (value: string) => void;
+
+  characterData: Record<string, Character>;
+  setCharacterData: (value: Record<string, Character>) => void;
 
   worldIndices: WorldIndices;
   setWorldIndices: (value: WorldIndices) => void;
@@ -38,8 +37,8 @@ type GameContextType = {
   npcState: string[];
   setNpcState: (value: string[]) => void;
 
-  characters: string[];
-  setCharacters: (value: string[] | ((prev: string[]) => string[])) => void;
+  characterState: string[];
+  setCharacterState: (value: string[] | ((prev: string[]) => string[])) => void;
 
   localPlayers: PlayerState[];
   setLocalPlayers: (value: PlayerState[]) => void;
@@ -67,9 +66,6 @@ type GameContextType = {
   logbook: string[];
   addToLogbook: (text: string) => void;
 
-  showTopBar: boolean;
-  setShowTopBar: (value: boolean) => void;
-
   showReturnToMainMenu: boolean;
   setShowReturnToMainMenu: (value: boolean) => void;
 
@@ -88,20 +84,14 @@ interface GameProviderProps {
 
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const { backendUrl } = useAppContext();
-  //// Multiplayer state ////
-  const [gameData, setGameData] = useMultiplayerState<GameData>(
-    "gameData",
-    null,
-  );
-  const [locationData, setLocationData] = useMultiplayerState<LocationData>(
-    "locationData",
-    null,
-  );
 
-  //////////////////////////// end of multiplayer state ////////////////////////////
+  const [gameId, setGameId] = useState<string>("");
+  const [locationData, setLocationData] = useState<LocationData>(null);
 
-  //// React local-only state ////
-  const [characters, setCharacters] = useState<string[]>([]);
+  const [characterData, setCharacterData] = useState<Record<string, Character>>(
+    {},
+  );
+  const [characterState, setCharacterState] = useState<string[]>([]);
   const [npcState, setNpcState] = useState<string[]>([]);
 
   const [worldIndices, setWorldIndices] = useState<WorldIndices>({
@@ -134,7 +124,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     playerPrompt: "",
   });
   const [isPaused, setIsPaused] = useState(false);
-  const [showTopBar, setShowTopBar] = useState(false);
   const [showReturnToMainMenu, setShowReturnToMainMenu] = useState(false);
   const [showContinue, setShowContinue] = useState(false);
   const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus>({
@@ -156,8 +145,11 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
       value={{
         gameApi,
 
-        gameData,
-        setGameData,
+        gameId,
+        setGameId,
+
+        characterData,
+        setCharacterData,
 
         worldIndices,
         setWorldIndices,
@@ -168,8 +160,8 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
         npcState,
         setNpcState,
 
-        characters,
-        setCharacters,
+        characterState,
+        setCharacterState,
 
         localPlayers,
         setLocalPlayers,
@@ -192,9 +184,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         logbook,
         addToLogbook,
-
-        showTopBar,
-        setShowTopBar,
 
         showReturnToMainMenu,
         setShowReturnToMainMenu,
@@ -222,11 +211,6 @@ export const useDiceRoll = () => {
   };
 };
 
-export const useGameData = () => {
-  const context = useContext(GameContext);
-  return { gameData: context.gameData, setGameData: context.setGameData };
-};
-
 export const useLocationData = () => {
   const context = useContext(GameContext);
   return {
@@ -243,11 +227,19 @@ export const useNpcState = () => {
   };
 };
 
-export const useCharacters = () => {
+export const useCharacterData = () => {
   const context = useContext(GameContext);
   return {
-    characters: context.characters,
-    setCharacters: context.setCharacters,
+    characterData: context.characterData,
+    setCharacterData: context.setCharacterData,
+  };
+};
+
+export const useCharacterState = () => {
+  const context = useContext(GameContext);
+  return {
+    characterState: context.characterState,
+    setCharacterState: context.setCharacterState,
   };
 };
 
@@ -287,8 +279,6 @@ export const useUiState = () => {
   return {
     showPromptInput: context.showPromptInput,
     setShowPromptInput: context.setShowPromptInput,
-    showTopBar: context.showTopBar,
-    setShowTopBar: context.setShowTopBar,
     showReturnToMainMenu: context.showReturnToMainMenu,
     setShowReturnToMainMenu: context.setShowReturnToMainMenu,
     showContinue: context.showContinue,
@@ -330,4 +320,9 @@ export const useWorldIndices = () => {
     worldIndices: context.worldIndices,
     setWorldIndices: context.setWorldIndices,
   };
+};
+
+export const useGameId = () => {
+  const context = useContext(GameContext);
+  return { gameId: context.gameId, setGameId: context.setGameId };
 };

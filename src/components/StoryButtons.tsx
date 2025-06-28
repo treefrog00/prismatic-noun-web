@@ -3,11 +3,11 @@ import TextInput from "@/components/TextInput";
 import {
   useUiState,
   useIsPaused,
-  useCharacters,
+  useCharacterState,
   useDiceRoll,
 } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
-import { useGameApi, useGameData } from "@/contexts/GameContext";
+import { useGameApi, useGameId } from "@/contexts/GameContext";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
@@ -18,7 +18,7 @@ import { useEventProcessor } from "@/contexts/EventContext";
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { gameData } = useGameData();
+  const { gameId } = useGameId();
   const gameApi = useGameApi();
 
   const {
@@ -30,7 +30,6 @@ const StoryButtons: React.FC = () => {
     setShowContinue,
   } = useUiState();
   const { gameConfig } = useGameConfig();
-  const { characters } = useCharacters();
   const { playlist, setPlaylist } = useStereo();
   const { setGameStage } = useGameStage();
   const { submitPrompt } = useEventProcessor();
@@ -72,7 +71,7 @@ const StoryButtons: React.FC = () => {
       return;
     }
 
-    await submitPrompt(gameApi, gameData.gameId, myPrompt);
+    await submitPrompt(gameApi, gameId, myPrompt);
 
     setShowPromptInput({
       ...showPromptInput,

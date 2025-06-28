@@ -8,7 +8,7 @@ import { useAppContext } from "@/contexts/AppContext";
 import { starryTheme } from "@/styles/starryTheme";
 import StarryBackground from "../StarryBackground";
 import { responsiveStyles } from "@/styles/responsiveStyles";
-import { questSummaries } from "@/questSummaries";
+import { questSummaries } from "@/caches/questSummaries";
 
 const LobbyContent = () => {
   const navigate = useNavigate();

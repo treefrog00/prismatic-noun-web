@@ -46,12 +46,6 @@ const CharacterSchema = BaseCharacterSchema.extend({
 
 const NpcSchema = BaseCharacterSchema.extend({});
 
-const GameDataSchema = z.object({
-  gameId: z.string(),
-  title: z.string(),
-  characters: z.record(z.string(), CharacterSchema),
-});
-
 const LocationDataSchema = z.object({
   name: z.string(),
   description: z.string(),
@@ -144,7 +138,7 @@ const GameEventSchema = z
   );
 
 export const StartGameSchema = z.object({
-  gameData: GameDataSchema,
+  characters: z.record(z.string(), CharacterSchema),
   promptLimit: z.number(),
   events: z.array(GameEventSchema),
 });
@@ -166,7 +160,6 @@ export type Character = z.infer<typeof CharacterSchema>;
 export type Npc = z.infer<typeof NpcSchema>;
 export type LocationData = z.infer<typeof LocationDataSchema>;
 export type StartGame = z.infer<typeof StartGameSchema>;
-export type GameData = z.infer<typeof GameDataSchema>;
 export type GameEvent = z.infer<typeof GameEventSchema>;
 export type DiceRoll = z.infer<typeof DiceRollSchema>;
 export type EventsResponse = z.infer<typeof EventsResponseSchema>;

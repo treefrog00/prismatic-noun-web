@@ -1,6 +1,7 @@
 node_modules
 dist
 src/envConfig.ts
+src/caches
 
 # gh pulse
 *-pulse.html

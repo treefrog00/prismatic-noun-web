@@ -1,8 +1,9 @@
 import { useState, useRef, useCallback } from "react";
 import CharacterOverlay from "./overlays/CharacterOverlay";
 import {
-  useCharacters,
-  useGameData,
+  useCharacterData,
+  useCharacterState,
+  useGameId,
   useLocationData,
   useNpcState,
 } from "@/contexts/GameContext";
@@ -135,9 +136,10 @@ const TopBar = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isLogbookOpen, setIsLogbookOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const { characters } = useCharacters();
+  const { characterState } = useCharacterState();
+  const { characterData } = useCharacterData();
   const { questSummary } = useAppContext();
-  const { gameData } = useGameData();
+  const { gameId } = useGameId();
 
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
@@ -153,11 +155,11 @@ const TopBar = () => {
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
 
-  const characterList = characters.map((name) => {
-    const characterData = gameData?.characters?.[name];
+  const characterList = characterState.map((name) => {
+    const character = characterData?.[name];
     return {
       name,
-      ...characterData,
+      ...character,
     };
   });
 

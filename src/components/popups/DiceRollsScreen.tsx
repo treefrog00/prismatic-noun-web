@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Popup from "@/components/popups/Popup";
-import { useDiceRoll, useGameData, useIsPaused } from "@/contexts/GameContext";
+import { useDiceRoll, useIsPaused } from "@/contexts/GameContext";
 import DiceRollWithText from "@/components/DiceRollWithText";
-import { useGameApi } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
 import { permaConsoleLog } from "@/util/logger";
 
 const DiceRollsScreen: React.FC = () => {
   const { diceRollState, setDiceRollState } = useDiceRoll();
-  const gameApi = useGameApi();
-  const { gameData } = useGameData();
   const { isPaused, setIsPaused } = useIsPaused();
 
   const [audio1, setAudio1] = useState<HTMLAudioElement | null>(null);

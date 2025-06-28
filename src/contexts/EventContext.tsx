@@ -112,7 +112,8 @@ export const EventProvider = ({
   const { setLocationData, locationData } = useLocationData();
   const { gameConfig } = useGameConfig();
   const { setPlaylist } = useStereo();
-  const { setShowPromptInput, setShowReturnToMainMenu } = useUiState();
+  const { showPromptInput, setShowPromptInput, setShowReturnToMainMenu } =
+    useUiState();
   const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
   const { showToast } = useToast();
@@ -225,7 +226,10 @@ export const EventProvider = ({
       return await fetchActPartTwo(gameId, gameApi, worldIndices, questSummary);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
-      permaConsoleLog("RejectPromptResponse", event.rejectionMessage);
+      setShowPromptInput({
+        ...showPromptInput,
+        show: true,
+      });
     } else if (event.type === "LocationStateUpdate") {
       setNpcState(event.npcState);
       if (event.changedLocationImage) {

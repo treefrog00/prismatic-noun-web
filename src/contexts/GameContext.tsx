@@ -26,7 +26,11 @@ type GameContextType = {
   setGameId: (value: string) => void;
 
   characterData: Record<string, Character>;
-  setCharacterData: (value: Record<string, Character>) => void;
+  setCharacterData: (
+    value:
+      | Record<string, Character>
+      | ((prev: Record<string, Character>) => Record<string, Character>),
+  ) => void;
 
   worldIndices: WorldIndices;
   setWorldIndices: (value: WorldIndices) => void;

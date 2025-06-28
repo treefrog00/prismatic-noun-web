@@ -8,13 +8,13 @@ import {
 import { GameEvent } from "@/types";
 import {
   DiceRollState,
+  useCharacterData,
   useCharacterState,
   useGameApi,
   useGameId,
   useIsPaused,
   useLogbook,
   useMainImage,
-  useRateLimitStatus,
   useUiState,
   useWorldIndices,
   WorldIndices,
@@ -121,6 +121,7 @@ export const EventProvider = ({
   const { gameId, setGameId } = useGameId();
   const { worldIndices, setWorldIndices } = useWorldIndices();
   const { questSummary } = useAppContext();
+  const { characterData, setCharacterData } = useCharacterData();
 
   const processEvent = async (
     event: GameEvent,
@@ -253,7 +254,7 @@ export const EventProvider = ({
         event.name,
       ]);
     } else if (event.type === "ChangePortrait") {
-      setCharacterState((prevCharacterData) => ({
+      setCharacterData((prevCharacterData) => ({
         ...prevCharacterData,
         [event.characterName]: {
           ...prevCharacterData[event.characterName],
@@ -285,6 +286,10 @@ export const EventProvider = ({
       showToast(event.errorMessage, "error");
     } else if (event.type === "GameEnd") {
       appendToStory("The End", { italic: true, highlight: true });
+      appendToStory(
+        "Message treefrog on Discord if you'd like to playtest some more :)",
+        { italic: true, highlight: true },
+      );
       setTimeout(() => {
         setShowReturnToMainMenu(true);
       }, 1000);

@@ -139,7 +139,6 @@ const TopBar = () => {
   const { characterState } = useCharacterState();
   const { characterData } = useCharacterData();
   const { questSummary } = useAppContext();
-  const { gameId } = useGameId();
 
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");

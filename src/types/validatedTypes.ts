@@ -79,11 +79,6 @@ const GameEventSchema = z
       characterRolls: z.array(DiceRollSchema),
       locationRoll: DiceRollSchema,
     }),
-
-    z.object({
-      type: z.literal("PollResponseNoDiceRoll"),
-    }),
-
     z.object({
       type: z.literal("RejectPromptResponse"),
       rejectionMessage: z.string(),
@@ -122,9 +117,6 @@ const GameEventSchema = z
       type: z.literal("GameEnd"),
     }),
     z.object({
-      type: z.literal("StillWaiting"),
-    }),
-    z.object({
       type: z.literal("ErrorEvent"),
       errorMessage: z.string(),
     }),
@@ -144,7 +136,6 @@ export const StartGameSchema = z.object({
 
 export const EventsResponseSchema = z.object({
   events: z.array(GameEventSchema),
-  requestId: z.string().nullable(),
 });
 
 export const GeneratePromptResponseSchema = z.object({

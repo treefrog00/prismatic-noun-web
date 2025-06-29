@@ -22,9 +22,6 @@ export interface RateLimitStatus {
 }
 
 type GameContextType = {
-  gameId: string;
-  setGameId: (value: string) => void;
-
   characterData: Record<string, Character>;
   setCharacterData: (
     value:
@@ -89,7 +86,6 @@ interface GameProviderProps {
 export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const { backendUrl } = useAppContext();
 
-  const [gameId, setGameId] = useState<string>("");
   const [locationData, setLocationData] = useState<LocationData>(null);
 
   const [characterData, setCharacterData] = useState<Record<string, Character>>(
@@ -148,9 +144,6 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     <GameContext.Provider
       value={{
         gameApi,
-
-        gameId,
-        setGameId,
 
         characterData,
         setCharacterData,
@@ -324,9 +317,4 @@ export const useWorldIndices = () => {
     worldIndices: context.worldIndices,
     setWorldIndices: context.setWorldIndices,
   };
-};
-
-export const useGameId = () => {
-  const context = useContext(GameContext);
-  return { gameId: context.gameId, setGameId: context.setGameId };
 };

@@ -1,13 +1,8 @@
 import { useRef, useEffect } from "react";
 import TextInput from "@/components/TextInput";
-import {
-  useUiState,
-  useIsPaused,
-  useCharacterState,
-  useDiceRoll,
-} from "@/contexts/GameContext";
+import { useUiState, useIsPaused, useDiceRoll } from "@/contexts/GameContext";
 import { getColorClasses } from "@/types/button";
-import { useGameApi, useGameId } from "@/contexts/GameContext";
+import { useGameApi } from "@/contexts/GameContext";
 import { myPlayer } from "@/core/multiplayerState";
 import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
@@ -18,7 +13,6 @@ import { useEventProcessor } from "@/contexts/EventContext";
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { gameId } = useGameId();
   const gameApi = useGameApi();
 
   const {
@@ -71,7 +65,7 @@ const StoryButtons: React.FC = () => {
       return;
     }
 
-    await submitPrompt(gameApi, gameId, myPrompt);
+    await submitPrompt(gameApi, myPrompt);
 
     setShowPromptInput({
       ...showPromptInput,

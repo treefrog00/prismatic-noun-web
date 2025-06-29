@@ -1,14 +1,10 @@
 import { useEffect, useRef } from "react";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
-import {
-  CheckRateLimitResponseSchema,
-  QuestSummariesSchema,
-} from "../types/validatedTypes";
+import { CheckRateLimitResponseSchema } from "../types/validatedTypes";
 
 import {
   useGameApi,
-  useGameId,
   useUiState,
   useDiceRoll,
   useRateLimitStatus,
@@ -25,7 +21,6 @@ import DiceRollsScreen from "./popups/DiceRollsScreen";
 import StoryImage from "./StoryImage";
 import { HASH_QUEST_ID } from "@/config";
 import RateLimitPopup from "./popups/RateLimitPopup";
-import { nanoid } from "nanoid";
 import { questSummaries } from "@/caches/questSummaries";
 
 const GameContent = () => {
@@ -33,7 +28,6 @@ const GameContent = () => {
   const storyRef = useRef<StoryRef>(null);
 
   // multiplayer state
-  const { gameId, setGameId } = useGameId();
   const { appendEvents } = useEventProcessor();
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig, setGameConfig } = useGameConfig();
@@ -106,7 +100,6 @@ const GameContent = () => {
         }
 
         let startGame = await startIfNotStarted(gameApi, summary);
-        setGameId(nanoid());
         setCharacterData(startGame.characters);
         setCharacterState(
           Object.entries(startGame.characters)

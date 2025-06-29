@@ -7,17 +7,13 @@ import {
 } from "react";
 import { GameEvent } from "@/types";
 import {
-  DiceRollState,
   useCharacterData,
   useCharacterState,
-  useGameApi,
-  useGameId,
   useIsPaused,
   useLogbook,
   useMainImage,
   useUiState,
   useWorldIndices,
-  WorldIndices,
 } from "./GameContext";
 import { useNpcState } from "./GameContext";
 import { useLocationData } from "./GameContext";
@@ -30,11 +26,7 @@ import { DICE_WRAPPER_ANIMATION_DURATION } from "@/components/DiceRollWithText";
 import { useStereo } from "./StereoContext";
 import { useToast } from "./ToastContext";
 import { GameApi } from "@/core/gameApi";
-import {
-  EventsResponse,
-  EventsResponseSchema,
-  QuestSummary,
-} from "@/types/validatedTypes";
+import { EventsResponse, EventsResponseSchema } from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
 import { StoryAppendOptions } from "@/components/Story";
 
@@ -43,11 +35,7 @@ type EventContextType = {
   setEventQueue: (value: GameEvent[]) => void;
   isProcessing: boolean;
   setIsProcessing: (value: boolean) => void;
-  submitPrompt: (
-    gameApi: GameApi,
-    gameId: string,
-    prompt: string,
-  ) => Promise<EventsResponse>;
+  submitPrompt: (gameApi: GameApi, prompt: string) => Promise<EventsResponse>;
   appendEvents: (events: GameEvent[]) => void;
   queueLength: number;
 };
@@ -55,47 +43,6 @@ type EventContextType = {
 const EventContext = createContext<EventContextType | null>(null);
 
 let isFirstParagraph = true;
-let waitCount = 0;
-let pendingDiceText = "";
-let requestId: string | null = null;
-
-const fetchActPartTwo = async (
-  gameId: string,
-  gameApi: GameApi,
-  worldIndices: WorldIndices,
-  questSummary: QuestSummary,
-): Promise<GameEvent[]> => {
-  const response = await gameApi.postTyped(
-    `/game/act_part_two`,
-    {
-      gameId: gameId,
-      requestId: requestId,
-      questId: questSummary.questId,
-      locationIndex: worldIndices.locationIndex,
-      sceneIndex: worldIndices.sceneIndex,
-    },
-    EventsResponseSchema,
-  );
-
-  return response.events;
-};
-
-export const setPendingDiceText = (diceRollState: DiceRollState) => {
-  let characterRollsSums = [];
-  for (const roll of diceRollState.characterRolls) {
-    const sum = roll.targetValues.reduce((acc, val) => acc + val, 0);
-    characterRollsSums.push(`${roll.label} ${sum}`);
-  }
-  let diceEventsText =
-    "Your party rolled: " + characterRollsSums.join(", ") + "\n";
-  const sum = diceRollState.locationRoll.targetValues.reduce(
-    (acc, val) => acc + val,
-    0,
-  );
-  diceEventsText += `${diceRollState.locationRoll.label} rolled: ${sum}`;
-
-  pendingDiceText = diceEventsText;
-};
 
 export const EventProvider = ({
   children,
@@ -117,11 +64,9 @@ export const EventProvider = ({
   const { isPaused, setIsPaused } = useIsPaused();
   const { addToLogbook } = useLogbook();
   const { showToast } = useToast();
-  const gameApi = useGameApi();
-  const { gameId, setGameId } = useGameId();
   const { worldIndices, setWorldIndices } = useWorldIndices();
   const { questSummary } = useAppContext();
-  const { characterData, setCharacterData } = useCharacterData();
+  const { setCharacterData } = useCharacterData();
 
   const processEvent = async (
     event: GameEvent,
@@ -134,10 +79,6 @@ export const EventProvider = ({
       locationIndex: event.locationIndex,
       sceneIndex: event.sceneIndex,
     });
-
-    if (event.type !== "StillWaiting") {
-      waitCount = 0;
-    }
 
     if (event.type === "Story") {
       // removed the dice roll text, it's not like it does anything anyway
@@ -189,16 +130,9 @@ export const EventProvider = ({
         locationRoll: event.locationRoll,
         finishedAnimation: false,
       };
-      setPendingDiceText(diceRollState);
 
       if (!gameConfig.shouldAnimateDice) {
-        return [
-          {
-            type: "StillWaiting",
-            locationIndex: worldIndices.locationIndex,
-            sceneIndex: worldIndices.sceneIndex,
-          },
-        ];
+        return;
       }
 
       // the flushSync microtask is only needed for React 18+
@@ -216,15 +150,6 @@ export const EventProvider = ({
         ...diceRollState,
         finishedAnimation: true,
       });
-      return [
-        {
-          type: "StillWaiting",
-          locationIndex: worldIndices.locationIndex,
-          sceneIndex: worldIndices.sceneIndex,
-        },
-      ];
-    } else if (event.type === "PollResponseNoDiceRoll") {
-      return await fetchActPartTwo(gameId, gameApi, worldIndices, questSummary);
     } else if (event.type === "RejectPromptResponse") {
       showToast(event.rejectionMessage, "error");
       setShowPromptInput({
@@ -270,20 +195,6 @@ export const EventProvider = ({
         show: true,
         playerPrompt: event.playerPrompt,
       });
-    } else if (event.type === "StillWaiting") {
-      waitCount++;
-      if (waitCount > 30) {
-        waitCount = 0;
-        showToast("Gave up waiting for AI response", "error");
-      } else {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return await fetchActPartTwo(
-          gameId,
-          gameApi,
-          worldIndices,
-          questSummary,
-        );
-      }
     } else if (event.type === "ErrorEvent") {
       showToast(event.errorMessage, "error");
       console.error(event.errorMessage);
@@ -338,26 +249,17 @@ export const EventProvider = ({
     setEventQueue(newQueue);
   };
 
-  const submitPrompt = async (
-    gameApi: GameApi,
-    gameId: string,
-    prompt: string,
-  ) => {
+  const submitPrompt = async (gameApi: GameApi, prompt: string) => {
     const response = await gameApi.postTyped(
       `/game/submit_prompt`,
       {
         questId: questSummary.questId,
-        gameId: gameId,
         prompt: prompt,
         locationIndex: worldIndices.locationIndex,
         sceneIndex: worldIndices.sceneIndex,
       },
       EventsResponseSchema,
     );
-
-    if (response.requestId) {
-      requestId = response.requestId;
-    }
 
     appendEvents(response.events);
 

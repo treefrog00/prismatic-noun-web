@@ -3,7 +3,6 @@ import CharacterOverlay from "./overlays/CharacterOverlay";
 import {
   useCharacterData,
   useCharacterState,
-  useGameId,
   useLocationData,
   useNpcState,
 } from "@/contexts/GameContext";

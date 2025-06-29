@@ -10,6 +10,7 @@ import StarryBackground from "../StarryBackground";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { questSummaries } from "@/caches/questSummaries";
 import FullScreenButton from "../FullScreenButton";
+import LobbyFeedback from "./LobbyFeedback";
 
 const LobbyContent = () => {
   const navigate = useNavigate();
@@ -74,6 +75,11 @@ const LobbyContent = () => {
                   Settings
                 </h2>
                 <Settings />
+              </div>
+              <div
+                className={activeTab === "contact" ? "block p-10" : "hidden"}
+              >
+                <LobbyFeedback />
               </div>
             </div>
           </div>

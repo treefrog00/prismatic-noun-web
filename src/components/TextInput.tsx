@@ -51,7 +51,8 @@ const TextInput: React.FC<TextInputProps> = ({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            if (onOk) {
+            // enter only submits in dev mode
+            if (onOk && import.meta.env.DEV) {
               e.preventDefault();
               onOk();
             }

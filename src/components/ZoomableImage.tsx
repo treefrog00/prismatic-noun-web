@@ -24,14 +24,18 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({
   } = useImageZoom();
 
   return (
-    <div className="relative inline-block">
+    <div
+      className="relative inline-block"
+      style={{
+        zIndex: 1001,
+      }}
+    >
       <img
         src={artUrl(src)}
         alt={alt}
         className={`transition-transform duration-300 ease-in-out cursor-pointer ${className}`}
         style={{
           transform: isZoomed ? "scale(2.5)" : "scale(1)",
-          zIndex: isZoomed ? 1000 : "auto",
           ...style,
         }}
         onMouseEnter={handleMouseEnter}

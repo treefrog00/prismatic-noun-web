@@ -7,7 +7,10 @@ export class GameApi {
   private backendUrl: string;
   private setRateLimitStatus: (status: RateLimitStatus) => void;
 
-  constructor(backendUrl: string, setRateLimitStatus: (status: RateLimitStatus) => void) {
+  constructor(
+    backendUrl: string,
+    setRateLimitStatus: (status: RateLimitStatus) => void,
+  ) {
     this.backendUrl = backendUrl;
     this.setRateLimitStatus = setRateLimitStatus;
   }
@@ -29,10 +32,8 @@ export class GameApi {
     }
 
     if (response.status === 429) {
-      const errorData = await response.json();
       this.setRateLimitStatus({
         show: true,
-        username: errorData.username,
       });
       return;
     }

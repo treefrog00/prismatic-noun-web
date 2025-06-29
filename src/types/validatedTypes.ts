@@ -6,7 +6,6 @@ export const ExchangeCodeResponseSchema = z.object({
   username: z.string(),
   authProvider: z.enum(["discord", "google"]),
   expiry: z.iso.datetime(),
-  backendUrl: z.string(),
 });
 
 // Create enum schema from theme color keys
@@ -150,6 +149,10 @@ export const EventsResponseSchema = z.object({
 
 export const GeneratePromptResponseSchema = z.object({
   prompt: z.string(),
+});
+
+export const CheckRateLimitResponseSchema = z.object({
+  isRateLimited: z.boolean(),
 });
 
 export { GameEventSchema };

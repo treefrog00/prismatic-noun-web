@@ -1,7 +1,10 @@
 import { useEffect, useRef } from "react";
 import TopBar from "./TopBar";
 import AmbientBackground from "./AmbientBackground";
-import { QuestSummariesSchema } from "../types/validatedTypes";
+import {
+  CheckRateLimitResponseSchema,
+  QuestSummariesSchema,
+} from "../types/validatedTypes";
 
 import {
   useGameApi,
@@ -34,7 +37,7 @@ const GameContent = () => {
   const { appendEvents } = useEventProcessor();
   const { questSummary, setQuestSummary } = useAppContext();
   const { gameConfig, setGameConfig } = useGameConfig();
-  const { rateLimitStatus } = useRateLimitStatus();
+  const { rateLimitStatus, setRateLimitStatus } = useRateLimitStatus();
   const gameApi = useGameApi();
   const { showPromptInput } = useUiState();
   const { diceRollState } = useDiceRoll();
@@ -48,6 +51,18 @@ const GameContent = () => {
   }, [showPromptInput.show]);
 
   useEffect(() => {
+    const checkRateLimit = async () => {
+      const response = await gameApi.postTyped(
+        `/check_rate_limit`,
+        {},
+        CheckRateLimitResponseSchema,
+      );
+      setRateLimitStatus({
+        show: response.isRateLimited,
+      });
+    };
+    checkRateLimit();
+
     const unsubscribe = storyEvents.subscribe((text, options) => {
       if (!storyRef.current) return;
 

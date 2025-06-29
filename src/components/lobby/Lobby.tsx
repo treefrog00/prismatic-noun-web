@@ -13,8 +13,8 @@ import { questSummaries } from "@/caches/questSummaries";
 const LobbyContent = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("lobby");
-  const [isCoinInserted, setIsCoinInserted] = useState(false);
   const [availableQuests, setAvailableQuests] = useState<QuestSummary[]>([]);
+
   const {
     questSummary,
     setQuestSummary,
@@ -30,14 +30,8 @@ const LobbyContent = () => {
   }, [seenLaunchScreen, navigate]);
 
   useEffect(() => {
-    const initializeGame = async () => {
-      setAvailableQuests(questSummaries);
-
-      setIsCoinInserted(true);
-      setQuestSummary(questSummaries[0]);
-    };
-
-    initializeGame();
+    setAvailableQuests(questSummaries);
+    setQuestSummary(questSummaries[0]);
   }, []);
 
   if (!questSummary) return null;
@@ -57,31 +51,23 @@ const LobbyContent = () => {
         <div className="flex-1 flex items-center justify-center">
           <div className="w-full max-w-5xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
             <div className="flex flex-col items-center gap-8">
-              {isCoinInserted ? (
-                activeTab === "lobby" && (
-                  <>
-                    <LobbyHome availableQuests={availableQuests} />
-                  </>
-                )
-              ) : (
-                <div className="text-gray-400">Loading...</div>
+              {activeTab === "lobby" && (
+                <LobbyHome availableQuests={availableQuests} />
               )}
-              {
-                <div
-                  className={activeTab === "settings" ? "block p-10" : "hidden"}
+              <div
+                className={activeTab === "settings" ? "block p-10" : "hidden"}
+              >
+                <h2
+                  style={{
+                    ...starryTheme.lobbyHeading,
+                    marginBottom: "3rem",
+                    fontSize: responsiveStyles.text.heading,
+                  }}
                 >
-                  <h2
-                    style={{
-                      ...starryTheme.lobbyHeading,
-                      marginBottom: "3rem",
-                      fontSize: responsiveStyles.text.heading,
-                    }}
-                  >
-                    Settings
-                  </h2>
-                  <Settings />
-                </div>
-              }
+                  Settings
+                </h2>
+                <Settings />
+              </div>
             </div>
           </div>
         </div>

@@ -100,7 +100,7 @@ const StoryButtons: React.FC = () => {
   return (
     <>
       <div
-        className={`mt-4 transition-all duration-300 ${showPromptInput.show ? "h-80" : "h-48"}`}
+        className={`mt-4 transition-all duration-300 ${showPromptInput.show ? "h-80" : "h-20"}`}
       >
         {showPromptInput.show && (
           <div className="flex flex-row h-full">

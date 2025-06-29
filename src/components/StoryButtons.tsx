@@ -153,7 +153,7 @@ const StoryButtons: React.FC = () => {
         )}
         {showContinue && !diceRollState.show && (
           <div
-            className={`text-gray-300 flex items-center gap-12 ${
+            className={`text-gray-200 flex items-center gap-12 ${
               gameConfig.shouldAnimateContinueButton
                 ? "opacity-0 continue-fade-in"
                 : ""
@@ -168,7 +168,7 @@ const StoryButtons: React.FC = () => {
           </div>
         )}
         {showReturnToMainMenu && (
-          <div className="text-gray-300 flex items-center gap-12 opacity-0 return-to-main-menu-fade-in">
+          <div className="text-gray-200 flex items-center gap-12 opacity-0 return-to-main-menu-fade-in">
             <button
               className={`game-button ${getColorClasses("teal")} mb-12`}
               onPointerDown={() => handleReturnToMainMenu()}

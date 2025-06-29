@@ -43,7 +43,7 @@ const TextInput: React.FC<TextInputProps> = ({
   return (
     <div className="flex flex-col h-full">
       <textarea
-        className="font-['Crimson_Text'] w-full flex-grow p-2 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-gray-400 bg-gray-800 text-gray-300 placeholder-gray-400 shadow-lg shadow-black/50"
+        className="font-['Crimson_Text'] w-full flex-grow p-2 border-2 border-gray-700 rounded-lg text-lg focus:outline-none focus:border-gray-400 bg-gray-800 text-gray-200 placeholder-gray-400 shadow-lg shadow-black/50"
         id="textInput"
         placeholder={placeHolder}
         value={text}
@@ -63,7 +63,7 @@ const TextInput: React.FC<TextInputProps> = ({
         ref={textInputRef}
       />
       {showCharCount && (
-        <div className="text-right text-base text-gray-300">
+        <div className="text-right text-base text-gray-200">
           {text.length} / {maxLength}
         </div>
       )}

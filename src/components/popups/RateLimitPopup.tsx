@@ -26,7 +26,7 @@ const RateLimitPopup: React.FC = () => {
           </p>
 
           <div className="flex flex-col items-center gap-4">
-            <p className="text-gray-300 text-sm mb-2">Sign in to continue:</p>
+            <p className="text-gray-200 text-sm mb-2">Sign in to continue:</p>
             <AuthButtons />
           </div>
         </div>

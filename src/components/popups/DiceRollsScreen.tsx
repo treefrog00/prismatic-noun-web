@@ -172,7 +172,7 @@ const DiceRollsScreen: React.FC = () => {
               Continue
             </button>
           ) : (
-            <div className="text-gray-300 text-xl">Awaiting result...</div>
+            <div className="text-gray-200 text-xl">Awaiting result...</div>
           )}
         </div>
       </div>

@@ -46,7 +46,7 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 </option>
               ))}
             </select>
-            <p className={`mt-5 text-gray-400 ${responsiveStyles.text.base}`}>
+            <p className={`mt-5 text-gray-200 ${responsiveStyles.text.base}`}>
               {questSummary.description}
             </p>
           </div>

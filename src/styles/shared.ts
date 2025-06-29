@@ -61,7 +61,7 @@ export const themeColors = {
   },
   green: {
     container: "bg-zinc-900",
-    text: "text-gray-300",
+    text: "text-gray-200",
     highlight: "text-yellow-400",
     gradient: ["#1f2937", "#052e16"],
   },
@@ -73,13 +73,13 @@ export const themeColors = {
   },
   darkBlue: {
     container: "bg-gray-800",
-    text: "text-gray-300",
+    text: "text-gray-200",
     highlight: "text-yellow-400",
     gradient: ["#0f1729", "#1f2937", "#111827"],
   },
   space: {
     container: "bg-gray-800",
-    text: "text-gray-300",
+    text: "text-gray-200",
     highlight: "text-yellow-400",
     gradient: ["#171717", "#171717", "#ca8a04"],
   },

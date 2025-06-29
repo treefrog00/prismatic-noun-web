@@ -20,7 +20,7 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
                 className={`font-['Cinzel'] px-2 md:px-6 py-2 md:py-3 ${responsiveStyles.text.small} md:text-lg transition-all duration-300 ${
                   props.activeTab === tab
                     ? "text-indigo-300 border-b-2 border-indigo-400/50 text-shadow-glow"
-                    : "text-gray-400 border-b-2 border-transparent hover:text-indigo-200 hover:border-indigo-400/30"
+                    : "text-gray-300 border-b-2 border-transparent hover:text-indigo-200 hover:border-indigo-400/30"
                 }`}
                 onPointerDown={() => props.onTabChange(tab)}
               >

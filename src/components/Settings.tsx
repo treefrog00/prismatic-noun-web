@@ -36,39 +36,39 @@ const Settings: React.FC = () => {
       <div className="space-y-2">
         <div className="flex flex-col space-y-6">
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Music</label>
+            <label className="text-gray-200 w-32">Music</label>
             <MusicToggle />
           </div>
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Animated stars</label>
+            <label className="text-gray-200 w-32">Animated stars</label>
             <ToggleSwitch
               isEnabled={shouldAnimateStars}
               onToggle={() => setShouldAnimateStars(!shouldAnimateStars)}
             />
           </div>
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Animated images</label>
+            <label className="text-gray-200 w-32">Animated images</label>
             <ToggleSwitch
               isEnabled={gameConfig.shouldAnimateImages}
               onToggle={handleToggleAnimateImages}
             />
           </div>
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Animated text</label>
+            <label className="text-gray-200 w-32">Animated text</label>
             <ToggleSwitch
               isEnabled={gameConfig.shouldAnimateText}
               onToggle={handleToggleAnimateText}
             />
           </div>
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Animated dice</label>
+            <label className="text-gray-200 w-32">Animated dice</label>
             <ToggleSwitch
               isEnabled={gameConfig.shouldAnimateDice}
               onToggle={handleToggleAnimateDice}
             />
           </div>
           <div className="flex items-center">
-            <label className="text-gray-300 w-32">Animated continue</label>
+            <label className="text-gray-200 w-32">Animated continue</label>
             <ToggleSwitch
               isEnabled={gameConfig.shouldAnimateContinueButton}
               onToggle={handleToggleAnimateContinueButton}

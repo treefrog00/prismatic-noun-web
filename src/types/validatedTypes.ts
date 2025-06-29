@@ -126,7 +126,7 @@ const GameEventSchema = z
       type: z.literal("StillWaiting"),
     }),
     z.object({
-      type: z.literal("ErrorResponse"),
+      type: z.literal("ErrorEvent"),
       errorMessage: z.string(),
     }),
   ])

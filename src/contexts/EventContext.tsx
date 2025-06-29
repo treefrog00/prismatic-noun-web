@@ -284,8 +284,13 @@ export const EventProvider = ({
           questSummary,
         );
       }
-    } else if (event.type === "ErrorResponse") {
+    } else if (event.type === "ErrorEvent") {
       showToast(event.errorMessage, "error");
+      console.error(event.errorMessage);
+      setShowPromptInput({
+        ...showPromptInput,
+        show: true,
+      });
     } else if (event.type === "GameEnd") {
       const message =
         questSummary.questId === "echo_chamber" ? "The End?" : "The End";

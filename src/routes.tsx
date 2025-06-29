@@ -59,22 +59,22 @@ export const routes: RouteObject[] = [
       </RootProvider>
     ),
   },
-  {
-    path: "/terms",
-    element: (
-      <HomeLayout>
-        <Terms />
-      </HomeLayout>
-    ),
-  },
-  {
-    path: "/privacy",
-    element: (
-      <HomeLayout>
-        <Privacy />
-      </HomeLayout>
-    ),
-  },
+  // {
+  //   path: "/terms",
+  //   element: (
+  //     <HomeLayout>
+  //       <Terms />
+  //     </HomeLayout>
+  //   ),
+  // },
+  // {
+  //   path: "/privacy",
+  //   element: (
+  //     <HomeLayout>
+  //       <Privacy />
+  //     </HomeLayout>
+  //   ),
+  // },
   {
     path: "/play",
     element: (

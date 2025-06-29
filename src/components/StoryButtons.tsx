@@ -109,11 +109,8 @@ const StoryButtons: React.FC = () => {
         className={`mt-4 transition-all duration-300 ${showPromptInput.show ? "h-80" : "h-48"}`}
       >
         {showPromptInput.show && (
-          <div className="flex flex-row gap-8 h-full">
-            <div
-              style={{ width: "calc(100% - 32rem)" }}
-              className="flex flex-col"
-            >
+          <div className="flex flex-row h-full">
+            <div style={{ width: "calc(100%)" }} className="flex flex-col">
               <div className="flex-grow mb-4">
                 <TextInput
                   text={myPrompt}
@@ -146,8 +143,8 @@ const StoryButtons: React.FC = () => {
                 </button>
               </div>
             </div>
-            <div style={{ width: "32rem", flexShrink: 0 }}>
-              {/* Empty space that matches StoryImage width */}
+            <div style={{ width: "16rem", flexShrink: 0 }}>
+              {/* Empty space to make it a little shorter than the story above */}
             </div>
           </div>
         )}

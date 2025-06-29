@@ -133,10 +133,10 @@ const GameContent = () => {
       <div className="w-4/5 flex flex-col h-dynamic py-4">
         <TopBar />
         <div
-          className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 mt-2 ${showPromptInput.show ? "max-h-[calc(100%-24rem)]" : ""}`}
+          className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 mt-2`}
         >
           <div className="flex-1 max-w-6xl mx-auto flex flex-col">
-            <div className="flex-1 min-h-0">
+            <div className={`flex-1 min-h-0 transition-all duration-300 $`}>
               <Story ref={storyRef} questSummary={questSummary} />
             </div>
             <StoryButtons />

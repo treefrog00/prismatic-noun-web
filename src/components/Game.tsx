@@ -135,8 +135,12 @@ const GameContent = () => {
         <div
           className={`flex flex-row gap-8 flex-1 min-h-0 transition-all duration-300 mt-2 ${showPromptInput.show ? "max-h-[calc(100%-24rem)]" : ""}`}
         >
-          {/* TODO: don't draw any components until initial data is loaded */}
-          <Story ref={storyRef} questSummary={questSummary} />
+          <div className="flex-1 max-w-6xl mx-auto flex flex-col">
+            <div className="flex-1 min-h-0">
+              <Story ref={storyRef} questSummary={questSummary} />
+            </div>
+            <StoryButtons />
+          </div>
           <div className="w-128 flex flex-col h-full">
             <div className="flex-1" />
             <div className="flex justify-end">
@@ -145,7 +149,6 @@ const GameContent = () => {
             <div className="flex-[2]" />
           </div>
         </div>
-        <StoryButtons />
       </div>
       {diceRollState.show && <DiceRollsScreen />}
       {rateLimitStatus.show && <RateLimitPopup />}

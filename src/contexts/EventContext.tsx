@@ -111,7 +111,7 @@ export const EventProvider = ({
   const { setNpcState } = useNpcState();
   const { setLocationData, locationData } = useLocationData();
   const { gameConfig } = useGameConfig();
-  const { setPlaylist } = useStereo();
+  const { playlist, setPlaylist } = useStereo();
   const { showPromptInput, setShowPromptInput, setShowReturnToMainMenu } =
     useUiState();
   const { isPaused, setIsPaused } = useIsPaused();
@@ -262,7 +262,9 @@ export const EventProvider = ({
         },
       }));
     } else if (event.type === "ChangePlaylist") {
-      setPlaylist(event.playlist);
+      if (JSON.stringify(playlist) !== JSON.stringify(event.playlist)) {
+        setPlaylist(event.playlist);
+      }
     } else if (event.type === "PlayerInput") {
       setShowPromptInput({
         show: true,
@@ -285,7 +287,9 @@ export const EventProvider = ({
     } else if (event.type === "ErrorResponse") {
       showToast(event.errorMessage, "error");
     } else if (event.type === "GameEnd") {
-      appendToStory("The End", { italic: true, highlight: true });
+      const message =
+        questSummary.questId === "echo_chamber" ? "The End?" : "The End";
+      appendToStory(message, { italic: true, highlight: true });
       appendToStory(
         "Message treefrog on Discord if you'd like to playtest some more :)",
         { italic: true, highlight: true },

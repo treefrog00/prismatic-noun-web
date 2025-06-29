@@ -46,7 +46,7 @@ const LaunchScreen = () => {
           <img
             src="/ai_art/logo.webp"
             alt="Game Logo"
-            className="w-40 xl:w-[320px] mb-8"
+            className="w-[620px] mb-8 opacity-70"
           />
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">

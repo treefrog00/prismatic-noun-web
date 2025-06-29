@@ -63,16 +63,18 @@ const CharacterOverlay = ({
           <div className="mt-2">
             <div className="font-bold flex items-end gap-4 mb-6">
               {myCharacterData.name}
-              <button
-                onClick={handleSpeechClick}
-                className="relative w-12 h-12 bg-gradient-to-b from-gray-600 to-gray-800 hover:from-gray-400 hover:to-gray-600 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-150 active:scale-95 active:shadow-md cursor-pointer"
-              >
-                <img
-                  src={artUrl("speech.webp")}
-                  alt="Speech icon"
-                  className="w-8 h-8 mx-auto filter brightness-110"
-                />
-              </button>
+              {myCharacterData.name !== "Wisp" && (
+                <button
+                  onClick={handleSpeechClick}
+                  className="relative w-12 h-12 bg-gradient-to-b from-gray-600 to-gray-800 hover:from-gray-400 hover:to-gray-600 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-150 active:scale-95 active:shadow-md cursor-pointer"
+                >
+                  <img
+                    src={artUrl("speech.webp")}
+                    alt="Speech icon"
+                    className="w-8 h-8 mx-auto filter brightness-110"
+                  />
+                </button>
+              )}
             </div>
             <div>{myCharacterData.description}</div>
             {myCharacterData.abilities.length > 0 && (

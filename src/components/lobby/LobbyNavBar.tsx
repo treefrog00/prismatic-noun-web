@@ -29,7 +29,7 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
               {index === tabs.length - 1 && (
                 <img
                   src={artUrl("logo.webp")}
-                  className={`${responsiveStyles.sizes.logo} mx-8 my-2`}
+                  className={`${responsiveStyles.sizes.logo} mx-8 my-2 opacity-70`}
                 />
               )}
             </li>

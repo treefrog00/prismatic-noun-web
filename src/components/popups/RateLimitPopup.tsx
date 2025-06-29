@@ -39,9 +39,8 @@ const RateLimitPopup: React.FC = () => {
       {!pnAccessToken ? (
         <div className="p-6 text-center">
           <p className="text-white text-lg mb-6">
-            Your IP address has temporarily exceeded the rate limit. You can
-            sign up for a free account for a slightly higher rate limit, or
-            otherwise feel free to come back tomorrow.
+            Enjoying the game? You can sign up for a free account for a higher
+            rate limit, or otherwise feel free to come back tomorrow.
           </p>
 
           <div className="flex flex-col items-center gap-4">
@@ -52,10 +51,8 @@ const RateLimitPopup: React.FC = () => {
       ) : (
         <div className="p-6 text-center">
           <p className="text-white text-lg mb-6">
-            Multiple accounts using the same IP address are all making a large
-            number of requests, so the IP is temporarily blocked in order to
-            avoid the server bill getting too high. Feel free to come back
-            tomorrow!
+            One or more accounts using the same IP address have been playing the
+            game a lot today. Feel free to come back tomorrow!
           </p>
         </div>
       )}

@@ -42,12 +42,18 @@ const LaunchScreen = () => {
           flexDirection: "column",
         }}
       >
-        <div className="flex flex-col items-center justify-center flex-1">
-          <img
-            src="/ai_art/logo.webp"
-            alt="Game Logo"
-            className="w-[620px] mb-8 opacity-70"
-          />
+        <div className="flex flex-col items-center justify-center flex-1 relative">
+          <div className="relative w-full h-96 mb-8">
+            <img
+              src="/ai_art/ship.webp"
+              className="absolute w-[300px] -top-6 left-1/2 transform translate-x-2"
+            />
+            <img
+              src="/ai_art/logo.webp"
+              className="absolute w-[440px] top-48 left-1/2 transform -translate-x-1/2"
+            />
+          </div>
+
           {
             <div className="w-full max-w-4xl mx-auto bg-gray-800/80 rounded-lg shadow-xl p-6 border border-gray-700">
               <div

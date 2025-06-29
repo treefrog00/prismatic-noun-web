@@ -43,8 +43,8 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({
       },
     },
     speed: {
-      min: 0.002,
-      max: 0.003,
+      min: 0.001,
+      max: 0.002,
     },
   };
 

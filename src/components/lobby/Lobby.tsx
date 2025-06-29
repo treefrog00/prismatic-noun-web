@@ -9,6 +9,7 @@ import { starryTheme } from "@/styles/starryTheme";
 import StarryBackground from "../StarryBackground";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import { questSummaries } from "@/caches/questSummaries";
+import FullScreenButton from "../FullScreenButton";
 
 const LobbyContent = () => {
   const navigate = useNavigate();
@@ -39,6 +40,12 @@ const LobbyContent = () => {
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
       <StarryBackground shouldAnimate={shouldAnimateStars} />
+
+      {/* Fullscreen button - positioned in bottom-right corner */}
+      <div className="absolute bottom-4 right-4 z-50">
+        <FullScreenButton />
+      </div>
+
       <div
         style={{
           ...starryTheme.contentLeft,

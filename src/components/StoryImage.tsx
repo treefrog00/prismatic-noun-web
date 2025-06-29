@@ -280,7 +280,7 @@ const StoryImage: React.FC = () => {
     <div
       className="w-128 h-128 flex relative z-10 transition-transform duration-300 ease-in-out"
       style={{
-        transform: isZoomed ? "scale(1.4)" : "scale(1)",
+        transform: isZoomed ? "scale(1.6)" : "scale(1)",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}

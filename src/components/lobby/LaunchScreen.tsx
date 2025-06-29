@@ -3,16 +3,14 @@ import { useStereo } from "@/contexts/StereoContext";
 import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
 import { useAppContext } from "@/contexts/AppContext";
-import AuthButtons from "../auth/AuthButtons";
-import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
+import FullScreenButton from "../FullScreenButton";
 
 const LaunchScreen = () => {
   const navigate = useNavigate();
   const { initialPlay: initialPlayMusic } = useStereo();
   const { shouldAnimateStars, setSeenLaunchScreen } = useAppContext();
-  const { pnAccessToken } = useAuth();
 
   if (isAndroidOrIOS()) {
     return (
@@ -34,6 +32,12 @@ const LaunchScreen = () => {
     <div style={starryTheme.container}>
       <div style={starryTheme.starryBackground} />
       <StarryBackground shouldAnimate={shouldAnimateStars} />
+
+      {/* Fullscreen button - positioned in bottom-right corner */}
+      <div className="absolute bottom-4 right-4 z-50">
+        <FullScreenButton />
+      </div>
+
       <div
         style={{
           ...starryTheme.contentLeft,
@@ -61,8 +65,8 @@ const LaunchScreen = () => {
                 </p>
 
                 <p>
-                  Feel free to adjust your headphones or volume control, but do
-                  not attempt to adjust the picture.
+                  Before entering feel free to adjust the volume or click the
+                  fullscreen button, but do not attempt to adjust the picture.
                 </p>
               </div>
             </div>

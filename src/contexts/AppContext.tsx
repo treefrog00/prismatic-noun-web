@@ -38,6 +38,10 @@ interface AppContextType {
   handleSetShouldAnimateText: (show: boolean) => void;
   handleSetShouldAnimateImages: (show: boolean) => void;
   handleSetShouldAnimateContinueButton: (show: boolean) => void;
+
+  // Fullscreen functionality
+  isFullscreen: boolean;
+  toggleFullscreen: () => void;
 }
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
@@ -54,6 +58,7 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     getBackendUrlFromStorage(),
   );
   const [seenLaunchScreen, setSeenLaunchScreen] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
     const savedValue = localStorage.getItem("shouldAnimateStars");
@@ -132,6 +137,41 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem(ANIMATE_CONTINUE_BUTTON_KEY, show.toString());
   };
 
+  // Fullscreen functionality
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement
+        .requestFullscreen()
+        .then(() => {
+          setIsFullscreen(true);
+        })
+        .catch((err) => {
+          console.error("Error attempting to enable fullscreen:", err);
+        });
+    } else {
+      document
+        .exitFullscreen()
+        .then(() => {
+          setIsFullscreen(false);
+        })
+        .catch((err) => {
+          console.error("Error attempting to exit fullscreen:", err);
+        });
+    }
+  };
+
+  // Listen for fullscreen changes
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
@@ -154,6 +194,10 @@ export const AppContextProvider: React.FC<{ children: React.ReactNode }> = ({
         handleSetShouldAnimateText,
         handleSetShouldAnimateImages,
         handleSetShouldAnimateContinueButton,
+
+        // Fullscreen functionality
+        isFullscreen,
+        toggleFullscreen,
       }}
     >
       {children}

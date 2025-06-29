@@ -30,7 +30,7 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({
         alt={alt}
         className={`transition-transform duration-300 ease-in-out cursor-pointer ${className}`}
         style={{
-          transform: isZoomed ? "scale(2.0)" : "scale(1)",
+          transform: isZoomed ? "scale(2.5)" : "scale(1)",
           zIndex: isZoomed ? 1000 : "auto",
           ...style,
         }}

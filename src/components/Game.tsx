@@ -52,15 +52,22 @@ const GameContent = () => {
 
   useEffect(() => {
     const checkRateLimit = async () => {
-      const response = await gameApi.postTyped(
-        `/check_rate_limit`,
-        {},
-        CheckRateLimitResponseSchema,
-      );
-      setRateLimitStatus({
-        show: response.isRateLimited,
-      });
+      try {
+        const response = await gameApi.postTyped(
+          `/check_rate_limit`,
+          {},
+          CheckRateLimitResponseSchema,
+        );
+        setRateLimitStatus({
+          show: response.isRateLimited,
+          hitGlobalLimit: response.hitGlobalLimit,
+        });
+      } catch (error) {
+        console.error("Failed to check rate limit:", error);
+      }
     };
+
+    // Fire-and-forget: runs in background without blocking component
     checkRateLimit();
 
     const unsubscribe = storyEvents.subscribe((text, options) => {

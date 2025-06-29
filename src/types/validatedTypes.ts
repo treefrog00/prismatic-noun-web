@@ -153,6 +153,7 @@ export const GeneratePromptResponseSchema = z.object({
 
 export const CheckRateLimitResponseSchema = z.object({
   isRateLimited: z.boolean(),
+  hitGlobalLimit: z.boolean(),
 });
 
 export { GameEventSchema };

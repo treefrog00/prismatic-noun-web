@@ -2,6 +2,7 @@ import { z } from "zod/v4";
 import { getCurrentPnAccessToken } from "@/contexts/AuthContext";
 import { permaConsoleLog } from "@/util/logger";
 import { RateLimitStatus } from "@/contexts/GameContext";
+import { fa } from "zod/v4/locales";
 
 export class GameApi {
   private backendUrl: string;
@@ -34,6 +35,7 @@ export class GameApi {
     if (response.status === 429) {
       this.setRateLimitStatus({
         show: true,
+        hitGlobalLimit: false, // this only matters if someone hits the global limit halfway through a game, which is an edge case that isn't worth the hassle of checking for, they'll just get a slightly confusing error message
       });
       return;
     }

@@ -12,6 +12,23 @@ const RateLimitPopup: React.FC = () => {
     setRateLimitStatus({ ...rateLimitStatus, show: false });
   };
 
+  if (rateLimitStatus.hitGlobalLimit) {
+    return (
+      <Popup
+        onClose={() => handleClose()}
+        title="Rate Limit Exceeded"
+        maxWidth="max-w-2xl"
+        className="max-h-[80vh] overflow-auto"
+      >
+        <div className="p-6 text-center">
+          <p className="text-white text-lg mb-6">
+            Global rate limit exceeded. Please try again another time.
+          </p>
+        </div>
+      </Popup>
+    );
+  }
+
   return (
     <Popup
       onClose={() => handleClose()}

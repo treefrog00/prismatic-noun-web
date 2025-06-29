@@ -1,6 +1,4 @@
-import {
-  setAccessTokenInStorage,
-} from "@/contexts/AuthContext";
+import { setAccessTokenInStorage } from "@/contexts/AuthContext";
 import { envConfig } from "@/envConfig";
 import { ExchangeCodeResponseSchema } from "@/types/validatedTypes";
 
@@ -39,6 +37,8 @@ export const exchangeCodeForToken = async (
       ? "/auth/exchange_discord_code"
       : "/auth/exchange_google_code";
 
+  const redirectUri = window.location.origin + window.location.pathname;
+
   const response = await fetch(`${backendUrl}${endpoint}`, {
     method: "POST",
     headers: {
@@ -46,7 +46,7 @@ export const exchangeCodeForToken = async (
     },
     body: JSON.stringify({
       code,
-      redirectUri: window.location.href,
+      redirectUri: redirectUri,
     }),
   });
 

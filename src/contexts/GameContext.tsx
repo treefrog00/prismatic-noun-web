@@ -18,6 +18,7 @@ export interface WorldIndices {
 
 export interface RateLimitStatus {
   show: boolean;
+  hitGlobalLimit: boolean;
 }
 
 type GameContextType = {
@@ -131,6 +132,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
   const [showContinue, setShowContinue] = useState(false);
   const [rateLimitStatus, setRateLimitStatus] = useState<RateLimitStatus>({
     show: false,
+    hitGlobalLimit: false,
   });
 
   // Logbook state

@@ -8,7 +8,8 @@ import "@/styles/gameButton.css";
 import { usePlayerStatePrompt } from "@/core/multiplayerState";
 import { useGameConfig, useGameStage } from "@/contexts/AppContext";
 import { LOBBY_PLAYLIST, useStereo } from "@/contexts/StereoContext";
-import { useEventProcessor } from "@/contexts/EventContext";
+import { promptRejected, useEventProcessor } from "@/contexts/EventContext";
+import { DICE_WRAPPER_ANIMATION_DURATION } from "./DiceRollWithText";
 
 const StoryButtons: React.FC = () => {
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -35,7 +36,33 @@ const StoryButtons: React.FC = () => {
   );
 
   const { isPaused, setIsPaused } = useIsPaused();
-  const { diceRollState } = useDiceRoll();
+  const { diceRollState, setDiceRollState } = useDiceRoll();
+
+  const rollDice = async () => {
+    if (!gameConfig.shouldAnimateDice) {
+      return;
+    }
+
+    // need to handle updates independently of the React hook within this function
+    const diceState = {
+      ...diceRollState,
+      show: true,
+      finishedAnimation: false,
+    };
+
+    setDiceRollState(diceState);
+
+    await new Promise((resolve) =>
+      setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
+    );
+
+    if (!promptRejected) {
+      setDiceRollState({
+        ...diceState,
+        finishedAnimation: true,
+      });
+    }
+  };
 
   // Timeout effect for showContinue
   useEffect(() => {
@@ -64,6 +91,9 @@ const StoryButtons: React.FC = () => {
     if (myPrompt.length === 0 || myPrompt.length > gameConfig.promptLimit) {
       return;
     }
+
+    // Run dice roll animation in the background.
+    void rollDice();
 
     await submitPrompt(gameApi, myPrompt);
 

@@ -73,12 +73,6 @@ const GameEventSchema = z
     z.object({
       type: z.literal("Pause"),
     }),
-
-    z.object({
-      type: z.literal("DiceRollScreen"),
-      characterRolls: z.array(DiceRollSchema),
-      locationRoll: DiceRollSchema,
-    }),
     z.object({
       type: z.literal("RejectPromptResponse"),
       rejectionMessage: z.string(),
@@ -112,6 +106,10 @@ const GameEventSchema = z
     z.object({
       type: z.literal("PlayerInput"),
       playerPrompt: z.string(),
+      diceRolls: z.object({
+        characterRolls: z.array(DiceRollSchema),
+        locationRoll: DiceRollSchema,
+      }),
     }),
     z.object({
       type: z.literal("GameEnd"),

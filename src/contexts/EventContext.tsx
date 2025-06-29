@@ -43,6 +43,7 @@ type EventContextType = {
 const EventContext = createContext<EventContextType | null>(null);
 
 let isFirstParagraph = true;
+export let promptRejected = false;
 
 export const EventProvider = ({
   children,
@@ -52,7 +53,7 @@ export const EventProvider = ({
   const [eventQueue, setEventQueue] = useState<GameEvent[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { setDiceRollState } = useDiceRoll();
+  const { diceRollState, setDiceRollState } = useDiceRoll();
   const { setMainImage } = useMainImage();
   const { setCharacterState } = useCharacterState();
   const { setNpcState } = useNpcState();
@@ -73,6 +74,10 @@ export const EventProvider = ({
   ): Promise<GameEvent[] | null> => {
     if (import.meta.env.DEV) {
       //permaConsoleLog("Processing", event.type, "event", event);
+    }
+
+    if (event.type !== "RejectPromptResponse") {
+      promptRejected = false;
     }
 
     setWorldIndices({
@@ -123,34 +128,9 @@ export const EventProvider = ({
       }
     } else if (event.type === "Pause") {
       setIsPaused(true);
-    } else if (event.type === "DiceRollScreen") {
-      const diceRollState = {
-        show: true,
-        characterRolls: event.characterRolls,
-        locationRoll: event.locationRoll,
-        finishedAnimation: false,
-      };
-
-      if (!gameConfig.shouldAnimateDice) {
-        return;
-      }
-
-      // the flushSync microtask is only needed for React 18+
-      queueMicrotask(() => {
-        ReactDOM.flushSync(() => {
-          setDiceRollState(diceRollState);
-        });
-      });
-
-      await new Promise((resolve) =>
-        setTimeout(resolve, DICE_WRAPPER_ANIMATION_DURATION),
-      );
-
-      setDiceRollState({
-        ...diceRollState,
-        finishedAnimation: true,
-      });
     } else if (event.type === "RejectPromptResponse") {
+      promptRejected = true;
+      setDiceRollState({ ...diceRollState, show: false });
       showToast(event.rejectionMessage, "error");
       setShowPromptInput({
         ...showPromptInput,
@@ -195,6 +175,13 @@ export const EventProvider = ({
         show: true,
         playerPrompt: event.playerPrompt,
       });
+      // set up the values, but don't show it yet
+      setDiceRollState({
+        show: false,
+        characterRolls: event.diceRolls.characterRolls,
+        locationRoll: event.diceRolls.locationRoll,
+        finishedAnimation: false,
+      });
     } else if (event.type === "ErrorEvent") {
       showToast(event.errorMessage, "error");
       console.error(event.errorMessage);
@@ -214,6 +201,8 @@ export const EventProvider = ({
         setShowReturnToMainMenu(true);
       }, 1000);
     }
+
+    return null;
   };
 
   const processNextEvent = async () => {

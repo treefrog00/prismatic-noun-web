@@ -3,7 +3,6 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const MUSIC_ENABLED_STORAGE_KEY = "music_enabled";
 const FADE_DURATION = 1000;
-const CROSSFADE_DURATION = 500; // Shorter crossfade for smoother transitions
 
 export const LOBBY_PLAYLIST: string[] = ["dream"];
 
@@ -35,7 +34,6 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   const audioElementRef = useRef<HTMLAudioElement | null>(null);
-  const nextAudioRef = useRef<HTMLAudioElement | null>(null); // For crossfading
   const speechAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout>();
   const [playlist, setPlaylist] = useState<string[]>(LOBBY_PLAYLIST);
@@ -45,43 +43,6 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
   // this is just to prevent auto playing when the playlist is set before the user has interacted with the page
   const [hasRunInitialPlay, setHasRunInitialPlay] = useState<boolean>(false);
-
-  // Preload the next track (only first 30 seconds)
-  const preloadTrack = async (trackName: string): Promise<HTMLAudioElement> => {
-    const audio = new Audio(`/ai_sound/${trackName}.mp3`);
-    audio.preload = "auto"; // Load audio data
-    audio.volume = 0; // Start silent for crossfade
-
-    // Set audio properties to reduce crackling
-    audio.crossOrigin = "anonymous";
-
-    // Wait for enough data to be loaded (about 30 seconds worth)
-    await new Promise<void>((resolve) => {
-      const checkBuffer = () => {
-        if (audio.buffered.length > 0) {
-          const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
-          if (bufferedEnd >= 30) {
-            // We have at least 30 seconds buffered
-            resolve();
-            return;
-          }
-        }
-        // Check again in 100ms
-        setTimeout(checkBuffer, 100);
-      };
-
-      const handleCanPlay = () => {
-        audio.removeEventListener("canplay", handleCanPlay);
-        checkBuffer();
-      };
-      audio.addEventListener("canplay", handleCanPlay);
-
-      // Fallback timeout - if we can't get 30 seconds, proceed anyway
-      setTimeout(resolve, 2000);
-    });
-
-    return audio;
-  };
 
   const fadeOut = async (
     audio: HTMLAudioElement,
@@ -113,48 +74,10 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
           clearInterval(fadeInterval);
           audio.pause();
           audio.src = "";
+          audio.volume = DEFAULT_MUSIC_VOLUME; // Reset volume for next playback
           resolve();
         }
       }, 20); // Update every 20ms for smooth fade
-    });
-  };
-
-  const crossfade = async (
-    currentAudio: HTMLAudioElement,
-    nextAudio: HTMLAudioElement,
-    duration: number = CROSSFADE_DURATION,
-  ): Promise<void> => {
-    if (!currentAudio.src || currentAudio.paused) {
-      // If no current audio, just start the next one
-      nextAudio.volume = DEFAULT_MUSIC_VOLUME;
-      await nextAudio.play();
-      return;
-    }
-
-    const startTime = performance.now();
-    const startVolume = currentAudio.volume;
-
-    // Start the next track
-    nextAudio.volume = 0;
-    await nextAudio.play();
-
-    return new Promise((resolve) => {
-      const fadeInterval = setInterval(() => {
-        const elapsed = performance.now() - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Fade out current track
-        currentAudio.volume = startVolume * (1 - progress);
-        // Fade in next track
-        nextAudio.volume = DEFAULT_MUSIC_VOLUME * progress;
-
-        if (progress === 1) {
-          clearInterval(fadeInterval);
-          currentAudio.pause();
-          currentAudio.src = "";
-          resolve();
-        }
-      }, 20);
     });
   };
 
@@ -188,17 +111,12 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const audioElement = new Audio();
-    audioElement.crossOrigin = "anonymous";
     audioElementRef.current = audioElement;
 
     return () => {
       if (audioElementRef.current) {
         audioElementRef.current.pause();
         audioElementRef.current.src = "";
-      }
-      if (nextAudioRef.current) {
-        nextAudioRef.current.pause();
-        nextAudioRef.current.src = "";
       }
     };
   }, []);
@@ -266,33 +184,14 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         audioElementRef.current.onended = null;
       }
 
-      // Clean up any existing next audio
-      if (nextAudioRef.current) {
-        nextAudioRef.current.pause();
-        nextAudioRef.current.src = "";
-      }
-
-      // Preload the next track
-      const nextAudio = await preloadTrack(track);
-      nextAudioRef.current = nextAudio;
-
-      // Small delay to ensure audio context stability
-      await new Promise((resolve) => setTimeout(resolve, 25));
-
-      // Perform crossfade if there's currently playing audio
+      // If there's currently playing audio, fade it out first
       if (!audioElementRef.current.paused && audioElementRef.current.src) {
-        await crossfade(audioElementRef.current, nextAudio);
-      } else {
-        // No current audio, just start the next one
-        nextAudio.volume = DEFAULT_MUSIC_VOLUME;
-        await nextAudio.play();
+        await fadeOut(audioElementRef.current);
       }
-
-      // Swap the audio elements
-      audioElementRef.current = nextAudio;
-      nextAudioRef.current = null;
-
-      // Add ended listener for the new track
+      audioElementRef.current.src = `/ai_sound/${track}.mp3`;
+      audioElementRef.current.volume = DEFAULT_MUSIC_VOLUME;
+      await audioElementRef.current.play();
+      // not using playlistIndex hook because it won't be updated in time
       addEndedListener(index);
     } catch (error) {
       // Ignore errors when audio is blocked or turned off
@@ -350,10 +249,6 @@ export const StereoProvider = ({ children }: { children: React.ReactNode }) => {
         audioElementRef.current.onended = null;
         audioElementRef.current.pause();
         audioElementRef.current.src = "";
-      }
-      if (nextAudioRef.current) {
-        nextAudioRef.current.pause();
-        nextAudioRef.current.src = "";
       }
     };
   }, []);

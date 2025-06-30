@@ -47,7 +47,7 @@ const LobbyFeedback = () => {
           >
             Contact
           </h2>
-
+          This form isn't wired up yet, message Treefrog on Discord instead!
           <form
             onSubmit={handleSubmit}
             className="mt-6 space-y-6 min-w-[600px]"

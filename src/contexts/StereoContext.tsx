@@ -18,7 +18,7 @@ interface StereoContextType {
 
 const StereoContext = createContext<StereoContextType | null>(null);
 
-const DEFAULT_MUSIC_VOLUME = 0.7;
+const DEFAULT_MUSIC_VOLUME = 0.6;
 
 export const useStereo = () => {
   const context = useContext(StereoContext);

@@ -94,7 +94,7 @@ export const EventProvider = ({
       }
 
       let options = {};
-      if (event.isAiResponse) {
+      if (event.isAiResponse || event.isCcNotice) {
         options = { skipScroll: true, animate: false };
       } else if (isFirstParagraph && gameConfig.shouldAnimateText) {
         options = { ...options, animate: true };
@@ -107,7 +107,8 @@ export const EventProvider = ({
       if (
         isFirstParagraph &&
         gameConfig.shouldAnimateText &&
-        !event.isAiResponse
+        !event.isAiResponse &&
+        !event.isCcNotice
       ) {
         await new Promise((resolve) => setTimeout(resolve, 1800));
       } else if (gameConfig.shouldAnimateText) {
@@ -125,7 +126,7 @@ export const EventProvider = ({
         });
       });
       if (gameConfig.shouldAnimateImages) {
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await new Promise((resolve) => setTimeout(resolve, 2300));
       }
     } else if (event.type === "Pause") {
       setIsPaused(true);

@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppContext } from "@/contexts/AppContext";
+import { isInIframe } from "@/hooks/useDeviceDetection";
 
 interface FullScreenButtonProps {
   className?: string;
@@ -11,8 +12,8 @@ const FullScreenButton: React.FC<FullScreenButtonProps> = ({
   const { isFullscreen, toggleFullscreen } = useAppContext();
 
   console.log("isFullscreen", isFullscreen);
-  // Don't render if already in fullscreen mode
-  if (isFullscreen) {
+  // Don't render if already in fullscreen mode or if running in an iframe
+  if (isFullscreen || isInIframe()) {
     return null;
   }
 

@@ -89,10 +89,6 @@ export const EventProvider = ({
     });
 
     if (event.type === "Story") {
-      if (event.seenCcNotice || HASH_QUEST_ID) {
-        setSeenCcNotice(true);
-      }
-
       let options = {};
       if (event.isAiResponse || event.isCcNotice) {
         options = { skipScroll: true, animate: false };
@@ -134,10 +130,13 @@ export const EventProvider = ({
       promptRejected = true;
       setDiceRollState({ ...diceRollState, show: false });
       showToast(event.rejectionMessage, "error");
-      setShowPromptInput({
-        ...showPromptInput,
-        show: true,
-      });
+
+      setTimeout(() => {
+        setShowPromptInput({
+          ...showPromptInput,
+          show: true,
+        });
+      }, 3000);
     } else if (event.type === "LocationStateUpdate") {
       setNpcState(event.npcState);
       if (event.changedLocationImage) {
@@ -147,6 +146,10 @@ export const EventProvider = ({
         });
       }
     } else if (event.type === "ChangeLocation") {
+      if (event.locationData.name !== "CC Notice") {
+        setSeenCcNotice(true);
+      }
+
       clearStory();
       isFirstParagraph = true;
       setNpcState(event.npcState);

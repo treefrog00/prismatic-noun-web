@@ -51,6 +51,10 @@ const TextInput: React.FC<TextInputProps> = ({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
+            if (e.shiftKey) {
+              // Allow newline with Shift+Enter
+              return;
+            }
             // enter only submits in dev mode
             if (onOk && import.meta.env.DEV) {
               e.preventDefault();

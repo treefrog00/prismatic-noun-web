@@ -64,7 +64,6 @@ const GameEventSchema = z
       text: z.string(),
       isAiResponse: z.boolean(),
       isCcNotice: z.boolean(),
-      seenCcNotice: z.boolean(),
     }),
 
     z.object({

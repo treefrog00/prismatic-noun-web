@@ -40,11 +40,36 @@ const LobbyHome = ({ availableQuests }: LobbyHomeProps) => {
                 if (quest) setQuestSummary(quest);
               }}
             >
-              {availableQuests.map((quest) => (
+              {availableQuests.slice(0, 4).map((quest) => (
                 <option key={quest.questId} value={quest.questId}>
                   {quest.title}
                 </option>
               ))}
+              <option value="" disabled>
+                &nbsp;
+              </option>
+              {availableQuests[4] && (
+                <option
+                  key={availableQuests[4].questId}
+                  value={availableQuests[4].questId}
+                >
+                  {availableQuests[4].title}
+                </option>
+              )}
+              <option value="" disabled>
+                &nbsp;
+              </option>
+              <option value="" disabled>
+                B-Sides
+              </option>
+              {availableQuests[5] && (
+                <option
+                  key={availableQuests[5].questId}
+                  value={availableQuests[5].questId}
+                >
+                  {availableQuests[5].title}
+                </option>
+              )}
             </select>
             <p className={`mt-5 text-gray-200 ${responsiveStyles.text.base}`}>
               {questSummary.description}

@@ -8,7 +8,7 @@ interface NavBarProps {
 }
 
 const LobbyNavBar: FC<NavBarProps> = (props) => {
-  const tabs = ["lobby", "settings", "contact"];
+  const tabs = ["lobby", "contact", "settings"];
 
   return (
     <nav className="w-full bg-gray-800/80 border-b border-gray-700 px-2 md:px-0">
@@ -29,7 +29,7 @@ const LobbyNavBar: FC<NavBarProps> = (props) => {
               {index === tabs.length - 1 && (
                 <img
                   src={artUrl("logo_diamond.webp")}
-                  className={`${responsiveStyles.sizes.logo} mx-8 my-2 opacity-70`}
+                  className={`${responsiveStyles.sizes.logo} mx-8 my-2 opacity-90`}
                 />
               )}
             </li>

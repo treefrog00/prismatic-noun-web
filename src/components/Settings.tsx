@@ -39,41 +39,45 @@ const Settings: React.FC = () => {
             <label className="text-gray-200 w-32">Music</label>
             <MusicToggle />
           </div>
-          <div className="flex items-center">
-            <label className="text-gray-200 w-32">Animated stars</label>
-            <ToggleSwitch
-              isEnabled={shouldAnimateStars}
-              onToggle={() => setShouldAnimateStars(!shouldAnimateStars)}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="text-gray-200 w-32">Animated images</label>
-            <ToggleSwitch
-              isEnabled={gameConfig.shouldAnimateImages}
-              onToggle={handleToggleAnimateImages}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="text-gray-200 w-32">Animated text</label>
-            <ToggleSwitch
-              isEnabled={gameConfig.shouldAnimateText}
-              onToggle={handleToggleAnimateText}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="text-gray-200 w-32">Animated dice</label>
-            <ToggleSwitch
-              isEnabled={gameConfig.shouldAnimateDice}
-              onToggle={handleToggleAnimateDice}
-            />
-          </div>
-          <div className="flex items-center">
-            <label className="text-gray-200 w-32">Animated continue</label>
-            <ToggleSwitch
-              isEnabled={gameConfig.shouldAnimateContinueButton}
-              onToggle={handleToggleAnimateContinueButton}
-            />
-          </div>
+          {import.meta.env.DEV && (
+            <>
+              <div className="flex items-center">
+                <label className="text-gray-200 w-32">Animated stars</label>
+                <ToggleSwitch
+                  isEnabled={shouldAnimateStars}
+                  onToggle={() => setShouldAnimateStars(!shouldAnimateStars)}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="text-gray-200 w-32">Animated images</label>
+                <ToggleSwitch
+                  isEnabled={gameConfig.shouldAnimateImages}
+                  onToggle={handleToggleAnimateImages}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="text-gray-200 w-32">Animated text</label>
+                <ToggleSwitch
+                  isEnabled={gameConfig.shouldAnimateText}
+                  onToggle={handleToggleAnimateText}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="text-gray-200 w-32">Animated dice</label>
+                <ToggleSwitch
+                  isEnabled={gameConfig.shouldAnimateDice}
+                  onToggle={handleToggleAnimateDice}
+                />
+              </div>
+              <div className="flex items-center">
+                <label className="text-gray-200 w-32">Animated continue</label>
+                <ToggleSwitch
+                  isEnabled={gameConfig.shouldAnimateContinueButton}
+                  onToggle={handleToggleAnimateContinueButton}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

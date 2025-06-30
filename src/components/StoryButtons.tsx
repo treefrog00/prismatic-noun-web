@@ -93,15 +93,16 @@ const StoryButtons: React.FC = () => {
       return;
     }
 
+    setShowPromptInput({
+      ...showPromptInput,
+      show: false,
+    });
+
     // Run dice roll animation in the background.
     void rollDice();
 
     await submitPrompt(gameApi, myPrompt);
 
-    setShowPromptInput({
-      ...showPromptInput,
-      show: false,
-    });
     setMyPrompt("");
   };
 

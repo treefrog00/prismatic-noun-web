@@ -7,6 +7,7 @@ interface Star {
   opacity: number;
   baseOpacity: number; // Add base opacity for animation
   speed: number;
+  phaseOffset: number; // Add phase offset for out-of-sync animation
 }
 
 interface StarryBackgroundProps {
@@ -85,6 +86,7 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({
           speed:
             Math.random() * (config.speed.max - config.speed.min) +
             config.speed.min,
+          phaseOffset: Math.random() * Math.PI,
         });
       }
       starsRef.current = stars;
@@ -117,7 +119,9 @@ const StarryBackground: React.FC<StarryBackgroundProps> = ({
       starsRef.current.forEach((star) => {
         if (shouldAnimate) {
           // Calculate animated opacity using sine wave
-          const sineValue = Math.sin(currentTime * star.speed);
+          const sineValue = Math.sin(
+            currentTime * star.speed + star.phaseOffset,
+          );
           const opacityRange =
             (config.opacity.animation.max - config.opacity.animation.min) / 2;
           const midPoint =

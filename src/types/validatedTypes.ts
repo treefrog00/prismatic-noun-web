@@ -63,6 +63,7 @@ const GameEventSchema = z
       type: z.literal("Story"),
       text: z.string(),
       isAiResponse: z.boolean(),
+      isCcNotice: z.boolean(),
     }),
 
     z.object({
@@ -106,10 +107,12 @@ const GameEventSchema = z
     z.object({
       type: z.literal("PlayerInput"),
       playerPrompt: z.string(),
-      diceRolls: z.object({
-        characterRolls: z.array(DiceRollSchema),
-        locationRoll: DiceRollSchema,
-      }),
+      diceRolls: z
+        .object({
+          characterRolls: z.array(DiceRollSchema),
+          locationRoll: DiceRollSchema,
+        })
+        .nullable(),
     }),
     z.object({
       type: z.literal("GameEnd"),

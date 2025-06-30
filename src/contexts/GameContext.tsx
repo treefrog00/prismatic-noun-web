@@ -6,6 +6,7 @@ import { useAppContext } from "./AppContext";
 
 export interface DiceRollState {
   show: boolean;
+  shouldShow: boolean;
   characterRolls: DiceRoll[];
   locationRoll: DiceRoll;
   finishedAnimation: boolean;
@@ -101,6 +102,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
   const [diceRollState, setDiceRollState] = useState<DiceRollState>({
     show: false,
+    shouldShow: false,
     characterRolls: [],
     locationRoll: null,
     finishedAnimation: false,

@@ -176,12 +176,23 @@ export const EventProvider = ({
         playerPrompt: event.playerPrompt,
       });
       // set up the values, but don't show it yet
-      setDiceRollState({
-        show: false,
-        characterRolls: event.diceRolls.characterRolls,
-        locationRoll: event.diceRolls.locationRoll,
-        finishedAnimation: false,
-      });
+      if (event.diceRolls) {
+        setDiceRollState({
+          show: false,
+          shouldShow: true,
+          characterRolls: event.diceRolls.characterRolls,
+          locationRoll: event.diceRolls.locationRoll,
+          finishedAnimation: false,
+        });
+      } else {
+        setDiceRollState({
+          show: false,
+          shouldShow: false,
+          characterRolls: [],
+          locationRoll: null,
+          finishedAnimation: false,
+        });
+      }
     } else if (event.type === "ErrorEvent") {
       showToast(event.errorMessage, "error");
       console.error(event.errorMessage);

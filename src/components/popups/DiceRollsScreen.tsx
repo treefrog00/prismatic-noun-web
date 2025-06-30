@@ -56,6 +56,7 @@ const DiceRollsScreen: React.FC = () => {
   const handleContinue = async () => {
     setDiceRollState({
       show: false,
+      shouldShow: false,
       characterRolls: [],
       locationRoll: null,
       finishedAnimation: false,

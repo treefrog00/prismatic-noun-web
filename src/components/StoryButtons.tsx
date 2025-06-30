@@ -39,17 +39,18 @@ const StoryButtons: React.FC = () => {
   const { diceRollState, setDiceRollState } = useDiceRoll();
 
   const rollDice = async () => {
-    if (!gameConfig.shouldAnimateDice) {
+    if (!gameConfig.shouldAnimateDice || !diceRollState.shouldShow) {
       return;
     }
 
+    console.log("rolling dice");
     // need to handle updates independently of the React hook within this function
     const diceState = {
       ...diceRollState,
       show: true,
-      finishedAnimation: false,
     };
 
+    // Immediately trigger the show state update
     setDiceRollState(diceState);
 
     await new Promise((resolve) =>

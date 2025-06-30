@@ -81,7 +81,11 @@ export const processTextFormatting = (
     .replace(/<\/hl>/g, "</span>")
     .replace(/<i>/g, `<span style="font-style: italic;">`)
     .replace(/<\/i>/g, "</span>")
-    .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"); // Replace <tab> at line start with 4 spaces
+    .replace(/^<tab>/gm, "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;") // Replace <tab> at line start with 4 spaces
+    .replace(
+      "Creative Commons Attribution-NonCommercial-ShareAlike license",
+      `<span class="${sharedStyles.highlight}"><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="blank">Creative Commons Attribution-NonCommercial-ShareAlike license</a><span class="${sharedStyles.highlight}">`,
+    );
 
   // If italic is true, wrap the entire text in highlight styling and make it italic
   if (options?.italic) {
@@ -342,6 +346,25 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
         }
       }
 
+      // Store character elements and their animation data
+      const characterElements: Array<{
+        element: HTMLSpanElement;
+        finalX: number;
+        finalY: number;
+        startTime: number;
+        bobStartTime: number;
+        secondBobTime: number;
+        settleTime: number;
+        bobAmount: number;
+        animationPhase:
+          | "initial"
+          | "rising"
+          | "firstBob"
+          | "secondBob"
+          | "settling"
+          | "complete";
+      }> = [];
+
       // Process each character using the measured positions
       for (let i = 0; i < plainText.length; i++) {
         const char = plainText[i];
@@ -376,11 +399,9 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           currentLine++;
           if (currentLine >= lastScrollLine + 5) {
             lastScrollLine = currentLine;
-            if (!options?.skipScroll) {
-              setTimeout(scrollToBottom, SCROLL_DELAY);
-            }
           }
         }
+
         // Use the measured position from the reference paragraph, adjusted for baseline offset
         const finalX = position.x;
         const finalY = position.y - baselineOffset;
@@ -391,32 +412,26 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
           textContainer.offsetHeight + 50 + Math.random() * 50 + "px";
         charElement.style.opacity = "0";
 
-        // Calculate individual animation time
-        const delay = charIndex * CHAR_DELAY; // Staggered delay
-        const animationTime = delay + 800; // rough estimate of total animation time
+        // Store character animation data
+        const delay = charIndex * CHAR_DELAY;
+        const bobAmount = 30 + Math.random() * 10;
+        const bobTime = 400 + Math.random() * 100;
+
+        characterElements.push({
+          element: charElement,
+          finalX,
+          finalY,
+          startTime: delay,
+          bobStartTime: delay + 50,
+          secondBobTime: delay + 50 + bobTime,
+          settleTime: delay + 50 + bobTime + 200,
+          bobAmount,
+          animationPhase: "initial",
+        });
+
+        // Calculate total animation time
+        const animationTime = delay + 50 + bobTime + 200; // Extra time for settling
         longestAnimationTime = Math.max(longestAnimationTime, animationTime);
-
-        // Start animation with a staggered delay
-        setTimeout(() => {
-          charElement.style.opacity = "1";
-
-          // Animate with CSS transition
-          charElement.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
-
-          // Add some randomness to the bobbing
-          const bobAmount = 30 + Math.random() * 10;
-          const bobTime = 400 + Math.random() * 100;
-
-          // First bob - go higher than final position
-          setTimeout(() => {
-            charElement.style.top = finalY - bobAmount + "px";
-
-            // Second bob - settle at final position
-            setTimeout(() => {
-              charElement.style.top = finalY + "px";
-            }, bobTime);
-          }, 50);
-        }, delay);
 
         charIndex++;
       }
@@ -424,17 +439,99 @@ const Story = forwardRef<StoryRef, StoryProps>(({ questSummary }, ref) => {
       // Remove the temporary measurement span
       textDisplay.removeChild(tempSpan);
 
-      // Clean up DOM after animation completes and replace with paragraph
-      setTimeout(() => {
-        // Simply make the reference paragraph visible (content is already correct)
-        referenceParagraph.style.opacity = "1";
+      // Animation loop using requestAnimationFrame
+      const startTime = performance.now();
+      let lastScrollTime = 0;
+      let animationId: number;
 
-        // Remove all the animated character elements
-        const characterElements = textContainer.querySelectorAll(".character");
-        characterElements.forEach((el) => el.remove());
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        let allComplete = true;
 
-        scrollToBottom();
-      }, longestAnimationTime);
+        // Handle scrolling based on elapsed time
+        if (elapsed > lastScrollTime + SCROLL_DELAY && !options?.skipScroll) {
+          const currentScrollLine = Math.floor(elapsed / SCROLL_DELAY);
+          if (currentScrollLine > lastScrollTime / SCROLL_DELAY) {
+            scrollToBottom();
+            lastScrollTime = elapsed;
+          }
+        }
+
+        // Animate each character based on elapsed time
+        characterElements.forEach((charData) => {
+          const {
+            element,
+            finalX,
+            finalY,
+            startTime,
+            bobStartTime,
+            secondBobTime,
+            settleTime,
+            bobAmount,
+            animationPhase,
+          } = charData;
+
+          if (elapsed < startTime) {
+            allComplete = false;
+            return; // Not time to start this character yet
+          }
+
+          if (charData.animationPhase === "initial" && elapsed >= startTime) {
+            // Start the initial rise
+            element.style.opacity = "1";
+            element.style.transition = `top 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease-in`;
+            charData.animationPhase = "rising";
+          }
+
+          if (charData.animationPhase === "rising" && elapsed >= bobStartTime) {
+            // First bob - go higher than final position
+            element.style.top = finalY - bobAmount + "px";
+            charData.animationPhase = "firstBob";
+          }
+
+          if (
+            charData.animationPhase === "firstBob" &&
+            elapsed >= secondBobTime
+          ) {
+            // Second bob - settle at final position
+            element.style.top = finalY + "px";
+            charData.animationPhase = "secondBob";
+          }
+
+          if (
+            charData.animationPhase === "secondBob" &&
+            elapsed >= settleTime
+          ) {
+            charData.animationPhase = "settling";
+          }
+
+          if (charData.animationPhase === "settling") {
+            charData.animationPhase = "complete";
+          }
+
+          if (charData.animationPhase !== "complete") {
+            allComplete = false;
+          }
+        });
+
+        // Continue animation if not all characters are complete
+        if (!allComplete && elapsed < longestAnimationTime + 500) {
+          animationId = requestAnimationFrame(animate);
+        } else {
+          // Animation complete - clean up and show final paragraph
+          referenceParagraph.style.opacity = "1";
+
+          // Remove all the animated character elements
+          const characterElements =
+            textContainer.querySelectorAll(".character");
+          characterElements.forEach((el) => el.remove());
+
+          scrollToBottom();
+        }
+      };
+
+      // Start the animation loop
+      animationId = requestAnimationFrame(animate);
     },
     // unused
     appendNoAnimation: (text: string, options?: StoryAppendOptions) => {

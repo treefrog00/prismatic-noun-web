@@ -76,6 +76,9 @@ type GameContextType = {
 
   rateLimitStatus: RateLimitStatus;
   setRateLimitStatus: (value: RateLimitStatus) => void;
+
+  seenCcNotice: boolean;
+  setSeenCcNotice: (value: boolean) => void;
 };
 
 export const GameContext = createContext<GameContextType | null>(null);
@@ -132,7 +135,7 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
     show: false,
     hitGlobalLimit: false,
   });
-
+  const [seenCcNotice, setSeenCcNotice] = useState(false);
   // Logbook state
   const [logbook, setLogbook] = useState<string[]>([]);
   const addToLogbook = (text: string) => {
@@ -192,6 +195,9 @@ export const GameProvider = ({ children }: GameProviderProps): JSX.Element => {
 
         rateLimitStatus,
         setRateLimitStatus,
+
+        seenCcNotice,
+        setSeenCcNotice,
       }}
     >
       {children}
@@ -318,5 +324,13 @@ export const useWorldIndices = () => {
   return {
     worldIndices: context.worldIndices,
     setWorldIndices: context.setWorldIndices,
+  };
+};
+
+export const useSeenCcNotice = () => {
+  const context = useContext(GameContext);
+  return {
+    seenCcNotice: context.seenCcNotice,
+    setSeenCcNotice: context.setSeenCcNotice,
   };
 };

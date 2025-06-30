@@ -5,6 +5,7 @@ import {
   useCharacterState,
   useLocationData,
   useNpcState,
+  useSeenCcNotice,
 } from "@/contexts/GameContext";
 import SettingsPopup from "@/components/popups/SettingsPopup";
 import NpcOverlay from "./overlays/NpcOverlay";
@@ -138,7 +139,7 @@ const TopBar = () => {
   const { characterState } = useCharacterState();
   const { characterData } = useCharacterData();
   const { questSummary } = useAppContext();
-
+  const { seenCcNotice } = useSeenCcNotice();
   const characterOverlay = useOverlayState("character");
   const npcOverlay = useOverlayState("npc");
   const locationOverlay = useOverlayState("location");
@@ -153,31 +154,35 @@ const TopBar = () => {
     y: listRef.current?.firstElementChild?.getBoundingClientRect().bottom ?? 0,
   });
 
-  const characterList = characterState.map((name) => {
-    const character = characterData?.[name];
-    return {
-      name,
-      ...character,
-    };
-  });
+  const characterList = seenCcNotice
+    ? characterState.map((name) => {
+        const character = characterData?.[name];
+        return {
+          name,
+          ...character,
+        };
+      })
+    : [];
 
-  const npcList = npcState.map((name) => {
-    const npcData = locationData?.npcs?.[name];
-    return {
-      name: name,
-      ...npcData,
-    };
-  });
+  const npcList = seenCcNotice
+    ? npcState.map((name) => {
+        const npcData = locationData?.npcs?.[name];
+        return {
+          name: name,
+          ...npcData,
+        };
+      })
+    : [];
 
   return (
     <>
       <div
-        className={`w-full backdrop-blur-sm border border-gray-500 py-2 px-4 mb-2 ${containerStyles.container} opacity-90 topbar-fade-in`}
+        className={`w-full backdrop-blur-sm border border-gray-500 py-2 px-4 mb-2 ${containerStyles.container} ${seenCcNotice ? "opacity-90 topbar-fade-in" : "opacity-0"} transition-opacity duration-300`}
       >
         <div className="flex justify-between items-center">
           <div ref={listRef} className="flex gap-4">
             {/* Location */}
-            {locationData ? (
+            {seenCcNotice && locationData ? (
               <div
                 className={`${sharedBoxStyles}`}
                 onMouseEnter={(e) =>

@@ -12,6 +12,7 @@ import {
   useIsPaused,
   useLogbook,
   useMainImage,
+  useSeenCcNotice,
   useUiState,
   useWorldIndices,
 } from "./GameContext";
@@ -29,6 +30,7 @@ import { GameApi } from "@/core/gameApi";
 import { EventsResponse, EventsResponseSchema } from "@/types/validatedTypes";
 import { permaConsoleLog } from "@/util/logger";
 import { StoryAppendOptions } from "@/components/Story";
+import { HASH_QUEST_ID } from "@/config";
 
 type EventContextType = {
   eventQueue: GameEvent[];
@@ -68,6 +70,7 @@ export const EventProvider = ({
   const { worldIndices, setWorldIndices } = useWorldIndices();
   const { questSummary } = useAppContext();
   const { setCharacterData } = useCharacterData();
+  const { setSeenCcNotice } = useSeenCcNotice();
 
   const processEvent = async (
     event: GameEvent,
@@ -86,11 +89,9 @@ export const EventProvider = ({
     });
 
     if (event.type === "Story") {
-      // removed the dice roll text, it's not like it does anything anyway
-      // if (event.isAiResponse && pendingDiceText) {
-      //   appendToStory(pendingDiceText, { italic: true, skipScroll: true });
-      //   pendingDiceText = "";
-      // }
+      if (event.seenCcNotice || HASH_QUEST_ID) {
+        setSeenCcNotice(true);
+      }
 
       let options = {};
       if (event.isAiResponse) {

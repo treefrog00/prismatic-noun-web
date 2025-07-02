@@ -22,17 +22,18 @@ const StoryImage: React.FC = () => {
   const [pixels, setPixels] = useState<PixelData[]>([]);
   const [isHovered, setIsHovered] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [isDrawingSmooth, setIsDrawingSmooth] = useState(false);
   const animationRef = useRef<number>();
   const pauseTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const PIXEL_SIZE = 16; // Size of each square in pixels (larger = fewer pixels = better performance)
-  const CANVAS_WIDTH = 512; // Adjust based on your image size
+  const PIXEL_SIZE = 16;
+  const CANVAS_WIDTH = 512;
   const CANVAS_HEIGHT = 512;
-  const MAX_DELAY_MS = 900; // Maximum random delay before pixel starts animating
-  const PIXEL_ANIMATION_DURATION_MS = 600; // Duration for each pixel's fade-in animation
-  const PAUSE_AFTER_PIXEL_EFFECT_MS = 200; // Pause duration after pixel effect completes
+  const MAX_DELAY_MS = 900;
+  const PIXEL_ANIMATION_DURATION_MS = 600;
+  const PAUSE_AFTER_PIXEL_EFFECT_MS = 200;
 
-  // Initialize pixel grid
+  // Initialize pixel grid once on mount
   useEffect(() => {
     const pixelGrid: PixelData[] = [];
     for (let y = 0; y < CANVAS_HEIGHT; y += PIXEL_SIZE) {
@@ -47,33 +48,38 @@ const StoryImage: React.FC = () => {
       }
     }
     setPixels(pixelGrid);
+    // When the component first loads, draw the initial image smoothly
+    setIsDrawingSmooth(true);
   }, []);
 
   // Handle image changes
   useEffect(() => {
-    if (
-      mainImage !== displayImage &&
-      !isTransitioning &&
-      gameConfig.shouldAnimateImages
-    ) {
+    // Don't do anything if the image hasn't actually changed
+    if (mainImage === displayImage) return;
+
+    if (gameConfig.shouldAnimateImages) {
+      // Set flags for the new transition
       setIsTransitioning(true);
+      setIsDrawingSmooth(false);
       setDisplayImage(mainImage);
 
-      // Start transition for all pixels - fade from transparent
+      // CRITICAL FIX: Reset all pixels to their initial animated state
       setPixels((prev) =>
         prev.map((pixel) => ({
           ...pixel,
-          phase: "from-transparent",
+          phase: "from-transparent", // Start the animation phase
           progress: 0,
-          startTime: undefined, // Reset start time
+          delay: Math.random() * MAX_DELAY_MS, // Assign a new random delay
+          startTime: undefined, // Clear the previous startTime
         })),
       );
-    } else if (mainImage !== displayImage && !gameConfig.shouldAnimateImages) {
-      // When animation is disabled, just update the image directly
+    } else {
+      // When animation is disabled, update directly and set to smooth
       setDisplayImage(mainImage);
+      setIsDrawingSmooth(true);
       setIsTransitioning(false);
     }
-  }, [mainImage, displayImage, gameConfig.shouldAnimateImages]);
+  }, [mainImage, gameConfig.shouldAnimateImages]);
 
   // Animation loop
   useEffect(() => {
@@ -81,10 +87,10 @@ const StoryImage: React.FC = () => {
 
     let lastFrameTime = 0;
     const targetFPS = 30;
-    const frameInterval = 1000 / targetFPS; // ~33.33ms between frames
+    const frameInterval = 1000 / targetFPS;
 
     const animate = (timestamp: number) => {
-      // Throttle to 30 FPS
+      // Throttle FPS
       if (timestamp - lastFrameTime < frameInterval) {
         if (isTransitioning) {
           animationRef.current = requestAnimationFrame(animate);
@@ -93,8 +99,9 @@ const StoryImage: React.FC = () => {
       }
       lastFrameTime = timestamp;
 
-      let allComplete = true;
       setPixels((prev) => {
+        let allComplete = true;
+
         const updated = prev.map((pixel) => {
           if (pixel.phase === "stable") return pixel;
 
@@ -132,13 +139,19 @@ const StoryImage: React.FC = () => {
           };
         });
 
+        // Check for completion inside the updater to ensure atomicity
         if (allComplete) {
-          // All pixels are now stable, so we can end the transition.
-          setIsTransitioning(false);
+          setIsTransitioning(false); // Stop the animation loop
+          // Set timeout for the stylistic pause before the final smooth render
+          pauseTimeoutRef.current = setTimeout(() => {
+            setIsDrawingSmooth(true);
+          }, PAUSE_AFTER_PIXEL_EFFECT_MS);
         }
+
         return updated;
       });
 
+      // Continue the loop if the transition flag is still true
       if (isTransitioning) {
         animationRef.current = requestAnimationFrame(animate);
       }
@@ -146,21 +159,16 @@ const StoryImage: React.FC = () => {
 
     animationRef.current = requestAnimationFrame(animate);
 
+    // Cleanup function
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
-    };
-  }, [isTransitioning]);
-
-  // Cleanup timeout on unmount
-  useEffect(() => {
-    return () => {
       if (pauseTimeoutRef.current) {
         clearTimeout(pauseTimeoutRef.current);
       }
     };
-  }, []);
+  }, [isTransitioning]);
 
   // Draw to canvas
   useEffect(() => {
@@ -170,18 +178,10 @@ const StoryImage: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const drawImage = (imageSrc: string | null, callback: () => void) => {
-      if (!imageSrc) {
-        // Clear canvas if no image to draw
-        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        callback();
-        return;
-      }
-
+    const drawPixelatedImage = (imageSrc: string) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
-        // Draw image to get pixel data
         const tempCanvas = document.createElement("canvas");
         tempCanvas.width = CANVAS_WIDTH;
         tempCanvas.height = CANVAS_HEIGHT;
@@ -196,11 +196,8 @@ const StoryImage: React.FC = () => {
           CANVAS_HEIGHT,
         );
 
-        // Clear canvas only after we have the image data ready
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        callback();
 
-        // Draw pixels based on their transition state
         pixels.forEach((pixel) => {
           let alpha = 1;
           let brightness = 1;
@@ -208,13 +205,9 @@ const StoryImage: React.FC = () => {
           if (pixel.phase === "from-transparent") {
             brightness = pixel.progress;
             alpha = pixel.progress;
-          } else if (pixel.phase === "stable") {
-            brightness = 1;
-            alpha = 1;
           }
 
           if (alpha > 0) {
-            // Get average color of the pixel square
             let r = 0,
               g = 0,
               b = 0,
@@ -248,29 +241,32 @@ const StoryImage: React.FC = () => {
           }
         });
       };
-
       img.src = artUrl(imageSrc);
     };
 
-    // Check if all pixels are stable (transition complete) and not in pause period
-    const allPixelsStable =
-      pixels.length > 0 && pixels.every((p) => p.phase === "stable");
-
-    if (allPixelsStable && displayImage) {
-      // Draw the image normally (smooth) when transition is complete and pause is over
+    if (isDrawingSmooth && displayImage) {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
-        // Clear and draw in one operation to prevent flicker
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       };
       img.src = artUrl(displayImage);
+    } else if (displayImage) {
+      drawPixelatedImage(displayImage);
     } else {
-      // Draw with pixel animation during transition or pause period
-      drawImage(displayImage, () => {});
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
-  }, [pixels, displayImage, isTransitioning]);
+  }, [pixels, displayImage, isDrawingSmooth]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (pauseTimeoutRef.current) {
+        clearTimeout(pauseTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleClick = () => {
     if (isHovered) {
@@ -289,34 +285,26 @@ const StoryImage: React.FC = () => {
       onClick={handleClick}
     >
       {!gameConfig.shouldAnimateImages ? (
-        // Simple image display when animation is disabled
         displayImage ? (
           <img
             src={artUrl(displayImage)}
             alt="Story scene"
             className="object-cover w-full h-full"
-            style={{
-              ...responsiveStyles.mask,
-            }}
+            style={{ ...responsiveStyles.mask }}
           />
         ) : (
-          // this was a hack to try to deal with the text jumping during animation it did't really work
-          <img src={artUrl("blank.webp")} width="512" height="512" />
+          <img src={artUrl("blank.webp")} width="512" height="512" alt="" />
         )
       ) : (
-        // Canvas animation when animation is enabled
         <canvas
           ref={canvasRef}
           width={CANVAS_WIDTH}
           height={CANVAS_HEIGHT}
           className="object-cover w-full h-full"
-          style={{
-            ...responsiveStyles.mask,
-          }}
+          style={{ ...responsiveStyles.mask }}
         />
       )}
 
-      {/* Magnifying glass icon - only show when hovered and not zoomed */}
       {isHovered && !isZoomed && (
         <div className="absolute bottom-2 right-2 z-20">
           <div className="bg-white rounded-lg p-2 shadow-md">

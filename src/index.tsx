@@ -56,7 +56,6 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
   );
 }
 
-// If backend url is set then probably testing on mobile, so log errors to sentry
 if (USE_SENTRY) {
   permaConsoleLog("Logging errors to sentry");
   Sentry.init({

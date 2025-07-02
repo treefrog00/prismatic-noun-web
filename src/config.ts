@@ -11,4 +11,4 @@ export const HASH_LOCATION_ID = hashParams.get("locationid");
 
 export const HASH_SCENE_ID = hashParams.get("sceneid");
 
-export const USE_SENTRY = import.meta.env.PROD || envConfig.backendUrl;
+export const USE_SENTRY = import.meta.env.PROD;

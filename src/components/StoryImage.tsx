@@ -13,12 +13,14 @@ interface PixelData {
   startTime?: number;
 }
 
+type AnimationStatus = "idle" | "animating" | "paused" | "drawing-smooth";
+
+// --- StoryImage Component ---
 const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
   const { gameConfig } = useGameConfig();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pixels, setPixels] = useState<PixelData[]>([]);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isDrawingSmooth, setIsDrawingSmooth] = useState(false);
+  const [status, setStatus] = useState<AnimationStatus>("idle");
   const [isHovered, setIsHovered] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
   const animationRef = useRef<number>();
@@ -31,7 +33,7 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
   const PIXEL_ANIMATION_DURATION_MS = 600;
   const PAUSE_AFTER_PIXEL_EFFECT_MS = 200;
 
-  // Initialize pixel grid and handle image changes
+  // Effect to initialize and trigger animations based on prop changes
   useEffect(() => {
     const pixelGrid: PixelData[] = [];
     for (let y = 0; y < CANVAS_HEIGHT; y += PIXEL_SIZE) {
@@ -48,29 +50,32 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
     }
 
     if (gameConfig.shouldAnimateImages) {
-      setIsDrawingSmooth(false);
-      setIsTransitioning(true);
+      // Reset and start the animation state machine
       setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
+      setStatus("animating");
     } else {
+      // Skip animation and go straight to the final state
       setPixels(pixelGrid);
-      setIsDrawingSmooth(true);
-      setIsTransitioning(false);
+      setStatus("drawing-smooth");
     }
-  }, [mainImage, gameConfig.shouldAnimateImages]); // Re-run when image or animation setting changes
+  }, [mainImage, gameConfig.shouldAnimateImages]);
 
-  // Animation loop
+  // Animation loop effect, runs only when status is 'animating'
   useEffect(() => {
-    if (!isTransitioning) return;
+    if (status !== "animating") return;
+
     let lastFrameTime = 0;
     const targetFPS = 30;
     const frameInterval = 1000 / targetFPS;
+
     const animate = (timestamp: number) => {
       if (timestamp - lastFrameTime < frameInterval) {
-        if (isTransitioning)
+        if (status === "animating")
           animationRef.current = requestAnimationFrame(animate);
         return;
       }
       lastFrameTime = timestamp;
+
       setPixels((prev) => {
         let allComplete = true;
         const updated = prev.map((pixel) => {
@@ -81,6 +86,7 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
             allComplete = false;
             return pixel;
           }
+
           let newPhase: "stable" | "from-transparent" = pixel.phase;
           let newProgress = 0;
           if (pixel.phase === "from-transparent") {
@@ -93,31 +99,46 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
           if (newPhase !== "stable") allComplete = false;
           return { ...pixel, phase: newPhase, progress: newProgress };
         });
+
         if (allComplete) {
-          setIsTransitioning(false);
-          pauseTimeoutRef.current = setTimeout(
-            () => setIsDrawingSmooth(true),
-            PAUSE_AFTER_PIXEL_EFFECT_MS,
-          );
+          // Transition to the next state instead of setting multiple flags
+          setStatus("paused");
         }
         return updated;
       });
-      if (isTransitioning)
+
+      if (status === "animating") {
         animationRef.current = requestAnimationFrame(animate);
+      }
     };
+
     animationRef.current = requestAnimationFrame(animate);
+
     return () => {
       if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, [status]);
+
+  // Pause effect, runs only when status is 'paused'
+  useEffect(() => {
+    if (status !== "paused") return;
+
+    pauseTimeoutRef.current = setTimeout(() => {
+      setStatus("drawing-smooth");
+    }, PAUSE_AFTER_PIXEL_EFFECT_MS);
+
+    return () => {
       if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
     };
-  }, [isTransitioning]);
+  }, [status]);
 
-  // Draw to canvas
+  // Draw to canvas effect
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
     const drawPixelatedImage = (imageSrc: string) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -171,7 +192,8 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       };
       img.src = artUrl(imageSrc);
     };
-    if (isDrawingSmooth && mainImage) {
+
+    if (status === "drawing-smooth" && mainImage) {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {
@@ -179,12 +201,12 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
         ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       };
       img.src = artUrl(mainImage);
-    } else if (mainImage) {
-      drawPixelatedImage(mainImage);
+    } else if (status === "animating" || status === "paused") {
+      if (mainImage) drawPixelatedImage(mainImage);
     } else {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
-  }, [pixels, mainImage, isDrawingSmooth]);
+  }, [pixels, mainImage, status]);
 
   const handleClick = () => {
     if (isHovered) setIsZoomed(!isZoomed);

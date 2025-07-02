@@ -10,6 +10,7 @@ import {
   useRateLimitStatus,
   useCharacterState,
   useCharacterData,
+  useMainImage,
 } from "../contexts/GameContext";
 import { startIfNotStarted } from "../core/startGame";
 import Story, { StoryRef } from "./Story";
@@ -37,6 +38,7 @@ const GameContent = () => {
   const { diceRollState } = useDiceRoll();
   const { setCharacterState } = useCharacterState();
   const { setCharacterData } = useCharacterData();
+  const { mainImage } = useMainImage();
 
   useEffect(() => {
     if (showPromptInput.show) {
@@ -137,7 +139,7 @@ const GameContent = () => {
           <div className="w-128 flex flex-col h-full">
             <div className="flex-1" />
             <div className="flex justify-end">
-              <StoryImage />
+              <StoryImage mainImage={mainImage} />
             </div>
             <div className="flex-[2]" />
           </div>

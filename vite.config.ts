@@ -6,10 +6,10 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react(),
-    visualizer({ open: true, filename: "rollup/stats.html" }),
-    {
-      name: "env-plugin",
-    },
+    // visualizer({ open: true, filename: "rollup/stats.html" }),
+    // {
+    //   name: "env-plugin",
+    // },
   ],
   resolve: {
     alias: {

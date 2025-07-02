@@ -4,7 +4,13 @@ import { visualizer } from "rollup-plugin-visualizer";
 import path from "path";
 
 export default defineConfig({
-  plugins: [react(), visualizer({ open: true, filename: "dist/stats.html" })],
+  plugins: [
+    react(),
+    visualizer({ open: true, filename: "rollup/stats.html" }),
+    {
+      name: "env-plugin",
+    },
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

@@ -5,3 +5,6 @@ src/caches
 
 # gh pulse
 *-pulse.html
+
+# rollup visualizer
+rollup/stats.html

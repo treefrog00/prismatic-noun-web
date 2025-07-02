@@ -22,8 +22,6 @@ const StoryImage: React.FC = () => {
   const [pixels, setPixels] = useState<PixelData[]>([]);
   const [isHovered, setIsHovered] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
-  const [isInPauseAfterPixelEffect, setIsInPauseAfterPixelEffect] =
-    useState(false);
   const animationRef = useRef<number>();
   const pauseTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -56,7 +54,6 @@ const StoryImage: React.FC = () => {
     if (
       mainImage !== displayImage &&
       !isTransitioning &&
-      !isInPauseAfterPixelEffect &&
       gameConfig.shouldAnimateImages
     ) {
       setIsTransitioning(true);
@@ -75,14 +72,8 @@ const StoryImage: React.FC = () => {
       // When animation is disabled, just update the image directly
       setDisplayImage(mainImage);
       setIsTransitioning(false);
-      setIsInPauseAfterPixelEffect(false);
     }
-  }, [
-    mainImage,
-    displayImage,
-    gameConfig.shouldAnimateImages,
-    isInPauseAfterPixelEffect,
-  ]);
+  }, [mainImage, displayImage, gameConfig.shouldAnimateImages]);
 
   // Animation loop
   useEffect(() => {
@@ -101,20 +92,12 @@ const StoryImage: React.FC = () => {
         return;
       }
       lastFrameTime = timestamp;
+
+      let allComplete = true;
       setPixels((prev) => {
-        let allComplete = true;
-
-        // Count pixels in each phase for debugging
-        const phaseCounts = {
-          stable: 0,
-          "from-transparent": 0,
-        };
-        prev.forEach((p) => phaseCounts[p.phase]++);
-
         const updated = prev.map((pixel) => {
           if (pixel.phase === "stable") return pixel;
 
-          // Set start time for this pixel if not set
           if (!pixel.startTime) {
             pixel.startTime = timestamp + pixel.delay;
           }
@@ -126,7 +109,6 @@ const StoryImage: React.FC = () => {
           }
 
           let newPhase: "stable" | "from-transparent" = pixel.phase;
-          let newStartTime = pixel.startTime;
           let newProgress = 0;
 
           if (pixel.phase === "from-transparent") {
@@ -147,21 +129,12 @@ const StoryImage: React.FC = () => {
             ...pixel,
             phase: newPhase,
             progress: newProgress,
-            startTime: newStartTime,
           };
         });
 
         if (allComplete) {
+          // All pixels are now stable, so we can end the transition.
           setIsTransitioning(false);
-          // Start the pause period after pixel effect completes
-          console.log("pause start");
-          setIsInPauseAfterPixelEffect(true);
-
-          // Set timeout to end the pause and show final image
-          pauseTimeoutRef.current = setTimeout(() => {
-            console.log("pause over");
-            setIsInPauseAfterPixelEffect(false);
-          }, PAUSE_AFTER_PIXEL_EFFECT_MS);
         }
         return updated;
       });
@@ -283,7 +256,7 @@ const StoryImage: React.FC = () => {
     const allPixelsStable =
       pixels.length > 0 && pixels.every((p) => p.phase === "stable");
 
-    if (allPixelsStable && !isInPauseAfterPixelEffect && displayImage) {
+    if (allPixelsStable && displayImage) {
       // Draw the image normally (smooth) when transition is complete and pause is over
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -297,7 +270,7 @@ const StoryImage: React.FC = () => {
       // Draw with pixel animation during transition or pause period
       drawImage(displayImage, () => {});
     }
-  }, [pixels, displayImage, isTransitioning, isInPauseAfterPixelEffect]);
+  }, [pixels, displayImage, isTransitioning]);
 
   const handleClick = () => {
     if (isHovered) {

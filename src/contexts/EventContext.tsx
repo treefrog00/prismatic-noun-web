@@ -209,10 +209,6 @@ export const EventProvider = ({
       const message =
         questSummary.questId === "echo_chamber" ? "The End?" : "The End";
       appendToStory(message, { italic: true, highlight: true });
-      appendToStory(
-        "Message treefrog on Discord if you'd like to playtest some more :)",
-        { italic: true, highlight: true },
-      );
       setTimeout(() => {
         setShowReturnToMainMenu(true);
       }, 1000);

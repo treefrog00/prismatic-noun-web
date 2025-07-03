@@ -5,7 +5,7 @@ export const isMobile = () => {
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent,
     );
-  const isSmallScreen = window.innerWidth * window.innerHeight < 400 * 900;
+  const isSmallScreen = window.outerWidth * window.outerHeight < 440 * 900;
 
   return isMobileDevice || isSmallScreen;
 };

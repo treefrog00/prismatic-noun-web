@@ -1,9 +1,13 @@
 // this version is immediate, for use on page load
-export const isAndroidOrIOS = () => {
+export const isMobile = () => {
   // possibly this could use bowser instead...
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent,
-  );
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  const isSmallScreen = window.innerWidth * window.innerHeight < 400 * 900;
+
+  return isMobileDevice || isSmallScreen;
 };
 
 // Check if the app is running inside an iframe

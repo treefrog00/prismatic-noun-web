@@ -4,7 +4,7 @@ import { responsiveStyles } from "@/styles/responsiveStyles";
 import StarryBackground from "../StarryBackground";
 import { useAppContext } from "@/contexts/AppContext";
 import { useNavigate } from "react-router-dom";
-import { isAndroidOrIOS } from "@/hooks/useDeviceDetection";
+import { isMobile } from "@/hooks/useDeviceDetection";
 import FullScreenButton from "../FullScreenButton";
 
 const LaunchScreen = () => {
@@ -12,7 +12,7 @@ const LaunchScreen = () => {
   const { initialPlay: initialPlayMusic } = useStereo();
   const { shouldAnimateStars, setSeenLaunchScreen } = useAppContext();
 
-  if (isAndroidOrIOS()) {
+  if (isMobile()) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
         <div className="text-white text-3xl font-bold text-center">

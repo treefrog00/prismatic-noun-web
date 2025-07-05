@@ -55,8 +55,7 @@ const TextInput: React.FC<TextInputProps> = ({
               // Allow newline with Shift+Enter
               return;
             }
-            // enter only submits in dev mode
-            if (onOk && import.meta.env.DEV) {
+            if (onOk) {
               e.preventDefault();
               onOk();
             }

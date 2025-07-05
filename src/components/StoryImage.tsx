@@ -35,6 +35,18 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
 
   // Effect to initialize and trigger animations based on prop changes
   useEffect(() => {
+    // Clear canvas immediately when image changes
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      }
+    }
+
+    // Set status to idle first to prevent any drawing
+    setStatus("idle");
+
     const pixelGrid: PixelData[] = [];
     for (let y = 0; y < CANVAS_HEIGHT; y += PIXEL_SIZE) {
       for (let x = 0; x < CANVAS_WIDTH; x += PIXEL_SIZE) {
@@ -49,9 +61,11 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       }
     }
 
-    // Reset and start the animation state machine
-    setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
-    setStatus("animating");
+    // Use a small delay to ensure the canvas stays clear before starting animation
+    setTimeout(() => {
+      setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
+      setStatus("animating");
+    }, 10);
   }, [mainImage]);
 
   // Animation loop effect, runs only when status is 'animating'
@@ -150,8 +164,12 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
           CANVAS_HEIGHT,
         );
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+        // Only draw pixels that should be visible based on current animation state
         pixels.forEach((pixel) => {
+          // Skip pixels that haven't started animating yet
           if (pixel.phase === "from-transparent" && pixel.progress <= 0) return;
+
           const alpha = pixel.phase === "from-transparent" ? pixel.progress : 1;
           const brightness = alpha;
           let r = 0,
@@ -195,9 +213,21 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
         ctx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       };
       img.src = artUrl(mainImage);
-    } else if (status === "animating" || status === "paused") {
-      if (mainImage) drawPixelatedImage(mainImage);
-    } else {
+    } else if (
+      (status === "animating" || status === "paused") &&
+      mainImage &&
+      pixels.length > 0
+    ) {
+      // Only draw pixelated image when we're actively animating, have a main image, and pixels are initialized
+      // Also ensure that pixels are in the correct animation state
+      const hasAnimatingPixels = pixels.some(
+        (pixel) => pixel.phase === "from-transparent",
+      );
+      if (hasAnimatingPixels) {
+        drawPixelatedImage(mainImage);
+      }
+    } else if (status === "idle") {
+      // Only clear canvas when idle, don't draw anything
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }
   }, [pixels, mainImage, status]);

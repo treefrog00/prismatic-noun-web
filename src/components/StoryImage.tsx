@@ -140,8 +140,14 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
         const tempCanvas = document.createElement("canvas");
         tempCanvas.width = CANVAS_WIDTH;
         tempCanvas.height = CANVAS_HEIGHT;
+        // Ensure temp canvas is never visible by setting it off-screen
+        tempCanvas.style.position = "absolute";
+        tempCanvas.style.left = "-9999px";
+        tempCanvas.style.top = "-9999px";
         const tempCtx = tempCanvas.getContext("2d");
         if (!tempCtx) return;
+
+        // Draw to temporary canvas (off-screen, never visible to user)
         tempCtx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         const imageData = tempCtx.getImageData(
           0,
@@ -149,6 +155,8 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
           CANVAS_WIDTH,
           CANVAS_HEIGHT,
         );
+
+        // Clear main canvas before drawing pixelated effect
         ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         pixels.forEach((pixel) => {
           if (pixel.phase === "from-transparent" && pixel.progress <= 0) return;

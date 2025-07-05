@@ -49,16 +49,10 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       }
     }
 
-    if (gameConfig.shouldAnimateImages) {
-      // Reset and start the animation state machine
-      setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
-      setStatus("animating");
-    } else {
-      // Skip animation and go straight to the final state
-      setPixels(pixelGrid);
-      setStatus("drawing-smooth");
-    }
-  }, [mainImage, gameConfig.shouldAnimateImages]);
+    // Reset and start the animation state machine
+    setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
+    setStatus("animating");
+  }, [mainImage]);
 
   // Animation loop effect, runs only when status is 'animating'
   useEffect(() => {
@@ -220,29 +214,13 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       onMouseLeave={() => setIsHovered(false)}
       onClick={handleClick}
     >
-      {!gameConfig.shouldAnimateImages ? (
-        mainImage ? (
-          <img
-            src={artUrl(mainImage)}
-            alt="Story scene"
-            className="object-cover w-full h-full"
-            style={{ ...responsiveStyles.mask }}
-          />
-        ) : (
-          <div
-            className="w-full h-full bg-gray-800"
-            style={{ ...responsiveStyles.mask }}
-          ></div>
-        )
-      ) : (
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_WIDTH}
-          height={CANVAS_HEIGHT}
-          className="object-cover w-full h-full"
-          style={{ ...responsiveStyles.mask }}
-        />
-      )}
+      <canvas
+        ref={canvasRef}
+        width={CANVAS_WIDTH}
+        height={CANVAS_HEIGHT}
+        className="object-cover w-full h-full"
+        style={{ ...responsiveStyles.mask }}
+      />
       {isHovered && !isZoomed && (
         <div className="absolute bottom-2 right-2 z-20">
           <div className="bg-white rounded-lg p-2 shadow-md">

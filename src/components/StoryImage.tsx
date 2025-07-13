@@ -25,6 +25,8 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const animationRef = useRef<number>();
   const pauseTimeoutRef = useRef<NodeJS.Timeout>();
+  const imageDataRef = useRef<ImageData | null>(null);
+  const currentImageUrlRef = useRef<string | null>(null);
 
   const PIXEL_SIZE = 16;
   const CANVAS_WIDTH = 512;
@@ -35,23 +37,47 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
 
   // Effect to initialize and trigger animations based on prop changes
   useEffect(() => {
-    const pixelGrid: PixelData[] = [];
-    for (let y = 0; y < CANVAS_HEIGHT; y += PIXEL_SIZE) {
-      for (let x = 0; x < CANVAS_WIDTH; x += PIXEL_SIZE) {
-        pixelGrid.push({
-          x,
-          y,
-          phase: "stable",
-          progress: 0,
-          delay: Math.random() * MAX_DELAY_MS,
-          startTime: undefined,
-        });
-      }
+    if (!mainImage) {
+      setStatus("idle");
+      return;
     }
 
-    // Reset and start the animation state machine
-    setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
-    setStatus("animating");
+    // Load image and cache image data
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = CANVAS_WIDTH;
+      tempCanvas.height = CANVAS_HEIGHT;
+      const tempCtx = tempCanvas.getContext("2d");
+      if (!tempCtx) return;
+
+      tempCtx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      const imageData = tempCtx.getImageData(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
+      // Cache the image data
+      imageDataRef.current = imageData;
+      currentImageUrlRef.current = mainImage;
+
+      // Set up pixel grid and start animation
+      const pixelGrid: PixelData[] = [];
+      for (let y = 0; y < CANVAS_HEIGHT; y += PIXEL_SIZE) {
+        for (let x = 0; x < CANVAS_WIDTH; x += PIXEL_SIZE) {
+          pixelGrid.push({
+            x,
+            y,
+            phase: "stable",
+            progress: 0,
+            delay: Math.random() * MAX_DELAY_MS,
+            startTime: undefined,
+          });
+        }
+      }
+
+      setPixels(pixelGrid.map((p) => ({ ...p, phase: "from-transparent" })));
+      setStatus("animating");
+    };
+    img.src = artUrl(mainImage);
   }, [mainImage]);
 
   // Animation loop effect, runs only when status is 'animating'
@@ -133,66 +159,47 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const drawPixelatedImage = (imageSrc: string) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        const tempCanvas = document.createElement("canvas");
-        tempCanvas.width = CANVAS_WIDTH;
-        tempCanvas.height = CANVAS_HEIGHT;
-        // Ensure temp canvas is never visible by setting it off-screen
-        tempCanvas.style.position = "absolute";
-        tempCanvas.style.left = "-9999px";
-        tempCanvas.style.top = "-9999px";
-        const tempCtx = tempCanvas.getContext("2d");
-        if (!tempCtx) return;
+    const drawPixelatedImage = () => {
+      if (!imageDataRef.current) return;
+      drawPixelsFromImageData(imageDataRef.current);
+    };
 
-        // Draw to temporary canvas (off-screen, never visible to user)
-        tempCtx.drawImage(img, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        const imageData = tempCtx.getImageData(
-          0,
-          0,
-          CANVAS_WIDTH,
-          CANVAS_HEIGHT,
-        );
-
-        // Clear main canvas before drawing pixelated effect
-        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        pixels.forEach((pixel) => {
-          if (pixel.phase === "from-transparent" && pixel.progress <= 0) return;
-          const alpha = pixel.phase === "from-transparent" ? pixel.progress : 1;
-          const brightness = alpha;
-          let r = 0,
-            g = 0,
-            b = 0,
-            count = 0;
+    const drawPixelsFromImageData = (imageData: ImageData) => {
+      // Clear main canvas before drawing pixelated effect
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      pixels.forEach((pixel) => {
+        if (pixel.phase === "from-transparent" && pixel.progress <= 0) return;
+        const alpha = pixel.phase === "from-transparent" ? pixel.progress : 1;
+        const brightness = alpha;
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
+        for (
+          let py = pixel.y;
+          py < pixel.y + PIXEL_SIZE && py < CANVAS_HEIGHT;
+          py++
+        ) {
           for (
-            let py = pixel.y;
-            py < pixel.y + PIXEL_SIZE && py < CANVAS_HEIGHT;
-            py++
+            let px = pixel.x;
+            px < pixel.x + PIXEL_SIZE && px < CANVAS_WIDTH;
+            px++
           ) {
-            for (
-              let px = pixel.x;
-              px < pixel.x + PIXEL_SIZE && px < CANVAS_WIDTH;
-              px++
-            ) {
-              const index = (py * CANVAS_WIDTH + px) * 4;
-              r += imageData.data[index];
-              g += imageData.data[index + 1];
-              b += imageData.data[index + 2];
-              count++;
-            }
+            const index = (py * CANVAS_WIDTH + px) * 4;
+            r += imageData.data[index];
+            g += imageData.data[index + 1];
+            b += imageData.data[index + 2];
+            count++;
           }
-          if (count > 0) {
-            r = Math.floor((r / count) * brightness);
-            g = Math.floor((g / count) * brightness);
-            b = Math.floor((b / count) * brightness);
-            ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            ctx.fillRect(pixel.x, pixel.y, PIXEL_SIZE, PIXEL_SIZE);
-          }
-        });
-      };
-      img.src = artUrl(imageSrc);
+        }
+        if (count > 0) {
+          r = Math.floor((r / count) * brightness);
+          g = Math.floor((g / count) * brightness);
+          b = Math.floor((b / count) * brightness);
+          ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+          ctx.fillRect(pixel.x, pixel.y, PIXEL_SIZE, PIXEL_SIZE);
+        }
+      });
     };
 
     if (status === "drawing-smooth" && mainImage) {
@@ -204,7 +211,7 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       };
       img.src = artUrl(mainImage);
     } else if (status === "animating" || status === "paused") {
-      if (mainImage) drawPixelatedImage(mainImage);
+      drawPixelatedImage();
     } else {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     }

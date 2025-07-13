@@ -51,6 +51,18 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       }
     }
 
+    // Clear any pending pause timeout from previous image
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+      pauseTimeoutRef.current = undefined;
+    }
+
+    // Cancel any ongoing animation from previous image
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = undefined;
+    }
+
     // Reset status to prevent old animations from interfering
     setStatus("idle");
 
@@ -214,7 +226,12 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       });
     };
 
-    if (status === "drawing-smooth" && mainImage) {
+    if (
+      status === "drawing-smooth" &&
+      mainImage &&
+      imageDataRef.current &&
+      currentImageUrlRef.current === mainImage
+    ) {
       const img = new Image();
       img.crossOrigin = "anonymous";
       img.onload = () => {

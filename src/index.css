@@ -60,5 +60,5 @@ html.wf-active {
 }
 
 .continue-fade-in {
-  animation: fadeInContinue 2s ease-in-out forwards;
+  animation: fadeInContinue 0.5s ease-in-out forwards;
 }

@@ -70,13 +70,7 @@ const StoryButtons: React.FC = () => {
     let timeoutId: NodeJS.Timeout;
 
     if (isPaused) {
-      if (gameConfig.shouldAnimateContinueButton) {
-        timeoutId = setTimeout(() => {
-          setShowContinue(true);
-        }, 1000);
-      } else {
-        setShowContinue(true);
-      }
+      setShowContinue(true);
     } else {
       setShowContinue(false);
     }

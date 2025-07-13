@@ -42,6 +42,18 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
       return;
     }
 
+    // Clear canvas immediately when mainImage changes to prevent flash
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      }
+    }
+
+    // Reset status to prevent old animations from interfering
+    setStatus("idle");
+
     // Load image and cache image data
     const img = new Image();
     img.crossOrigin = "anonymous";

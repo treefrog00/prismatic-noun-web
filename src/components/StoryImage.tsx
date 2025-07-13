@@ -31,8 +31,8 @@ const StoryImage: React.FC<{ mainImage: string | null }> = ({ mainImage }) => {
   const PIXEL_SIZE = 16;
   const CANVAS_WIDTH = 512;
   const CANVAS_HEIGHT = 512;
-  const MAX_DELAY_MS = 900;
-  const PIXEL_ANIMATION_DURATION_MS = 600;
+  const MAX_DELAY_MS = 500;
+  const PIXEL_ANIMATION_DURATION_MS = 400;
   const PAUSE_AFTER_PIXEL_EFFECT_MS = 200;
 
   // Effect to initialize and trigger animations based on prop changes

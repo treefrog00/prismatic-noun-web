@@ -122,7 +122,7 @@ export const EventProvider = ({
         });
       });
       if (gameConfig.shouldAnimateImages) {
-        await new Promise((resolve) => setTimeout(resolve, 2300));
+        await new Promise((resolve) => setTimeout(resolve, 1500));
       }
     } else if (event.type === "Pause") {
       setIsPaused(true);
